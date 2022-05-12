@@ -96,7 +96,7 @@ bool GLApp::init(GLint w, GLint h, std::string t) {
     std::cout << "Using glew version: " << glewGetString(GLEW_VERSION) << std::endl;
     std::cout << "Driver supports OpenGL 4.5\n" << std::endl;
   } else {
-    std::cerr << "Using glew version: " << glewGetString(GLEW_VERSION) << std::endl;
+    //std::cerr << "Using glew version: " << glewGetString(GLEW_VERSION) << std::endl;
     std::cerr << "Driver doesn't support OpenGL 4.5 - abort program" << std::endl;
     return false;
   }
