@@ -1,7 +1,7 @@
 /*!
 @file    main.cpp
-@author  pghali@digipen.edu, a.weiren@digipen.edu
-@date    10/06/2022
+@author  pghali@digipen.edu
+@date    10/11/2016
 
 This file uses functionality defined in types GLHelper and GLApp to initialize 
 an OpenGL context and implement a game loop.
@@ -40,17 +40,23 @@ Note that the C++ compiler will insert a return 0 statement if one is missing.
 */
 int main() {
   // Part 1
+    /*creates a window
+    starts up an OpenGL context
+    initializes graphical entities used by the application to render images such as geometry buffer objects, shader programs, and texture objects*/
   init();
 
   // Part 2
   while (!glfwWindowShouldClose(GLHelper::ptr_window)) {
+    //a rendering loop that processes user input and advances the application one step forward in function update*/ 
     // Part 2a
     update();
     // Part 2b
+    //renders the scene in function draw
     draw();
   }
 
   // Part 3
+  //returns allocated resources back to the system in function cleanup
   cleanup();
 }
 
@@ -101,13 +107,13 @@ abstracted away in GLApp::init
 */
 static void init() {
   // Part 1
-  if (!GLHelper::init(1600, 900, "Test")) { //Original is 2400, 1350
+  if (!GLHelper::init(1600, 900, "Tutorial 1")) { //2400, 1350
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
   }
 
   // Part 2
-  //GLHelper::print_specs();
+  GLHelper::print_specs();
 
   // Part 3
   GLApp::init();

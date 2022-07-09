@@ -1,7 +1,7 @@
 /* !
 @file    glhelper.h
-@author  pghali@digipen.edu, a.weiren@digipen.edu
-@date    10/06/2022
+@author  pghali@digipen.edu, lee.g@digipen.edu
+@date    17/06/2022
 
 This file contains the declaration of namespace Helper that encapsulates the
 functionality required to create an OpenGL context using GLFW; use GLEW
@@ -18,6 +18,8 @@ objects participating in the application.
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
+#include <glslshader.h>
+
 #include <GL/glew.h> // for access to OpenGL API declarations 
 #include <GLFW/glfw3.h>
 #include <string>
@@ -41,6 +43,7 @@ struct GLHelper
 
   static void update_time(double fpsCalcInt = 1.0);
 
+  // Access openGL context info
   static void print_specs();
 
   static GLint width, height;
@@ -49,12 +52,10 @@ struct GLHelper
   static std::string title;
   static GLFWwindow *ptr_window;
 
-  static GLboolean keystateP;
-  static GLboolean keystateT;  // Change task
-  static GLboolean keystateM;  // Modulus
-  static GLboolean keystateA;  // Alpha
-
-  static GLboolean mousestateLeft;
+  static GLboolean keystateT;
+  static GLboolean keystateM;
+  static GLboolean keystateA;
 };
+
 
 #endif /* GLHELPER_H */

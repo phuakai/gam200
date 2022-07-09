@@ -1,7 +1,7 @@
 /*!
 @file    glhelper.cpp
-@author  pghali@digipen.edu, a.weiren@digipen.edu
-@date    10/06/2022
+@author  pghali@digipen.edu, lee.g@digipen.edu
+@date    17/06/2022
 
 This file implements functionality useful and necessary to build OpenGL
 applications including use of external APIs such as GLFW to create a
@@ -28,7 +28,6 @@ GLFWwindow* GLHelper::ptr_window;
 GLboolean GLHelper::keystateT = GL_FALSE;
 GLboolean GLHelper::keystateM = GL_FALSE;
 GLboolean GLHelper::keystateA = GL_FALSE;
-GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
 /*  _________________________________________________________________________ */
 /*! init
@@ -63,7 +62,6 @@ bool GLHelper::init(GLint w, GLint h, std::string t) {
     return false;
   }
 
-  
   // In case a GLFW function fails, an error is reported to callback function
   glfwSetErrorCallback(GLHelper::error_cb);
 
@@ -72,10 +70,13 @@ bool GLHelper::init(GLint w, GLint h, std::string t) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  //double buffered framebuffer
   glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
   glfwWindowHint(GLFW_RED_BITS, 8); glfwWindowHint(GLFW_GREEN_BITS, 8);
   glfwWindowHint(GLFW_BLUE_BITS, 8); glfwWindowHint(GLFW_ALPHA_BITS, 8);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // window dimensions are static
+
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // window dimensions are static. true: adjust screen to win size
 
   GLHelper::ptr_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
   if (!GLHelper::ptr_window) {
@@ -86,8 +87,8 @@ bool GLHelper::init(GLint w, GLint h, std::string t) {
 
   glfwMakeContextCurrent(GLHelper::ptr_window);
 
+  //callback functions
   glfwSetFramebufferSizeCallback(GLHelper::ptr_window, GLHelper::fbsize_cb);
-
   glfwSetKeyCallback(GLHelper::ptr_window, GLHelper::key_cb);
   glfwSetMouseButtonCallback(GLHelper::ptr_window, GLHelper::mousebutton_cb);
   glfwSetCursorPosCallback(GLHelper::ptr_window, GLHelper::mousepos_cb);
@@ -104,12 +105,10 @@ bool GLHelper::init(GLint w, GLint h, std::string t) {
     return false;
   }
   if (GLEW_VERSION_4_5) {
-    std::cout << "Using glew version: "
-              << glewGetString(GLEW_VERSION) << std::endl;
+    std::cout << "Using glew version: " << glewGetString(GLEW_VERSION) << std::endl;
     std::cout << "Driver supports OpenGL 4.5\n" << std::endl;
   } else {
-    std::cerr << "Driver doesn't support OpenGL 4.5 - abort program" 
-              << std::endl;
+    std::cerr << "Driver doesn't support OpenGL 4.5 - abort program" << std::endl;
     return false;
   }
 
@@ -160,61 +159,50 @@ This function is called when keyboard buttons are pressed.
 When the ESC key is pressed, the close flag of the window is set.
 */
 void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int mod) {
-    // key state changes from released to pressed
-    if (GLFW_PRESS == action) {
-        if (GLFW_KEY_ESCAPE == key) {
-            glfwSetWindowShouldClose(pwin, GLFW_TRUE);
-        }
-        if (key == GLFW_KEY_T)
-        {
-            keystateT = GL_TRUE;
-        }
-        if (key == GLFW_KEY_M)
-        {
-            keystateM = GL_TRUE;
-        }
-        if (key == GLFW_KEY_A)
-        {
-            keystateA = GL_TRUE;
-        }
-        //keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
-        //keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
-    }
-    else if (GLFW_REPEAT == action) {
-        // key state was and is being pressed
-        if (key == GLFW_KEY_T)
-        {
-            keystateT = GL_FALSE;
-        }
-        if (key == GLFW_KEY_M)
-        {
-            keystateM = GL_FALSE;
-        }
-        if (key == GLFW_KEY_A)
-        {
-            keystateA = GL_FALSE;
-        }
-        //keystateV = GL_FALSE;
-        //keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
-    }
-    else if (GLFW_RELEASE == action) {
-        // key start changes from pressed to released
-        if (key == GLFW_KEY_T)
-        {
-            keystateT = GL_FALSE;
-        }
-        if (key == GLFW_KEY_M)
-        {
-            keystateM = GL_FALSE;
-        }
-        if (key == GLFW_KEY_A)
-        {
-            keystateA = GL_FALSE;
-        }
+  if (GLFW_PRESS == action) {
+#ifdef _DEBUG
+    std::cout << "Key pressed" << std::endl;
+#endif
+  } else if (GLFW_REPEAT == action) {
+#ifdef _DEBUG
+    std::cout << "Key repeatedly pressed" << std::endl;
+#endif
+  } else if (GLFW_RELEASE == action) {
+#ifdef _DEBUG
+    std::cout << "Key released" << std::endl;
+#endif
+  }
 
-    }
+  // key state changes from released to pressed
+  if (GLFW_KEY_V != key)
+  {
+      if (GLFW_RELEASE == action || GLFW_REPEAT == action) // key start changes from pressed to released
+      {
+          if (GLFW_KEY_T == key)
+              keystateT = GL_FALSE;
 
+          if (GLFW_KEY_M == key)
+              keystateM = GL_FALSE;
 
+          if (GLFW_KEY_A == key)
+              keystateA = GL_FALSE;
+
+      }
+      else if (GLFW_PRESS == action)
+      {
+          if (GLFW_KEY_ESCAPE == key)
+              glfwSetWindowShouldClose(pwin, GLFW_TRUE);
+        
+          if (GLFW_KEY_T == key)
+              keystateT = GL_TRUE;
+
+          if (GLFW_KEY_M == key)
+              keystateM = GL_TRUE;
+
+          if (GLFW_KEY_A == key)
+              keystateA = GL_TRUE;
+      }
+  }
 }
 
 /*  _________________________________________________________________________*/
@@ -240,17 +228,31 @@ were held down
 This function is called when mouse buttons are pressed.
 */
 void GLHelper::mousebutton_cb(GLFWwindow *pwin, int button, int action, int mod) {
-    if (GLFW_MOUSE_BUTTON_LEFT == button)
-    {
-        if (GLFW_PRESS == action)
-        {
-            mousestateLeft = GL_TRUE;
-        }
-        if (GLFW_RELEASE == action)
-        {
-            mousestateLeft = GL_FALSE;
-        }
-    }
+  switch (button) {
+  case GLFW_MOUSE_BUTTON_LEFT:
+#ifdef _DEBUG
+    std::cout << "Left mouse button ";
+#endif
+    break;
+  case GLFW_MOUSE_BUTTON_RIGHT:
+#ifdef _DEBUG
+    std::cout << "Right mouse button ";
+#endif
+    break;
+  }
+  switch (action) {
+  case GLFW_PRESS:
+#ifdef _DEBUG
+    std::cout << "pressed!!!" << std::endl;
+#endif
+    break;
+  case GLFW_RELEASE:
+#ifdef _DEBUG
+    std::cout << "released!!!" << std::endl;
+#endif
+    break;
+  }
+
 }
 
 /*  _________________________________________________________________________*/
@@ -384,63 +386,64 @@ void GLHelper::update_time(double fps_calc_interval) {
   }
 }
 
-/*  _________________________________________________________________________*/
+/*  _________________________________________________________________________ */
 /*! print_specs
 
-This function is called once on initialization to print out the computer's specs
-It uses OpenGL's glGet functions to print out specs such as:
-GPU Vendor, GL Renderer, Gl Version
+@param none
+
+@return none
+
+This funciton accesses the following OpenGL context information: GPU Vendor, GPU 
+Renderer, GPU Version, GPU Shader Version, GL Major Version, GL Minor Version, Maximum 
+Vertex Count, Maximum Indices Count, GL Maximum texture size, Maximum Viewport 
+Dimensions, Maximum generic vertex attributes, Maximum vertex buffer bindings
 */
 void GLHelper::print_specs()
 {
     GLubyte const* str_ven = glGetString(GL_VENDOR);
     std::cout << "GPU Vendor: " << str_ven << std::endl;
 
-    str_ven = glGetString(GL_RENDERER);
-    std::cout << "GL Renderer: " << str_ven << std::endl;
+    GLubyte const* str_renderer = glGetString(GL_RENDERER);
+    std::cout << "GPU Renderer: " << str_renderer << std::endl;
 
-    str_ven = glGetString(GL_VERSION);
-    std::cout << "GL Version: " << str_ven << std::endl;
+    GLubyte const* str_ver = glGetString(GL_VERSION);
+    std::cout << "GPU Version: " << str_ver << std::endl;
 
-    str_ven = glGetString(GL_SHADING_LANGUAGE_VERSION);
-    std::cout << "GL Shader Version: " << str_ven << std::endl;
+    GLubyte const* str_shader_ver = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    std::cout << "GPU Shader Version: " << str_shader_ver << std::endl;
 
+    GLint maj_ver;
+    glGetIntegerv(GL_MAJOR_VERSION, &maj_ver);
+    std::cout << "GL Major Version: " << maj_ver << std::endl;
 
-    GLint glintget;
-    GLint glintget2[2];
+    GLint min_ver;
+    glGetIntegerv(GL_MINOR_VERSION, &min_ver);
+    std::cout << "GL Minor Version: " << min_ver << std::endl;
 
-    glGetIntegerv(GL_MAJOR_VERSION, &glintget); // For major version
-    std::cout << "GL Major Version: " << glintget << std::endl;
+    std::cout << "Current OpenGL Context is double buffered" << std::endl;
 
-    glGetIntegerv(GL_MINOR_VERSION, &glintget); // For minor version
-    std::cout << "GL Minor Version: " << glintget << std::endl;
+    GLint max_vertex_cnt;
+    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_vertex_cnt);
+    std::cout << "Maximum Vertex Count: " << max_vertex_cnt << std::endl;
 
-    glGetIntegerv(GL_DOUBLEBUFFER, &glintget); // For double buffer checking
-    if (glintget)
-    {
-        std::cout << "Current OpenGL Context is double buffered" << std::endl;
-    }
-    else
-    {
-        std::cout << "Current OpenGL Context is not double buffered" << std::endl;
-    }
+    GLint max_indices_cnt;
+    glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &max_indices_cnt);
+    std::cout << "Maximum Indices Count: " << max_indices_cnt << std::endl;
 
+    GLint tex_size;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tex_size);
+    std::cout << "GL Maximum texture size: " << tex_size << std::endl;
 
-    glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &glintget); // For maximum vertex count
-    std::cout << "Maximum Vertex Count: " << glintget << std::endl;
+    GLint max_vierport_dims[2] = { 0 , 0};
+    glGetIntegerv(GL_MAX_VIEWPORT_DIMS, max_vierport_dims);
+    std::cout << "Maximum Viewport Dimensions: " << *max_vierport_dims << " x " << *(max_vierport_dims + 1) << std::endl;
 
-    glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &glintget); // For maximum indices count
-    std::cout << "Maximum Indices Count: " << glintget << std::endl;
+    GLint vtx_attributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &vtx_attributes);
+    std::cout << "Maximum generic vertex attributes: " << vtx_attributes << std::endl;
 
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glintget); // For maximum texture size
-    std::cout << "GL Maximum texture size: " << glintget << std::endl;
-
-    glGetIntegerv(GL_MAX_VIEWPORT_DIMS, glintget2); // For maximum viewport dimensions
-    std::cout << "Maximum Viewport Dimensions: " << glintget2[0] << " x " << glintget2[1] << std::endl;
-
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &glintget); // For generic vertex attributes
-    std::cout << "Maximum generic vertex attributes: " << glintget << std::endl;
-
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &glintget); // For vertex buffer bindings
-    std::cout << "Maximum vertex buffer bindings: " << glintget << std::endl;
+    GLint vtx_buffer_bindings;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &vtx_buffer_bindings);
+    std::cout << "Maximum vertex buffer bindings: " << vtx_buffer_bindings << std::endl;
 }
+

@@ -25,9 +25,9 @@ GLdouble GLHelper::delta_time;
 std::string GLHelper::title;
 GLFWwindow* GLHelper::ptr_window;
 
-GLboolean GLHelper::keystateU = GL_FALSE;
-GLboolean GLHelper::keystateH = GL_FALSE;
-GLboolean GLHelper::keystateK = GL_FALSE;
+GLboolean GLHelper::keystateW = GL_FALSE;
+GLboolean GLHelper::keystateA = GL_FALSE;
+GLboolean GLHelper::keystateD = GL_FALSE;
 GLboolean GLHelper::keystateV = GL_FALSE;
 GLboolean GLHelper::keystateZ = GL_FALSE;
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
@@ -167,51 +167,51 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (GLFW_KEY_ESCAPE == key) {
             glfwSetWindowShouldClose(pwin, GLFW_TRUE);
         }
-        if (key == GLFW_KEY_U)
+        if (key == GLFW_KEY_W)
         {
-            keystateU = GL_TRUE;
+            keystateW = GL_TRUE;
         }
-        if (key == GLFW_KEY_H)
+        if (key == GLFW_KEY_A)
         {
-            keystateH = GL_TRUE;
+            keystateA = GL_TRUE;
         }
-        if (key == GLFW_KEY_K)
+        if (key == GLFW_KEY_D)
         {
-            keystateK = GL_TRUE;
+            keystateD = GL_TRUE;
         }
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
         keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
-        if (key == GLFW_KEY_U)
+        if (key == GLFW_KEY_W)
         {
-            keystateU = GL_TRUE;
+            keystateW = GL_TRUE;
         }
-        if (key == GLFW_KEY_H)
+        if (key == GLFW_KEY_A)
         {
-            keystateH = GL_TRUE;
+            keystateA = GL_TRUE;
         }
-        if (key == GLFW_KEY_K)
+        if (key == GLFW_KEY_D)
         {
-            keystateK = GL_TRUE;
+            keystateD = GL_TRUE;
         }
         keystateV = GL_FALSE;
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
     }
     else if (GLFW_RELEASE == action) {
         // key start changes from pressed to released
-        if (key == GLFW_KEY_U)
+        if (key == GLFW_KEY_W)
         {
-            keystateU = GL_FALSE;
+            keystateW = GL_FALSE;
         }
-        if (key == GLFW_KEY_H)
+        if (key == GLFW_KEY_A)
         {
-            keystateH = GL_FALSE;
+            keystateA = GL_FALSE;
         }
-        if (key == GLFW_KEY_K)
+        if (key == GLFW_KEY_D)
         {
-            keystateK = GL_FALSE;
+            keystateD = GL_FALSE;
         }
         if (key == GLFW_KEY_V)
         {

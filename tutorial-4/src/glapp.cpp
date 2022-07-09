@@ -434,12 +434,12 @@ void GLApp::Camera2D::update(GLFWwindow* pWindow) {
 		0, 2.f / (float)height, 0,
 		0, 0, 1);
 
-	if (GLHelper::keystateU == GL_TRUE)
+	if (GLHelper::keystateW == GL_TRUE)
 	{
 		pgo->position = pgo->position + linear_speed * up;
 	}
 
-	if (GLHelper::keystateH == GL_TRUE)
+	if (GLHelper::keystateA == GL_TRUE)
 	{
 		if (pgo->orientation.x / M_PI * 180 >= 360)
 		{
@@ -448,7 +448,7 @@ void GLApp::Camera2D::update(GLFWwindow* pWindow) {
 		pgo->orientation.x += pgo->orientation.y;
 	}
 
-	if (GLHelper::keystateK == GL_TRUE)
+	if (GLHelper::keystateD == GL_TRUE)
 	{
 		if (pgo->orientation.x / M_PI * 180 <= -360)
 		{
