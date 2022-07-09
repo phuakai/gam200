@@ -1,6 +1,6 @@
 /* !
 @file    glslshader.h
-@author  pghali@digipen.edu, a.weiren@digipen.edu
+@author  pghali@digipen.edu
 @date    06/11/2016
 
 Note: The contents of this file must not be updated by students. Otherwise,
@@ -28,7 +28,6 @@ program object.
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
-
 
 /*  _________________________________________________________________________ */
 class GLSLShader {
@@ -175,5 +174,6 @@ private:
   // return true if file (given in relative path) exists, false otherwise
   GLboolean FileExists(std::string const& file_name);
 };
+
 
 #endif /* GLSLSHADER_H */
