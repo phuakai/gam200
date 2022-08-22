@@ -26,15 +26,31 @@ and transformations (in later labs).
 #include <list> // added in tutorial 3
 #include <random>
 #include <map>
-
+#include <unordered_map>
 
 struct GLApp {
+
   static void init();
   static void update();
   static void draw();
   static void cleanup();
 
-  static GLboolean reduc;
+
+  //added for physics testing
+  static constexpr glm::vec3 red{1.f, 0.f, 0.f};
+  static constexpr glm::vec3 green{0.f, 1.f, 0.f};
+  static constexpr glm::vec3 blue{0.f, 0.f, 1.f};
+  enum class collisionType
+  {
+	NIL,	   //0
+	SAT,	   //1
+	DIAG,	   //2
+	SNAPDIAGSTATIC, //3
+	SATSTATIC //4
+  };
+  static short currentCollision;
+  static std::unordered_map<collisionType, std::string> collisionInfo;
+
 
   struct GLModel {
 	  GLenum primitive_type = GL_TRIANGLES; // which OpenGL primitive to be rendered?
@@ -49,45 +65,27 @@ struct GLApp {
   };
 
   struct GLObject {
+	  glm::vec2 orientation{};														// orientation x is angle disp, orientation y is angle speed specified in degrees
+	  glm::vec2 scaling{};															// scaling parameters
+	  glm::vec2 modelCenterPos{};														// center of shape coordinates
 
-	  // std::default_random_engine dre;
+	  glm::mat3 mdl_to_ndc_xform{};													// model to ncd transformation
+	  
 
+	  //added for physics testing
+	  bool overlap{ false };														// flag for overlap
+	  //added for physics testing (collision response)
+	  glm::mat3 worldToMdlXform{};
 
-	 // these two variables keep track of the current orientation
-	 // of the object.
-	 // angle_speed: rate of change of rotation angle per second
-	 // angle_disp: current absolute orientation angle
-	 // all angles refer to rotation about Z-axis
-	 // it is up to you whether angles are tracked in degrees or radians
-
-	 //GLfloat angle_speed = 0, angle_disp = 0; // orientation (removed in tut4)
-	  glm::vec2 orientation{}; // orientation x is angle disp, orientation y is angle speed specified in degrees
-	  glm::vec2 scaling{}; // scaling parameters
-	  glm::vec2 position{}; // translation vector coordinates
-	  // compute object's model transform matrix using scaling,
-	  // rotation, and translation attributes ...
-	  // this must be computed by the CPU and not by vertex shader (why?)
-	  glm::mat3 mdl_to_ndc_xform{}; // model to ncd transformation
-
-	  // which model is this object an instance of?
-	  // since models are contained in a vector, we keep track of the
-	  // specific model that was instanced by index into vector container
-
-	  //GLuint mdl_ref = 0; // removed in tut 4
-
-	  // how to draw this instanced model?
-	  // since shader programs are contained in a vector, we keep track of
-	  // specific shader program using an index into vector container
-
-	  //GLuint shd_ref = 0; // removed in tut 4
-
-	  // added in tutorial 4
 	  std::map<std::string, GLApp::GLModel>::iterator mdl_ref{};
 	  std::map<std::string, GLSLShader>::iterator shd_ref{};
 
-	  // added to tutorial 4
+	  //added for physics testing
 	  glm::vec3 color{};
-	  glm::mat3 mdl_xform{}; // model to world transformation
+	  glm::mat3 mdlXform{};															// model to world transformation
+	  glm::vec2 worldCenterPos{};
+	  std::vector<glm::vec2> worldVertices;												// vertices coordinates
+	  std::vector<glm::vec2> modelVertices;												// vertices coordinates
 
 	  // member functions that must be defined in glapp.cpp
 	  // function to initialize object's state

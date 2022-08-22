@@ -19,7 +19,7 @@ tutorial4-shdrpgm ../shaders/my-tutorial-4.vert ../shaders/my-tutorial-4.frag
 0.0 0.0 0.0
 50.0 100.0
 30.0 2.0      
--19500 -19700
+-19300 -19750
 square
 Object3
 tutorial4-shdrpgm ../shaders/my-tutorial-4.vert ../shaders/my-tutorial-4.frag

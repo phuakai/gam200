@@ -47,8 +47,8 @@ GLSLShader::CompileLinkValidate(std::vector<std::pair<GLenum, std::string>> vec)
   if (GL_FALSE == Validate()) {
     return GL_FALSE;
   }
-  PrintActiveAttribs();
-  PrintActiveUniforms();
+  //PrintActiveAttribs();
+  //PrintActiveUniforms();
 
   return GL_TRUE;
 }
