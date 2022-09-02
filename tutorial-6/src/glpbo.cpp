@@ -161,6 +161,7 @@ void GLPbo::setup_quad_vao()
 	glVertexArrayAttribFormat(vaoid, 0, 2, GL_FLOAT, GL_FALSE, 0); // attrib index and size
 	glVertexArrayAttribBinding(vaoid, 0, 0); // Attrib index, buffer binding point
 
+
 	glEnableVertexArrayAttrib(vaoid, 1); // Attrib 1
 	glVertexArrayVertexBuffer(vaoid, 1, vbo_hdl, sizeof(glm::vec2) * pos_vtx.size(), sizeof(glm::vec2)); // buffer binding point 1
 	glVertexArrayAttribFormat(vaoid, 1, 3, GL_FLOAT, GL_FALSE, 0); // attrib index and size

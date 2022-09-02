@@ -41,6 +41,8 @@ struct GLApp {
 	  GLuint primitive_cnt = 0; // added for tutorial 2
 	  GLuint posvtx_cnt = 0;
 
+	  std::vector <glm::vec2> model_coords;
+
 	  GLuint vaoid = 0; // handle to VAO
 	  GLuint draw_cnt = 0; // added for tutorial 2
 
@@ -71,6 +73,8 @@ struct GLApp {
 	  glm::mat3 mdl_to_ndc_xform{}; // model to ncd transformation
 
 	  glm::vec2 ndcposition{}; // translation vector coordinates
+
+	  
 
 	  // which model is this object an instance of?
 	  // since models are contained in a vector, we keep track of the
