@@ -247,8 +247,6 @@ void GLApp::init_scene(std::string scene_filename) {
 	std::istringstream line_sstm{ line };
 	int obj_cnt;
 	line_sstm >> obj_cnt; // read count of objects in scene
-	GLuint vao[3];
-	int modelnum{};
 	while (obj_cnt--) 
 	{ 
 		/*
@@ -304,8 +302,7 @@ void GLApp::init_scene(std::string scene_filename) {
 		if model with name model_name is not present in std::map container
 		called models, then add this model to the container
 		*/
-		std::vector <glm::vec2> pos_vtx;
-		std::vector <GLushort> primitive;
+		
 		if (models.find(model_name) != models.end())
 		{
 			Object.mdl_ref = models.find(model_name);
@@ -328,12 +325,10 @@ void GLApp::init_scene(std::string scene_filename) {
 			linestream >> prefix >> meshname;
 			
 
-			GLuint vbo, ebo;
-			
+			GLuint vbo, vao, ebo;
+			std::vector <glm::vec2> pos_vtx;
+			std::vector <GLushort> primitive;
 
-			pos_vtx.clear();
-			primitive.clear();
-			int test1 = 0;
 			while (getline(ifs, line_mesh))
 			{
 				std::istringstream linestream{ line_mesh };
@@ -361,33 +356,12 @@ void GLApp::init_scene(std::string scene_filename) {
 				{
 					while (linestream >> floatstuff1 >> floatstuff2)
 					{
-						//std::cout << "What is read from stream " << floatstuff1 << ", " << floatstuff2 << std::endl;
 						pos_vtx.emplace_back(glm::vec2(floatstuff1, floatstuff2));
 						Model.model_coords.emplace_back(glm::vec2(floatstuff1, floatstuff2));
-						//std::cout << "What is emplaced " << test1 << " - " << pos_vtx[test1].x << ", " << pos_vtx[test1].y << std::endl;
-						//std::cout << "Size 1 - " << pos_vtx.size() << std::endl;
-						test1++;
 					}
 				}
 			}
 
-			if (model_name == "square")
-			{
-				modelnum = 0;
-			}
-			else if (model_name == "triangle")
-			{
-				modelnum = 1;
-			}
-			else if (model_name == "circle")
-			{
-				modelnum = 2;
-			}
-			for (int i = 0; i < pos_vtx.size(); i++)
-			{
-				//std::cout << "Size 2 - " << pos_vtx.size() << std::endl;
-				//std::cout << "Vtx num " << i << ", Coords reading " << pos_vtx[i].x << ", " << pos_vtx[i].y << std::endl;
-			}
 			//IMPORTANT
 			//Grace wants world coordinates to be in vert
 			// So in
@@ -405,50 +379,29 @@ void GLApp::init_scene(std::string scene_filename) {
 			// GL_DYNAMIC_STORAGE_BIT allows contents of the data to be updated after creation by calling glBufferSubData, 
 			// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
 			
-			glCreateVertexArrays(1, &vao[modelnum]); // Creates a vertex array object (can replace vao with an array if multiple buffers)
+			glCreateVertexArrays(1, &vao); // Creates a vertex array object (can replace vao with an array if multiple buffers)
 			//std::cout << "THIS IS VAO " << vao << std::endl;
-			glEnableVertexArrayAttrib(vao[modelnum], 4); // Enables the vertex array attrib for index 4 of vao
+			glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
 			// When enabled, vertex attribute array will be accessed and used for rendering 
 			// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
-			glVertexArrayVertexBuffer(vao[modelnum], 6, vbo, 0, sizeof(glm::vec2)); // Binds a buffer to a vertex array object
+			glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(glm::vec2)); // Binds a buffer to a vertex array object
 			// Name of vertex array object, index for vertex buffer object to bind to, name of buffer to be binded, offset of first element, stride/step (distance between elements of buffer)
 
 			
-			glVertexArrayAttribFormat(vao[modelnum], 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays
+			glVertexArrayAttribFormat(vao, 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays
 			// Name of vertex array object, index of vertex array object being set, size (num of values per vertex that is stored in array), type of data,
 			// GL_TRUE = data should be normalized, GL_FALSE = data converted directly as fixed-point values, offset (distance between elements of buffer)
-			glVertexArrayAttribBinding(vao[modelnum], 4, 6); // Associates a vertex attribute and a vertex buffer binding for a VAO
+			glVertexArrayAttribBinding(vao, 4, 6); // Associates a vertex attribute and a vertex buffer binding for a VAO
 			// Name of vertex array object, index of vertex attrib, index of vertex buffer binding index
-
-			
-			
-
 
 
 			glCreateBuffers(1, &ebo); // Creates a buffer named ebo (can replace ebo with an array if multiple buffers)
 			glNamedBufferStorage(ebo, sizeof(GLushort) * primitive.size(), primitive.data(), GL_DYNAMIC_STORAGE_BIT);
-			glVertexArrayElementBuffer(vao[modelnum], ebo); // Configures element array buffer binding of a vertex array object
+			glVertexArrayElementBuffer(vao, ebo); // Configures element array buffer binding of a vertex array object
 			// Name of vertex array object, name of buffer object used for element array buffer binding
 			glBindVertexArray(0); // Unbind vertex array object (0 is used to unbind)
-			
 
-			//std::cout << "PRIMITE AND POS " << primitive.size() << ", " << pos_vtx.size() << std::endl;
-
-			Model.vaoid = vao[modelnum];
-
-			std::vector<glm::vec2> pos_vtx2;
-			std::cout << "Size 3 - " << pos_vtx.size() << std::endl;
-			pos_vtx2.resize(pos_vtx.size());
-			///glNamedBufferSubData(obj->second.mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * obj->second.mdl_ref->second.posvtx_cnt, updatedpos_vtx.data());
-			glGetNamedBufferSubData(vao[modelnum], 0, sizeof(glm::vec2) * pos_vtx.size(), pos_vtx2.data());
-			for (int i = 0; i < pos_vtx.size(); i++)
-			{
-
-				//std::cout << "Banana Position " << i << " - " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
-				//std::cout << "New pos " << newvtx.x << ", " << newvtx.y << std::endl;
-
-			}
-			//glDeleteVertexArrays(1, &vao);
+			Model.vaoid = vao;
 			Model.primitive_cnt = primitive.size();
 			Model.posvtx_cnt = pos_vtx.size();
 			Model.draw_cnt = primitive.size();
@@ -713,27 +666,13 @@ void GLApp::GLObject::draw() const
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
 	for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
 	{
-		//std::cout << "Model num " << i << std::endl;
-		//std::cout << "Model coords " << mdl_ref->second.model_coords[i].x << ", " << mdl_ref->second.model_coords[i].y << std::endl;
-		//std::cout << "Newer Stored Position " << i << " - " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
-		//std::cout << "Model transformation " << std::endl
-		//<< mdl_to_ndc_xform[0][0] << ", " << mdl_to_ndc_xform[1][0] << ", " << mdl_to_ndc_xform[2][0] << std::endl
-		//<< mdl_to_ndc_xform[0][1] << ", " << mdl_to_ndc_xform[1][1] << ", " << mdl_to_ndc_xform[2][1] << std::endl
-		//<< mdl_to_ndc_xform[0][2] << ", " << mdl_to_ndc_xform[1][2] << ", " << mdl_to_ndc_xform[2][2] << std::endl;
 		newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-		//std::cout << "After matrix mult " << newpos[i].x << ", " << newpos[i].y << std::endl << std::endl;
-		//std::cout << "New pos " << newvtx.x << ", " << newvtx.y << std::endl;
-
 	}
 	GLuint buffer;
 	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 	std::cout << "Buffer " << buffer << std::endl;
 	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
 	glBindVertexArray(mdl_ref->second.vaoid); // Rebind VAO
-
-
-	//std::cout << "Hi " << 1 << std::endl;
-
 
 	// copy object's color to fragment shader uniform variable uColor
 	shd_ref->second.SetUniform("uColor", color);
