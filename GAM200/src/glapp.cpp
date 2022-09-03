@@ -100,61 +100,7 @@ void GLApp::update() {
 	{
 
 		obj->second.update(GLHelper::delta_time);
-		//std::cout << "Test " << test << std::endl;
-		//std::cout << "Object size " << objects.size() << std::endl;
-		//std::cout << "Object " << obj->second.position.x << ", " << obj->second.position.y << std::endl << std::endl;
-		//std::cout << "Model size " << obj->second.mdl_ref->second.posvtx_cnt << std::endl;
-
-		std::vector<glm::vec2> pos_vtx;
-		std::vector<glm::vec2> updatedpos_vtx;
-		pos_vtx.resize(obj->second.mdl_ref->second.posvtx_cnt);
-		//std::vector <glm::vec2> pos_vtx;
-		glGetNamedBufferSubData(obj->second.mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * obj->second.mdl_ref->second.posvtx_cnt, pos_vtx.data());
-		for (int i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
-		{
-			glm::vec3 newvtx = obj->second.mdl_to_ndc_xform * glm::vec3(pos_vtx[i].x, pos_vtx[i].y, 1);
-			updatedpos_vtx.emplace_back(glm::vec2(newvtx.x, newvtx.y));
-			//std::cout << "Position " << i << " - " << (float)pos_vtx[i].x + 0.01 << ", " << (float)pos_vtx[i].y + 0.01 << std::endl;
-			//std::cout << "New pos " << i << " - " << newvtx.x << ", " << newvtx.y << std::endl;
-
-		}
-
-		//glGetNamedBufferSubData(obj->second.mdl_ref->second.vaoid, 0, obj->second.mdl_ref->second.posvtx_cnt, &pos_vtx);
-		std::vector<glm::vec2> pos_vtx2;
-		pos_vtx2.resize(obj->second.mdl_ref->second.posvtx_cnt);
-		//glNamedBufferSubData(obj->second.mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * obj->second.mdl_ref->second.posvtx_cnt, updatedpos_vtx.data());
-		glGetNamedBufferSubData(obj->second.mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * obj->second.mdl_ref->second.posvtx_cnt, pos_vtx2.data());
-		for (int i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
-		{
-		
-			//std::cout << "Stored Position " << i << " - " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
-			//std::cout << "New pos " << newvtx.x << ", " << newvtx.y << std::endl;
-
-		}
 	}
-	std::stringstream title;
-	title << std::fixed;
-	title << std::setprecision(2);
-	title << "Tutorial 4 | Ang Wei Ren ";
-	title << " | Camera Position (" << camera2d.pgo->position.x << ", " << camera2d.pgo->position.y << ")";
-	title << " | Orientation: " << std::setprecision(0) << (camera2d.pgo->orientation.x / M_PI * 180) << " degrees";
-	title << " | Window height: " << camera2d.height;
-	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps * 100) / 100.0;
-
-	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
-
-	// clear color buffer
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// Part 4: Render each object in container GLApp::objects
-	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
-	{
-		if (obj->first != "Camera")
-		{
-			obj->second.draw();
-		}
-	}
-	objects["Camera"].draw();
 	//std::cout << "Exited Update\n";
 }
 /*  _________________________________________________________________________*/
@@ -656,28 +602,13 @@ void GLApp::GLObject::update(GLdouble delta_time)
 
 	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * translation * rotation * scale;
 
-	//std::cout << "Positions : " << position.x << ", " << position.y << std::endl;
-	//std::cout << "Model transformation "
-	//	<< mdl_to_ndc_xform[0][0] << ", " << mdl_to_ndc_xform[1][0] << ", " << mdl_to_ndc_xform[2][0] << ", "
-	//	<< mdl_to_ndc_xform[0][1] << ", " << mdl_to_ndc_xform[1][1] << ", " << mdl_to_ndc_xform[2][1] << ", "
-	//	<< mdl_to_ndc_xform[0][2] << ", " << mdl_to_ndc_xform[1][2] << ", " << mdl_to_ndc_xform[2][2] << std::endl;
-	//std::cout << "After transformation " << ndcposition.x << ", " << ndcposition.y << std::endl;
-
-
-	std::vector<glm::vec2> pos_vtx2;
 	std::vector<glm::vec2> newpos;
-	pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
-
 	ndc_coords.clear();
-	glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
 	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
 		ndc_coords.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-		//std::cout << "Result " << mdl_ref->second.ndc_coords[i].x << ", " << mdl_ref->second.ndc_coords[i].y << std::endl;
 	}
-	
 
-	//std::cout << "Exited object update\n";
 }
 
 
@@ -697,79 +628,26 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	std::vector<glm::vec2> pos_vtx2;
 	std::vector<glm::vec2> newpos;
-	pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
-
 	GLuint buffer;
-
 	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	//std::cout << "Size " << ndc_coords.size() << std::endl;
 	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
-		//std::cout << "Model coords " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
-		//std::cout << "Result " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
 		newpos.emplace_back(ndc_coords[i]);
-		//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
 	}
-	//std::cout << "Buffer num " << buffer << std::endl;
 	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
-
-	glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
-	for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
-	{
-		//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
-		//std::cout << "Model coords " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
-		//newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-		//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
-	}
-
-
-	//std::vector<glm::vec2> pos_vtx2;
-	//std::vector<glm::vec2> newpos;
-	//pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
-
-	//glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
-	//for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
-	//{
-	//	//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
-	//	//std::cout << "Model coords " << mdl_ref->second.model_coords[i].x << ", " << mdl_ref->second.model_coords[i].y << std::endl;
-	//	newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-	//	//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
-	//}
-	//GLuint buffer;
-	//glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	////std::cout << "Buffer num " << buffer << std::endl;
-	//glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
-
-	//std::vector<glm::vec2> pos_vtx3;
-	//pos_vtx3.resize(mdl_ref->second.posvtx_cnt);
-	//glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx3.data());
-	//for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
-	//{
-	//	//std::cout << "Model coords " << pos_vtx3[i].x << ", " << pos_vtx3[i].y << std::endl;
-	//	//std::cout << "Model coords " << mdl_ref->second.model_coords[i].x << ", " << mdl_ref->second.model_coords[i].y << std::endl;
-	//	//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
-	//}
 
 	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
 
 	glBindVertexArray(mdl_ref->second.vaoid); // Rebind VAO
-	//std::cout << "VAO num " << mdl_ref->second.vaoid << std::endl;
 
 	// copy object's color to fragment shader uniform variable uColor
 	shd_ref->second.SetUniform("uColor", color);
-
-	// copy object's model-to-NDC matrix to vertex shader's
-	// uniform variable uModelToNDC
-	//shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
 
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.primitive_type, mdl_ref->second.draw_cnt, GL_UNSIGNED_SHORT, NULL);
 
 	// unbind VAO and unload shader program
-
 	glBindVertexArray(0);
 	shd_ref->second.UnUse();
 	//std::cout << "Exited object draw\n";
