@@ -599,14 +599,17 @@ void GLApp::GLObject::update(GLdouble delta_time)
 		0, 1, 0,
 		position.x, position.y, 1);
 
-
-	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * translation * rotation * scale;
+	mdl_to_world_xform = translation * rotation * scale;
+	world_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
+	
 
 	std::vector<glm::vec2> newpos;
 	ndc_coords.clear();
 	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		ndc_coords.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		world_coords.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		std::cout << "World coords " << world_coords[i].x << ", " << world_coords[i].y << std::endl;
+		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
 	}
 
 }

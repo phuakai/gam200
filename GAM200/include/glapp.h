@@ -71,11 +71,12 @@ struct GLApp {
 	  // compute object's model transform matrix using scaling,
 	  // rotation, and translation attributes ...
 	  // this must be computed by the CPU and not by vertex shader (why?)
-	  glm::mat3 mdl_to_ndc_xform{}; // model to ncd transformation
+	  glm::mat3 world_to_ndc_xform{}; // model to ndc transformation
 
 	  glm::vec2 ndcposition{}; // translation vector coordinates
 
 	  std::vector <glm::vec2> ndc_coords;
+	  std::vector <glm::vec2> world_coords;
 
 	  // which model is this object an instance of?
 	  // since models are contained in a vector, we keep track of the
@@ -95,7 +96,7 @@ struct GLApp {
 
 	  // added to tutorial 4
 	  glm::vec3 color{};
-	  glm::mat3 mdl_xform{}; // model to world transformation
+	  glm::mat3 mdl_to_world_xform{}; // model to world transformation
 
 	  // member functions that must be defined in glapp.cpp
 	  // function to initialize object's state
