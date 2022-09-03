@@ -86,6 +86,7 @@ despawn the oldest objects, and respawn objects again once no objects are left.
 
 */
 void GLApp::update() {
+	//std::cout << "Entered Update\n";
 	// first, update camera
 	GLApp::camera2d.update(GLHelper::ptr_window);
 
@@ -94,13 +95,11 @@ void GLApp::update() {
 	// call update function GLObject::update(delta_time) except on
 	// object which has camera embedded in it - this is because
 	// the camera has already updated the object's orientation
-	int test{};
-	float test1;
+
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
 
 		obj->second.update(GLHelper::delta_time);
-		test++;
 		//std::cout << "Test " << test << std::endl;
 		//std::cout << "Object size " << objects.size() << std::endl;
 		//std::cout << "Object " << obj->second.position.x << ", " << obj->second.position.y << std::endl << std::endl;
@@ -133,7 +132,30 @@ void GLApp::update() {
 
 		}
 	}
-	test = 0;
+	std::stringstream title;
+	title << std::fixed;
+	title << std::setprecision(2);
+	title << "Tutorial 4 | Ang Wei Ren ";
+	title << " | Camera Position (" << camera2d.pgo->position.x << ", " << camera2d.pgo->position.y << ")";
+	title << " | Orientation: " << std::setprecision(0) << (camera2d.pgo->orientation.x / M_PI * 180) << " degrees";
+	title << " | Window height: " << camera2d.height;
+	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps * 100) / 100.0;
+
+	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
+
+	// clear color buffer
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Part 4: Render each object in container GLApp::objects
+	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
+	{
+		if (obj->first != "Camera")
+		{
+			obj->second.draw();
+		}
+	}
+	objects["Camera"].draw();
+	//std::cout << "Exited Update\n";
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
@@ -148,9 +170,9 @@ glClear to set the color buffer bit, glfwSetWindowTitle to set the window title
 */
 void GLApp::draw() 
 {
+	//std::cout << "Entered draw\n";
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
-
 	std::stringstream title;
 	title << std::fixed;
 	title << std::setprecision(2);
@@ -174,6 +196,7 @@ void GLApp::draw()
 		}
 	}
 	objects["Camera"].draw();
+	//std::cout << "Exited draw\n";
 }
 
 /*  _________________________________________________________________________*/
@@ -380,7 +403,7 @@ void GLApp::init_scene(std::string scene_filename) {
 			// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
 			
 			glCreateVertexArrays(1, &vao); // Creates a vertex array object (can replace vao with an array if multiple buffers)
-			//std::cout << "THIS IS VAO " << vao << std::endl;
+
 			glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
 			// When enabled, vertex attribute array will be accessed and used for rendering 
 			// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
@@ -403,6 +426,7 @@ void GLApp::init_scene(std::string scene_filename) {
 
 			Model.vaoid = vao;
 			Model.primitive_cnt = primitive.size();
+			std::cout << "Pos size " << pos_vtx.size() << ", VAO id " << vao << std::endl;
 			Model.posvtx_cnt = pos_vtx.size();
 			Model.draw_cnt = primitive.size();
 
@@ -610,6 +634,7 @@ This function is called once per frame to update an object's scale, rotation and
 */
 void GLApp::GLObject::update(GLdouble delta_time)
 {
+	//std::cout << "Entered object update\n";
 	glm::mat3 scale
 	(scaling.x, 0, 0,
 		0, scaling.y, 0,
@@ -638,7 +663,21 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	//	<< mdl_to_ndc_xform[0][2] << ", " << mdl_to_ndc_xform[1][2] << ", " << mdl_to_ndc_xform[2][2] << std::endl;
 	//std::cout << "After transformation " << ndcposition.x << ", " << ndcposition.y << std::endl;
 
+
+	std::vector<glm::vec2> pos_vtx2;
+	std::vector<glm::vec2> newpos;
+	pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
+
+	ndc_coords.clear();
+	glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
+	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	{
+		ndc_coords.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		//std::cout << "Result " << mdl_ref->second.ndc_coords[i].x << ", " << mdl_ref->second.ndc_coords[i].y << std::endl;
+	}
 	
+
+	//std::cout << "Exited object update\n";
 }
 
 
@@ -653,26 +692,71 @@ set the transformation matrix for the model and render using glDrawElements
 */
 void GLApp::GLObject::draw() const
 {
+	//std::cout << "Entered object draw\n";
 	// load shader program in use by this object
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	
-	
 	std::vector<glm::vec2> pos_vtx2;
 	std::vector<glm::vec2> newpos;
 	pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
-	
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
+
+	GLuint buffer;
+
+	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	//std::cout << "Size " << ndc_coords.size() << std::endl;
+	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	{
+		//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
+		//std::cout << "Model coords " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
+		//std::cout << "Result " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
+		newpos.emplace_back(ndc_coords[i]);
+		//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
+	}
+	//std::cout << "Buffer num " << buffer << std::endl;
+	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
+
+	glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
 	for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
 	{
-		newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
+		//std::cout << "Model coords " << pos_vtx2[i].x << ", " << pos_vtx2[i].y << std::endl;
+		//newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
 	}
-	GLuint buffer;
-	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	std::cout << "Buffer " << buffer << std::endl;
-	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
+
+
+	//std::vector<glm::vec2> pos_vtx2;
+	//std::vector<glm::vec2> newpos;
+	//pos_vtx2.resize(mdl_ref->second.posvtx_cnt);
+
+	//glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx2.data());
+	//for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
+	//{
+	//	//std::cout << "Model number " << mdl_ref->second.vaoid << std::endl;
+	//	//std::cout << "Model coords " << mdl_ref->second.model_coords[i].x << ", " << mdl_ref->second.model_coords[i].y << std::endl;
+	//	newpos.emplace_back(mdl_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+	//	//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
+	//}
+	//GLuint buffer;
+	//glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	////std::cout << "Buffer num " << buffer << std::endl;
+	//glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
+
+	//std::vector<glm::vec2> pos_vtx3;
+	//pos_vtx3.resize(mdl_ref->second.posvtx_cnt);
+	//glGetNamedBufferSubData(mdl_ref->second.vaoid, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, pos_vtx3.data());
+	//for (int i = 0; i < mdl_ref->second.model_coords.size(); i++)
+	//{
+	//	//std::cout << "Model coords " << pos_vtx3[i].x << ", " << pos_vtx3[i].y << std::endl;
+	//	//std::cout << "Model coords " << mdl_ref->second.model_coords[i].x << ", " << mdl_ref->second.model_coords[i].y << std::endl;
+	//	//std::cout << "Result " << newpos[i].x << ", " << newpos[i].y << std::endl;
+	//}
+
+	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
+
 	glBindVertexArray(mdl_ref->second.vaoid); // Rebind VAO
+	//std::cout << "VAO num " << mdl_ref->second.vaoid << std::endl;
 
 	// copy object's color to fragment shader uniform variable uColor
 	shd_ref->second.SetUniform("uColor", color);
@@ -680,13 +764,14 @@ void GLApp::GLObject::draw() const
 	// copy object's model-to-NDC matrix to vertex shader's
 	// uniform variable uModelToNDC
 	//shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
-	
+
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.primitive_type, mdl_ref->second.draw_cnt, GL_UNSIGNED_SHORT, NULL);
-	
+
 	// unbind VAO and unload shader program
 
 	glBindVertexArray(0);
 	shd_ref->second.UnUse();
+	//std::cout << "Exited object draw\n";
 }
 
