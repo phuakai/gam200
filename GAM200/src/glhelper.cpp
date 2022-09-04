@@ -27,8 +27,10 @@ GLFWwindow* GLHelper::ptr_window;
 
 GLboolean GLHelper::keystateW = GL_FALSE;
 GLboolean GLHelper::keystateA = GL_FALSE;
+GLboolean GLHelper::keystateS = GL_FALSE;
 GLboolean GLHelper::keystateD = GL_FALSE;
 GLboolean GLHelper::keystateV = GL_FALSE;
+GLboolean GLHelper::keystateC = GL_FALSE;
 GLboolean GLHelper::keystateZ = GL_FALSE;
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
@@ -179,8 +181,13 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateD = GL_TRUE;
         }
+        if (key == GLFW_KEY_S)
+        {
+            keystateS = GL_TRUE;
+        }
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
         keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
+        keystateC = (key == GLFW_KEY_C) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
@@ -196,7 +203,12 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateD = GL_TRUE;
         }
+        if (key == GLFW_KEY_S)
+        {
+            keystateS = GL_TRUE;
+        }
         keystateV = GL_FALSE;
+        keystateC = GL_FALSE;
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
     }
     else if (GLFW_RELEASE == action) {
@@ -213,6 +225,10 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateD = GL_FALSE;
         }
+        if (key == GLFW_KEY_S)
+        {
+            keystateS = GL_FALSE;
+        }
         if (key == GLFW_KEY_V)
         {
             keystateV = GL_FALSE;
@@ -220,6 +236,10 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (key == GLFW_KEY_Z)
         {
             keystateZ = GL_FALSE;
+        }
+        if (key == GLFW_KEY_C)
+        {
+            keystateC = GL_FALSE;
         }
 
     }

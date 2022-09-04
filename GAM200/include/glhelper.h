@@ -52,9 +52,11 @@ struct GLHelper
   static GLboolean keystateP;
   static GLboolean keystateZ;  // Zoom
   static GLboolean keystateW;  // Move forward
+  static GLboolean keystateS;  // Move backward
   static GLboolean keystateA;  // Rotate
   static GLboolean keystateD;  // Rotate
   static GLboolean keystateV;  // View
+  static GLboolean keystateC;  // Collision
   static GLboolean mousestateLeft;
 };
 

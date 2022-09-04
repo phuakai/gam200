@@ -23,12 +23,22 @@
     <ClCompile Include="src\glhelper.cpp" />
     <ClCompile Include="src\glslshader.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mat3x3.cpp" />
+    <ClCompile Include="src\phsyics.cpp" />
+    <ClCompile Include="src\vec2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glapp.h" />
     <ClInclude Include="include\glhelper.h" />
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\main.h" />
+    <ClInclude Include="include\mat3x3.h" />
+    <ClInclude Include="include\physics.h" />
+    <ClInclude Include="include\vec2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shaders\gam200.frag" />
+    <None Include="..\shaders\gam200.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -74,7 +84,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\prop-pages\my-tutorial-1.props" />
+    <Import Project="..\prop-pages\gam200.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
