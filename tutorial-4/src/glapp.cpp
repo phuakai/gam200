@@ -73,15 +73,20 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	0, 1, 0,
 	modelCenterPos.x, modelCenterPos.y, 1);
 
-	mdlXform = translation * rotation * scale;
-	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * mdlXform;
+	mdl_to_world_xform = translation * rotation * scale;
+	world_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
 
 
 	//compute world coordinates for physics calc
-	worldCenterPos = mdlXform * glm::vec3(0.f, 0.f, 1.f);
-	for (size_t i{ 0 } ; i < modelVertices.size() ; ++i)
+	worldCenterPos = mdl_to_world_xform * glm::vec3(0.f, 0.f, 1.f);
+
+	std::vector<glm::vec2> newpos;
+	ndc_coords.clear();
+	worldVertices.clear();
+	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		worldVertices[i] = mdlXform * glm::vec3(modelVertices[i], 1.f);
+		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
 	}
 }
 
@@ -101,14 +106,25 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	glBindVertexArray(mdl_ref->second.vaoid);
+	std::vector<glm::vec2> newpos;
+	GLuint buffer;
+	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	for (int i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	{
+		newpos.emplace_back(ndc_coords[i]); // Update position
+	}
+	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
+
+	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
+
+	glBindVertexArray(mdl_ref->second.vaoid); // Rebind VAO
 
 	// copy object's color to fragment shader uniform variable uColor
 	shd_ref->second.SetUniform("uColor", color);
 
 	// copy object's model-to-NDC matrix to vertex shader's
 	// uniform variable uModelToNDC
-	shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
+	//shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
 
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.primitive_type, mdl_ref->second.draw_cnt, GL_UNSIGNED_SHORT, NULL);
@@ -474,7 +490,7 @@ void GLApp::init_scene(std::string scene_filename)
 			std::string meshname;
 			char prefix;
 			linestream >> prefix >> meshname;
-			std::vector <float> pos_vtx;
+			std::vector <glm::vec2> pos_vtx;
 			std::vector <GLushort> primitive;
 
 			GLuint vbo, vao, ebo;
@@ -511,35 +527,43 @@ void GLApp::init_scene(std::string scene_filename)
 					//}
 				
 					linestream >> x >> y;
-					pos_vtx.emplace_back(x);
-					pos_vtx.emplace_back(y);
-					Object.modelVertices.emplace_back(glm::vec2(x, y));
+					pos_vtx.emplace_back(glm::vec2(x, y));
+					Model.model_coords.emplace_back(glm::vec2(x, y));
 					break;
 				default:
 					break;
 				}
-
 			}
+			
+			glCreateBuffers(1, &vbo); // Creates a buffer named vbo (can replace vbo with an array if multiple buffers)
 
-			Object.worldVertices.resize(Object.modelVertices.size());
+			glNamedBufferStorage(vbo, sizeof(glm::vec2) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
+			// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
+			// GL_DYNAMIC_STORAGE_BIT allows contents of the data to be updated after creation by calling glBufferSubData, 
+			// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
+			glCreateVertexArrays(1, &vao); // Creates a vertex array object (can replace vao with an array if multiple buffers)
 
+			glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
+			// When enabled, vertex attribute array will be accessed and used for rendering 
+			// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
+			glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(glm::vec2)); // Binds a buffer to a vertex array object
+			// Name of vertex array object, index for vertex buffer object to bind to, name of buffer to be binded, offset of first element, stride/step (distance between elements of buffer)
 
-			glCreateBuffers(1, &vbo);
-			glNamedBufferStorage(vbo, sizeof(float) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT);
+			glVertexArrayAttribFormat(vao, 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays
+			// Name of vertex array object, index of vertex array object being set, size (num of values per vertex that is stored in array), type of data,
+			// GL_TRUE = data should be normalized, GL_FALSE = data converted directly as fixed-point values, offset (distance between elements of buffer)
+			glVertexArrayAttribBinding(vao, 4, 6); // Associates a vertex attribute and a vertex buffer binding for a VAO
+			// Name of vertex array object, index of vertex attrib, index of vertex buffer binding index
 
-			glCreateVertexArrays(1, &vao);
-			glEnableVertexArrayAttrib(vao, 0);
-			glVertexArrayVertexBuffer(vao, 0, vbo, 0, 2 * sizeof(float));
-			glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
-			glVertexArrayAttribBinding(vao, 0, 0);
-
-			glCreateBuffers(1, &ebo);
+			glCreateBuffers(1, &ebo); // Creates a buffer named ebo (can replace ebo with an array if multiple buffers)
 			glNamedBufferStorage(ebo, sizeof(GLushort) * primitive.size(), primitive.data(), GL_DYNAMIC_STORAGE_BIT);
-			glVertexArrayElementBuffer(vao, ebo);
-			glBindVertexArray(0);
+			glVertexArrayElementBuffer(vao, ebo); // Configures element array buffer binding of a vertex array object
+			// Name of vertex array object, name of buffer object used for element array buffer binding
+			glBindVertexArray(0); // Unbind vertex array object (0 is used to unbind)
 
 			Model.vaoid = vao;
 			Model.primitive_cnt = primitive.size();
+			Model.posvtx_cnt = pos_vtx.size();
 			Model.draw_cnt = primitive.size();
 
 			models[model_name] = Model;
