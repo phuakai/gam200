@@ -74,7 +74,8 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	modelCenterPos.x, modelCenterPos.y, 1);
 
 	mdl_to_world_xform = translation * rotation * scale;
-	world_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
+	world_to_ndc_xform = camera2d.world_to_ndc_xform;
+	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
 
 
 	//compute world coordinates for physics calc
@@ -85,8 +86,8 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	worldVertices.clear();
 	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0f));
+		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(worldVertices[i], 1.0f));
 	}
 }
 
@@ -106,14 +107,11 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	std::vector<glm::vec2> newpos;
+
 	GLuint buffer;
 	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		newpos.emplace_back(ndc_coords[i]); // Update position
-	}
-	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
+
+	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, ndc_coords.data()); // Set new buffer index with subdata
 
 	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
 
@@ -240,7 +238,10 @@ void GLApp::update()
 				default:
 					break;
 			}
-
+			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
+			{
+				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * glm::vec3(obj->second.worldVertices[i], 1.f);
+			}
 		}
 	}
 }

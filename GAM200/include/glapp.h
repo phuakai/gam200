@@ -72,8 +72,9 @@ struct GLApp {
 	  glm::vec2 scaling{};															// scaling parameters
 	  glm::vec2 modelCenterPos{};														// center of shape coordinates
 
-	  glm::mat3 world_to_ndc_xform{}; // model to ndc transformation
+	  glm::mat3 mdl_to_ndc_xform{}; // model to ndc transformation
 	  glm::mat3 mdl_to_world_xform{}; // model to world transformation
+	  glm::mat3 world_to_ndc_xform{}; // world to ndc transformation
 
 	  glm::vec2 ndcposition{}; // translation vector coordinates
 
