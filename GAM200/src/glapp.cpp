@@ -65,17 +65,16 @@ void GLApp::GLObject::update(GLdouble delta_time)
 
 	glm::mat3 rotation
 	(cos(orientation.x), sin(orientation.x), 0,
-	-sin(orientation.x), cos(orientation.x), 0,
-	0, 0, 1);
+		-sin(orientation.x), cos(orientation.x), 0,
+		0, 0, 1);
 
 	glm::mat3 translation
 	(1, 0, 0,
-	0, 1, 0,
-	modelCenterPos.x, modelCenterPos.y, 1);
+		0, 1, 0,
+		modelCenterPos.x, modelCenterPos.y, 1);
 
 	mdl_to_world_xform = translation * rotation * scale;
 	world_to_ndc_xform = camera2d.world_to_ndc_xform;
-	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
 
 
 	//compute world coordinates for physics calc
@@ -86,8 +85,8 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	worldVertices.clear();
 	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0f));
-		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(worldVertices[i], 1.0f));
+		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
+		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
 	}
 }
 
@@ -107,11 +106,21 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-
+	std::vector<glm::vec2> newpos;
 	GLuint buffer;
 	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
-	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, ndc_coords.data()); // Set new buffer index with subdata
+	//test code
+	for (size_t i{ 0 }; i < ndc_coords.size(); ++i)
+	{
+		newpos.emplace_back(world_to_ndc_xform * glm::vec3(worldVertices[i], 1.f));
+	}
+
+	//for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	//{
+	//	newpos.emplace_back(ndc_coords[i]); // Update position
+	//}
+	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, newpos.data()); // Set new buffer index with subdata
 
 	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
 
@@ -144,14 +153,14 @@ It uses OpenGL functions such as:
 glClearColor and glViewport to initialize the app
 */
 
-void GLApp::init() 
+void GLApp::init()
 {
 	// Part 1: initialize OpenGL state ...
 	glClearColor(1.f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
 
 	// Part 2: use the entire window as viewport ...
 	GLint w = GLHelper::width, h = GLHelper::height;
-	
+
 	glViewport(0, 0, w, h);
 
 	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
@@ -185,16 +194,16 @@ This function updates the polygon rasterization mode when 'P' is pressed,
 it also spawns new objects until reaching the maximum object limit, where it will
 despawn the oldest objects, and respawn objects again once no objects are left.
 */
-void GLApp::update() 
+void GLApp::update()
 {
 	// first, update camera
 	GLApp::camera2d.update(GLHelper::ptr_window);
 	objects["Camera"].update(GLHelper::delta_time);
-	
+
 	// update other inputs for physics
 	if (GLHelper::keystateC)
 	{
-		currentCollision = ++currentCollision % 3;
+		currentCollision = ++currentCollision % 4;
 		GLHelper::keystateC = false;
 	}
 
@@ -213,34 +222,30 @@ void GLApp::update()
 
 			switch (currentCollision)
 			{
-				case 1: //collisionType::SAT
-					if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
-					{
-						obj->second.overlap = true;
-						objects["Camera"].overlap = true;
-					}
-					break;
-				case 2: //collisionType::DIAG
-					if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
-					{
-						obj->second.overlap = true;
-						objects["Camera"].overlap = true;
-					}
-					break;
-				case 3: //collisionType::SNAPDIAGSTATIC
-					//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
-					physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
-					if (objects["Camera"].overlap)
-					{
-						objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
-					}
-					break;
-				default:
-					break;
-			}
-			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
-			{
-				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * glm::vec3(obj->second.worldVertices[i], 1.f);
+			case 1: //collisionType::SAT
+				if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
+				{
+					obj->second.overlap = true;
+					objects["Camera"].overlap = true;
+				}
+				break;
+			case 2: //collisionType::DIAG
+				if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
+				{
+					obj->second.overlap = true;
+					objects["Camera"].overlap = true;
+				}
+				break;
+			case 3: //collisionType::SNAPDIAGSTATIC
+				//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
+				physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
+				if (objects["Camera"].overlap)
+				{
+					//objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
+				}
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -251,12 +256,12 @@ void GLApp::update()
 @param none
 @return none
 
-This function is called once per frame to set the title of the window, 
+This function is called once per frame to set the title of the window,
 update the rendering mode and renders all objects out onto the viewport
 It uses OpenGL functions such as:
 glClear to set the color buffer bit, glfwSetWindowTitle to set the window title
 */
-void GLApp::draw() 
+void GLApp::draw()
 {
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
@@ -268,8 +273,8 @@ void GLApp::draw()
 	title << " | Camera Position (" << camera2d.pgo->modelCenterPos.x << ", " << camera2d.pgo->modelCenterPos.y << ")";
 	title << " | Orientation: " << std::setprecision(0) << (camera2d.pgo->orientation.x / M_PI * 180) << " degrees";
 	title << " | Window height: " << camera2d.height;
-	title << " | Collision Type: " << collisionInfo[static_cast< collisionType>(currentCollision)];
-	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps*100)/100.0;
+	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
+	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps * 100) / 100.0;
 
 	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
 
@@ -281,57 +286,57 @@ void GLApp::draw()
 	{
 		switch (currentCollision)
 		{
-			case 0: //collisionType::NIL
-				if (obj->first != "Camera")
-				{
-					obj->second.draw();
-				}
+		case 0: //collisionType::NIL
+			if (obj->first != "Camera")
+			{
+				obj->second.draw();
+			}
 
-				break;
-			case 1: //collisionType::SAT
-				if (obj->first != "Camera")
-				{
-					obj->second.draw();
-					obj->second.color = green;
-				}
-				else
-					obj->second.color = blue;
+			break;
+		case 1: //collisionType::SAT
+			if (obj->first != "Camera")
+			{
+				obj->second.draw();
+				obj->second.color = green;
+			}
+			else
+				obj->second.color = blue;
 
-				if (obj->second.overlap)
-				{
-					obj->second.color = red;
-				}
-				break;
-			case 2: //collisionType::DIAG
-				if (obj->first != "Camera")
-				{
-					obj->second.draw();
-					obj->second.color = green;
-				}
-				else
-					obj->second.color = blue;
+			if (obj->second.overlap)
+			{
+				obj->second.color = red;
+			}
+			break;
+		case 2: //collisionType::DIAG
+			if (obj->first != "Camera")
+			{
+				obj->second.draw();
+				obj->second.color = green;
+			}
+			else
+				obj->second.color = blue;
 
-				if (obj->second.overlap)
-				{
-					obj->second.color = red;
-				}
-				break;
-			case 3: //collisionType::SNAPDIAGSTATIC
-				if (obj->first != "Camera")
-				{
-					obj->second.draw();
-					obj->second.color = green;
-				}
-				else
-					obj->second.color = blue;
+			if (obj->second.overlap)
+			{
+				obj->second.color = red;
+			}
+			break;
+		case 3: //collisionType::SNAPDIAGSTATIC
+			if (obj->first != "Camera")
+			{
+				obj->second.draw();
+				obj->second.color = green;
+			}
+			else
+				obj->second.color = blue;
 
-				if (obj->second.overlap)
-				{
-					obj->second.color = red;
-				}
-				break;
-			default:
-				break;
+			if (obj->second.overlap)
+			{
+				obj->second.color = red;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -347,7 +352,7 @@ void GLApp::draw()
 This function is empty for now
 */
 void GLApp::cleanup() {
-  // empty for now
+	// empty for now
 }
 
 /*  _________________________________________________________________________*/
@@ -366,7 +371,7 @@ Name of fragment shader to be used
 
 This function is called at the initialization of the scene to insert the different shader programs into a map container
 */
-void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std::string frg_shdr) 
+void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std::string frg_shdr)
 {
 	std::vector<std::pair<GLenum, std::string>> shdr_files
 	{
@@ -395,10 +400,10 @@ Name of scene to be used
 
 This function is called once at the initialization of the scene to compute and initialize the objects
 */
-void GLApp::init_scene(std::string scene_filename) 
+void GLApp::init_scene(std::string scene_filename)
 {
 	std::ifstream ifs{ scene_filename, std::ios::in };
-	if (!ifs) 
+	if (!ifs)
 	{
 		std::cout << "ERROR: Unable to open scene file: "
 			<< scene_filename << "\n";
@@ -410,8 +415,8 @@ void GLApp::init_scene(std::string scene_filename)
 	std::istringstream line_sstm{ line };
 	int obj_cnt;
 	line_sstm >> obj_cnt; // read count of objects in scene
-	while (obj_cnt--) 
-	{ 
+	while (obj_cnt--)
+	{
 		/*
 		add code to do this:
 		read remaining parameters of object from file:
@@ -478,7 +483,7 @@ void GLApp::init_scene(std::string scene_filename)
 		else
 		{
 			GLModel Model;
-			std::ifstream ifs{"../meshes/" + model_name + ".msh" , std::ios::in};
+			std::ifstream ifs{ "../meshes/" + model_name + ".msh" , std::ios::in };
 			if (!ifs)
 			{
 				std::cout << "ERROR: Unable to open mesh file: " << model_name << "\n";
@@ -487,7 +492,7 @@ void GLApp::init_scene(std::string scene_filename)
 			ifs.seekg(0, std::ios::beg);
 			std::string line_mesh;
 			getline(ifs, line_mesh);
-			std::istringstream linestream{line_mesh};
+			std::istringstream linestream{ line_mesh };
 			std::string meshname;
 			char prefix;
 			linestream >> prefix >> meshname;
@@ -526,7 +531,7 @@ void GLApp::init_scene(std::string scene_filename)
 					//{
 					//pos_vtx.emplace_back(floatstuff);
 					//}
-				
+
 					linestream >> x >> y;
 					pos_vtx.emplace_back(glm::vec2(x, y));
 					Model.model_coords.emplace_back(glm::vec2(x, y));
@@ -535,7 +540,7 @@ void GLApp::init_scene(std::string scene_filename)
 					break;
 				}
 			}
-			
+
 			glCreateBuffers(1, &vbo); // Creates a buffer named vbo (can replace vbo with an array if multiple buffers)
 
 			glNamedBufferStorage(vbo, sizeof(glm::vec2) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
@@ -605,7 +610,7 @@ Pointer to Camera object
 
 This function is called once at the initialization of the camera to compute and initialize the camera window
 */
-void GLApp::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr) 
+void GLApp::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 {
 	// assign address of object of type GLApp::GLObject with
 	// name "Camera" in std::map container GLApp::objects ...
@@ -615,22 +620,22 @@ void GLApp::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 	GLsizei fb_width, fb_height;
 	glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
 	ar = static_cast<GLfloat>(fb_width) / fb_height;
-	int width = int (ar * height);
-	
+	int width = int(ar * height);
+
 	// compute camera's up and right vectors ...
 	up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
 	right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
 	// at startup, the camera must be initialized to free camera ...
 
 	//glm is row-major
-	view_xform = glm::mat3(	1, 0, 0, 
-							0, 1, 0,
-							-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
+	view_xform = glm::mat3(1, 0, 0,
+		0, 1, 0,
+		-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
 
 	// compute other matrices ...
 	camwin_to_ndc_xform = glm::mat3(2 / width, 0, 0,
-									0, 2 / height, 0,
-									0, 0, 1);
+		0, 2 / height, 0,
+		0, 0, 1);
 	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
 }
 
@@ -644,7 +649,7 @@ Pointer to GLFW window currently in use
 
 This function is called once per frame to compute and update the camera window
 */
-void GLApp::Camera2D::update(GLFWwindow* pWindow) 
+void GLApp::Camera2D::update(GLFWwindow* pWindow)
 {
 	// compute camera window's aspect ratio ...
 	GLsizei fb_width, fb_height;
@@ -721,40 +726,40 @@ void GLApp::Camera2D::update(GLFWwindow* pWindow)
 	if (camtype_flag == GL_FALSE)
 	{
 		//glm is row-major
-		view_xform = glm::mat3(	1, 0, 0,
-								0, 1, 0,
-								-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
+		view_xform = glm::mat3(1, 0, 0,
+			0, 1, 0,
+			-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
 	}
 	else
 	{
-		view_xform = glm::mat3(	right.x, up.x, 0,
-								right.y, up.y, 0,
-								-(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y), -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y), 1);
+		view_xform = glm::mat3(right.x, up.x, 0,
+			right.y, up.y, 0,
+			-(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y), -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y), 1);
 	}
 
 	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
 	// check keyboard button presses to enable camera interactivity
-	
+
 	// update camera aspect ratio - this must be done every frame
 	// because it is possible for the user to change viewport
 	// dimensions
-	
+
 	// update camera's orientation (if required)
-	
+
 	// update camera's up and right vectors (if required)
-	
+
 	// update camera's position (if required)
-	
+
 	// implement camera's zoom effect (if required)
-	 
+
 	// compute appropriate world-to-camera view transformation matrix
-	
+
 	// compute window-to-NDC transformation matrix
-	
+
 	// compute world-to-NDC transformation matrix
 
 }
-	
+
 
 /*  _________________________________________________________________________*/
 /*! GLObject::init

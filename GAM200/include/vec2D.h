@@ -17,6 +17,8 @@ Technology is prohibited.
 #ifndef CSD1130_VECTOR2D_H_
 #define CSD1130_VECTOR2D_H_
 
+#include "vector"
+
 namespace vector2D
 {
 #ifdef _MSC_VER
@@ -40,7 +42,7 @@ namespace vector2D
 		float m[2];
 
 		// Constructors
-		vec2D() {};
+		vec2D() { x = 0.f; y = 0.f; };
 		vec2D(float constructX, float constructY);
 
 		// Assignment operators
@@ -126,6 +128,49 @@ namespace vector2D
 	 */
 	 /**************************************************************************/
 	vec2D normalToLineSegment(const vec2D& point0, const vec2D& point1);
+
+	/**************************************************************************/
+	/*!
+		This function returns the linear interpolation of two points
+	 */
+	 /**************************************************************************/
+	vec2D lerpVec(const vec2D& point0, const vec2D& point1, const float& percentage);
+
+	/**************************************************************************/
+	/*!
+		This function uses the law of cosine to compute the angle between two
+		vectors and return it
+	 */
+	 /**************************************************************************/
+	float angle(const vec2D& pVec0, const vec2D& pVec1);
+
+	/**************************************************************************/
+	/*!
+		This function finds the maximum value of two points
+	 */
+	 /**************************************************************************/
+	vec2D maxPointBoundingBox(const vec2D& pVec0, const vec2D& pVec1);
+
+	/**************************************************************************/
+	/*!
+		This function finds the minimum value of two points
+	 */
+	 /**************************************************************************/
+	vec2D minPointBoundingBox(const vec2D& v1, const vec2D& v2);
+
+	/**************************************************************************/
+	/*!
+		This function finds the maximum value of a polygon
+	 */
+	 /**************************************************************************/
+	vec2D maxPointsOfPolygonBoundingBox(std::vector<vec2D> polygonPoints);
+
+	/**************************************************************************/
+	/*!
+		This function finds the minimum value of a polygon
+	 */
+	 /**************************************************************************/
+	vec2D minPointsOfPolygonBoundingBox(std::vector<vec2D> polygonPoints);
 
 }
 

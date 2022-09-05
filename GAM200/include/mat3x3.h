@@ -43,7 +43,12 @@ namespace matrix3x3
 		float m[9];
 		float m2[3][3];
 
-		mat3x3() {}
+		mat3x3() {
+			m00 = 0.f, m01 = 0.f, m02 = 0.f;
+			m10 = 0.f, m11 = 0.f, m12 = 0.f;
+			m20 = 0.f, m21 = 0.f, m22 = 0.f;
+		}
+
 		mat3x3(const float* pArr);
 		mat3x3(	float _00, float _01, float _02,
 				float _10, float _11, float _12,

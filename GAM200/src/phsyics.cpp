@@ -139,7 +139,7 @@ namespace physics
 				shape2 = &polygon1;
 			}
 
-			for (int j = 0; j < shape1->worldVertices.size(); ++j)
+			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
 			{
 				int k = (j + 1) % shape1->worldVertices.size();
 
@@ -152,7 +152,7 @@ namespace physics
 				* shape 1
 				***********************************/
 				float shape1Min{ FLT_MAX }, shape1Max{ -FLT_MAX };
-				for (int l{ 0 }; l < shape1->worldVertices.size(); ++l)
+				for (size_t l{ 0 }; l < shape1->worldVertices.size(); ++l)
 				{
 					/***********************************
 					* Dot prod of the shape's point and 
@@ -168,7 +168,7 @@ namespace physics
 				* shape 2
 				***********************************/
 				float shape2Min{ myInf }, shape2Max{ -myInf };
-				for (int l{ 0 }; l < shape2->worldVertices.size(); ++l)
+				for (size_t l{ 0 }; l < shape2->worldVertices.size(); ++l)
 				{
 					//dot prod of the shape's point and the normal
 					float length = shape2->worldVertices[l].x * normalToEdge.x + shape2->worldVertices[l].y * normalToEdge.y;
@@ -204,7 +204,7 @@ namespace physics
 			/***********************************
 			* Check diagonals of polygon 1
 			***********************************/
-			for (int j = 0; j < shape1->worldVertices.size(); ++j)
+			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
 			{
 				physics::LineSegment lineSeg1{ vector2D::vec2D(shape1->worldCenterPos.x, shape1->worldCenterPos.y),					// Start point
 											   vector2D::vec2D(shape1->worldVertices[j].x, shape1->worldVertices[j].y) };			// End point
@@ -212,7 +212,7 @@ namespace physics
 				/***********************************
 				* Check edges of polygon 2
 				***********************************/
-				for (int k = 0; k < shape2->worldVertices.size(); ++k)
+				for (size_t k = 0; k < shape2->worldVertices.size(); ++k)
 				{
 					int l = (k + 1) % shape2->worldVertices.size();
 					physics::LineSegment lineSeg2{ vector2D::vec2D(shape2->worldVertices[k].x, shape2->worldVertices[k].y),					// Start point
@@ -252,7 +252,7 @@ namespace physics
 			/***********************************
 			* Check diagonals of polygon 1
 			***********************************/
-			for (int j = 0; j < shape1->worldVertices.size(); ++j)
+			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
 			{
 				physics::LineSegment lineSeg1{ vector2D::vec2D(shape1->worldCenterPos.x, shape1->worldCenterPos.y),					// Start point
 											   vector2D::vec2D(shape1->worldVertices[j].x, shape1->worldVertices[j].y) };			// End point
@@ -261,7 +261,7 @@ namespace physics
 				/***********************************
 				* Check edges of polygon 2
 				***********************************/
-				for (int k = 0; k < shape2->worldVertices.size(); ++k)
+				for (size_t k = 0; k < shape2->worldVertices.size(); ++k)
 				{
 					int l = (k + 1) % shape2->worldVertices.size();
 					physics::LineSegment lineSeg2{ vector2D::vec2D(shape2->worldVertices[k].x, shape2->worldVertices[k].y),					// Start point
@@ -283,14 +283,14 @@ namespace physics
 					}
 					//std::cout << displacement.x << " " << displacement.y << std::endl;
 
-					for (int m{ 0 }; m < shape1->worldVertices.size(); ++m)
-					{
-						shape1->worldVertices[m].x += displacement.x * (i == 0 ? -1 : +1);
-						shape1->worldVertices[m].y += displacement.y * (i == 0 ? -1 : +1);
 				}
-					shape1->worldCenterPos.x += displacement.x * (i == 0 ? -1 : +1);
-					shape1->worldCenterPos.y += displacement.y * (i == 0 ? -1 : +1);
+				for (size_t m{ 0 }; m < shape1->worldVertices.size(); ++m)
+				{
+					shape1->worldVertices[m].x += displacement.x * (i == 0 ? -1 : +1);
+					shape1->worldVertices[m].y += displacement.y * (i == 0 ? -1 : +1);
 				}
+				shape1->worldCenterPos.x += displacement.x * (i == 0 ? -1 : +1);
+				shape1->worldCenterPos.y += displacement.y * (i == 0 ? -1 : +1);
 			}
 		}
 		return false;
