@@ -270,6 +270,7 @@ were held down
 This function is called when mouse buttons are pressed.
 */
 void GLHelper::mousebutton_cb(GLFWwindow *pwin, int button, int action, int mod) {
+    
     if (GLFW_MOUSE_BUTTON_LEFT == button)
     {
         if (GLFW_PRESS == action)
@@ -302,7 +303,8 @@ relative to the top-left corner of the window client area.
 */
 void GLHelper::mousepos_cb(GLFWwindow *pwin, double xpos, double ypos) {
 #ifdef _DEBUG
-  std::cout << "Mouse cursor position: (" << xpos << ", " << ypos << ")" << std::endl;
+    // DEBUG
+  //std::cout << "Mouse cursor position: (" << xpos << ", " << ypos << ")" << std::endl;
 #endif
 }
 
