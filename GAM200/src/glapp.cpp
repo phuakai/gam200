@@ -26,7 +26,8 @@ to OpenGL implementations.
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>
 #include <physics.h>
-
+#include <graphics.h>
+#include <input.h>
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -35,8 +36,6 @@ std::map<std::string, GLSLShader> GLApp::shdrpgms; // define shaders
 std::map<std::string, GLApp::GLModel> GLApp::models; // define models
 
 std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
-
-GLApp::Camera2D GLApp::camera2d;
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 short GLApp::currentCollision;
@@ -74,9 +73,17 @@ void GLApp::GLObject::update(GLdouble delta_time)
 		modelCenterPos.x, modelCenterPos.y, 1);
 
 	mdl_to_world_xform = translation * rotation * scale;
-	world_to_ndc_xform = camera2d.world_to_ndc_xform;
-	mdl_to_ndc_xform = camera2d.world_to_ndc_xform * mdl_to_world_xform;
+	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
+	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
+	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+	world_to_ndc_xform = glm::mat3
+	(
+		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[6],
+		world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[7],
+		world_to_ndc_notglm.m[2], world_to_ndc_notglm.m[5], world_to_ndc_notglm.m[8]
+	);
 
+	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
 
 	//compute world coordinates for physics calc
 	worldCenterPos = mdl_to_world_xform * glm::vec3(0.f, 0.f, 1.f);
@@ -161,7 +168,7 @@ void GLApp::init()
 	GLApp::init_scene("../scenes/gam200.scn");
 
 	// Part 4: initialize camera
-	GLApp::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
+	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
 
 	// Store physics related info to be printed in title bar
 	currentCollision = 0;
@@ -187,7 +194,7 @@ despawn the oldest objects, and respawn objects again once no objects are left.
 void GLApp::update()
 {
 	// first, update camera
-	GLApp::camera2d.update(GLHelper::ptr_window);
+	Graphics::camera2d.update(GLHelper::ptr_window);
 	objects["Camera"].update(GLHelper::delta_time);
 
 	// update other inputs for physics
@@ -212,30 +219,46 @@ void GLApp::update()
 
 			switch (currentCollision)
 			{
-			case 1: //collisionType::SAT
-				if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
-				{
-					obj->second.overlap = true;
-					objects["Camera"].overlap = true;
-				}
-				break;
-			case 2: //collisionType::DIAG
-				if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
-				{
-					obj->second.overlap = true;
-					objects["Camera"].overlap = true;
-				}
-				break;
-			case 3: //collisionType::SNAPDIAGSTATIC
-				//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
-				physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
-				if (objects["Camera"].overlap)
-				{
-					//objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
-				}
-				break;
-			default:
-				break;
+				case 1: //collisionType::SAT
+					if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
+					{
+						obj->second.overlap = true;
+						objects["Camera"].overlap = true;
+					}
+					break;
+				case 2: //collisionType::DIAG
+					if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
+					{
+						obj->second.overlap = true;
+						objects["Camera"].overlap = true;
+					}
+					break;
+				case 3: //collisionType::SNAPDIAGSTATIC
+					//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
+					physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
+					if (objects["Camera"].overlap)
+					{
+						glm::vec2 tmp = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
+						objects["Camera"].modelCenterPos.x = tmp.x;
+						objects["Camera"].modelCenterPos.y = tmp.y;
+					}
+					break;
+				default:
+					break;
+
+					
+			}
+			if (GLHelper::mousestateLeft)
+			{
+				GLHelper::mousestateLeft = false;
+				double mousePosx, mousePosy;
+
+				Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+
+				std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+
+				obj->second.modelCenterPos.x = (float)mousePosx;
+				obj->second.modelCenterPos.y = (float)mousePosy;
 			}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
 			{
@@ -243,6 +266,9 @@ void GLApp::update()
 			}
 		}
 	}
+
+	
+	
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
@@ -260,15 +286,16 @@ void GLApp::draw()
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
 
+
 	std::stringstream title;
 	title << std::fixed;
 	title << std::setprecision(2);
 	title << "GAM200";
-	title << " | Camera Position (" << camera2d.pgo->modelCenterPos.x << ", " << camera2d.pgo->modelCenterPos.y << ")";
-	title << " | Orientation: " << std::setprecision(0) << (camera2d.pgo->orientation.x / M_PI * 180) << " degrees";
-	title << " | Window height: " << camera2d.height;
-	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
-	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps * 100) / 100.0;
+	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
+	title << " | Orientation: " << std::setprecision(0) << (Graphics::camera2d.getCameraObject().orientation.x / M_PI * 180) << " degrees";
+	title << " | Window height: " << Graphics::camera2d.getHeight();
+	title << " | Collision Type: " << collisionInfo[static_cast< collisionType>(currentCollision)];
+	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps*100)/100.0;
 
 	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
 
@@ -589,169 +616,6 @@ void GLApp::init_scene(std::string scene_filename)
 		}
 		objects[model_object] = Object;
 	}
-}
-
-/*  _________________________________________________________________________*/
-/*! GLApp::Camera2D::init
-
-@param GLFWwindow* pWindow
-Pointer to GLFW window currently in use
-
-@param GLApp::GLObject* ptr
-Pointer to Camera object
-
-@return none
-
-This function is called once at the initialization of the camera to compute and initialize the camera window
-*/
-void GLApp::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
-{
-	// assign address of object of type GLApp::GLObject with
-	// name "Camera" in std::map container GLApp::objects ...
-	pgo = ptr;
-
-	// compute camera window's aspect ratio ...
-	GLsizei fb_width, fb_height;
-	glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
-	ar = static_cast<GLfloat>(fb_width) / fb_height;
-	int width = int(ar * height);
-
-	// compute camera's up and right vectors ...
-	up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
-	right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
-	// at startup, the camera must be initialized to free camera ...
-
-	//glm is row-major
-	view_xform = glm::mat3(1, 0, 0,
-		0, 1, 0,
-		-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
-
-	// compute other matrices ...
-	camwin_to_ndc_xform = glm::mat3(2 / width, 0, 0,
-		0, 2 / height, 0,
-		0, 0, 1);
-	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
-}
-
-/*  _________________________________________________________________________*/
-/*! GLApp::Camera2D::update
-
-@param GLFWwindow* pWindow
-Pointer to GLFW window currently in use
-
-@return none
-
-This function is called once per frame to compute and update the camera window
-*/
-void GLApp::Camera2D::update(GLFWwindow* pWindow)
-{
-	// compute camera window's aspect ratio ...
-	GLsizei fb_width, fb_height;
-	glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
-	ar = static_cast<GLfloat>(fb_width) / fb_height;
-	int width = int(ar * height);
-
-	// compute camera's up and right vectors ...
-	up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
-	right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
-	// at startup, the camera must be initialized to free camera ...
-
-	// compute other matrices ...
-	camwin_to_ndc_xform = glm::mat3(2.f / (float)width, 0, 0,
-		0, 2.f / (float)height, 0,
-		0, 0, 1);
-
-	if (GLHelper::keystateW == GL_TRUE)
-	{
-		//std::cout << "before w: " << pgo->modelCenterPos.x << " " << pgo->modelCenterPos.y << std::endl;
-		pgo->modelCenterPos = pgo->modelCenterPos + linear_speed * up;
-		//std::cout << "after w: " << pgo->modelCenterPos.x << " " << pgo->modelCenterPos.y << std::endl;
-	}
-
-	if (GLHelper::keystateS == GL_TRUE)
-	{
-		pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
-	}
-
-	if (GLHelper::keystateA == GL_TRUE)
-	{
-		if (pgo->orientation.x / M_PI * 180 >= 360)
-		{
-			pgo->orientation.x = 0;
-		}
-		pgo->orientation.x += pgo->orientation.y;
-	}
-
-	if (GLHelper::keystateD == GL_TRUE)
-	{
-		if (pgo->orientation.x / M_PI * 180 <= -360)
-		{
-			pgo->orientation.x = 0;
-		}
-		pgo->orientation.x -= pgo->orientation.y;
-	}
-
-	if (GLHelper::keystateV == GL_TRUE)
-	{
-		if (camtype_flag == GL_TRUE)
-		{
-			camtype_flag = GL_FALSE;
-		}
-		else
-		{
-			camtype_flag = GL_TRUE;
-		}
-		GLHelper::keystateV = GL_FALSE;
-	}
-
-	if (GLHelper::keystateZ == GL_TRUE)
-	{
-		if (height >= max_height)
-		{
-			height_chg_dir = -1;
-		}
-		else if (height <= min_height)
-		{
-			height_chg_dir = 1;
-		}
-		height += height_chg_val * height_chg_dir;
-	}
-
-	if (camtype_flag == GL_FALSE)
-	{
-		//glm is row-major
-		view_xform = glm::mat3(1, 0, 0,
-			0, 1, 0,
-			-pgo->modelCenterPos.x, -pgo->modelCenterPos.y, 1);
-	}
-	else
-	{
-		view_xform = glm::mat3(right.x, up.x, 0,
-			right.y, up.y, 0,
-			-(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y), -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y), 1);
-	}
-
-	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
-	// check keyboard button presses to enable camera interactivity
-
-	// update camera aspect ratio - this must be done every frame
-	// because it is possible for the user to change viewport
-	// dimensions
-
-	// update camera's orientation (if required)
-
-	// update camera's up and right vectors (if required)
-
-	// update camera's position (if required)
-
-	// implement camera's zoom effect (if required)
-
-	// compute appropriate world-to-camera view transformation matrix
-
-	// compute window-to-NDC transformation matrix
-
-	// compute world-to-NDC transformation matrix
-
 }
 
 
