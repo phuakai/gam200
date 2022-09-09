@@ -216,7 +216,6 @@ namespace matrix3x3
 		*determinant = pMtx.m[0] * (pMtx.m[4] * pMtx.m[8] - pMtx.m[5] * pMtx.m[7])
 			- pMtx.m[1] * (pMtx.m[3] * pMtx.m[8] - pMtx.m[5] * pMtx.m[6])
 			+ pMtx.m[2] * (pMtx.m[3] * pMtx.m[7] - pMtx.m[4] * pMtx.m[6]);
-		std::cout << "Entered " << *determinant << std::endl;
 		if (determinant == 0)
 		{
 			pResult = nullptr;
