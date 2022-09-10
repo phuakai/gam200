@@ -178,8 +178,9 @@ void GLApp::init()
 	collisionInfo[collisionType::NIL] = "NIL";
 	collisionInfo[collisionType::SAT] = "SAT";
 	collisionInfo[collisionType::DIAG] = "DIAG";
-	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
+	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
+	collisionInfo[collisionType::AABBDYNAMIC] = "AABBDYNAMIC";
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
@@ -211,7 +212,7 @@ void GLApp::update()
 
 	if (GLHelper::keystateC)
 	{
-		currentCollision = ++currentCollision % 5;
+		currentCollision = ++currentCollision % 6;
 		GLHelper::keystateC = false;
 	}
 
@@ -251,35 +252,33 @@ void GLApp::update()
 				}
 				break;
 			case 3: //collisionType::SNAPDIAGSTATIC
-				//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
 				physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
-				//if (objects["Camera"].overlap)
-				//{
-					//objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
-				//}
 				break;
-			case 4: //AABB collision
+			case 4: //collisionType::AABBSTATIC
 				if (physics::shapeOverlapStaticAABB(objects["Camera"], obj->second))
 				{
 					obj->second.overlap = true;
 					objects["Camera"].overlap = true;
 				}
 				break;
+			case 5: //collisionType::AABBDYNAMIC
+				physics::shapeOverlapDynamicAABB(objects["Camera"], obj->second);
+				break;
 			default:
 				break;
 			}
-			if (GLHelper::mousestateLeft)
-			{
-				GLHelper::mousestateLeft = false;
-				double mousePosx, mousePosy;
+			//if (GLHelper::mousestateLeft)
+			//{
+			//	GLHelper::mousestateLeft = false;
+			//	double mousePosx, mousePosy;
 
-				Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+			//	Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
 
-				std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+			//	std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
 
-				obj->second.modelCenterPos.x = (float)mousePosx;
-				obj->second.modelCenterPos.y = (float)mousePosy;
-			}
+			//	obj->second.modelCenterPos.x = (float)mousePosx;
+			//	obj->second.modelCenterPos.y = (float)mousePosy;
+			//}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
 			{
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
@@ -376,6 +375,20 @@ void GLApp::draw()
 			}
 			break;
 		case 4: //collisionType::AABBSTATIC
+			if (obj->first != "Camera")
+			{
+				obj->second.draw();
+				obj->second.color = green;
+			}
+			else
+				obj->second.color = blue;
+
+			if (obj->second.overlap)
+			{
+				obj->second.color = red;
+			}
+			break;
+		case 5: //collisionType::AABBDYNAMIC
 			if (obj->first != "Camera")
 			{
 				obj->second.draw();
@@ -525,6 +538,8 @@ void GLApp::init_scene(std::string scene_filename)
 		std::istringstream velocity{ line };
 		velocity >> Object.vel.x >> Object.vel.y;
 		Object.overlap = false;
+		Object.untravelledDistance.first = vector2D::vec2D{ 0.f, 0.f };
+		Object.untravelledDistance.second = 0.f;
 
 		/*
 		add code to do this:

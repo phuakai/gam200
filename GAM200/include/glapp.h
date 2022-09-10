@@ -48,14 +48,14 @@ struct GLApp {
 	SAT,			//1
 	DIAG,			//2
 	SNAPDIAGSTATIC, //3
-	AABBSTATIC,		//5
-	SATSTATIC,		//4
-	AABBDYNAMIC		//6
+	AABBSTATIC,		//4
+	AABBDYNAMIC,	//5
+	SATSTATIC		//6
   };
+
   static short currentCollision;
   static bool stepByStepCollision;
   static std::unordered_map<collisionType, std::string> collisionInfo;
-
   
 
   struct GLModel {
@@ -78,6 +78,8 @@ struct GLApp {
 	  vector2D::vec2D scaling{};														// scaling parameters
 	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
 	  vector2D::vec2D vel{};															// velocity
+	  vector2D::vec2D directionVec{};													// directional vec
+	  std::pair<vector2D::Point2D, float> untravelledDistance;							// destination, untravelled distance
 
 	  matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 	  matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -99,7 +101,7 @@ struct GLApp {
 	  glm::vec3 color{};
 	  matrix3x3::mat3x3 mdlXform{};															// model to world transformation
 	  vector2D::vec2D worldCenterPos{};
-	  std::vector<vector2D::vec2D> bounddingBoxWorldVertices;									
+	  std::vector<vector2D::vec2D> boundingBoxWorldVertices;									
 	  std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
 	  std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 

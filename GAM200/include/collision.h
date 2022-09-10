@@ -94,8 +94,9 @@ namespace physics
 
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
-	bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
-		const AABB& aabb2, const vector2D::vec2D& vel2);
+	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
+	//	const AABB& aabb2, const vector2D::vec2D& vel2);
+	void shapeOverlapDynamicAABB(GLApp::GLObject& polygon1, GLApp::GLObject& polygon2);
 
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
 						 GLApp::GLObject const& polygon2);

@@ -133,23 +133,23 @@ namespace physics
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
 	{
-		polygon1.bounddingBoxWorldVertices.resize(4);
-		polygon2.bounddingBoxWorldVertices.resize(4);
+		polygon1.boundingBoxWorldVertices.clear();
+		polygon2.boundingBoxWorldVertices.clear();
 		
 		// Compute min/max points
 		AABB poly1{ vector2D::minPointsOfPolygonBoundingBox(polygon1.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon1.worldVertices) };
 		AABB poly2{ vector2D::minPointsOfPolygonBoundingBox(polygon2.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon2.worldVertices) };
 
 		// Store bounding box for rendering
-		polygon1.bounddingBoxWorldVertices.emplace_back(poly1.min);
-		polygon1.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.max.x, poly1.min.y));
-		polygon1.bounddingBoxWorldVertices.emplace_back(poly1.max);
-		polygon1.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.min.x, poly1.max.y));
+		polygon1.boundingBoxWorldVertices.emplace_back(poly1.min);
+		polygon1.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.max.x, poly1.min.y));
+		polygon1.boundingBoxWorldVertices.emplace_back(poly1.max);
+		polygon1.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.min.x, poly1.max.y));
 
-		polygon2.bounddingBoxWorldVertices.emplace_back(poly2.min);
-		polygon2.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.max.x, poly2.min.y));
-		polygon2.bounddingBoxWorldVertices.emplace_back(poly2.max);
-		polygon2.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.min.x, poly2.max.y));
+		polygon2.boundingBoxWorldVertices.emplace_back(poly2.min);
+		polygon2.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.max.x, poly2.min.y));
+		polygon2.boundingBoxWorldVertices.emplace_back(poly2.max);
+		polygon2.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.min.x, poly2.max.y));
 
 		// Check for static collision detection between rectangles
 		if (poly1.min.x <= poly2.max.x && poly1.max.x >= poly2.min.x &&
@@ -185,103 +185,83 @@ namespace physics
 
 	}
 
-	bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
-		const AABB& aabb2, const vector2D::vec2D& vel2)
+	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
+		//const AABB& aabb2, const vector2D::vec2D& vel2)
+	void shapeOverlapDynamicAABB(GLApp::GLObject& polygon1, GLApp::GLObject& polygon2)
 	{
-		///*
-		//Implement the collision intersection over here.
+		/*
+		The steps are:
+		Step 1: Check for static collision detection between rectangles (before moving).
+					If the check returns no overlap you continue with the following next steps (dynamics).
+					Otherwise you return collision true
 
-		//The steps are:
-		//Step 1: Check for static collision detection between rectangles (before moving).
-		//			If the check returns no overlap you continue with the following next steps (dynamics).
-		//			Otherwise you return collision true
+		Step 2: Initialize and calculate the new velocity of Vb
+				tFirst = 0
+				tLast = dt
+		*/
 
-		//Step 2: Initialize and calculate the new velocity of Vb
-		//		tFirst = 0
-		//		tLast = dt*/
-		//float tFirst(0), tLast(GLHelper::delta_time);
-		//vector2D::vec2D relativeVel{ vel1.x - vel2.x, vel1.y - vel2.y };
+		if (shapeOverlapStaticAABB(polygon1, polygon2)) //polygon1 is pushed back
+		{
+			float tFirst(0), tLast(GLHelper::delta_time);
+			vector2D::vec2D relativeVel{ polygon1.vel.x - polygon2.vel.x, polygon1.vel.y - polygon2.vel.y };
 
-		////Step 3: Working with one dimension(x - axis).				
-		////if (Vb < 0)
-		//if (relativeVel.x < 0)
-		//{
-		//	//case 1
-		//	if (aabb1.min.x > aabb2.max.x) // case 1
-		//	{
-		//		return 0;
-		//	}
-		//	//case 4 - revisited
-		//	if (aabb1.max.x < aabb2.min.x) // case 4
-		//	{
-		//		tFirst = max(((aabb1.max.x - aabb2.min.x) / relativeVel.x), tFirst);
-		//	}
-		//	if (aabb1.min.x < aabb2.max.x)
-		//	{
-		//		tLast = min(((aabb1.min.x - aabb2.max.x) / relativeVel.x), tLast);
-		//	}
-		//}
-		////if (Vb > 0)
-		//if (relativeVel.x > 0)
-		//{
-		//	//case 2 - revisited
-		//	if (aabb1.min.x > aabb2.max.x) // case 2
-		//	{
-		//		tFirst = max((aabb1.min.x - aabb2.max.x) / relativeVel.x, tFirst);
-		//	}
-		//	if (aabb1.max.x > aabb2.min.x)
-		//	{
-		//		tLast = min((aabb1.max.x - aabb2.min.x) / relativeVel.x, tLast);
-		//	}
-		//	//case 3
-		//	if (aabb1.max.x < aabb2.min.x) // case 3
-		//	{
-		//		return 0;
-		//	}
-		//}
+			// Compute min/max points
+			AABB poly1{ vector2D::minPointsOfPolygonBoundingBox(polygon1.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon1.worldVertices) };
+			AABB poly2{ vector2D::minPointsOfPolygonBoundingBox(polygon2.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon2.worldVertices) };
 
-		////Step 4: Repeat step 3 on the y - axis
-		//if (relativeVel.y < 0)
-		//{
-		//	if (aabb1.min.y > aabb2.max.y)
-		//	{
-		//		return 0;
-		//	}
-		//	if (aabb1.max.y < aabb2.min.y)
-		//	{
-		//		tFirst = max(tFirst, (aabb1.max.y - aabb2.min.y) / relativeVel.y);
-		//	}
-		//	if (aabb1.min.y < aabb2.max.y)
-		//	{
-		//		tLast = min(tLast, (aabb1.min.y - aabb2.max.y) / relativeVel.y);
-		//	}
-		//}
-		//if (relativeVel.y > 0)
-		//{
-		//	if (aabb1.min.y > aabb2.max.y)
-		//	{
-		//		tFirst = max(tFirst, (aabb1.min.y - aabb2.max.y) / relativeVel.y);
-		//	}
-		//	if (aabb1.max.y > aabb2.min.y)
-		//	{
-		//		tLast = min(tLast, (aabb1.max.y - aabb2.min.y) / relativeVel.y);
-		//	}
-		//	if (aabb1.max.y < aabb2.min.y)
-		//	{
-		//		return 0;
-		//	}
-		//}
 
-		////case 5
-		//if (tFirst > tLast)
-		//{
-		//	return 0;
-		//}
 
-		////Step 5: Otherwise the rectangles intersect
-		//return true;
+			////Step 3: Working with one dimension(x - axis).				
+			//if (relativeVel.x < 0)
+			//{
+			//	//case 4 - revisited
+			//	if (poly1.max.x < poly2.min.x) // case 4
+			//	{
+			//		tFirst = std::max(((poly1.max.x - poly2.min.x) / relativeVel.x), tFirst);
+			//	}
+			//	if (poly1.min.x < poly2.max.x)
+			//	{
+			//		tLast = std::min(((poly1.min.x - poly2.max.x) / relativeVel.x), tLast);
+			//	}
+			//}
+			//if (relativeVel.x > 0)
+			//{
+			//	//case 2 - revisited
+			//	if (poly1.min.x > poly2.max.x) // case 2
+			//	{
+			//		tFirst = std::max((poly1.min.x - poly2.max.x) / relativeVel.x, tFirst);
+			//	}
+			//	if (poly1.max.x > poly2.min.x)
+			//	{
+			//		tLast = std::min((poly1.max.x - poly2.min.x) / relativeVel.x, tLast);
+			//	}
+			//}
 
-		return false;
+			////Step 4: Repeat step 3 on the y - axis
+			//if (relativeVel.y < 0)
+			//{
+			//	if (poly1.max.y < poly2.min.y)
+			//	{
+			//		tFirst = std::max(tFirst, (poly1.max.y - poly2.min.y) / relativeVel.y);
+			//	}
+			//	if (poly1.min.y < poly2.max.y)
+			//	{
+			//		tLast = std::min(tLast, (poly1.min.y - poly2.max.y) / relativeVel.y);
+			//	}
+			//}
+			//if (relativeVel.y > 0)
+			//{
+			//	if (poly1.min.y > poly2.max.y)
+			//	{
+			//		tFirst = std::max(tFirst, (poly1.min.y - poly2.max.y) / relativeVel.y);
+			//	}
+			//	if (poly1.max.y > poly2.min.y)
+			//	{
+			//		tLast = std::min(tLast, (poly1.max.y - poly2.min.y) / relativeVel.y);
+			//	}
+			//}
+
+		}
 	}
 
 	/******************************************************************************/
