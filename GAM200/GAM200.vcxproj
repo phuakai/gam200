@@ -27,7 +27,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mat3x3.cpp" />
     <ClCompile Include="src\collision.cpp" />
-    <ClCompile Include="src\phsyics.cpp" />
+    <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
   </ItemGroup>

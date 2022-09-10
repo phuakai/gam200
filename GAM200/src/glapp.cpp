@@ -78,11 +78,11 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
 	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
 	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-	world_to_ndc_xform = glm::mat3
+	world_to_ndc_xform = matrix3x3::mat3x3
 	(
-		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[6],
-		world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[7],
-		world_to_ndc_notglm.m[2], world_to_ndc_notglm.m[5], world_to_ndc_notglm.m[8]
+		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
 	);
 
 	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
@@ -282,7 +282,7 @@ void GLApp::update()
 			}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
 			{
-				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * glm::vec3(obj->second.worldVertices[i], 1.f);
+				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
 	}
