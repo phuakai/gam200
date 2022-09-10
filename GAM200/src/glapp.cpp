@@ -32,6 +32,7 @@ to OpenGL implementations.
 #include <collisiondebug.h>
 #include <buffer.h>
 #include <model.h>
+#include <random>
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -44,6 +45,8 @@ std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 short GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
+
+int tmpobjcounter{};
 /*  _________________________________________________________________________*/
 /*! GLObject::update
 
@@ -216,9 +219,33 @@ void GLApp::update()
 	if (GLHelper::keystateC)
 	{
 		currentCollision = ++currentCollision % 5;
+		
 		GLHelper::keystateC = false;
 	}
+	if (GLHelper::keystateQ)
+	{
+		std::string tmpobjname = "Banana";
+		tmpobjcounter++;
+		std::stringstream tmpstream;
+		tmpstream << tmpobjname << tmpobjcounter;
+		std::string finalobjname = tmpstream.str();
+		std::cout << "Final obj name " << finalobjname << std::endl;
+		//using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
+		unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+		// create default engine as source of randomness
+		std::default_random_engine generator(seed);
 
+		std::uniform_int_distribution<int> posrandom(19000, 20000);
+		int randx = posrandom(generator);
+		int randy = posrandom(generator);
+
+		std::uniform_int_distribution<int> sizerandom(50, 150);
+		float randwidth = (float)sizerandom(generator);
+		float randheight = (float)sizerandom(generator);
+		//std::cout << "Values " << randx << ", " << randy << std::endl;
+		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+		GLHelper::keystateQ = false;
+	}
 	// next, iterate through each element of container objects
 	// for each object of type GLObject in container objects
 	// call update function GLObject::update(delta_time) except on
@@ -383,17 +410,18 @@ void GLApp::draw()
 		case 4: //collisionType::AABBSTATIC
 			if (obj->first != "Camera")
 			{
-				
 				obj->second.draw();
 				obj->second.color = green;
 			}
 			else
+			{ 
 				obj->second.color = blue;
+			}
 
 			if (obj->second.overlap)
 			{
-				std::cout << "Colliding\n";
 				collisionDebug(obj->second);
+				
 				obj->second.color = red;
 			}
 			break;
@@ -450,6 +478,50 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	// add compiled, linked, and validated shader program to
 	// std::map container GLApp::shdrpgms
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
+}
+
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos)
+{
+	GLObject tmpObj;
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
+	float randr = colour(generator);
+	float randg = colour(generator);
+	float randb = colour(generator);
+	tmpObj.color = glm::vec3(randr, randg, randb);
+	tmpObj.scaling = scale;
+	tmpObj.orientation = vector2D::vec2D(0, 0);
+	tmpObj.modelCenterPos = pos;
+	tmpObj.vel = vector2D::vec2D(10, 10);
+
+	if (shdrpgms.find("gam200-shdrpgm") != shdrpgms.end())
+	{
+		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
+	}
+	else
+	{
+		insert_shdrpgm("gam200-shdrpgm", "../shaders/gam200.vert", "../shaders/gam200.frag");
+		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
+	}
+
+	if (models.find(modelname) != models.end())
+	{
+		tmpObj.mdl_ref = models.find(modelname);
+	}
+	else
+	{
+		Graphics::Model Model;
+		Model = Model.init(modelname);
+		models[modelname] = Model;
+		tmpObj.mdl_ref = models.find(modelname);
+	}
+
+	objects[objname] = tmpObj;
+
 }
 
 /*  _________________________________________________________________________*/

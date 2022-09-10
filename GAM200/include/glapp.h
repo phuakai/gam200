@@ -98,6 +98,8 @@ struct GLApp {
 	  void draw() const;
 	  // function to update the object's model transformation matrix
 	  void update(GLdouble delta_time);
+
+	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos); // Temp
   };
 
 
