@@ -30,6 +30,7 @@
     <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
+    <ClCompile Include="vec3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glapp.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
+    <ClInclude Include="vec3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />

@@ -48,6 +48,9 @@
     <ClCompile Include="src\physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vec3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glapp.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vec3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
