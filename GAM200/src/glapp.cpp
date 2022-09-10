@@ -25,9 +25,12 @@ to OpenGL implementations.
 #include <iomanip>
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>
+#include <collision.h>
 #include <physics.h>
 #include <graphics.h>
 #include <input.h>
+#include <collisiondebug.h>
+#include <buffer.h>
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -39,6 +42,7 @@ std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 short GLApp::currentCollision;
+bool GLApp::stepByStepCollision;
 /*  _________________________________________________________________________*/
 /*! GLObject::update
 
@@ -52,48 +56,48 @@ void GLApp::GLObject::update(GLdouble delta_time)
 {
 	overlap = false;					//change overlap to false
 
-	glm::mat3 scale
+	matrix3x3::mat3x3 scale
 	(scaling.x, 0, 0,
-		0, scaling.y, 0,
-		0, 0, 1);
+	0, scaling.y, 0,
+	0, 0, 1);
 
 	if (mdl_ref->first != "triangle")	// check if is black triangle
 	{
 		orientation.x += orientation.y * float(delta_time);
 	}
 
-	glm::mat3 rotation
-	(cos(orientation.x), sin(orientation.x), 0,
-		-sin(orientation.x), cos(orientation.x), 0,
-		0, 0, 1);
+	matrix3x3::mat3x3 rotation
+	(cos(orientation.x), -sin(orientation.x), 0,
+	sin(orientation.x), cos(orientation.x), 0,
+	0, 0, 1);
 
-	glm::mat3 translation
-	(1, 0, 0,
-		0, 1, 0,
-		modelCenterPos.x, modelCenterPos.y, 1);
+	matrix3x3::mat3x3 translation
+	(1, 0, modelCenterPos.x,
+	0, 1, modelCenterPos.y,
+	0, 0, 1);
 
 	mdl_to_world_xform = translation * rotation * scale;
 	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
 	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
 	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-	world_to_ndc_xform = glm::mat3
+	world_to_ndc_xform = matrix3x3::mat3x3
 	(
-		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[6],
-		world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[7],
-		world_to_ndc_notglm.m[2], world_to_ndc_notglm.m[5], world_to_ndc_notglm.m[8]
+		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
 	);
 
 	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
 
 	//compute world coordinates for physics calc
-	worldCenterPos = mdl_to_world_xform * glm::vec3(0.f, 0.f, 1.f);
+	worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
 
 	ndc_coords.clear();
 	worldVertices.clear();
 	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
-		worldVertices.emplace_back(mdl_to_world_xform * glm::vec3(mdl_ref->second.model_coords[i], 1.0));
-		ndc_coords.emplace_back(world_to_ndc_xform * glm::vec3(worldVertices[i], 1.0f));
+		worldVertices.emplace_back(mdl_to_world_xform * mdl_ref->second.model_coords[i]);
+		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
 	}
 }
 
@@ -117,7 +121,7 @@ void GLApp::GLObject::draw() const
 	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
 
-	glNamedBufferSubData(buffer, 0, sizeof(glm::vec2) * mdl_ref->second.posvtx_cnt, ndc_coords.data()); // Set new buffer index with subdata
+	glNamedBufferSubData(buffer, 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
 
 	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
 
@@ -172,9 +176,11 @@ void GLApp::init()
 
 	// Store physics related info to be printed in title bar
 	currentCollision = 0;
+	stepByStepCollision = false;
 	collisionInfo[collisionType::NIL] = "NIL";
 	collisionInfo[collisionType::SAT] = "SAT";
 	collisionInfo[collisionType::DIAG] = "DIAG";
+	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 
 	// Part 5: Print OpenGL context and GPU specs
@@ -198,9 +204,16 @@ void GLApp::update()
 	objects["Camera"].update(GLHelper::delta_time);
 
 	// update other inputs for physics
+
+	if (GLHelper::keystateP)
+	{
+		stepByStepCollision = !stepByStepCollision;
+		GLHelper::keystateP = false;
+	}
+
 	if (GLHelper::keystateC)
 	{
-		currentCollision = ++currentCollision % 4;
+		currentCollision = ++currentCollision % 5;
 		GLHelper::keystateC = false;
 	}
 
@@ -209,44 +222,53 @@ void GLApp::update()
 	// call update function GLObject::update(delta_time) except on
 	// object which has camera embedded in it - this is because
 	// the camera has already updated the object's orientation
+	bool test{ true };
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
 		if (obj->first != "Camera")
 		{
 			obj->second.update(GLHelper::delta_time);
+			//update phsyics according to input
+			if (test)
+			{
+				test = false;
+				movement(obj->second, objects["Camera"], stepByStepCollision);
+			}
 
 			//check for physics collision after update
-
 			switch (currentCollision)
 			{
-				case 1: //collisionType::SAT
-					if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
-					{
-						obj->second.overlap = true;
-						objects["Camera"].overlap = true;
-					}
-					break;
-				case 2: //collisionType::DIAG
-					if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
-					{
-						obj->second.overlap = true;
-						objects["Camera"].overlap = true;
-					}
-					break;
-				case 3: //collisionType::SNAPDIAGSTATIC
-					//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
-					physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
-					if (objects["Camera"].overlap)
-					{
-						glm::vec2 tmp = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
-						objects["Camera"].modelCenterPos.x = tmp.x;
-						objects["Camera"].modelCenterPos.y = tmp.y;
-					}
-					break;
-				default:
-					break;
-
-					
+			case 1: //collisionType::SAT
+				if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
+				{
+					obj->second.overlap = true;
+					objects["Camera"].overlap = true;
+				}
+				break;
+			case 2: //collisionType::DIAG
+				if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
+				{
+					obj->second.overlap = true;
+					objects["Camera"].overlap = true;
+				}
+				break;
+			case 3: //collisionType::SNAPDIAGSTATIC
+				//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
+				physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
+				//if (objects["Camera"].overlap)
+				//{
+					//objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
+				//}
+				break;
+			case 4: //AABB collision
+				if (physics::shapeOverlapStaticAABB(objects["Camera"], obj->second))
+				{
+					obj->second.overlap = true;
+					objects["Camera"].overlap = true;
+				}
+				break;
+			default:
+				break;
 			}
 			if (GLHelper::mousestateLeft)
 			{
@@ -262,7 +284,7 @@ void GLApp::update()
 			}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.posvtx_cnt; i++)
 			{
-				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * glm::vec3(obj->second.worldVertices[i], 1.f);
+				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
 	}
@@ -307,12 +329,12 @@ void GLApp::draw()
 	{
 		switch (currentCollision)
 		{
+			
 		case 0: //collisionType::NIL
 			if (obj->first != "Camera")
 			{
 				obj->second.draw();
 			}
-
 			break;
 		case 1: //collisionType::SAT
 			if (obj->first != "Camera")
@@ -353,6 +375,23 @@ void GLApp::draw()
 
 			if (obj->second.overlap)
 			{
+				obj->second.color = red;
+			}
+			break;
+		case 4: //collisionType::AABBSTATIC
+			if (obj->first != "Camera")
+			{
+				
+				obj->second.draw();
+				obj->second.color = green;
+			}
+			else
+				obj->second.color = blue;
+
+			if (obj->second.overlap)
+			{
+				std::cout << "Colliding\n";
+				collisionDebug(obj->second);
 				obj->second.color = red;
 			}
 			break;
@@ -488,8 +527,10 @@ void GLApp::init_scene(std::string scene_filename)
 		line_model_position >> Object.modelCenterPos.x >> Object.modelCenterPos.y;
 
 		//for physics
+		getline(ifs, line); // 8th parameter: velocity
+		std::istringstream velocity{ line };
+		velocity >> Object.vel.x >> Object.vel.y;
 		Object.overlap = false;
-
 
 		/*
 		add code to do this:
@@ -499,7 +540,6 @@ void GLApp::init_scene(std::string scene_filename)
 		if (models.find(model_name) != models.end())
 		{
 			Object.mdl_ref = models.find(model_name);
-
 		}
 		else
 		{
@@ -517,7 +557,7 @@ void GLApp::init_scene(std::string scene_filename)
 			std::string meshname;
 			char prefix;
 			linestream >> prefix >> meshname;
-			std::vector <glm::vec2> pos_vtx;
+			std::vector <vector2D::vec2D> pos_vtx;
 			std::vector <GLushort> primitive;
 
 			GLuint vbo, vao, ebo;
@@ -554,8 +594,8 @@ void GLApp::init_scene(std::string scene_filename)
 					//}
 
 					linestream >> x >> y;
-					pos_vtx.emplace_back(glm::vec2(x, y));
-					Model.model_coords.emplace_back(glm::vec2(x, y));
+					pos_vtx.emplace_back(vector2D::vec2D(x, y));
+					Model.model_coords.emplace_back(vector2D::vec2D(x, y));
 					break;
 				default:
 					break;
@@ -564,7 +604,7 @@ void GLApp::init_scene(std::string scene_filename)
 
 			glCreateBuffers(1, &vbo); // Creates a buffer named vbo (can replace vbo with an array if multiple buffers)
 
-			glNamedBufferStorage(vbo, sizeof(glm::vec2) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
+			glNamedBufferStorage(vbo, sizeof(vector2D::vec2D) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
 			// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
 			// GL_DYNAMIC_STORAGE_BIT allows contents of the data to be updated after creation by calling glBufferSubData, 
 			// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
@@ -573,7 +613,7 @@ void GLApp::init_scene(std::string scene_filename)
 			glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
 			// When enabled, vertex attribute array will be accessed and used for rendering 
 			// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
-			glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(glm::vec2)); // Binds a buffer to a vertex array object
+			glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(vector2D::vec2D)); // Binds a buffer to a vertex array object
 			// Name of vertex array object, index for vertex buffer object to bind to, name of buffer to be binded, offset of first element, stride/step (distance between elements of buffer)
 
 			glVertexArrayAttribFormat(vao, 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays

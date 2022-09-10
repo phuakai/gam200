@@ -13,7 +13,7 @@ an OpenGL context and implement a game loop.
 // Extension loader library's header must be included before GLFW's header!!!
 #include <glhelper.h>
 #include <glapp.h>
-#include <physics.h>
+#include <collision.h>
 #include <iostream>
 
 /*                                                   type declarations

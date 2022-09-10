@@ -1,18 +1,20 @@
 12            # number of objects in scene
-square        # name of model (there should be a corresponding square.dpm in $(SolutionDir)meshes)
+triangle        # name of model (there should be a corresponding square.dpm in $(SolutionDir)meshes)
 Object1       # name of game object - this name must be unique in the scene
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag # names of shader program, vertex and fragment shaders for rendering model square
 1.0 0.0 0.0   # (r, g, b) color used for painting object
 200.0 150.0   # scaling factors of object along horizontal and vertices axes, respectively
-0.0 -17.5       # orientation factors of object: initial angular orientation (where am i looking at start up?) and angular speed in degrees/sec (how fast will i rotate)
+0.0 0.0       # orientation factors of object: initial angular orientation (where am i looking at start up?) and angular speed in degrees/sec (how fast will i rotate)
 -19800 -20000 # object's position in game world
+10.0 10.0
 square
 Object2
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.0 1.0 0.0
 225.0 175.0
-0.0 18.0       
+0.0 0.0       
 -19200 -20000
+10.0 10.0
 triangle
 Camera
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
@@ -20,20 +22,23 @@ gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 50.0 100.0
 30.0 2.0      
 -19300 -19750
+10.0 10.0
 square
 Object3
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.0 0.0 1.0
 175.0 225.0
-0.0  -15.0          
+0.0  0.0
 -19000 -19200
+10.0 10.0
 square
 Object4
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.0 1.0 1.0
 140.0 180.0
--30.0 20.0
+-30.0 0.0
 -20000 -19400
+10.0 10.0
 circle
 Object5
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
@@ -41,45 +46,52 @@ gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 220.0 220.0
 0.0 0.0       # not much point in setting orientation parameters for circular objects
 -19600 -19600
+10.0 10.0
 square              
 Object6
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 1.0 0.4 0.5
 400.0 150.0
-0.0  -22.5                  
+0.0  0.0                  
 -20300 -20000
+10.0 10.0
 circle
 Object7
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.0 0.8 0.5
 225.0 175.0
-0.0  -1.2       
+0.0  0.0      
 -18800 -20000
+10.0 10.0
 circle
 Object8
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.3 0.0 0.5
 100.0 100.0
-0.0 -1.2       
+0.0 0.0       
 -20300 -19500
+10.0 10.0
 square
 Object9
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.3 0.2 0.5
 100.0 100.0
-45.0 10.5
+45.0 0.0
 -20100 -19700
+10.0 10.0
 square
 Object10
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 0.5 0.5 0.5
 250.0 120.0
-0.0 -13.5        
+0.0 0.0        
 -19000 -19600
+10.0 10.0
 square
 Object11
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 1.0 0.5 0.5
 520.0 420.0
-0.0 10.6      
+0.0 0.0      
 -19600 -19000
+10.0 10.0

@@ -24,8 +24,7 @@ matrix3x3::mat3x3 Transform::getViewporttoNDC()
 	matrix3x3::mat3x3 ndc_to_viewport = getNDCtoViewport();
 	
 	matrix3x3::mat3x3 viewport_to_ndc;
-	float tmp = 0;
-	matrix3x3::Mtx33Inverse(&viewport_to_ndc, &tmp, ndc_to_viewport);
+	matrix3x3::Mtx33Inverse(&viewport_to_ndc, ndc_to_viewport);
 	return viewport_to_ndc;
 }
 
@@ -62,8 +61,7 @@ matrix3x3::mat3x3 Transform::getNDCtoWorld()
 {
 	matrix3x3::mat3x3 world_to_ndc = Graphics::camera2d.getWorldtoNDCxForm();
 	matrix3x3::mat3x3 ndc_to_world;
-	float tmp = 0;
-	matrix3x3::Mtx33Inverse(&ndc_to_world, &tmp, world_to_ndc);
+	matrix3x3::Mtx33Inverse(&ndc_to_world, world_to_ndc);
 	
 	
 	return ndc_to_world;

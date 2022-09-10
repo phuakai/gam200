@@ -129,7 +129,7 @@ namespace matrix3x3
 		would be set to NULL.
 	*/
 	/**************************************************************************/
-	void Mtx33Inverse(mat3x3* pResult, float* determinant, const mat3x3& pMtx);
+	void Mtx33Inverse(mat3x3* pResult, mat3x3 const& pMtx);
 }
 
 #endif // CSD1130_MATRIX3X3_H_

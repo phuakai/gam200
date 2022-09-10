@@ -210,12 +210,11 @@ namespace matrix3x3
 		would be set to NULL.
 	*/
 	/**************************************************************************/
-	void Mtx33Inverse(mat3x3* pResult, float* determinant, const mat3x3& pMtx)
+	void Mtx33Inverse(mat3x3* pResult, mat3x3 const& pMtx)
 	{
-
-		*determinant = pMtx.m[0] * (pMtx.m[4] * pMtx.m[8] - pMtx.m[5] * pMtx.m[7])
-			- pMtx.m[1] * (pMtx.m[3] * pMtx.m[8] - pMtx.m[5] * pMtx.m[6])
-			+ pMtx.m[2] * (pMtx.m[3] * pMtx.m[7] - pMtx.m[4] * pMtx.m[6]);
+		float determinant = pMtx.m[0] * (pMtx.m[4] * pMtx.m[8] - pMtx.m[5] * pMtx.m[7])
+							- pMtx.m[1] * (pMtx.m[3] * pMtx.m[8] - pMtx.m[5] * pMtx.m[6])
+							+ pMtx.m[2] * (pMtx.m[3] * pMtx.m[7] - pMtx.m[4] * pMtx.m[6]);
 		if (determinant == 0)
 		{
 			pResult = nullptr;
@@ -224,15 +223,15 @@ namespace matrix3x3
 		{
 			mat3x3 tmp;
 			Mtx33Transpose(tmp, pMtx);
-			pResult->m[0] = (tmp.m[4] * tmp.m[8] - tmp.m[5] * tmp.m[7]) / *determinant;
-			pResult->m[1] = -(tmp.m[3] * tmp.m[8] - tmp.m[5] * tmp.m[6]) / *determinant;
-			pResult->m[2] = (tmp.m[3] * tmp.m[7] - tmp.m[6] * tmp.m[4]) / *determinant;
-			pResult->m[3] = -(tmp.m[1] * tmp.m[8] - tmp.m[2] * tmp.m[7]) / *determinant;
-			pResult->m[4] = (tmp.m[0] * tmp.m[8] - tmp.m[2] * tmp.m[6]) / *determinant;
-			pResult->m[5] = -(tmp.m[0] * tmp.m[7] - tmp.m[1] * tmp.m[6]) / *determinant;
-			pResult->m[6] = (tmp.m[1] * tmp.m[5] - tmp.m[2] * tmp.m[4]) / *determinant;
-			pResult->m[7] = -(tmp.m[0] * tmp.m[5] - tmp.m[2] * tmp.m[3]) / *determinant;
-			pResult->m[8] = (tmp.m[0] * tmp.m[4] - tmp.m[1] * tmp.m[3]) / *determinant;
+			pResult->m[0] = (tmp.m[4] * tmp.m[8] - tmp.m[5] * tmp.m[7]) / determinant;
+			pResult->m[1] = -(tmp.m[3] * tmp.m[8] - tmp.m[5] * tmp.m[6]) / determinant;
+			pResult->m[2] = (tmp.m[3] * tmp.m[7] - tmp.m[6] * tmp.m[4]) / determinant;
+			pResult->m[3] = -(tmp.m[1] * tmp.m[8] - tmp.m[2] * tmp.m[7]) / determinant;
+			pResult->m[4] = (tmp.m[0] * tmp.m[8] - tmp.m[2] * tmp.m[6]) / determinant;
+			pResult->m[5] = -(tmp.m[0] * tmp.m[7] - tmp.m[1] * tmp.m[6]) / determinant;
+			pResult->m[6] = (tmp.m[1] * tmp.m[5] - tmp.m[2] * tmp.m[4]) / determinant;
+			pResult->m[7] = -(tmp.m[0] * tmp.m[5] - tmp.m[2] * tmp.m[3]) / determinant;
+			pResult->m[8] = (tmp.m[0] * tmp.m[4] - tmp.m[1] * tmp.m[3]) / determinant;
 		}
 	}
 }

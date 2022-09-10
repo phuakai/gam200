@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\buffer.cpp" />
+    <ClCompile Include="src\collisiondebug.cpp" />
     <ClCompile Include="src\glapp.cpp" />
     <ClCompile Include="src\glhelper.cpp" />
     <ClCompile Include="src\glslshader.cpp" />
@@ -26,11 +28,15 @@
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mat3x3.cpp" />
-    <ClCompile Include="src\phsyics.cpp" />
+    <ClCompile Include="src\collision.cpp" />
+    <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\buffer.h" />
+    <ClInclude Include="include\collisiondebug.h" />
     <ClInclude Include="include\glapp.h" />
     <ClInclude Include="include\glhelper.h" />
     <ClInclude Include="include\glslshader.h" />
@@ -38,6 +44,8 @@
     <ClInclude Include="include\input.h" />
     <ClInclude Include="include\main.h" />
     <ClInclude Include="include\mat3x3.h" />
+    <ClInclude Include="include\collision.h" />
+    <ClInclude Include="include\model.h" />
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />

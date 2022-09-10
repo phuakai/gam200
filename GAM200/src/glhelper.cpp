@@ -32,6 +32,11 @@ GLboolean GLHelper::keystateD = GL_FALSE;
 GLboolean GLHelper::keystateV = GL_FALSE;
 GLboolean GLHelper::keystateC = GL_FALSE;
 GLboolean GLHelper::keystateZ = GL_FALSE;
+GLboolean GLHelper::keystateI = GL_FALSE;  // Player forward
+GLboolean GLHelper::keystateK = GL_FALSE;  // Player backward
+GLboolean GLHelper::keystateJ = GL_FALSE;  // Player left
+GLboolean GLHelper::keystateL = GL_FALSE;  // Player right
+GLboolean GLHelper::keystateP = GL_FALSE;  // Pause game
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
 /*  _________________________________________________________________________ */
@@ -185,9 +190,27 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateS = GL_TRUE;
         }
+        if (key == GLFW_KEY_I)
+        {
+            keystateI = GL_TRUE;
+        }
+        if (key == GLFW_KEY_K)
+        {
+            keystateK = GL_TRUE;
+        }
+        if (key == GLFW_KEY_J)
+        {
+            keystateJ = GL_TRUE;
+        }
+        if (key == GLFW_KEY_L)
+        {
+            keystateL = GL_TRUE;
+        }
+
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
         keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
         keystateC = (key == GLFW_KEY_C) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
+        keystateP = (key == GLFW_KEY_P) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is P
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
@@ -207,8 +230,25 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateS = GL_TRUE;
         }
+        if (key == GLFW_KEY_I)
+        {
+            keystateI = GL_TRUE;
+        }
+        if (key == GLFW_KEY_K)
+        {
+            keystateK = GL_TRUE;
+        }
+        if (key == GLFW_KEY_J)
+        {
+            keystateJ = GL_TRUE;
+        }
+        if (key == GLFW_KEY_L)
+        {
+            keystateL = GL_TRUE;
+        }
         keystateV = GL_FALSE;
         keystateC = GL_FALSE;
+        keystateP = GL_FALSE;
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
     }
     else if (GLFW_RELEASE == action) {
@@ -241,10 +281,27 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         {
             keystateC = GL_FALSE;
         }
-
+        if (key == GLFW_KEY_I)
+        {
+            keystateI = GL_FALSE;
+        }
+        if (key == GLFW_KEY_K)
+        {
+            keystateK = GL_FALSE;
+        }
+        if (key == GLFW_KEY_J)
+        {
+            keystateJ = GL_FALSE;
+        }
+        if (key == GLFW_KEY_L)
+        {
+            keystateL = GL_FALSE;
+        }
+        if (key == GLFW_KEY_P)
+        {
+            keystateL = GL_FALSE;
+        }
     }
-
-
 }
 
 /*  _________________________________________________________________________*/
