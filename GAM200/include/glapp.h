@@ -27,6 +27,8 @@ and transformations (in later labs).
 #include <random>
 #include <map>
 #include <unordered_map>
+#include <vec2D.h>
+#include <mat3x3.h>
 
 struct GLApp {
 
@@ -42,13 +44,16 @@ struct GLApp {
   static constexpr glm::vec3 blue{0.f, 0.f, 1.f};
   enum class collisionType
   {
-	NIL,	   //0
-	SAT,	   //1
-	DIAG,	   //2
+	NIL,			//0
+	SAT,			//1
+	DIAG,			//2
 	SNAPDIAGSTATIC, //3
-	SATSTATIC //4
+	AABBSTATIC,		//5
+	SATSTATIC,		//4
+	AABBDYNAMIC		//6
   };
   static short currentCollision;
+  static bool stepByStepCollision;
   static std::unordered_map<collisionType, std::string> collisionInfo;
 
 
@@ -57,7 +62,7 @@ struct GLApp {
 	  GLuint primitive_cnt = 0; // added for tutorial 2
 	  GLuint posvtx_cnt = 0;
 
-	  std::vector <glm::vec2> model_coords;
+	  std::vector <vector2D::vec2D> model_coords;
 
 	  GLuint vaoid = 0; // handle to VAO
 	  GLuint draw_cnt = 0; // added for tutorial 2
@@ -68,32 +73,33 @@ struct GLApp {
   };
 
   struct GLObject {
-	  glm::vec2 orientation{};														// orientation x is angle disp, orientation y is angle speed specified in degrees
-	  glm::vec2 scaling{};															// scaling parameters
-	  glm::vec2 modelCenterPos{};														// center of shape coordinates
+	  vector2D::vec2D orientation{};														// orientation x is angle disp, orientation y is angle speed specified in degrees
+	  vector2D::vec2D scaling{};															// scaling parameters
+	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
+	  vector2D::vec2D vel{};														// velocity
 
-	  glm::mat3 mdl_to_ndc_xform{}; // model to ndc transformation
-	  glm::mat3 mdl_to_world_xform{}; // model to world transformation
-	  glm::mat3 world_to_ndc_xform{}; // world to ndc transformation
+	  matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
+	  matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
+	  matrix3x3::mat3x3 world_to_ndc_xform{}; // world to ndc transformation
 
-	  glm::vec2 ndcposition{}; // translation vector coordinates
+	  vector2D::vec2D ndcposition{}; // translation vector coordinates
 
-	  std::vector <glm::vec2> ndc_coords;
+	  std::vector <vector2D::vec2D> ndc_coords;
 
 	  //added for physics testing
 	  bool overlap{ false };														// flag for overlap
 	  //added for physics testing (collision response)
-	  glm::mat3 worldToMdlXform{};
+	  //glm::mat3 worldToMdlXform{};
 
 	  std::map<std::string, GLApp::GLModel>::iterator mdl_ref{};
 	  std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 	  //added for physics testing
 	  glm::vec3 color{};
-	  glm::mat3 mdlXform{};															// model to world transformation
-	  glm::vec2 worldCenterPos{};
-	  std::vector<glm::vec2> worldVertices;												// vertices coordinates
-	  std::vector<glm::vec2> modelVertices;												// vertices coordinates
+	  matrix3x3::mat3x3 mdlXform{};															// model to world transformation
+	  vector2D::vec2D worldCenterPos{};
+	  std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
+	  std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
 	  // member functions that must be defined in glapp.cpp
 	  // function to initialize object's state
@@ -143,7 +149,6 @@ struct GLApp {
   };
   // define object of type Camera2D ...
   static Camera2D camera2d;
-
 
   static void init_models_cont(); // new in tutorial 3
   using VPSS = std::vector<std::pair<std::string, std::string>>;

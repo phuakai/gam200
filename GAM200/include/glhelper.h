@@ -49,7 +49,6 @@ struct GLHelper
   static std::string title;
   static GLFWwindow *ptr_window;
 
-  static GLboolean keystateP;
   static GLboolean keystateZ;  // Zoom
   static GLboolean keystateW;  // Move forward
   static GLboolean keystateS;  // Move backward
@@ -57,6 +56,11 @@ struct GLHelper
   static GLboolean keystateD;  // Rotate
   static GLboolean keystateV;  // View
   static GLboolean keystateC;  // Collision
+  static GLboolean keystateI;  // Player forward
+  static GLboolean keystateK;  // Player backward
+  static GLboolean keystateJ;  // Player left
+  static GLboolean keystateL;  // Player right
+  static GLboolean keystateP;  // Pause game
   static GLboolean mousestateLeft;
 };
 

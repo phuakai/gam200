@@ -24,7 +24,8 @@
     <ClCompile Include="src\glslshader.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mat3x3.cpp" />
-    <ClCompile Include="src\phsyics.cpp" />
+    <ClCompile Include="src\collision.cpp" />
+    <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\main.h" />
     <ClInclude Include="include\mat3x3.h" />
+    <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\vec2D.h" />
   </ItemGroup>

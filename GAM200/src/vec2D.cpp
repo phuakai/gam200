@@ -16,6 +16,7 @@ Technology is prohibited.
 #include "vec2D.h"
 #include "math.h"
 #include <algorithm>
+#include <iostream>
 
 namespace vector2D
 {
@@ -276,7 +277,7 @@ namespace vector2D
 	 /**************************************************************************/
 	vec2D maxPointsOfPolygonBoundingBox(std::vector<vec2D> polygonPoints)
 	{
-		vec2D maxPt{ FLT_MIN , FLT_MIN };
+		vec2D maxPt{ -FLT_MAX , -FLT_MAX };
 
 		for (size_t i{ 0 }; i < polygonPoints.size(); ++i)
 		{
@@ -291,7 +292,7 @@ namespace vector2D
 		This function finds the minimum value of a polygon
 	 */
 	 /**************************************************************************/
-	vec2D minPointsOfPolygon(std::vector<vec2D> polygonPoints)
+	vec2D minPointsOfPolygonBoundingBox(std::vector<vec2D> polygonPoints)
 	{
 		vec2D minPt{ FLT_MAX , FLT_MAX };
 

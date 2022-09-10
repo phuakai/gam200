@@ -30,10 +30,13 @@
     <ClCompile Include="src\mat3x3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\phsyics.cpp">
+    <ClCompile Include="src\collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\vec2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,10 +56,13 @@
     <ClInclude Include="include\mat3x3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\physics.h">
+    <ClInclude Include="include\collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vec2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
