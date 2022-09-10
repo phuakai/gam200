@@ -118,12 +118,12 @@ void GLApp::GLObject::draw() const
 
 	// bind VAO of this object's model
 	GLuint buffer;
-	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 6, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	glGetVertexArrayIndexediv(mdl_ref->second.vaoid, 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
 
 	glNamedBufferSubData(buffer, 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
 
-	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 4, 6);
+	glVertexArrayAttribBinding(mdl_ref->second.vaoid, 0, 0);
 
 	glBindVertexArray(mdl_ref->second.vaoid); // Rebind VAO
 
@@ -602,31 +602,50 @@ void GLApp::init_scene(std::string scene_filename)
 				}
 			}
 
-			glCreateBuffers(1, &vbo); // Creates a buffer named vbo (can replace vbo with an array if multiple buffers)
+			//glCreateBuffers(1, &vbo); // Creates a buffer named vbo (can replace vbo with an array if multiple buffers)
 
-			glNamedBufferStorage(vbo, sizeof(vector2D::vec2D) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
-			// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
-			// GL_DYNAMIC_STORAGE_BIT allows contents of the data to be updated after creation by calling glBufferSubData, 
-			// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
-			glCreateVertexArrays(1, &vao); // Creates a vertex array object (can replace vao with an array if multiple buffers)
+			//glNamedBufferStorage(vbo, sizeof(vector2D::vec2D) * pos_vtx.size(), pos_vtx.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
+			//// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
+			//// GL_DYNAMIC_STORAGE_BIT allows contents of the data to be updated after creation by calling glBufferSubData, 
+			//// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
+			//glCreateVertexArrays(1, &vao); // Creates a vertex array object (can replace vao with an array if multiple buffers)
 
-			glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
-			// When enabled, vertex attribute array will be accessed and used for rendering 
-			// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
-			glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(vector2D::vec2D)); // Binds a buffer to a vertex array object
-			// Name of vertex array object, index for vertex buffer object to bind to, name of buffer to be binded, offset of first element, stride/step (distance between elements of buffer)
+			//glEnableVertexArrayAttrib(vao, 4); // Enables the vertex array attrib for index 4 of vao
+			//// When enabled, vertex attribute array will be accessed and used for rendering 
+			//// when calls are made to vertex array commands such as glDrawArrays, glDrawElements, glDrawRangeElements, glMultiDrawElements, or glMultiDrawArrays.
+			//glVertexArrayVertexBuffer(vao, 6, vbo, 0, sizeof(vector2D::vec2D)); // Binds a buffer to a vertex array object
+			//// Name of vertex array object, index for vertex buffer object to bind to, name of buffer to be binded, offset of first element, stride/step (distance between elements of buffer)
 
-			glVertexArrayAttribFormat(vao, 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays
-			// Name of vertex array object, index of vertex array object being set, size (num of values per vertex that is stored in array), type of data,
-			// GL_TRUE = data should be normalized, GL_FALSE = data converted directly as fixed-point values, offset (distance between elements of buffer)
-			glVertexArrayAttribBinding(vao, 4, 6); // Associates a vertex attribute and a vertex buffer binding for a VAO
-			// Name of vertex array object, index of vertex attrib, index of vertex buffer binding index
+			//glVertexArrayAttribFormat(vao, 4, 2, GL_FLOAT, GL_FALSE, 0); // Specify the organisation of vertex arrays
+			//// Name of vertex array object, index of vertex array object being set, size (num of values per vertex that is stored in array), type of data,
+			//// GL_TRUE = data should be normalized, GL_FALSE = data converted directly as fixed-point values, offset (distance between elements of buffer)
+			//glVertexArrayAttribBinding(vao, 4, 6); // Associates a vertex attribute and a vertex buffer binding for a VAO
+			//// Name of vertex array object, index of vertex attrib, index of vertex buffer binding index
 
-			glCreateBuffers(1, &ebo); // Creates a buffer named ebo (can replace ebo with an array if multiple buffers)
-			glNamedBufferStorage(ebo, sizeof(GLushort) * primitive.size(), primitive.data(), GL_DYNAMIC_STORAGE_BIT);
-			glVertexArrayElementBuffer(vao, ebo); // Configures element array buffer binding of a vertex array object
-			// Name of vertex array object, name of buffer object used for element array buffer binding
-			glBindVertexArray(0); // Unbind vertex array object (0 is used to unbind)
+			//glCreateBuffers(1, &ebo); // Creates a buffer named ebo (can replace ebo with an array if multiple buffers)
+			//glNamedBufferStorage(ebo, sizeof(GLushort) * primitive.size(), primitive.data(), GL_DYNAMIC_STORAGE_BIT);
+			//glVertexArrayElementBuffer(vao, ebo); // Configures element array buffer binding of a vertex array object
+			//// Name of vertex array object, name of buffer object used for element array buffer binding
+			//glBindVertexArray(0); // Unbind vertex array object (0 is used to unbind)
+
+			vbo = Graphics::VBO::init();
+			Graphics::VBO::store(vbo, sizeof(vector2D::vec2D) * pos_vtx.size(), pos_vtx);
+
+			vao = Graphics::VAO::init();
+			Graphics::VAO::enableattrib(vao);
+
+			Graphics::VBO::bind(vao, vbo, sizeof(vector2D::vec2D));
+
+			Graphics::VAO::setattrib(vao);
+			Graphics::VAO::bindattrib(vao);
+
+			ebo = Graphics::EBO::init();
+			Graphics::EBO::store(ebo, sizeof(GLushort)* primitive.size(), primitive);
+
+			Graphics::EBO::bind(vao, ebo);
+
+			Graphics::VAO::unbind();
+
 
 			Model.vaoid = vao;
 			Model.primitive_cnt = primitive.size();

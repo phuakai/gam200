@@ -7,13 +7,13 @@ namespace Graphics
 	{
 		public:
 		
-			GLuint init(); // Create vao
-			void bind(GLuint vao); // Binds vao
-			void unbind(); // Unbinds vao
-			void enableattrib(GLuint vao); // Enable attrib
-			void bindattrib(GLuint vao); // Bind attrib
-			void setattrib(GLuint vao); // Set attrib
-			void del(); // Delete vao
+			static GLuint init(); // Create vao
+			static void bind(GLuint vao); // Binds vao
+			static void unbind(); // Unbinds vao
+			static void enableattrib(GLuint vao); // Enable attrib
+			static void bindattrib(GLuint vao); // Bind attrib
+			static void setattrib(GLuint vao); // Set attrib
+			static void del(); // Delete vao
 
 	};
 
@@ -21,23 +21,23 @@ namespace Graphics
 	{
 	public:
 
-		GLuint init(); // Create buffer
-		void bind(GLuint vao, GLuint vbo, GLsizei step); // Binds buffer
-		void unbind(); // Unbinds buffer
-		void store(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
-		void setdata(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
-		void del(); // Delete buffer
+		static GLuint init(); // Create buffer
+		static void bind(GLuint vao, GLuint vbo, GLsizei step); // Binds buffer
+		static void unbind(); // Unbinds buffer
+		static void store(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
+		static void setdata(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
+		static void del(); // Delete buffer
 	};
 
 	class EBO
 	{
 	public:
 
-		GLuint init(); // Create buffer
-		void bind(GLuint vao, GLuint ebo); // Binds buffer
-		void unbind(); // Unbinds buffer
-		void store(GLuint ebo, int size, std::vector <vector2D::vec2D> data);
-		void setdata(GLuint ebo, int size, std::vector <vector2D::vec2D> data);
-		void del(); // Delete buffer
+		static GLuint init(); // Create buffer
+		static void bind(GLuint vao, GLuint ebo); // Binds buffer
+		static void unbind(); // Unbinds buffer
+		static void store(GLuint ebo, int size, std::vector <GLushort> data);
+		static void setdata(GLuint ebo, int size, std::vector <GLushort> data);
+		static void del(); // Delete buffer
 	};
 }

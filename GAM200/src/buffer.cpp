@@ -89,7 +89,7 @@ GLuint Graphics::EBO::init()
 void Graphics::EBO::bind(GLuint vao, GLuint ebo)
 {
 	glVertexArrayElementBuffer(vao, ebo); // Configures element array buffer binding of a vertex array object
-			// Name of vertex array object, name of buffer object used for element array buffer binding
+	// Name of vertex array object, name of buffer object used for element array buffer binding
 }
 
 
@@ -98,7 +98,7 @@ void Graphics::EBO::unbind()
 	//glBindVertexArray(0);
 }
 
-void Graphics::EBO::store(GLuint ebo, int size, std::vector <vector2D::vec2D> data)
+void Graphics::EBO::store(GLuint ebo, int size, std::vector <GLushort> data)
 {
 	glNamedBufferStorage(ebo, size, data.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
 	// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
@@ -106,7 +106,7 @@ void Graphics::EBO::store(GLuint ebo, int size, std::vector <vector2D::vec2D> da
 	// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
 }
 
-void Graphics::EBO::setdata(GLuint ebo, int size, std::vector <vector2D::vec2D> data)
+void Graphics::EBO::setdata(GLuint ebo, int size, std::vector <GLushort> data)
 {
 	glNamedBufferSubData(ebo, 0, size, data.data()); // Set new buffer index with subdata
 }
