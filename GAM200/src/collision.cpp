@@ -131,19 +131,34 @@ namespace physics
 	*/
 	/**************************************************************************/
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
-	bool shapeOverlapStaticAABB(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2)
+	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
 	{
+		polygon1.bounddingBoxWorldVertices.resize(4);
+		polygon2.bounddingBoxWorldVertices.resize(4);
+		
 		// Compute min/max points
 		AABB poly1{ vector2D::minPointsOfPolygonBoundingBox(polygon1.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon1.worldVertices) };
 		AABB poly2{ vector2D::minPointsOfPolygonBoundingBox(polygon2.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon2.worldVertices) };
 
-		// Check for static collision detection between rectangles(before moving)
+		// Store bounding box for rendering
+		polygon1.bounddingBoxWorldVertices.emplace_back(poly1.min);
+		polygon1.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.max.x, poly1.min.y));
+		polygon1.bounddingBoxWorldVertices.emplace_back(poly1.max);
+		polygon1.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.min.x, poly1.max.y));
+
+		polygon2.bounddingBoxWorldVertices.emplace_back(poly2.min);
+		polygon2.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.max.x, poly2.min.y));
+		polygon2.bounddingBoxWorldVertices.emplace_back(poly2.max);
+		polygon2.bounddingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.min.x, poly2.max.y));
+
+		// Check for static collision detection between rectangles
 		if (poly1.min.x <= poly2.max.x && poly1.max.x >= poly2.min.x &&
 			poly1.min.y <= poly2.max.y && poly1.max.y >= poly2.min.y)
 		{
 			return true;
 		}
 		return false;
+
 		//AABB poly1{ polygon1.worldVertices[0], polygon1.worldVertices[2] };
 		//AABB poly2{ polygon2.worldVertices[0], polygon2.worldVertices[2] };
 

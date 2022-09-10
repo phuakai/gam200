@@ -95,7 +95,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
 	{
 		worldVertices.emplace_back(mdl_to_world_xform * mdl_ref->second.model_coords[i]);
-		ndc_coords.emplace_back(world_to_ndc_xform * mdl_ref->second.model_coords[i]);
+		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
 	}
 }
 
@@ -332,7 +332,6 @@ void GLApp::draw()
 			{
 				obj->second.draw();
 			}
-
 			break;
 		case 1: //collisionType::SAT
 			if (obj->first != "Camera")
@@ -526,7 +525,6 @@ void GLApp::init_scene(std::string scene_filename)
 		std::istringstream velocity{ line };
 		velocity >> Object.vel.x >> Object.vel.y;
 		Object.overlap = false;
-
 
 		/*
 		add code to do this:

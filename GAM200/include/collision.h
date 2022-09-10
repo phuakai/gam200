@@ -92,7 +92,7 @@ namespace physics
 											 vector2D::vec2D& ptEnd,						// Final position of the circle after reflection - output
 											 vector2D::vec2D& reflected);					// Normalized reflection vector direction - output
 
-	bool shapeOverlapStaticAABB(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2);
+	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
 	bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
 		const AABB& aabb2, const vector2D::vec2D& vel2);

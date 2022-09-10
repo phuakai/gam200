@@ -74,10 +74,10 @@ struct GLApp {
   };
 
   struct GLObject {
-	  vector2D::vec2D orientation{};														// orientation x is angle disp, orientation y is angle speed specified in degrees
-	  vector2D::vec2D scaling{};															// scaling parameters
+	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
+	  vector2D::vec2D scaling{};														// scaling parameters
 	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
-	  vector2D::vec2D vel{};														// velocity
+	  vector2D::vec2D vel{};															// velocity
 
 	  matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 	  matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -99,6 +99,7 @@ struct GLApp {
 	  glm::vec3 color{};
 	  matrix3x3::mat3x3 mdlXform{};															// model to world transformation
 	  vector2D::vec2D worldCenterPos{};
+	  std::vector<vector2D::vec2D> bounddingBoxWorldVertices;									
 	  std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
 	  std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
