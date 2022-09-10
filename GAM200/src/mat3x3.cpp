@@ -15,6 +15,7 @@ Technology is prohibited.
 
 #include "mat3x3.h"
 #include "math.h"
+#include <iostream>
 
 namespace matrix3x3
 {

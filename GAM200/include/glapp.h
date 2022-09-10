@@ -56,6 +56,7 @@ struct GLApp {
   static bool stepByStepCollision;
   static std::unordered_map<collisionType, std::string> collisionInfo;
 
+  
 
   struct GLModel {
 	  GLenum primitive_type = GL_TRIANGLES; // which OpenGL primitive to be rendered?
@@ -112,45 +113,9 @@ struct GLApp {
 	  void update(GLdouble delta_time);
   };
 
-  struct GLViewport {
-	  GLint x, y;
-	  GLsizei width, height;
-  };
 
-  struct Camera2D {
-	  GLObject* pgo{}; // pointer to game object that embeds camera
-	  glm::vec2 right{};
-	  glm::vec2 up{};
-	  glm::mat3 view_xform{};
-	  glm::mat3 camwin_to_ndc_xform{};
-	  glm::mat3 world_to_ndc_xform{};
 
-	  GLint height{ 1000 };
-	  GLfloat ar{};
-
-	  // window change parameters ...
-	  GLint min_height{ 500 }, max_height{ 2000 };
-	  // height is increasing if 1 and decreasing if -1
-	  GLint height_chg_dir{ 1 };
-	  // increments by which window height is changed per Z key press
-	  GLint height_chg_val{ 5 };
-	  // camera's speed when button U is pressed
-	  GLfloat linear_speed{ 2.f };
-	  // keyboard button press flags
-	  GLboolean camtype_flag{ GL_FALSE }; // button V
-	  GLboolean zoom_flag{ GL_FALSE }; // button Z
-	  GLboolean left_turn_flag{ GL_FALSE }; // button H
-	  GLboolean right_turn_flag{ GL_FALSE }; // button K
-	  GLboolean move_flag{ GL_FALSE }; // button U
-
-	  // you can implement these functions as you wish ...
-	  void init(GLFWwindow*, GLObject* ptr);
-	  void update(GLFWwindow*);
-  };
-  // define object of type Camera2D ...
-  static Camera2D camera2d;
-
-  static void init_models_cont(); // new in tutorial 3
+  //static void init_models_cont(); // new in tutorial 3
   using VPSS = std::vector<std::pair<std::string, std::string>>;
 
   // function to insert shader program into container GLApp::shdrpgms ...
@@ -173,7 +138,6 @@ struct GLApp {
 
 
   
-  static std::vector<GLViewport> vps; // container for viewports
 };
 
 #endif /* GLAPP_H */
