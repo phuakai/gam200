@@ -10,9 +10,9 @@ namespace Graphics
 			static GLuint init(); // Create vao
 			static void bind(GLuint vao); // Binds vao
 			static void unbind(); // Unbinds vao
-			static void enableattrib(GLuint vao); // Enable attrib
-			static void bindattrib(GLuint vao); // Bind attrib
-			static void setattrib(GLuint vao); // Set attrib
+			static void enableattrib(GLuint vao, int attrib); // Enable attrib
+			static void bindattrib(GLuint vao, int attribindex, int bufferindex); // Bind attrib
+			static void setattrib(GLuint vao, int index); // Set attrib
 			static void del(); // Delete vao
 
 	};
@@ -22,10 +22,10 @@ namespace Graphics
 	public:
 
 		static GLuint init(); // Create buffer
-		static void bind(GLuint vao, GLuint vbo, GLsizei step); // Binds buffer
+		static void bind(GLuint vao, int index, GLuint vbo, int offset, GLsizei step); // Binds buffer
 		static void unbind(); // Unbinds buffer
 		static void store(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
-		static void setdata(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
+		static void setdata(GLuint vbo, int offset, int size, std::vector <vector2D::vec2D> data);
 		static void del(); // Delete buffer
 	};
 

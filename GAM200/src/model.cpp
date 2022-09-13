@@ -64,14 +64,26 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 
 	vbo = Graphics::VBO::init();
 	Graphics::VBO::store(vbo, sizeof(vector2D::vec2D) * tempmodel.pos_vtx.size(), tempmodel.pos_vtx);
+	std::vector<vector2D::Vec2> tex_coord
+	{
+		vector2D::Vec2(1.f, 0.f), vector2D::Vec2(1.f, 1.f),
+		vector2D::Vec2(0.f, 1.f), vector2D::Vec2(0.f, 0.f)
+	};
+	Graphics::VBO::setdata(vbo, sizeof(vector2D::Vec2) * tempmodel.pos_vtx.size(), sizeof(vector2D::Vec2) * tex_coord.size(), tex_coord);
 
 	vao = Graphics::VAO::init();
-	Graphics::VAO::enableattrib(vao);
+	Graphics::VAO::enableattrib(vao, 0); // Attrib 0
 
-	Graphics::VBO::bind(vao, vbo, sizeof(vector2D::vec2D));
+	Graphics::VBO::bind(vao, 0, vbo, 0, sizeof(vector2D::vec2D)); // Set buffer binding point 0
 
-	Graphics::VAO::setattrib(vao);
-	Graphics::VAO::bindattrib(vao);
+	Graphics::VAO::setattrib(vao, 0); // Attrib format
+	Graphics::VAO::bindattrib(vao, 0, 0); // Bind attrib
+
+
+	Graphics::VAO::enableattrib(vao, 1); // Attrib 1
+	Graphics::VBO::bind(vao, 1, vbo, sizeof(vector2D::vec2D) * tempmodel.pos_vtx.size(), sizeof(vector2D::vec2D)); // Set buffer binding point 1
+	Graphics::VAO::setattrib(vao, 1); // Attrib format 1
+	Graphics::VAO::bindattrib(vao, 1, 1); // Bind attrib 1
 
 	ebo = Graphics::EBO::init();
 	Graphics::EBO::store(ebo, sizeof(GLushort) * tempmodel.primitive.size(), tempmodel.primitive);

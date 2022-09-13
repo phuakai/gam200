@@ -32,6 +32,7 @@ to OpenGL implementations.
 #include <collisiondebug.h>
 #include <buffer.h>
 #include <model.h>
+#include <texture.h>
 #include <random>
 
 /*                                                   objects with file scope
@@ -43,6 +44,9 @@ std::map<std::string, Graphics::Model> models; // define models
 std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
+
+Graphics::Texture texobj;
+
 short GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
@@ -132,12 +136,19 @@ void GLApp::GLObject::draw() const
 
 	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
 
+	std::cout << "Tex obj id " << texobj.getTexid() << std::endl;
+	glBindTextureUnit(6, texobj.getTexid());
+
 	// copy object's color to fragment shader uniform variable uColor
-	shd_ref->second.SetUniform("uColor", color);
+	//shd_ref->second.SetUniform("uColor", color);
 
 	// copy object's model-to-NDC matrix to vertex shader's
 	// uniform variable uModelToNDC
 	//shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
+	//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
+	GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
+
+	glUniform1i(tex_loc, 6);
 
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
@@ -212,6 +223,7 @@ void GLApp::update()
 
 	if (GLHelper::keystateP)
 	{
+		Graphics::Texture::loadTexture("../images/factory.png", texobj);
 		stepByStepCollision = !stepByStepCollision;
 		GLHelper::keystateP = false;
 	}
@@ -224,26 +236,31 @@ void GLApp::update()
 	}
 	if (GLHelper::keystateQ)
 	{
-		std::string tmpobjname = "Banana";
-		tmpobjcounter++;
-		std::stringstream tmpstream;
-		tmpstream << tmpobjname << tmpobjcounter;
-		std::string finalobjname = tmpstream.str();
-		std::cout << "Final obj name " << finalobjname << std::endl;
-		//using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
-		unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-		// create default engine as source of randomness
-		std::default_random_engine generator(seed);
+		for (int j = 0; j < 50; j++)
+		{
 
-		std::uniform_int_distribution<int> posrandom(19000, 20000);
-		int randx = posrandom(generator);
-		int randy = posrandom(generator);
 
-		std::uniform_int_distribution<int> sizerandom(50, 150);
-		float randwidth = (float)sizerandom(generator);
-		float randheight = (float)sizerandom(generator);
-		//std::cout << "Values " << randx << ", " << randy << std::endl;
-		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+			std::string tmpobjname = "Banana";
+			tmpobjcounter++;
+			std::stringstream tmpstream;
+			tmpstream << tmpobjname << tmpobjcounter;
+			std::string finalobjname = tmpstream.str();
+			std::cout << "Final obj name " << finalobjname << std::endl;
+			//using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
+			unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+			// create default engine as source of randomness
+			std::default_random_engine generator(seed);
+
+			std::uniform_int_distribution<int> posrandom(19000, 20000);
+			int randx = posrandom(generator);
+			int randy = posrandom(generator);
+
+			std::uniform_int_distribution<int> sizerandom(50, 150);
+			float randwidth = (float)sizerandom(generator);
+			float randheight = (float)sizerandom(generator);
+			//std::cout << "Values " << randx << ", " << randy << std::endl;
+			GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+		}
 		GLHelper::keystateQ = false;
 	}
 	// next, iterate through each element of container objects

@@ -6,6 +6,7 @@
 #include <mat3x3.h>
 
 namespace Graphics {
+
 	struct GLViewport 
 	{
 		GLint x, y;

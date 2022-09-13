@@ -10,10 +10,14 @@ fragment shader. That is why every fragment of the triangle primitive
 rendered by an object has the same color
 */
 
-uniform vec3 uColor;
+//uniform vec3 uColor;
 
+layout (location=0) in vec2 vTexturecoord;
 layout (location=0) out vec4 fFragColor;
 
+uniform sampler2D ourTexture;
+
 void main () {
-	fFragColor = vec4(uColor, 1.0);
+	//fFragColor = vec4(uColor, 1.0);
+	fFragColor = texture(ourTexture, vTexturecoord);
 }
