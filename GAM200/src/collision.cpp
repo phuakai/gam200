@@ -34,7 +34,7 @@ namespace physics
 
 	/******************************************************************************/
 	/*!
-		Checks for collision between a circule and a line segment
+		Checks for collision between a circle and a line segment
 	*/
 	/******************************************************************************/
 	int CollisionIntersection_CircleLineSegment(const Circle& circle, //start pos, rad
@@ -187,79 +187,37 @@ namespace physics
 
 	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
 		//const AABB& aabb2, const vector2D::vec2D& vel2)
-	void shapeOverlapDynamicAABB(GLApp::GLObject& polygon1, GLApp::GLObject& polygon2)
+	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon)
 	{
-		/*
-		The steps are:
-		Step 1: Check for static collision detection between rectangles (before moving).
-					If the check returns no overlap you continue with the following next steps (dynamics).
-					Otherwise you return collision true
-
-		Step 2: Initialize and calculate the new velocity of Vb
-				tFirst = 0
-				tLast = dt
-		*/
-
-		if (shapeOverlapStaticAABB(polygon1, polygon2)) //polygon1 is pushed back
+		if (shapeOverlapStaticAABB(staticPolygon, dynamicPolygon)) //polygon1 is pushed back
 		{
 			float tFirst(0), tLast(GLHelper::delta_time);
-			vector2D::vec2D relativeVel{ polygon1.vel.x - polygon2.vel.x, polygon1.vel.y - polygon2.vel.y };
+			vector2D::vec2D relativeVel{ staticPolygon.vel.x - dynamicPolygon.vel.x, staticPolygon.vel.y - dynamicPolygon.vel.y };
 
 			// Compute min/max points
-			AABB poly1{ vector2D::minPointsOfPolygonBoundingBox(polygon1.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon1.worldVertices) };
-			AABB poly2{ vector2D::minPointsOfPolygonBoundingBox(polygon2.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon2.worldVertices) };
+			AABB staticPoly{ vector2D::minPointsOfPolygonBoundingBox(staticPolygon.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(staticPolygon.worldVertices) };
+			AABB dynamicPoly{ vector2D::minPointsOfPolygonBoundingBox(dynamicPolygon.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(dynamicPolygon.worldVertices) };
 
+			// Check location of dynamicPolygon wrt staticPolygon
+			//if (dynamicPoly.max.x > dynamicPoly.min.x) // dymanic is on left side of static
 
+			// Find shorter length
+			float lengthOfOverlap = (staticPoly.max.x - dynamicPoly.min.x) < (dynamicPoly.max.x - staticPoly.min.x) ? staticPoly.max.x - dynamicPoly.min.x : dynamicPoly.max.x - staticPoly.min.x;
 
-			////Step 3: Working with one dimension(x - axis).				
-			//if (relativeVel.x < 0)
-			//{
-			//	//case 4 - revisited
-			//	if (poly1.max.x < poly2.min.x) // case 4
-			//	{
-			//		tFirst = std::max(((poly1.max.x - poly2.min.x) / relativeVel.x), tFirst);
-			//	}
-			//	if (poly1.min.x < poly2.max.x)
-			//	{
-			//		tLast = std::min(((poly1.min.x - poly2.max.x) / relativeVel.x), tLast);
-			//	}
-			//}
-			//if (relativeVel.x > 0)
-			//{
-			//	//case 2 - revisited
-			//	if (poly1.min.x > poly2.max.x) // case 2
-			//	{
-			//		tFirst = std::max((poly1.min.x - poly2.max.x) / relativeVel.x, tFirst);
-			//	}
-			//	if (poly1.max.x > poly2.min.x)
-			//	{
-			//		tLast = std::min((poly1.max.x - poly2.min.x) / relativeVel.x, tLast);
-			//	}
-			//}
+			// Length btn both polygon along x-axis
+			float distanceBtnCenters{ staticPolygon.modelCenterPos.x - dynamicPolygon.modelCenterPos.x };
 
-			////Step 4: Repeat step 3 on the y - axis
-			//if (relativeVel.y < 0)
-			//{
-			//	if (poly1.max.y < poly2.min.y)
-			//	{
-			//		tFirst = std::max(tFirst, (poly1.max.y - poly2.min.y) / relativeVel.y);
-			//	}
-			//	if (poly1.min.y < poly2.max.y)
-			//	{
-			//		tLast = std::min(tLast, (poly1.min.y - poly2.max.y) / relativeVel.y);
-			//	}
-			//}
-			//if (relativeVel.y > 0)
-			//{
-			//	if (poly1.min.y > poly2.max.y)
-			//	{
-			//		tFirst = std::max(tFirst, (poly1.min.y - poly2.max.y) / relativeVel.y);
-			//	}
-			//	if (poly1.max.y > poly2.min.y)
-			//	{
-			//		tLast = std::min(tLast, (poly1.max.y - poly2.min.y) / relativeVel.y);
-			//	}
-			//}
+			// Half width of polygon1 and polygon 2
+			float poly1HalfWidth{ staticPoly.max.x - staticPolygon.modelCenterPos.x }, poly2HalfWidth{ dynamicPoly.max.x - dynamicPolygon.modelCenterPos.x };
+
+			// Vector btn the center of polygon1 and polygon2
+			vector2D::vec2D directionalVec{ staticPolygon.modelCenterPos - dynamicPolygon.modelCenterPos };
+
+			// Interpolate and negate the vector
+			vector2D::vec2D reverseDirectionalVec { -directionalVec * (lengthOfOverlap/distanceBtnCenters)};
+			std::cout << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
+			// Add vector to modelcenterpos
+			dynamicPolygon.modelCenterPos += reverseDirectionalVec;
 
 		}
 	}
@@ -448,4 +406,100 @@ namespace physics
 		}
 		return false;
 	}
+
+	///******************************************************************************/
+	///*!
+	//	Check for both circle & pillar and circle & circle collision
+	// */
+	// /******************************************************************************/
+	//int CollisionIntersection_CircleCircle(const Circle& circleA,		//ball
+	//										const vector2D::vec2D& velA,  //ball vel
+	//										const Circle& circleB,		//pillar
+	//										const  vector2D::vec2D& velB,  //pillar vel
+	//										vector2D::vec2D & interPtA,	//ball's intersection pt
+	//										vector2D::vec2D & interPtB,	//pillar's intersection pt
+	//										float& interTime)			//intersection time -> B(ti)
+	//{
+	//	// make circleB static
+	//	float m{ 0.f };
+	//	vector2D::vec2D velATmp{ velA };
+	//	vector2D::Vector2DNormalize(velATmp, velA);
+	//	m = vector2D::Vector2DDotProduct(circleB.m_center - circleA.m_center, velATmp);
+
+	//	float radiusSum{ circleA.m_radius + circleB.m_radius };
+	//	float distanceBtnCircles{ Vector2DLength(circleA.m_center - circleB.m_center) };
+	//	float nSquare = distanceBtnCircles * distanceBtnCircles - m * m;
+
+	//	if (m < 0 && distanceBtnCircles > radiusSum)
+	//	{
+	//		return 0;
+	//	}
+	//	else if (nSquare > radiusSum * radiusSum)
+	//	{
+	//		return 0;
+	//	}
+	//	else
+	//	{
+	//		float sSquare{ radiusSum * radiusSum - nSquare };
+	//		float interTimeTmp0{ 0.f }, interTimeTmp1{ 0.f };
+	//		interTimeTmp0 = (m - sqrt(sSquare)) / Vector2DLength(velA);
+	//		interTimeTmp1 = (m + sqrt(sSquare)) / Vector2DLength(velA);
+	//		interTime = std::min(interTimeTmp0, interTimeTmp1);
+	//		if (interTime >= 0 && interTime <= 1)
+	//		{
+	//			interPtA = circleA.m_center + velA * interTime;
+	//			return 1;
+	//		}
+	//	}
+	//	return 0;
+	//}
+
+	///******************************************************************************/
+	///*!
+	//	Computes the new circle position if there is collision between the circle
+	//	and the pillar
+	// */
+	// /******************************************************************************/
+	//void CollisionResponse_CirclePillar(const vector2D::vec2D & normal,
+	//									const float& interTime,
+	//									const vector2D::vec2D& ptStart,
+	//									const vector2D::vec2D& ptInter,
+	//									vector2D::vec2D& ptEnd,
+	//									vector2D::vec2D& reflectedVectorNormalized)
+	//{
+	//	reflectedVectorNormalized = 2 * (vector2D::Vector2DDotProduct(ptStart - ptInter, normal)) * normal - (ptStart - ptInter);
+	//	vector2D::Vector2DNormalize(reflectedVectorNormalized, reflectedVectorNormalized);
+	//	ptEnd = ptInter + vector2D::Vector2DLength(ptEnd - ptStart) * reflectedVectorNormalized * (1 - interTime);
+	//}
+
+	///******************************************************************************/
+	///*!
+
+	//*/
+	// /******************************************************************************/
+	//void CollisionResponse_CircleCircle(vector2D::vec2D & normal,
+	//									const float interTime,
+	//									vector2D::vec2D & velA,
+	//									const float& massA,
+	//									vector2D::vec2D & interPtA,
+	//									vector2D::vec2D & velB,
+	//									const float& massB,
+	//									vector2D::vec2D & interPtB,
+	//									vector2D::vec2D & reflectedVectorA,
+	//									vector2D::vec2D & ptEndA,
+	//									vector2D::vec2D & reflectedVectorB,
+	//									vector2D::vec2D & ptEndB)
+	//{
+	//	float tmpVecA{ vector2D::Vector2DDotProduct(velA, normal) };
+	//	float tmpVecB{ vector2D::Vector2DDotProduct(velB, normal) };
+
+	//	reflectedVectorA = velA - (2 * (tmpVecA - tmpVecB) / (massA + massB)) * massB * normal;
+
+	//	ptEndA = interPtA + (1 - interTime) * reflectedVectorA;
+
+	//	reflectedVectorB = velB + (2 * (tmpVecA - tmpVecB) / (massA + massB)) * massA * normal;
+
+	//	ptEndB = interPtB + (1 - interTime) * reflectedVectorB;
+	//}
+
 }

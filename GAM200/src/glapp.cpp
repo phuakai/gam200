@@ -262,7 +262,7 @@ void GLApp::update()
 				}
 				break;
 			case 5: //collisionType::AABBDYNAMIC
-				physics::shapeOverlapDynamicAABB(objects["Camera"], obj->second);
+				physics::shapeOverlapDynamicAABB(obj->second, objects["Camera"]);
 				break;
 			default:
 				break;
