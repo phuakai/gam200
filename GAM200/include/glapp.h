@@ -29,6 +29,7 @@ and transformations (in later labs).
 #include <unordered_map>
 #include <vec2D.h>
 #include <mat3x3.h>
+#include <model.h>
 
 struct GLApp {
 
@@ -56,22 +57,8 @@ struct GLApp {
   static short currentCollision;
   static bool stepByStepCollision;
   static std::unordered_map<collisionType, std::string> collisionInfo;
-  
 
-  struct GLModel {
-	  GLenum primitive_type = GL_TRIANGLES; // which OpenGL primitive to be rendered?
-	  GLuint primitive_cnt = 0; // added for tutorial 2
-	  GLuint posvtx_cnt = 0;
-
-	  std::vector <vector2D::vec2D> model_coords;
-
-	  GLuint vaoid = 0; // handle to VAO
-	  GLuint draw_cnt = 0; // added for tutorial 2
-
-	  // you could add member functions for convenience if you so wish ...
-	  //void init(); // read mesh data from file ...
-	  //void release(); // return buffers back to GPU ...
-  };
+ 
 
   struct GLObject {
 	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
@@ -94,7 +81,7 @@ struct GLApp {
 	  //added for physics testing (collision response)
 	  //glm::mat3 worldToMdlXform{};
 
-	  std::map<std::string, GLApp::GLModel>::iterator mdl_ref{};
+	  std::map<std::string, Graphics::Model>::iterator mdl_ref{};
 	  std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 	  //added for physics testing
@@ -114,6 +101,8 @@ struct GLApp {
 	  void draw() const;
 	  // function to update the object's model transformation matrix
 	  void update(GLdouble delta_time);
+
+	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos); // Temp
   };
 
 
@@ -128,7 +117,7 @@ struct GLApp {
 
   //static std::vector<GLApp::GLModel> models; // removed
   // added for tutorial 4: repository of models
-  static std::map<std::string, GLModel> models; // singleton
+  //static std::map<std::string, Graphics::Model> models; // singleton
 
   
   //static std::list<GLApp::GLObject> objects; // from tutorial 3

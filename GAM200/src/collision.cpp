@@ -133,6 +133,9 @@ namespace physics
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
 	{
+		//polygon1.boundingBoxWorldVertices.resize(4);
+		//polygon2.boundingBoxWorldVertices.resize(4);
+
 		polygon1.boundingBoxWorldVertices.clear();
 		polygon2.boundingBoxWorldVertices.clear();
 		
@@ -150,6 +153,13 @@ namespace physics
 		polygon2.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.max.x, poly2.min.y));
 		polygon2.boundingBoxWorldVertices.emplace_back(poly2.max);
 		polygon2.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.min.x, poly2.max.y));
+
+		//std::cout << "Collision Vertice size " << polygon2.boundingBoxWorldVertices.size() << std::endl;
+
+		//for (int i = 0; i < polygon2.boundingBoxWorldVertices.size(); i++)
+		//{
+		//	std::cout << "Collision " << polygon2.boundingBoxWorldVertices[i].x << ", " << polygon2.boundingBoxWorldVertices[i].y << std::endl;
+		//}
 
 		// Check for static collision detection between rectangles
 		if (poly1.min.x <= poly2.max.x && poly1.max.x >= poly2.min.x &&

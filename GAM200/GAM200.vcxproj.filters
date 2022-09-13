@@ -48,7 +48,13 @@
     <ClCompile Include="src\physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vec3D.cpp">
+    <ClCompile Include="src\collisiondebug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,7 +92,13 @@
     <ClInclude Include="include\physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\vec3D.h">
+    <ClInclude Include="include\collisiondebug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
