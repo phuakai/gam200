@@ -47,6 +47,12 @@ short GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
 int tmpobjcounter{};
+
+std::vector<Unit> playerList;
+std::vector<Unit> enemyList;
+
+extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
+
 /*  _________________________________________________________________________*/
 /*! GLObject::update
 
@@ -122,11 +128,11 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	GLuint buffer;
-	glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	//GLuint buffer;
+	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
 
-	glNamedBufferSubData(buffer, 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
+	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
 
 	glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
 
@@ -174,7 +180,8 @@ void GLApp::init()
 	// GLApp::models, store shader programs of type GLSLShader in
 	// container GLApp::shdrpgms, and store repositories of objects of
 	// type GLObject in container GLApp::objects
-	GLApp::init_scene("../scenes/gam200.scn");
+	//GLApp::init_scene("../scenes/gam200.scn");
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(-19300, -19750), glm::vec3(0, 0, 0));
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -187,6 +194,84 @@ void GLApp::init()
 	collisionInfo[collisionType::DIAG] = "DIAG";
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
+
+	int counter = 1;
+	vector2D::vec2D startingPoint{ -19300 - 500 + 1000 / MAX_GRID_X / 2, -19750 - 500 + 1000 / MAX_GRID_Y / 2 };
+
+	Unit player1;
+	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
+	player1.position = vector2D::vec2D(-19700, -19800);
+	player1.direction = vector2D::vec2D(10, 10);
+	player1.unitName = "player1";
+	playerList.push_back(player1);
+
+	for (int i = 0; i < playerList.size(); ++i)
+	{
+		GLApp::GLObject::gimmeObject("square", playerList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
+	}
+
+	// objects creation
+	Unit enemy;
+	enemy.position = vector2D::vec2D(-19300, -19750);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy1";
+	enemyList.push_back(enemy);
+	enemy.position = vector2D::vec2D(-18900, -19350);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy2";
+	enemyList.push_back(enemy);
+	enemy.position = vector2D::vec2D(-19500, -19350);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy3";
+	enemyList.push_back(enemy);
+	enemy.position = vector2D::vec2D(-19134, -19420);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy4";
+	enemyList.push_back(enemy);
+	enemy.position = vector2D::vec2D(-19000, -19750);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy5";
+	enemyList.push_back(enemy);
+	enemy.position = vector2D::vec2D(-19100, -19842);
+	enemy.direction = vector2D::vec2D(10, 10);
+	enemy.unitName = "enemy6";
+	enemyList.push_back(enemy);
+
+	for (int i = 0; i < enemyList.size(); ++i)
+	{
+		enemyList[i].target = &playerList[0];
+		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+	}
+
+	Node endingPoint;
+	endingPoint.position = (playerList[0].position - vector2D::vec2D(-19800, -20250)) / (1000 / MAX_GRID_X);
+	std::cout << endingPoint.position.x << "\t" << endingPoint.position.y << std::endl;
+
+	std::vector<Node> walls;
+	Node temp;
+	temp.position = vector2D::vec2D(10, 11);
+	walls.push_back(temp);
+	temp.position = vector2D::vec2D(10, 12);
+	walls.push_back(temp);
+
+	generateDijkstraCost(endingPoint, walls);
+	generateFlowField(endingPoint);
+	enemyList[5].Print();
+
+	for (int i = 0; i < MAX_GRID_Y; ++i)
+	{
+		for (int j = 0; j < MAX_GRID_X; ++j)
+		{
+			// wall
+			if (dijkstraField[i][j] == WALL)
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(0.5, 0.5, 0.5));
+			else
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(1, 1, 1));
+
+			++counter;
+		}
+	}
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(-19300, -19750), glm::vec3(0, 0, 0));
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
@@ -243,7 +328,7 @@ void GLApp::update()
 		float randwidth = (float)sizerandom(generator);
 		float randheight = (float)sizerandom(generator);
 		//std::cout << "Values " << randx << ", " << randy << std::endl;
-		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), glm::vec3(0, 0, 0));
 		GLHelper::keystateQ = false;
 	}
 	// next, iterate through each element of container objects
@@ -257,12 +342,6 @@ void GLApp::update()
 		if (obj->first != "Camera")
 		{
 			obj->second.update(GLHelper::delta_time);
-			//update phsyics according to input
-			if (test)
-			{
-				test = false;
-				movement(obj->second, objects["Camera"], stepByStepCollision);
-			}
 
 			//check for physics collision after update
 			switch (currentCollision)
@@ -308,14 +387,26 @@ void GLApp::update()
 
 				std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
 
-				obj->second.modelCenterPos.x = (float)mousePosx;
-				obj->second.modelCenterPos.y = (float)mousePosy;
+				//obj->second.modelCenterPos.x = (float)mousePosx;
+				//obj->second.modelCenterPos.y = (float)mousePosy;
 			}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
 			{
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
+
+		// movement
+		for (int i = 0; i < enemyList.size(); ++i)
+		{
+			// found object
+			if (enemyList[i].unitName == obj->first)
+			{
+				enemyList[i].Move();
+				obj->second.modelCenterPos = enemyList[i].position;
+			}
+		}
+
 	}
 
 	
@@ -336,7 +427,6 @@ void GLApp::draw()
 {
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
-
 
 	std::stringstream title;
 	title << std::fixed;
@@ -430,7 +520,6 @@ void GLApp::draw()
 		}
 	}
 
-	objects["Camera"].draw();
 }
 
 /*  _________________________________________________________________________*/
@@ -480,19 +569,14 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
 }
 
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos)
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, glm::vec3 colour)
 {
 	GLObject tmpObj;
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
 	std::default_random_engine generator(seed);
 
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
-
-	float randr = colour(generator);
-	float randg = colour(generator);
-	float randb = colour(generator);
-	tmpObj.color = glm::vec3(randr, randg, randb);
+	tmpObj.color = colour;
 	tmpObj.scaling = scale;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;

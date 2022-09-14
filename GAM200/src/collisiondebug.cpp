@@ -23,7 +23,7 @@ void collisionDebug(GLApp::GLObject& object)
 		//object.worldVertices.emplace_back(object.boundingBoxWorldVertices[i]);
 		//object.ndc_coords.emplace_back(newndc);
 	}
-	GLApp::GLObject::gimmeObject("square", "test", vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y));
+	GLApp::GLObject::gimmeObject("square", "test", vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), glm::vec3(0, 0, 0));
 	//std::cout << "New additions " << object.boundingBoxWorldVertices.size() << std::endl;
 	//std::cout << "Matrix " << std::endl
 	//	<< tmp.m[0] << ", " << tmp.m[1] << ", " << tmp.m[2] << std::endl
