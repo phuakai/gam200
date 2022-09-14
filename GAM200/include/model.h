@@ -10,6 +10,10 @@
 
 namespace Graphics
 {
+	struct vertexData {
+		vector2D::vec2D posVtx;
+		vector2D::vec2D txtVtx;
+	};
 	class Model
 	{
 	public:

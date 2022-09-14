@@ -1,4 +1,5 @@
 #include <glhelper.h>
+#include <model.h>
 #include <vec2D.h>
 
 namespace Graphics
@@ -24,7 +25,7 @@ namespace Graphics
 		static GLuint init(); // Create buffer
 		static void bind(GLuint vao, int index, GLuint vbo, int offset, GLsizei step); // Binds buffer
 		static void unbind(); // Unbinds buffer
-		static void store(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
+		static void store(GLuint vbo, int size, std::vector <Graphics::vertexData> data);
 		static void setdata(GLuint vbo, int offset, int size, std::vector <vector2D::vec2D> data);
 		static void del(); // Delete buffer
 	};

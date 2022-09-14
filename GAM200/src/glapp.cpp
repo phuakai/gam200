@@ -127,34 +127,57 @@ void GLApp::GLObject::draw() const
 
 	// bind VAO of this object's model
 	GLuint buffer;
-	glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-
-
-	glNamedBufferSubData(buffer, 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
-
-	glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
-
 	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
+	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	std::vector<vector2D::Vec2> tex_coord
+	{
+		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f),
+		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f)
+	};
+	std::vector<Graphics::vertexData> vertexData;
+	for (int i = 0; i < ndc_coords.size(); ++i)
+	{
+		Graphics::vertexData tmpVtxData;
+		tmpVtxData.posVtx = ndc_coords[i];
+		tmpVtxData.txtVtx = tex_coord[i];
+		vertexData.emplace_back(tmpVtxData);
+	}
+	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
 
-	std::cout << "Tex obj id " << texobj.getTexid() << std::endl;
-	glBindTextureUnit(6, texobj.getTexid());
+	//glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
+
+
+	glBindTextureUnit(0, (texobj.getTexid()));
+
+
+	//std::cout << "Tex obj id " << texobj.getTexid() << std::endl;
+	
 
 	// copy object's color to fragment shader uniform variable uColor
 	//shd_ref->second.SetUniform("uColor", color);
 
 	// copy object's model-to-NDC matrix to vertex shader's
 	// uniform variable uModelToNDC
-	//shd_ref->second.SetUniform("uModel_to_NDC", mdl_to_ndc_xform);
+	glm::mat3 glm_mdl_to_ndc_xform
+	{
+		mdl_to_ndc_xform.m[0], mdl_to_ndc_xform.m[1], mdl_to_ndc_xform.m[2],
+		mdl_to_ndc_xform.m[3], mdl_to_ndc_xform.m[4], mdl_to_ndc_xform.m[5],
+		mdl_to_ndc_xform.m[6], mdl_to_ndc_xform.m[7], mdl_to_ndc_xform.m[8]
+	};
+	//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
 	//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
 	GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
 
-	glUniform1i(tex_loc, 6);
+	glUniform1i(tex_loc, 0);
 
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
 
 	// unbind VAO and unload shader program
 	glBindVertexArray(0);
+	glDisable(GL_BLEND);
 	shd_ref->second.UnUse();
 }
 
@@ -173,7 +196,7 @@ glClearColor and glViewport to initialize the app
 void GLApp::init()
 {
 	// Part 1: initialize OpenGL state ...
-	glClearColor(1.f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
+	glClearColor(0.3f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
 
 	// Part 2: use the entire window as viewport ...
 	GLint w = GLHelper::width, h = GLHelper::height;
@@ -223,7 +246,7 @@ void GLApp::update()
 
 	if (GLHelper::keystateP)
 	{
-		Graphics::Texture::loadTexture("../images/factory.png", texobj);
+		Graphics::Texture::loadTexture("../images/duck-rgba-256.tex", texobj);
 		stepByStepCollision = !stepByStepCollision;
 		GLHelper::keystateP = false;
 	}
@@ -251,7 +274,7 @@ void GLApp::update()
 			// create default engine as source of randomness
 			std::default_random_engine generator(seed);
 
-			std::uniform_int_distribution<int> posrandom(19000, 20000);
+			std::uniform_int_distribution<int> posrandom(-500, 500);
 			int randx = posrandom(generator);
 			int randy = posrandom(generator);
 
@@ -369,6 +392,10 @@ void GLApp::draw()
 
 	// clear color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
+
+
+
+	//glEnable(GL_TEXTURE);
 
 	// Part 4: Render each object in container GLApp::objects
 	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)

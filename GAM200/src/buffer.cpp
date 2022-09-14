@@ -61,7 +61,7 @@ void Graphics::VBO::unbind()
 	//glBindVertexArray(0);
 }
 
-void Graphics::VBO::store(GLuint vbo, int size, std::vector <vector2D::vec2D> data)
+void Graphics::VBO::store(GLuint vbo, int size, std::vector <Graphics::vertexData> data)
 {
 	glNamedBufferStorage(vbo, size, data.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
 	// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system
@@ -71,7 +71,7 @@ void Graphics::VBO::store(GLuint vbo, int size, std::vector <vector2D::vec2D> da
 
 void Graphics::VBO::setdata(GLuint vbo, int offset, int size, std::vector <vector2D::vec2D> data)
 {
-	glNamedBufferSubData(vbo, 0, size, data.data()); // Set new buffer index with subdata
+	glNamedBufferSubData(vbo, offset, size, data.data()); // Set new buffer index with subdata
 }
 
 void Graphics::VBO::del()
