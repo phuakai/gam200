@@ -34,6 +34,7 @@
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
+    <ClCompile Include="src\vec3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h" />
@@ -51,6 +52,7 @@
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
+    <ClInclude Include="include\vec3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />

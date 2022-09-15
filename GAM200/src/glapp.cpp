@@ -50,6 +50,8 @@ Graphics::Texture texobj;
 short GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
+bool modulate, alphablend, textures;
+
 int tmpobjcounter{};
 /*  _________________________________________________________________________*/
 /*! GLObject::update
@@ -129,18 +131,23 @@ void GLApp::GLObject::draw() const
 	GLuint buffer;
 	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
 	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	std::vector<vector2D::Vec2> tex_coord
 	{
-		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f),
-		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f)
+		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
+		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
+	};
+	std::vector<vector3D::Vec3> clr_vtx
+	{
+		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 	};
 	std::vector<Graphics::vertexData> vertexData;
 	for (int i = 0; i < ndc_coords.size(); ++i)
 	{
 		Graphics::vertexData tmpVtxData;
 		tmpVtxData.posVtx = ndc_coords[i];
+		tmpVtxData.clrVtx = clr_vtx[i];
 		tmpVtxData.txtVtx = tex_coord[i];
 		vertexData.emplace_back(tmpVtxData);
 	}
@@ -149,9 +156,9 @@ void GLApp::GLObject::draw() const
 	//glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
 
 
-	glBindTextureUnit(0, (texobj.getTexid()));
+	
 
-
+	
 	//std::cout << "Tex obj id " << texobj.getTexid() << std::endl;
 	
 
@@ -169,15 +176,20 @@ void GLApp::GLObject::draw() const
 	//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
 	//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
 	GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
-
 	glUniform1i(tex_loc, 0);
+
+	GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
+	glUniform1i(UniformModulate, modulate);
+
+	GLboolean UniformTextures= glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
+	glUniform1i(UniformTextures, textures);
 
 	// call glDrawElements with appropriate arguments
 	glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
 
 	// unbind VAO and unload shader program
 	glBindVertexArray(0);
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 	shd_ref->second.UnUse();
 }
 
@@ -209,6 +221,8 @@ void GLApp::init()
 	// container GLApp::shdrpgms, and store repositories of objects of
 	// type GLObject in container GLApp::objects
 	GLApp::init_scene("../scenes/gam200.scn");
+
+	Graphics::Texture::loadTexture("../images/duck-rgba-256.tex", texobj);
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -246,7 +260,6 @@ void GLApp::update()
 
 	if (GLHelper::keystateP)
 	{
-		Graphics::Texture::loadTexture("../images/duck-rgba-256.tex", texobj);
 		stepByStepCollision = !stepByStepCollision;
 		GLHelper::keystateP = false;
 	}
@@ -257,11 +270,26 @@ void GLApp::update()
 		
 		GLHelper::keystateC = false;
 	}
+	if (GLHelper::keystateM)
+	{
+		modulate = !modulate;
+		GLHelper::keystateM = GL_FALSE;
+	}
+	if (GLHelper::keystateB)
+	{
+		alphablend = !alphablend;
+		GLHelper::keystateB = GL_FALSE;
+	}
+	if (GLHelper::keystateT)
+	{
+		textures = !textures;
+		GLHelper::keystateT = GL_FALSE;
+	}
 	if (GLHelper::keystateQ)
 	{
-		for (int j = 0; j < 50; j++)
+		for (int j = 0; j < 100; j++)
 		{
-
+			
 
 			std::string tmpobjname = "Banana";
 			tmpobjcounter++;
@@ -282,7 +310,7 @@ void GLApp::update()
 			float randwidth = (float)sizerandom(generator);
 			float randheight = (float)sizerandom(generator);
 			//std::cout << "Values " << randx << ", " << randy << std::endl;
-			GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+			GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(250, 250), vector2D::vec2D(-randx, -randy));
 		}
 		GLHelper::keystateQ = false;
 	}
@@ -393,10 +421,23 @@ void GLApp::draw()
 	// clear color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
 
-
-
-	//glEnable(GL_TEXTURE);
-
+	if (alphablend)
+	{
+		//std::cout << "Nani\n";
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	if (textures)
+	{
+		//std::cout << "Enabled\n";
+		glBindTextureUnit(0, (texobj.getTexid()));
+	}
+	if (!textures)
+	{
+		//std::cout << "Disabled\n";
+		glBindTextureUnit(0, 0);
+		//glBindTextureUnit(0, (texobj.getTexid()));
+	}	
 	// Part 4: Render each object in container GLApp::objects
 	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
@@ -475,6 +516,9 @@ void GLApp::draw()
 	}
 
 	objects["Camera"].draw();
+
+	glDisable(GL_BLEND);
+
 }
 
 /*  _________________________________________________________________________*/

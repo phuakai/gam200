@@ -12,12 +12,26 @@ rendered by an object has the same color
 
 //uniform vec3 uColor;
 
-layout (location=0) in vec2 vTexturecoord;
+layout (location=0) in vec3 vInterpColor;
+layout (location=1) in vec2 vTexturecoord;
 layout (location=0) out vec4 fFragColor;
 
 uniform sampler2D ourTexture;
-
+uniform bool modulatebool;
+uniform bool texturebool;
 void main () {
 	//fFragColor = vec4(uColor, 1.0);
-	fFragColor = texture(ourTexture, vTexturecoord);
+	vec3 modulate = {1.f, 1.f, 1.f};
+    if (modulatebool == true) 
+	{
+        modulate = vInterpColor;
+	}
+	if (texturebool == true)
+	{
+		fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
+	}
+	else
+	{
+		fFragColor = vec4(vInterpColor, 1.0);
+	}
 }

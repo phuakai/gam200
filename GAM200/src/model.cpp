@@ -5,6 +5,7 @@
 #include <buffer.h>
 
 
+
 Graphics::Model Graphics::Model::init(std::string modelname)
 {
 	Graphics::Model tempmodel;
@@ -65,6 +66,11 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f),
 		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f)
 	};
+	std::vector<vector3D::Vec3> clr_vtx
+	{
+		vector3D::Vec3(1.f, 0.f, 0.f), vector3D::Vec3(0.f, 1.f, 0.f),
+		vector3D::Vec3(0.f, 0.f, 1.f), vector3D::Vec3(1.f, 0.f, 1.f)
+	};
 	std::vector<Graphics::vertexData> vertexData;
 	for (int i = 0; i < tempmodel.pos_vtx.size(); ++i)
 	{
@@ -72,6 +78,7 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 		//std::cout << "Nani Pos " << tempmodel.pos_vtx[i].x << ", " << tempmodel.pos_vtx[i].y << std::endl;
 		//std::cout << "Nani Texture " << tex_coord[i].x << ", " << tex_coord[i].y << std::endl;
 		tmpVtxData.posVtx = tempmodel.pos_vtx[i];
+		tmpVtxData.clrVtx = clr_vtx[i];
 		tmpVtxData.txtVtx = tex_coord[i];
 		vertexData.emplace_back(tmpVtxData);
 	}
@@ -83,17 +90,20 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 
 	vao = Graphics::VAO::init();
 	Graphics::VAO::enableattrib(vao, 0); // Attrib 0
-
-	Graphics::VBO::bind(vao, 0, vbo, 0, sizeof(float) * 4); // Set buffer binding point 0
-
-	Graphics::VAO::setattrib(vao, 0); // Attrib format
+	Graphics::VBO::bind(vao, 0, vbo, 0, sizeof(float) * 7); // Set buffer binding point 0
+	Graphics::VAO::setattrib(vao, 0, 2); // Attrib format
 	Graphics::VAO::bindattrib(vao, 0, 0); // Bind attrib
 
+	Graphics::VAO::enableattrib(vao, 1); // Attrib 0
+	Graphics::VBO::bind(vao, 1, vbo, sizeof(float) * 2, sizeof(float) * 7); // Set buffer binding point 0
+	Graphics::VAO::setattrib(vao, 1, 3); // Attrib format
+	Graphics::VAO::bindattrib(vao, 1, 1); // Bind attrib
 
-	Graphics::VAO::enableattrib(vao, 1); // Attrib 1
-	Graphics::VBO::bind(vao, 1, vbo, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 1
-	Graphics::VAO::setattrib(vao, 1); // Attrib format 1
-	Graphics::VAO::bindattrib(vao, 1, 1); // Bind attrib 1
+
+	Graphics::VAO::enableattrib(vao, 2); // Attrib 1
+	Graphics::VBO::bind(vao, 2, vbo, sizeof(float) * 5, sizeof(float) * 7); // Set buffer binding point 1
+	Graphics::VAO::setattrib(vao, 2, 2); // Attrib format 1
+	Graphics::VAO::bindattrib(vao, 2, 2); // Bind attrib 1
 
 	ebo = Graphics::EBO::init();
 	Graphics::EBO::store(ebo, sizeof(GLushort) * tempmodel.primitive.size(), tempmodel.primitive);

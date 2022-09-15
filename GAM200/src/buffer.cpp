@@ -30,9 +30,9 @@ void Graphics::VAO::bindattrib(GLuint vao, int attribindex, int bufferindex)
 	// Name of vertex array object, index of vertex attrib, index of vertex buffer binding index
 }
 
-void Graphics::VAO::setattrib(GLuint vao, int index)
+void Graphics::VAO::setattrib(GLuint vao, int index, int unitsize)
 {
-	glVertexArrayAttribFormat(vao, index, 2, GL_FLOAT, GL_FALSE, 0);// Specify the organisation of vertex arrays
+	glVertexArrayAttribFormat(vao, index, unitsize, GL_FLOAT, GL_FALSE, 0);// Specify the organisation of vertex arrays
 	// Name of vertex array object, index of vertex array object being set, size (num of values per vertex that is stored in array), type of data,
 	// GL_TRUE = data should be normalized, GL_FALSE = data converted directly as fixed-point values, offset (distance between elements of buffer)
 }

@@ -38,6 +38,9 @@ GLboolean GLHelper::keystateJ = GL_FALSE;  // Player left
 GLboolean GLHelper::keystateL = GL_FALSE;  // Player right
 GLboolean GLHelper::keystateP = GL_FALSE;  // Pause game
 GLboolean GLHelper::keystateQ = GL_FALSE;  // Add new object
+GLboolean GLHelper::keystateM = GL_FALSE;  // Modulate
+GLboolean GLHelper::keystateT = GL_FALSE;  // Toggle Texture
+GLboolean GLHelper::keystateB = GL_FALSE;  // Toggle Alpha blend
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
 /*  _________________________________________________________________________ */
@@ -214,6 +217,11 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateP = (key == GLFW_KEY_P) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is P
 
         keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Q
+
+        keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
+
+        keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
+        keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
@@ -254,6 +262,9 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateP = GL_FALSE;
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
         keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
+        keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
+        keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
+        keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_RELEASE == action) {
         // key start changes from pressed to released
@@ -308,6 +319,18 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (key == GLFW_KEY_Q)
         {
             keystateQ = GL_FALSE;
+        }
+        if (key == GLFW_KEY_M)
+        {
+            keystateM = GL_FALSE;
+        }
+        if (key == GLFW_KEY_T)
+        {
+            keystateT = GL_FALSE;
+        }
+        if (key == GLFW_KEY_B)
+        {
+            keystateB = GL_FALSE;
         }
     }
 }

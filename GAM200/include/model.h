@@ -1,6 +1,7 @@
 #include <glhelper.h>
 #include <vector>
 #include <vec2D.h>
+#include <vec3D.h>
 #include <string>
 #include <map>
 #include <unordered_map>
@@ -12,6 +13,7 @@ namespace Graphics
 {
 	struct vertexData {
 		vector2D::vec2D posVtx;
+		vector3D::vec3D clrVtx;
 		vector2D::vec2D txtVtx;
 	};
 	class Model

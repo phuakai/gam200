@@ -13,7 +13,7 @@ namespace Graphics
 			static void unbind(); // Unbinds vao
 			static void enableattrib(GLuint vao, int attrib); // Enable attrib
 			static void bindattrib(GLuint vao, int attribindex, int bufferindex); // Bind attrib
-			static void setattrib(GLuint vao, int index); // Set attrib
+			static void setattrib(GLuint vao, int index, int unitsize = 2); // Set attrib
 			static void del(); // Delete vao
 
 	};
