@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ECS.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\collisiondebug.cpp" />
     <ClCompile Include="src\glapp.cpp" />
@@ -37,6 +38,7 @@
   <ItemGroup>
     <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\collisiondebug.h" />
+    <ClInclude Include="include\ECS.h" />
     <ClInclude Include="include\glapp.h" />
     <ClInclude Include="include\glhelper.h" />
     <ClInclude Include="include\glslshader.h" />

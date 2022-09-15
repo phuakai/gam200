@@ -33,6 +33,10 @@ to OpenGL implementations.
 #include <buffer.h>
 #include <model.h>
 #include <random>
+//#include "ECS.h"
+
+
+
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -122,11 +126,11 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
-	GLuint buffer;
-	glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+	//GLuint buffer;
+	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
 
-	glNamedBufferSubData(buffer, 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
+	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(vector2D::vec2D) * ndc_coords.size(), ndc_coords.data()); // Set new buffer index with subdata
 
 	glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
 
@@ -187,7 +191,10 @@ void GLApp::init()
 	collisionInfo[collisionType::DIAG] = "DIAG";
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
+	
 
+	
+	
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
 }

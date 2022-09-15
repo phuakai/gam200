@@ -15,7 +15,7 @@ an OpenGL context and implement a game loop.
 #include <glapp.h>
 #include <collision.h>
 #include <iostream>
-
+#include "ECS.cpp"
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
 
@@ -106,6 +106,8 @@ static void init() {
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
   }
+
+  registerComponent<Position>();
 
   // Part 2
   //GLHelper::print_specs();
