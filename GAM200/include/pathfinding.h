@@ -13,8 +13,8 @@ struct Unit {
 	vector2D::vec2D position;
 	// Position of the enemy
 	vector2D::vec2D nodePosition;
-	// Direction of enemy to target
-	vector2D::vec2D direction;
+	// Velocity of enemy
+	vector2D::vec2D velocity;
 	// Target
 	Unit* target;
 	// Maximum speed of enemy
@@ -36,13 +36,12 @@ struct Node {
 
 };
 
-extern std::vector<Unit> agentList;
 // make these parameters instead of global (pointers)
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 // empty grid of vectors
 extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
 
-vector2D::vec2D movementFlocking(Unit* unit, vector2D::vec2D destination);
+void movementFlocking(Unit& unit, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity);
 void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D::vec2D> walls);
 void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition);
 void generateFlowField();

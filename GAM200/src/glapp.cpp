@@ -50,8 +50,11 @@ int tmpobjcounter{};
 
 std::vector<Unit> playerList;
 std::vector<Unit> enemyList;
+extern std::vector<Unit> enemyList;
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
+std::vector<vector2D::vec2D> walls;
+float timer;
 
 /*  _________________________________________________________________________*/
 /*! GLObject::update
@@ -195,13 +198,12 @@ void GLApp::init()
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 
-	int counter = 1;
-	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
-
 	Unit player1;
 	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
 	player1.position = vector2D::vec2D(-200, 0);
-	player1.direction = vector2D::vec2D(10, 10);
+	player1.velocity = vector2D::vec2D(10, 10);
+	player1.maxSpeed = 2;
+	player1.maxForce = 10;
 	player1.unitName = "player1";
 	playerList.push_back(player1);
 
@@ -211,31 +213,18 @@ void GLApp::init()
 	}
 
 	// objects creation
-	Unit enemy;
-	enemy.position = vector2D::vec2D(0, 0);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy1";
-	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(200, 200);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy2";
-	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(149, -229);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy3";
-	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-200, 229);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy4";
-	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-134, -194);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy5";
-	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-230, 0);
-	enemy.direction = vector2D::vec2D(10, 10);
-	enemy.unitName = "enemy6";
-	enemyList.push_back(enemy);
+	for (int i = 0; i < 100; ++i)
+	{
+		Unit enemy;
+		enemy.position = vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i/30 * 10));
+		enemy.velocity = vector2D::vec2D(10, 10);
+		enemy.maxSpeed = 2;
+		enemy.maxForce = 1;
+		enemy.unitID = i + 1;
+		enemy.unitName = "enemy" + std::to_string(i + 1);
+		enemyList.push_back(enemy);
+	}
+	timer = 4;
 
 	for (int i = 0; i < enemyList.size(); ++i)
 	{
@@ -243,14 +232,20 @@ void GLApp::init()
 		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
 	}
 
-	std::vector<vector2D::vec2D> walls;
-	walls.push_back(vector2D::vec2D(10, 11));
-	walls.push_back(vector2D::vec2D(10, 12));
+	// walls
+	//walls.push_back(vector2D::vec2D(10, 11));
+	//walls.push_back(vector2D::vec2D(10, 12));
+	//walls.push_back(vector2D::vec2D(10, 13));
+	//walls.push_back(vector2D::vec2D(10, 14));
+	//walls.push_back(vector2D::vec2D(10, 15));
 
 	generateDijkstraCost(playerList[0].position, walls);
 	generateFlowField();
-	enemyList[5].Print();
+	//enemyList[5].Print();
 
+	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
+
+	int counter = 1;
 	for (int i = 0; i < MAX_GRID_Y; ++i)
 	{
 		for (int j = 0; j < MAX_GRID_X; ++j)
@@ -287,6 +282,21 @@ void GLApp::update()
 	objects["Camera"].update(GLHelper::delta_time);
 
 	// update other inputs for physics
+
+	double mousePosX, mousePosY;
+	bool mouseClick = false;
+	if (GLHelper::mousestateLeft)
+	{
+		GLHelper::mousestateLeft = false;
+
+		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+		mouseClick = true;
+
+		std::cout << "this is my mouse pos: " << mousePosX << " " << mousePosY << std::endl;
+
+		//obj->second.modelCenterPos.x = (float)mousePosx;
+		//obj->second.modelCenterPos.y = (float)mousePosy;
+	}
 
 	if (GLHelper::keystateP)
 	{
@@ -371,18 +381,18 @@ void GLApp::update()
 			default:
 				break;
 			}
-			if (GLHelper::mousestateLeft)
-			{
-				GLHelper::mousestateLeft = false;
-				double mousePosx, mousePosy;
+			//if (GLHelper::mousestateLeft)
+			//{
+			//	GLHelper::mousestateLeft = false;
+			//	double mousePosx, mousePosy;
 
-				Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+			//	Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
 
-				std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+			//	std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
 
-				//obj->second.modelCenterPos.x = (float)mousePosx;
-				//obj->second.modelCenterPos.y = (float)mousePosy;
-			}
+			//	//obj->second.modelCenterPos.x = (float)mousePosx;
+			//	//obj->second.modelCenterPos.y = (float)mousePosy;
+			//}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
 			{
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
@@ -390,20 +400,33 @@ void GLApp::update()
 		}
 
 		// movement
-		for (int i = 0; i < enemyList.size(); ++i)
+		if (timer <= 0)
 		{
-			// found object
-			if (enemyList[i].unitName == obj->first)
+			for (int i = 0; i < enemyList.size(); ++i)
 			{
-				enemyList[i].Move();
-				obj->second.modelCenterPos = enemyList[i].position;
+				// found object
+				if (enemyList[i].unitName == obj->first)
+				{
+					enemyList[i].Move();
+					obj->second.modelCenterPos = enemyList[i].position;
+				}
 			}
+		}
+
+		if (playerList[0].unitName == obj->first && mouseClick)
+		{
+			playerList[0].position.x = mousePosX;
+			playerList[0].position.y = mousePosY;
+			obj->second.modelCenterPos = playerList[0].position;
+
+			generateDijkstraCost(playerList[0].position, walls);
+			generateFlowField();
 		}
 
 	}
 
-	
-	
+	if (timer > 0)
+		timer -= GLHelper::delta_time;
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
