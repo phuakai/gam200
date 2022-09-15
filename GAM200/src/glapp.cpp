@@ -181,7 +181,7 @@ void GLApp::init()
 	// container GLApp::shdrpgms, and store repositories of objects of
 	// type GLObject in container GLApp::objects
 	//GLApp::init_scene("../scenes/gam200.scn");
-	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(-19300, -19750), glm::vec3(0, 0, 0));
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), glm::vec3(0, 0, 0));
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -196,11 +196,11 @@ void GLApp::init()
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 
 	int counter = 1;
-	vector2D::vec2D startingPoint{ -19300 - 500 + 1000 / MAX_GRID_X / 2, -19750 - 500 + 1000 / MAX_GRID_Y / 2 };
+	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
 
 	Unit player1;
 	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
-	player1.position = vector2D::vec2D(-19700, -19800);
+	player1.position = vector2D::vec2D(-200, 0);
 	player1.direction = vector2D::vec2D(10, 10);
 	player1.unitName = "player1";
 	playerList.push_back(player1);
@@ -212,27 +212,27 @@ void GLApp::init()
 
 	// objects creation
 	Unit enemy;
-	enemy.position = vector2D::vec2D(-19300, -19750);
+	enemy.position = vector2D::vec2D(0, 0);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy1";
 	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-18900, -19350);
+	enemy.position = vector2D::vec2D(200, 200);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy2";
 	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-19500, -19350);
+	enemy.position = vector2D::vec2D(149, -229);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy3";
 	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-19134, -19420);
+	enemy.position = vector2D::vec2D(-200, 229);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy4";
 	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-19000, -19750);
+	enemy.position = vector2D::vec2D(-134, -194);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy5";
 	enemyList.push_back(enemy);
-	enemy.position = vector2D::vec2D(-19100, -19842);
+	enemy.position = vector2D::vec2D(-230, 0);
 	enemy.direction = vector2D::vec2D(10, 10);
 	enemy.unitName = "enemy6";
 	enemyList.push_back(enemy);
@@ -243,19 +243,12 @@ void GLApp::init()
 		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
 	}
 
-	Node endingPoint;
-	endingPoint.position = (playerList[0].position - vector2D::vec2D(-19800, -20250)) / (1000 / MAX_GRID_X);
-	std::cout << endingPoint.position.x << "\t" << endingPoint.position.y << std::endl;
+	std::vector<vector2D::vec2D> walls;
+	walls.push_back(vector2D::vec2D(10, 11));
+	walls.push_back(vector2D::vec2D(10, 12));
 
-	std::vector<Node> walls;
-	Node temp;
-	temp.position = vector2D::vec2D(10, 11);
-	walls.push_back(temp);
-	temp.position = vector2D::vec2D(10, 12);
-	walls.push_back(temp);
-
-	generateDijkstraCost(endingPoint, walls);
-	generateFlowField(endingPoint);
+	generateDijkstraCost(playerList[0].position, walls);
+	generateFlowField();
 	enemyList[5].Print();
 
 	for (int i = 0; i < MAX_GRID_Y; ++i)
@@ -271,7 +264,7 @@ void GLApp::init()
 			++counter;
 		}
 	}
-	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(-19300, -19750), glm::vec3(0, 0, 0));
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), glm::vec3(0, 0, 0));
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();

@@ -43,6 +43,6 @@ extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
 
 vector2D::vec2D movementFlocking(Unit* unit, vector2D::vec2D destination);
-void generateDijkstraCost(Node& endingNode, std::vector<Node> walls);
-void calculateLOS(Node& startingNode, Node& endingNode);
-void generateFlowField(Node& endingNode);
+void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D::vec2D> walls);
+void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition);
+void generateFlowField();
