@@ -13,6 +13,7 @@ to OpenGL implementations.
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
+
 #include <glapp.h>
 #include <iostream>
 #include <array>
@@ -33,7 +34,6 @@ to OpenGL implementations.
 #include <buffer.h>
 #include <model.h>
 #include <random>
-//#include "ECS.h"
 
 
 

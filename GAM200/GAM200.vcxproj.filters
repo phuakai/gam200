@@ -57,7 +57,7 @@
     <ClCompile Include="src\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ECS.cpp">
+    <ClCompile Include="src\ECS.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
