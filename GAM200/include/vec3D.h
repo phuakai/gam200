@@ -14,8 +14,8 @@ Technology is prohibited.
 */
 /* End Header **************************************************************************/
 
-#ifndef CSD1130_VECTOR2D_H_
-#define CSD1130_VECTOR2D_H_
+#ifndef CSD1130_VECTOR3D_H_
+#define CSD1130_VECTOR3D_H_
 
 #include "vector"
 

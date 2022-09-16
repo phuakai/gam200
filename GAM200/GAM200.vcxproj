@@ -31,9 +31,12 @@
     <ClCompile Include="src\collision.cpp" />
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\physics.cpp" />
+    <ClCompile Include="src\physicsRigidBody.cpp" />
+    <ClCompile Include="src\physicsTransform.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
     <ClCompile Include="src\vec3D.cpp" />
+    <ClCompile Include="src\physicsWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h" />
@@ -48,9 +51,12 @@
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\physics.h" />
+    <ClInclude Include="include\physicsRigidBody.h" />
+    <ClInclude Include="include\physicsTransform.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
     <ClInclude Include="include\vec3D.h" />
+    <ClInclude Include="include\physicsWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />

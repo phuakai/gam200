@@ -16,6 +16,8 @@ Technology is prohibited.
 #include "mat3x3.h"
 #include "math.h"
 #include <iostream>
+#include <sstream>
+#include <string>
 
 namespace matrix3x3
 {
@@ -218,6 +220,9 @@ namespace matrix3x3
 		if (determinant == 0)
 		{
 			pResult = nullptr;
+			//std::stringstream msg { "Determinant is 0!" };
+			//std::string msg { "Determinant is 0!" };
+			return;
 		}
 		else
 		{

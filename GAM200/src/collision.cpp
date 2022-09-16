@@ -3,126 +3,93 @@
 #include <algorithm>
 #include <math.h>
 
+#include "physics.h"
 #include "collision.h"
 
 namespace physics
 {
-	/******************************************************************************/
+
+	/**************************************************************************/
 	/*!
-		Builds a line segment to be used for collision check
-	 */
-	 /******************************************************************************/
-	void BuildLineSegment(LineSegmentWNormal& lineSegment,
-		const vector2D::vec2D& pos,
-		float scale,
-		float dir)
-	{
-		//create the points of the line and rotates the points
-		lineSegment.pt0.x = pos.x - scale / 2.f * cos(dir);
-		lineSegment.pt0.y = pos.y - scale / 2.f * sin(dir);
-		lineSegment.pt1.x = pos.x + scale / 2.f * cos(dir);
-		lineSegment.pt1.y = pos.y + scale / 2.f * sin(dir);
-
-		//create the normal to the line
-		lineSegment.normal.x = lineSegment.pt1.y - lineSegment.pt0.y;
-		lineSegment.normal.y = -(lineSegment.pt1.x - lineSegment.pt0.x);
-
-		//normalise the normal
-		vector2D::vec2D normal{ lineSegment.normal };
-		Vector2DNormalize(lineSegment.normal, normal);
-	}
-
-	/******************************************************************************/
-	/*!
-		Checks for collision between a circle and a line segment
+		CollisionDetection_CircleCircle checks for collision between two circcles
+		and returns true on collision else it returns false
 	*/
-	/******************************************************************************/
-	int CollisionIntersection_CircleLineSegment(const Circle& circle, //start pos, rad
-		const vector2D::vec2D& ptEnd, //circle pos at the end of curr frame
-		const LineSegmentWNormal& lineSeg, //border: start/end pos, normal
-		vector2D::vec2D& interPt, //intersection pt btn circle & wall
-		vector2D::vec2D& normalAtCollision, //vec normal at collision pt
-		float& interTime) //value of intersection time
+	/**************************************************************************/
+	bool CollisionPushResponseCircleCircle(
+		vector2D::vec2D &staticCenter, float &staticRad, 
+		vector2D::vec2D &kineticCenter, float &kineticRad,
+		vector2D::vec2D & dirNorm, float &depth)
 	{
-		if (Vector2DDotProduct(lineSeg.normal, (circle.m_center - lineSeg.pt0)) <= -circle.m_radius)
-		{
-			vector2D::vec2D tmpPO{ lineSeg.pt0.x - circle.m_radius * lineSeg.normal.x,
-									lineSeg.pt0.y - circle.m_radius * lineSeg.normal.y };
-			vector2D::vec2D tmpP1{ lineSeg.pt1.x - circle.m_radius * lineSeg.normal.x,
-									lineSeg.pt1.y - circle.m_radius * lineSeg.normal.y };
+		float distanceBtnCenters, sumOfRad;
 
-			vector2D::vec2D V{ ptEnd.x - circle.m_center.x, ptEnd.y - circle.m_center.y };
-			vector2D::vec2D M;
+		// No collision
+		if (!CollisionDetectionCircleCircle(staticCenter, staticRad, kineticCenter, kineticRad, distanceBtnCenters, sumOfRad))
+			return false;
 
-			vector2D::Vector2DNormalize(M, V);
+		// There is collision, provide response
+		vector2D::Vector2DNormalize(dirNorm, staticCenter - kineticCenter);
+		depth = sqrt(sumOfRad) - sqrt(distanceBtnCenters);
 
-			matrix3x3::mat3x3 rot;
-			matrix3x3::Mtx33RotDeg(rot, -90.f);
-			M = rot * M;
-			if (vector2D::Vector2DDotProduct(M, circle.m_center - tmpPO) *
-				vector2D::Vector2DDotProduct(M, circle.m_center - tmpP1) < 0)
-			{
-				interTime = (vector2D::Vector2DDotProduct(lineSeg.normal, lineSeg.pt0) -
-					vector2D::Vector2DDotProduct(lineSeg.normal, circle.m_center) - circle.m_radius) /
-					vector2D::Vector2DDotProduct(lineSeg.normal, V);
+		vector2D::vec2D tmpNorm{ dirNorm * (depth / 2.f) };
+		vector2D::vec2D reverseTmpNorm{ tmpNorm * -1};
 
-				if (interTime >= 0 && interTime <= 1)
-				{
-					interPt = circle.m_center + V * interTime;
-					normalAtCollision = -lineSeg.normal;
-					return 1; // intersection
-				}
-			}
-		}
-		else if (vector2D::Vector2DDotProduct(lineSeg.normal, (circle.m_center - lineSeg.pt0)) >= circle.m_radius)
-		{
-			vector2D::vec2D tmpPO{ lineSeg.pt0.x + circle.m_radius * lineSeg.normal.x,
-									lineSeg.pt0.y + circle.m_radius * lineSeg.normal.y };
-			vector2D::vec2D tmpP1{ lineSeg.pt1.x + circle.m_radius * lineSeg.normal.x,
-									lineSeg.pt1.y + circle.m_radius * lineSeg.normal.y };
+		//move(tmpNorm, staticCenter);
+		//move(reverseTmpNorm, kineticCenter);
 
-			vector2D::vec2D V{ ptEnd.x - circle.m_center.x, ptEnd.y - circle.m_center.y };
-			vector2D::vec2D M;
-
-			vector2D::Vector2DNormalize(M, V);
-
-			matrix3x3::mat3x3 rot;
-			matrix3x3::Mtx33RotDeg(rot, -90.f);
-			M = rot * M;
-			if (vector2D::Vector2DDotProduct(M, circle.m_center - tmpPO) *
-				vector2D::Vector2DDotProduct(M, circle.m_center - tmpP1) < 0)
-			{
-				interTime = (vector2D::Vector2DDotProduct(lineSeg.normal, lineSeg.pt0) -
-					vector2D::Vector2DDotProduct(lineSeg.normal, circle.m_center) + circle.m_radius) /
-					vector2D::Vector2DDotProduct(lineSeg.normal, V);
-
-				if (interTime >= 0 && interTime <= 1)
-				{
-					interPt = circle.m_center + V * interTime;
-					normalAtCollision = -lineSeg.normal;
-					return 1; // intersection
-				}
-			}
-		}
-		return 0; // no intersection
+		return true;
 	}
 
-	/******************************************************************************/
+	/**************************************************************************/
 	/*!
-		Computes the new circle position if there is collision between the circle
-		and line segment
+		CollisionDetection_CircleCircle checks for collision between two circcles
+		and returns true on collision else it returns false
 	*/
-	/******************************************************************************/
-	void CollisionResponse_CircleLineSegment(const vector2D::vec2D& ptInter,
-		const vector2D::vec2D& normal,
-		vector2D::vec2D& ptEnd,
-		vector2D::vec2D& reflected)
+	/**************************************************************************/
+	bool CollisionBlockResponseCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad,
+		vector2D::vec2D& dirNorm, float& depth)
 	{
-		reflected = (ptEnd - ptInter) - 2 * (vector2D::Vector2DDotProduct(ptEnd - ptInter, normal)) * normal;
-		vector2D::vec2D reflection{ reflected };
-		vector2D::Vector2DNormalize(reflected, reflection);
-		ptEnd = ptInter + reflected;
+		float distanceBtnCenters, sumOfRad;
+
+		// No collision
+		if (!CollisionDetectionCircleCircle(staticCenter, staticRad, kineticCenter, kineticRad, distanceBtnCenters, sumOfRad))
+			return false;
+
+		// There is collision, provide response
+		vector2D::Vector2DNormalize(dirNorm, staticCenter - kineticCenter);
+		depth = sqrt(sumOfRad) - sqrt(distanceBtnCenters);
+
+		vector2D::vec2D tmpNorm{ dirNorm * depth };
+		vector2D::vec2D reverseTmpNorm{ tmpNorm * -1 };
+
+		//move(reverseTmpNorm, kineticCenter);
+
+		return true;
 	}
+
+	/**************************************************************************/
+	/*!
+		CollisionResponse_CircleCircle checks for collision between two circcles
+		and returns true on collision else it returns false
+	*/
+	/**************************************************************************/
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad,
+		float &distanceBtnCenters, float & sumOfRad)
+	{
+		distanceBtnCenters = vector2D::Vector2DSquareDistance(staticCenter, kineticCenter) ;
+		sumOfRad = (staticRad + kineticRad) * (staticRad + kineticRad) ;
+
+		// No collision
+		if (distanceBtnCenters >= sumOfRad)
+			return false;
+
+		// There is collision
+		return true;
+	}
+
 
 	/**************************************************************************/
 	/*!
@@ -133,17 +100,17 @@ namespace physics
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
 	{
-		//polygon1.boundingBoxWorldVertices.resize(4);
-		//polygon2.boundingBoxWorldVertices.resize(4);
-
 		polygon1.boundingBoxWorldVertices.clear();
 		polygon2.boundingBoxWorldVertices.clear();
 		
-		// Compute min/max points
+		// Store min/max points
+		//AABB poly1{ polygon1.boundingBoxWorldVertices[0], polygon1.boundingBoxWorldVertices[2] };
+		//AABB poly2{ polygon2.boundingBoxWorldVertices[0], polygon2.boundingBoxWorldVertices[2] };
+
 		AABB poly1{ vector2D::minPointsOfPolygonBoundingBox(polygon1.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon1.worldVertices) };
 		AABB poly2{ vector2D::minPointsOfPolygonBoundingBox(polygon2.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon2.worldVertices) };
 
-		// Store bounding box for rendering
+		//Store bounding box for rendering
 		polygon1.boundingBoxWorldVertices.emplace_back(poly1.min);
 		polygon1.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly1.max.x, poly1.min.y));
 		polygon1.boundingBoxWorldVertices.emplace_back(poly1.max);
@@ -154,12 +121,6 @@ namespace physics
 		polygon2.boundingBoxWorldVertices.emplace_back(poly2.max);
 		polygon2.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly2.min.x, poly2.max.y));
 
-		//std::cout << "Collision Vertice size " << polygon2.boundingBoxWorldVertices.size() << std::endl;
-
-		//for (int i = 0; i < polygon2.boundingBoxWorldVertices.size(); i++)
-		//{
-		//	std::cout << "Collision " << polygon2.boundingBoxWorldVertices[i].x << ", " << polygon2.boundingBoxWorldVertices[i].y << std::endl;
-		//}
 
 		// Check for static collision detection between rectangles
 		if (poly1.min.x <= poly2.max.x && poly1.max.x >= poly2.min.x &&
@@ -195,19 +156,45 @@ namespace physics
 
 	}
 
+	void computeBoundingBox(GLApp::GLObject& polygon)
+	{
+		polygon.boundingBoxWorldVertices.clear();
+
+		// Compute min/max points
+		AABB poly{ vector2D::minPointsOfPolygonBoundingBox(polygon.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(polygon.worldVertices) };
+
+		// Store bounding box for rendering
+		polygon.boundingBoxWorldVertices.emplace_back(poly.min);
+		polygon.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly.max.x, poly.min.y));
+		polygon.boundingBoxWorldVertices.emplace_back(poly.max);
+		polygon.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly.min.x, poly.max.y));
+
+	}
+
 	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
-		//const AABB& aabb2, const vector2D::vec2D& vel2)
+	//const AABB& aabb2, const vector2D::vec2D& vel2)
 	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon)
 	{
 		if (shapeOverlapStaticAABB(staticPolygon, dynamicPolygon)) //polygon1 is pushed back
 		{
-			float tFirst(0), tLast(GLHelper::delta_time);
-			vector2D::vec2D relativeVel{ staticPolygon.vel.x - dynamicPolygon.vel.x, staticPolygon.vel.y - dynamicPolygon.vel.y };
+			//float tFirst(0), tLast(GLHelper::delta_time);
+			//vector2D::vec2D relativeVel{ staticPolygon.vel.x - dynamicPolygon.vel.x, staticPolygon.vel.y - dynamicPolygon.vel.y };
 
 			// Compute min/max points
 			AABB staticPoly{ vector2D::minPointsOfPolygonBoundingBox(staticPolygon.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(staticPolygon.worldVertices) };
 			AABB dynamicPoly{ vector2D::minPointsOfPolygonBoundingBox(dynamicPolygon.worldVertices), vector2D::maxPointsOfPolygonBoundingBox(dynamicPolygon.worldVertices) };
 
+			std::cout << "-----------------\nstatic poly bef response\n"
+				<< "min points: (" << staticPoly.min.x << ", " << staticPoly.min.y << ")\n"
+				<< "max points: (" << staticPoly.max.x << ", " << staticPoly.max.y << ")\n"
+				<< "center points: (" << staticPolygon.modelCenterPos.x << ", " << staticPolygon.modelCenterPos.y << ")\n";
+				
+			std::cout << "-----------------\ndynamic poly bef response\n"
+				<< "min points: (" << dynamicPoly.min.x << ", " << dynamicPoly.min.y << ")\n"
+				<< "max points: (" << dynamicPoly.max.x << ", " << dynamicPoly.max.y << ")\n"
+				<< "center points: (" << dynamicPolygon.modelCenterPos.x << ", " << dynamicPolygon.modelCenterPos.y << ")\n";
+
+			
 			// Check location of dynamicPolygon wrt staticPolygon
 			//if (dynamicPoly.max.x > dynamicPoly.min.x) // dymanic is on left side of static
 
@@ -216,19 +203,47 @@ namespace physics
 
 			// Length btn both polygon along x-axis
 			float distanceBtnCenters{ staticPolygon.modelCenterPos.x - dynamicPolygon.modelCenterPos.x };
+			//std::cout << "this is distance btn centers: " << distanceBtnCenters << std::endl;
+			distanceBtnCenters = distanceBtnCenters < 0.f ? -distanceBtnCenters : distanceBtnCenters;
 
 			// Half width of polygon1 and polygon 2
 			float poly1HalfWidth{ staticPoly.max.x - staticPolygon.modelCenterPos.x }, poly2HalfWidth{ dynamicPoly.max.x - dynamicPolygon.modelCenterPos.x };
 
 			// Vector btn the center of polygon1 and polygon2
-			vector2D::vec2D directionalVec{ staticPolygon.modelCenterPos - dynamicPolygon.modelCenterPos };
+			//vector2D::vec2D directionalVec{ staticPolygon.modelCenterPos - dynamicPolygon.modelCenterPos };
 
 			// Interpolate and negate the vector
-			vector2D::vec2D reverseDirectionalVec { -directionalVec * (lengthOfOverlap/distanceBtnCenters)};
-			std::cout << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
-			// Add vector to modelcenterpos
-			dynamicPolygon.modelCenterPos += reverseDirectionalVec;
+			//vector2D::vec2D reverseDirectionalVec { -directionalVec * (lengthOfOverlap/distanceBtnCenters)};
+			//std::cout << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
+			
 
+			std::cout << "this is delta time: " << GLHelper::delta_time << std::endl;
+			std::cout << "direction vec in col: " << dynamicPolygon.directionVec.x * GLHelper::delta_time * 350.f << " " << dynamicPolygon.directionVec.y * GLHelper::delta_time * 200.f << std::endl;
+			vector2D::vec2D reverseDirectionalVec{ -dynamicPolygon.directionVec * GLHelper::delta_time * 400.f };// *(lengthOfOverlap / distanceBtnCenters) };
+			std::cout << "this is reverse direction vec: " << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
+
+			// Add vector to modelcenterpos
+			dynamicPolygon.modelCenterPos += reverseDirectionalVec ;
+			//std::cout << "this is center after response: " << dynamicPolygon.modelCenterPos.x << " " << dynamicPolygon.modelCenterPos.y << std::endl;
+			
+			computeBoundingBox(dynamicPolygon);
+
+			std::cout << "-----------------\nstatic poly aft response\n"
+				<< "min points: (" << staticPoly.min.x << ", " << staticPoly.min.y << ")\n"
+				<< "max points: (" << staticPoly.max.x << ", " << staticPoly.max.y << ")\n"
+				<< "center points: (" << staticPolygon.modelCenterPos.x << ", " << staticPolygon.modelCenterPos.y << ")\n";
+
+			std::cout << "-----------------\ndynamic poly aft response\n"
+				<< "min points: (" << dynamicPoly.min.x << ", " << dynamicPoly.min.y << ")\n"
+				<< "max points: (" << dynamicPoly.max.x << ", " << dynamicPoly.max.y << ")\n"
+				<< "center points: (" << dynamicPolygon.modelCenterPos.x << ", " << dynamicPolygon.modelCenterPos.y << ")\n";
+
+
+			dynamicPolygon.untravelledDistance.second = 0.f;
+			dynamicPolygon.directionVec.x = 0.f;
+			dynamicPolygon.directionVec.y = 0.f;
+			staticPolygon.overlap = true;
+			dynamicPolygon.overlap = true;
 		}
 	}
 

@@ -62,6 +62,7 @@ struct GLHelper
   static GLboolean keystateL;  // Player right
   static GLboolean keystateP;  // Pause game
   static GLboolean keystateQ;  // Pause game
+  static GLboolean keystateE;  // Pause game
   static GLboolean mousestateLeft;
 };
 

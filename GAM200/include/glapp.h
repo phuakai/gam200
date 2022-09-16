@@ -30,6 +30,7 @@ and transformations (in later labs).
 #include <vec2D.h>
 #include <mat3x3.h>
 #include <model.h>
+#include <physicsRigidBody.h>
 
 struct GLApp {
 
@@ -64,9 +65,10 @@ struct GLApp {
 	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
 	  vector2D::vec2D scaling{};														// scaling parameters
 	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
-	  vector2D::vec2D vel{};															// velocity
+	  float speed{};																	// speed
 	  vector2D::vec2D directionVec{};													// directional vec
 	  std::pair<vector2D::Point2D, float> untravelledDistance;							// destination, untravelled distance
+	  physicsRigidBody body;															// param for collision
 
 	  matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 	  matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
