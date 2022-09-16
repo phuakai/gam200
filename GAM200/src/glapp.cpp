@@ -201,35 +201,46 @@ void GLApp::init()
 	Unit player1;
 	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
 	player1.position = vector2D::vec2D(-200, 0);
-	player1.velocity = vector2D::vec2D(10, 10);
 	player1.maxSpeed = 2;
 	player1.maxForce = 10;
+	player1.size = vector2D::vec2D(20, 20);
 	player1.unitName = "player1";
 	playerList.push_back(player1);
 
 	for (int i = 0; i < playerList.size(); ++i)
 	{
-		GLApp::GLObject::gimmeObject("square", playerList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
+		GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
 	}
 
 	// objects creation
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 2500; ++i)
 	{
 		Unit enemy;
 		enemy.position = vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i/30 * 10));
-		enemy.velocity = vector2D::vec2D(10, 10);
 		enemy.maxSpeed = 2;
 		enemy.maxForce = 1;
+		enemy.size = vector2D::vec2D(10, 10);
 		enemy.unitID = i + 1;
 		enemy.unitName = "enemy" + std::to_string(i + 1);
 		enemyList.push_back(enemy);
 	}
 	timer = 4;
 
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
 	for (int i = 0; i < enemyList.size(); ++i)
 	{
+
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
+
 		enemyList[i].target = &playerList[0];
-		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, vector2D::vec2D(20, 20), vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(randr, randg, randb));
+		//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
 	}
 
 	// walls

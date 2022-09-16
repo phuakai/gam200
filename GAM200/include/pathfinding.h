@@ -9,6 +9,8 @@
 struct Unit {
 	std::string unitName;
 	int unitID;
+	// Size of the enemy
+	vector2D::vec2D size;
 	// Position of the enemy
 	vector2D::vec2D position;
 	// Position of the enemy

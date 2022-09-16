@@ -25,13 +25,23 @@ void Unit::Move()
 {
 	nodePosition = (position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-	if (LOSgrid[(int)nodePosition.y][(int)nodePosition.x])
+	if (position.x < target->position.x + target->size.x + 10 && position.x > target->position.x - target->size.x - 10 &&
+		position.y < target->position.y + target->size.y + 10 && position.y > target->position.y - target->size.y - 10)
 	{
-		vector2D::Vector2DNormalize(velocity, target->position - position);
+		velocity.x = 0;
+		velocity.y = 0;
+		//return;
 	}
 	else
 	{
-		vector2D::Vector2DNormalize(velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+		if (LOSgrid[(int)nodePosition.y][(int)nodePosition.x])
+		{
+			vector2D::Vector2DNormalize(velocity, target->position - position);
+		}
+		else
+		{
+			vector2D::Vector2DNormalize(velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+		}
 	}
 
 	std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
@@ -86,9 +96,9 @@ void movementFlocking(Unit& unit, vector2D::vec2D destination, std::vector<vecto
 	vector2D::vec2D desiredVelocity;
 
 	// make these not hardcoded please
-	float agentRadius = 2.0f;
-	float minimumSeparation = 20.0f;		// used for Separation
-	float maximumCohesion = 30.0f;			// used for Cohesion and Alignment
+	float agentRadius = ((unit.size.x + unit.size.y) / 2) / 10;
+	float minimumSeparation = ((unit.size.x + unit.size.y) / 2) * 0.9;		// used for Separation
+	float maximumCohesion = ((unit.size.x + unit.size.y) / 2) * 0.9;			// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
 	// 1 count for each part of flocking -> separation, cohesion, and alignment
