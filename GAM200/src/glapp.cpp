@@ -291,7 +291,7 @@ void GLApp::update()
 	{
 		for (int j = 0; j < 100; j++)
 		{
-			
+
 
 			std::string tmpobjname = "Banana";
 			tmpobjcounter++;
@@ -308,22 +308,22 @@ void GLApp::update()
 			int randx = posrandom(generator);
 			int randy = posrandom(generator);
 
-		std::uniform_int_distribution<int> sizerandom(50, 150);
-		float randwidth = (float)sizerandom(generator);
-		float randheight = (float)sizerandom(generator);
-		//std::cout << "Values " << randx << ", " << randy << std::endl;
-		if (GLHelper::keystateQ)
-		{
-			GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy));
-			GLHelper::keystateQ = false;
-		}
-		else
-		{
-			GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
-			GLHelper::keystateE = false;
+			std::uniform_int_distribution<int> sizerandom(50, 150);
+			float randwidth = (float)sizerandom(generator);
+			float randheight = (float)sizerandom(generator);
+			//std::cout << "Values " << randx << ", " << randy << std::endl;
+			if (GLHelper::keystateQ)
+			{
+				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy));
+				GLHelper::keystateQ = false;
+			}
+			else
+			{
+				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+				GLHelper::keystateE = false;
+			}
 		}
 	}
-	
 	//check for movement
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
@@ -449,8 +449,9 @@ void GLApp::update()
 					break;
 				default:
 					break;
+				}
 			}
-			}
+			
 
 		}
 	}
@@ -675,7 +676,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	GLObject tmpObj;
 	std::string hi;
 	std::cout << "hi\n";
-	tmpObj.body.createCircleBody(150.f, vector2D::vec2D(-19350.f, -19800.f), 0.f, false, 0.f, &tmpObj.body, hi);
+	tmpObj.body.createCircleBody(150.f, vector2D::vec2D(-500.f, 500.f), 0.f, false, 0.f, &tmpObj.body, hi);
 	tmpObj.body.setRad(scale.x);
 	tmpObj.body.setPos(pos);
 
