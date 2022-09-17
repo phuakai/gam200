@@ -6,7 +6,7 @@
 #include <iostream>
 
 //void movement(GLApp::GLObject& obj, GLApp::GLObject const& cam, bool const& stepByStep)
-vector2D::vec2D movement (vector2D::vec2D &pos, float &speed)
+vector2D::vec2D movement (vector2D::vec2D &pos, float &speed, bool stepByStep)
 {
 	float dt = GLHelper::delta_time;
 
@@ -40,32 +40,32 @@ vector2D::vec2D movement (vector2D::vec2D &pos, float &speed)
 	{
 		keyboardVel.y += speed;
 		//obj.untravelledDistance.second = 0.f;
-		//if (stepByStep)
-			//GLHelper::keystateI = false;
+		if (stepByStep)
+			GLHelper::keystateI = false;
 	}
 	
 	if (GLHelper::keystateK == true) //down
 	{
 		keyboardVel.y -= speed;
 		//obj.untravelledDistance.second = 0.f;
-		//if (stepByStep)
-			//GLHelper::keystateK = false;
+		if (stepByStep)
+			GLHelper::keystateK = false;
 	}
 
 	if (GLHelper::keystateJ == true) //left
 	{
 		keyboardVel.x -= speed;
 		//obj.untravelledDistance.second = 0.f;
-		//if (stepByStep)
-			//GLHelper::keystateJ = false;
+		if (stepByStep)
+			GLHelper::keystateJ = false;
 	}
 
 	if (GLHelper::keystateL == true) //right
 	{
 		keyboardVel.x += speed;
 		//obj.untravelledDistance.second = 0.f;
-		//if (stepByStep)
-			//GLHelper::keystateL = false;
+		if (stepByStep)
+			GLHelper::keystateL = false;
 	}
 
 	if (keyboardVel.x != 0.f || keyboardVel.y != 0.f)

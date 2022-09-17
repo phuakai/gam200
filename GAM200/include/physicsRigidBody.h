@@ -25,6 +25,7 @@ private:
 	float area;
 	
 	bool isStatic;					//will not be affected by physics
+	bool isCollidable;              //for collision debugger
 
 	float radius;					//for circle
 	float width;					//for box
@@ -59,19 +60,24 @@ public:
 	* Creator
 	********************/
 	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
-	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody &body, std::string errMsg);
+	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
 
 	/********************
 	* Getters
 	********************/
 	float getRad();
 	vector2D::vec2D getPos();
+	float getWidth();
+	float getHeight();
+	std::vector<vector2D::vec2D> getTfmVtx();
+	bool getCollidability();
 
 	/********************
 	* Setters
 	********************/
 	void setRad(float rad);
 	void setPos(vector2D::Point2D position);
+	void setCollidability(bool collisionflag);
 
 	/********************
 	* Others

@@ -143,9 +143,12 @@ void GLApp::GLObject::draw() const
 		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
 		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 	};
+
+
 	std::vector<Graphics::vertexData> vertexData;
 	for (int i = 0; i < ndc_coords.size(); ++i)
 	{
+		//std::cout << "Coords " << i << std::endl;
 		Graphics::vertexData tmpVtxData;
 		tmpVtxData.posVtx = ndc_coords[i];
 		tmpVtxData.clrVtx = clr_vtx[i];
@@ -269,7 +272,7 @@ void GLApp::update()
 
 	if (GLHelper::keystateC)
 	{
-		currentCollision = ++currentCollision % 6;
+		currentCollision = ++currentCollision % 2;
 		GLHelper::keystateC = false;
 	}
 	if (GLHelper::keystateM)
@@ -287,9 +290,9 @@ void GLApp::update()
 		textures = !textures;
 		GLHelper::keystateT = GL_FALSE;
 	}
-	if (GLHelper::keystateQ)
+	if (GLHelper::keystateQ || GLHelper::keystateE)
 	{
-		for (int j = 0; j < 100; j++)
+		for (int j = 0; j < 1; j++)
 		{
 
 
@@ -311,15 +314,21 @@ void GLApp::update()
 			std::uniform_int_distribution<int> sizerandom(50, 150);
 			float randwidth = (float)sizerandom(generator);
 			float randheight = (float)sizerandom(generator);
+
+			std::uniform_real_distribution<float> colour(0.f, 1.f);
+			float randr = colour(generator);
+			float randg = colour(generator);
+			float randb = colour(generator);
+			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
 			//std::cout << "Values " << randx << ", " << randy << std::endl;
 			if (GLHelper::keystateQ)
 			{
-				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy));
+				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy), tmpcolor);
 				GLHelper::keystateQ = false;
 			}
 			else
 			{
-				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), tmpcolor);
 				GLHelper::keystateE = false;
 			}
 		}
@@ -327,13 +336,18 @@ void GLApp::update()
 	//check for movement
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
-		if (obj1->first == "Banana1")
+		if (obj1->first != "Camera")
 		{
-			vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed);
-			obj1->second.body.move(velocity);
+			if (obj1->first == "Banana1")
+			{
+				//obj1->second.body.rotate(45.f);
+				//float rad{45.f / 180.f * M_PI};
+				//obj1->second.orientation.x = rad;
+				vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
+				obj1->second.body.move(velocity);
+			}
+			obj1->second.body.transformVertices();
 			obj1->second.modelCenterPos = obj1->second.body.getPos();
-			//obj1->second.body.setPos(obj1->second.modelCenterPos);
-
 		}
 	}
 
@@ -352,15 +366,15 @@ void GLApp::update()
 						float depth;
 						vector2D::vec2D velocity{ 0.f, 0.f };
 						if (physics::CollisionPushResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-																		obj2->second.modelCenterPos, obj2->second.scaling.x,
-																		velocity, depth))
+							obj2->second.modelCenterPos, obj2->second.scaling.x,
+							velocity, depth))
 						{
+							velocity *= (depth / 2.f);
 							obj1->second.body.move(velocity);
-							obj1->second.body.move(velocity);
+							velocity *= -1;
+							obj2->second.body.move(velocity);
 							obj1->second.modelCenterPos = obj1->second.body.getPos();
 							obj2->second.modelCenterPos = obj2->second.body.getPos();
-							//obj1->second.body.setPos(obj1->second.modelCenterPos);
-							//obj2->second.body.setPos(obj2->second.modelCenterPos);
 						}
 					}
 				}
@@ -383,12 +397,14 @@ void GLApp::update()
 					if (obj2->first == "Banana1")
 					{
 						float depth;
-
+						vector2D::vec2D velocity{ 0.f, 0.f };
 						if (physics::CollisionBlockResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
 							obj2->second.modelCenterPos, obj2->second.scaling.x,
-							obj2->second.directionVec, depth))
+							velocity, depth))
 						{
-							obj2->second.body.setPos(obj2->second.modelCenterPos);
+							velocity *= depth;
+							obj2->second.body.move(velocity);
+							obj2->second.modelCenterPos = obj2->second.body.getPos();
 						}
 					}
 				}
@@ -398,64 +414,104 @@ void GLApp::update()
 
 #endif
 
-	bool GraceObj{ true };
-	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-	{
-		for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+
+	//#if false
+		// Check for polygon polygon collision detection
+		for (int i{ 0 }; i < 8; ++i)
 		{
-
-		//if (obj1->first != "Camera")
-		//{
-			if (obj1 != obj2)
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 			{
-
-				obj1->second.update(GLHelper::delta_time);
-				//update phsyics according to input
-				if (GraceObj && (obj1->first != "Camera"))
+				if (obj1->first != "Camera" && obj1->second.body.getCollidability())
 				{
-					GraceObj = false;
-					//movement(obj1->second, objects["Camera"], stepByStepCollision);
-					//movement(obj1->second, obj2->second, stepByStepCollision);
-				}
-				//check for physics collision after update
-				switch (currentCollision)
-				{
-				case 1: //collisionType::SAT
-					if (physics::shapeOverlapSAT(obj2->second, obj1->second))
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 					{
-						obj1->second.overlap = true;
-						obj2->second.overlap = true;
+						if (obj2->first != "Camera" && obj1->first != obj2->first && obj2->second.body.getCollidability())
+						{
+							float depth;
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							//std::cout << "this is in glapp: " << obj1->second.body.getTfmVtx()[i].x << " " << obj1->second.body.getTfmVtx()[i].y << std::endl;
+							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+							{
+								//obj1->second.body.move(velocity);
+								//obj1->second.body.move(velocity);
+								//obj1->second.modelCenterPos = obj1->second.body.getPos();
+								//obj2->second.modelCenterPos = obj2->second.body.getPos();
+								//obj1->second.body.setPos(obj1->second.modelCenterPos);
+								//obj2->second.body.setPos(obj2->second.modelCenterPos);
+							}
+						}
 					}
-					break;
-				case 2: //collisionType::DIAG
-					if (physics::shapeOverlapDIAGONAL(obj2->second, obj1->second))
-					{
-						obj1->second.overlap = true;
-						obj2->second.overlap = true;
-					}
-					break;
-				case 3: //collisionType::SNAPDIAGSTATIC
-					physics::shapeOverlapSnapStaticDIAGONAL(obj2->second, obj1->second);
-					break;
-				case 4: //collisionType::AABBSTATIC
-					if (physics::shapeOverlapStaticAABB(obj2->second, obj1->second))
-					{
-						obj1->second.overlap = true;
-						obj2->second.overlap = true;
-					}
-					break;
-				case 5: //collisionType::AABBDYNAMIC
-					physics::shapeOverlapDynamicAABB(obj2->second, obj1->second);
-					break;
-				default:
-					break;
 				}
 			}
-			
-
+		}
+//#endif
+	#if false
+	for (int i{ 0 }; i < 8; ++i)
+	{
+		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+		{
+			if (obj1->first == "Banana1")
+			{
+				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+				{
+					if (obj2->first != "Camera" && obj1->first != obj2->first)
+					{
+						float depth{ FLT_MAX };
+						vector2D::vec2D velocity{ 0.f, 0.f };
+						if (physics::CollisionPushPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+						{
+							velocity *= (depth / 2.f);
+							obj1->second.body.move(velocity);
+							velocity *= -1;
+							obj2->second.body.move(velocity);
+							obj1->second.modelCenterPos = obj1->second.body.getPos();
+							obj2->second.modelCenterPos = obj2->second.body.getPos();
+						}
+					}
+				}
+			}
 		}
 	}
-	//}
+	#endif
+#if false
+	for (int i{ 0 }; i < 8; ++i)
+	{
+		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+		{
+			if (obj1->first != "Camera")
+			{
+				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+				{
+					if (obj2->first != "Camera" && obj1->first != obj2->first)
+					{
+						float depth{ FLT_MAX };
+						vector2D::vec2D velocity{ 0.f, 0.f };
+						if (physics::CollisionBlockPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+						{
+							velocity *= depth;
+							velocity *= -1;
+							obj2->second.body.move(velocity);
+							obj2->second.modelCenterPos = obj2->second.body.getPos();
+						}
+					}
+				}
+			}
+		}
+	}
+#endif
+
+	
+	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+	{
+		if (obj1->first != "Camera")
+		{
+			if (currentCollision > 0)
+			{
+				collisionDebug(obj1->second);
+			}
+			obj1->second.update(GLHelper::delta_time);
+		}
+	}
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end() ; ++obj1)
 	{
 		for (GLuint i = 0; i < obj1->second.mdl_ref->second.posvtx_cnt; i++)
@@ -487,11 +543,11 @@ void GLApp::draw()
 	title << std::fixed;
 	title << std::setprecision(2);
 	title << "GAM200";
+	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps*100)/100.0;
 	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
 	title << " | Orientation: " << std::setprecision(0) << (Graphics::camera2d.getCameraObject().orientation.x / M_PI * 180) << " degrees";
 	title << " | Window height: " << Graphics::camera2d.getHeight();
 	title << " | Collision Type: " << collisionInfo[static_cast< collisionType>(currentCollision)];
-	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps*100)/100.0;
 
 	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
 
@@ -522,100 +578,18 @@ void GLApp::draw()
 		{
 			
 		case 0: //collisionType::NIL
-			if (obj->first != "Camera")
+			if (obj->first != "Camera" &&  obj->second.body.getCollidability())
 			{
 				obj->second.draw();
 			}
 			break;
-		case 1: //collisionType::SAT
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-				obj->second.color = blue;
 
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
-		case 2: //collisionType::DIAG
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-				obj->second.color = blue;
-
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
-		case 3: //collisionType::SNAPDIAGSTATIC
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-				obj->second.color = blue;
-
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
-		case 4: //collisionType::AABBSTATIC
-			//collisionDebug(obj->second);
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-			{ 
-				obj->second.color = blue;
-			}
-
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
-		case 5: //collisionType::AABBDYNAMIC
-			//collisionDebug(obj->second);
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-				obj->second.color = blue;
-
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
-		case 6: //collisionType::AABBDYNAMIC
-			if (obj->first != "Camera")
-			{
-				obj->second.draw();
-				obj->second.color = green;
-			}
-			else
-				obj->second.color = blue;
-
-			if (obj->second.overlap)
-			{
-				obj->second.color = red;
-			}
-			break;
 		default:
+			if (obj->first != "Camera")
+			{	
+				obj->second.draw();
+			}
+			
 			break;
 		}
 	}
@@ -671,32 +645,42 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
 }
 
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos)
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, bool collisionflag)
 {
 	GLObject tmpObj;
 	std::string hi;
-	std::cout << "hi\n";
-	tmpObj.body.createCircleBody(150.f, vector2D::vec2D(-500.f, 500.f), 0.f, false, 0.f, &tmpObj.body, hi);
-	tmpObj.body.setRad(scale.x);
-	tmpObj.body.setPos(pos);
 
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
+	if (modelname == "circle")
+		tmpObj.body.createCircleBody(scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
+	else if (modelname == "square")
+		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	float randr = colour(generator);
-	float randg = colour(generator);
-	float randb = colour(generator);
-	tmpObj.color = glm::vec3(randr, randg, randb);
-	tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
+	std::cout << "Creating " << pos.x << " " << pos.y << std::endl;
+	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	//// create default engine as source of randomness
+	//std::default_random_engine generator(seed);
+	//std::uniform_real_distribution<float> colour(0.f, 1.f);
+	//float randr = colour(generator);
+	//float randg = colour(generator);
+	//float randb = colour(generator);
+	//tmpObj.color = glm::vec3(randr, randg, randb);
+	
+	tmpObj.color = vector3D::vec3D(0.3f, 0.4f, 0.5f);
+
+	//std::cout << "1st test " << tmpObj.color.x << ", " << tmpObj.color.y << ", " << tmpObj.color.z << std::endl;
+	//std::cout << "2nd test " << tmpObj.color.r << ", " << tmpObj.color.g << ", " << tmpObj.color.b << std::endl;
+	// 
 	//tmpObj.scaling = scale;
-	tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
+	if (modelname == "circle")
+		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
+	else if (modelname == "square")
+		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getWidth(), tmpObj.body.getWidth());
 	//std::cout << "this is scale in obj and scale in scale in body: " << tmpObj.scaling.x << " " << tmpObj.scaling.y << " " << tmpObj.body.getRad() << std::endl;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
 	tmpObj.speed = 200.f;
+	tmpObj.body.setCollidability(collisionflag);
 
 	if (shdrpgms.find("gam200-shdrpgm") != shdrpgms.end())
 	{
@@ -720,10 +704,11 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 		tmpObj.mdl_ref = models.find(modelname);
 	}
 
+	
+
 	objects[objname] = tmpObj;
 
 }
-
 /*  _________________________________________________________________________*/
 /*! GLApp::init_scene
 

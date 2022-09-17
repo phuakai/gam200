@@ -80,11 +80,16 @@ namespace physics
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
 						 GLApp::GLObject const& polygon2);
 
-	bool shapeOverlapDIAGONAL(GLApp::GLObject const& polygon1, 
-							  GLApp::GLObject const& polygon2);
+	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx);
+	bool CollisionPushPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D &norm, float& depth);
+	bool CollisionBlockPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D& norm, float& depth);
 
-	bool shapeOverlapSnapStaticDIAGONAL(GLApp::GLObject & polygon1,
-										GLApp::GLObject & polygon2);
+	bool CollisionDetecgtionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
+		vector2D::vec2D& norm, float& depth);
+
+	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis);
+	void projectCircle(vector2D::vec2D circleCenter, float rad, vector2D::vec2D projAxis);
+	vector2D::vec2D meanOfVertices(std::vector<vector2D::vec2D> vtx);
 
 	void computeBoundingBox(GLApp::GLObject& polygon);
 

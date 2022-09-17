@@ -19,6 +19,7 @@ physicsRigidBody::physicsRigidBody()
 	restitution = 0.f;
 	area = 0.f;
 	isStatic = false;
+	isCollidable = true;
 	radius = 0.f;
 	width = 0.f;
 	height = 0.f;
@@ -46,6 +47,7 @@ physicsRigidBody::physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVe
 	restitution = Restituition;
 	area = Area;
 	isStatic = IsStatic;
+	isCollidable = true;
 	radius = Radius;
 	width = Width;
 	height = Height;
@@ -61,6 +63,7 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	//body = NULL;
 	errMsg.clear();
 	float area = rad * rad * M_PI;
+
 
 	// Check area
 	if (area < world.minBodySize)
@@ -91,13 +94,13 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	//body->rot = Rot;
 	//body->rotVel = RotVel;
 	//body->density = Density;
+	body->pos = pos;
 	body->mass = area * 1.f * density;
 	body->restitution = restituition;
 	body->area = area;
 	body->isStatic = isStatic;
-	//body->setRad(rad);
+	body->isCollidable = true;
 	body->radius = rad;
-	//std::cout << "this is rad in init: " << body->getRad() << std::endl;
 
 	//body->width = 0.f;
 	//body->height = 0.f;
@@ -107,9 +110,8 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 }
 
 
-bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody & body, std::string errMsg)
+bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body, std::string errMsg)
 {
-	//body = NULL;
 	errMsg.clear();
 	float area = width * height;
 
@@ -122,7 +124,7 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 		std::cout << errMsg << std::endl;
 		return false;
 	}
-	if (area > 1000.f)//flatworld.minBodySize)
+	if (area > world.maxBodySize)
 	{
 		std::stringstream msg{ "Area is too large. Max area is " };
 		msg << world.maxBodySize;
@@ -136,38 +138,41 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 
 	// Create box body
 
-	//body = new physicsRigidBody;
-	body.pos = pos;
+	body->pos = pos;
 	//body->linearVel = LinearVel;
 	//body->rot = Rot;
 	//body->rotVel = RotVel;
 	//body->density = Density;
-	body.mass = area * 1.f * density;
-	body.restitution = restituition;
-	body.area = area;
-	body.isStatic = isStatic;
+	body->mass = area * 1.f * density;
+	body->restitution = restituition;
+	body->area = area;
+	body->isStatic = isStatic;
+	body->isCollidable = true;
 	//body.radius = 0.f;
-	body.width = width;
-	body.height = height;
-	body.halfWidth = width / 2.f;
-	body.halfHeight = height / 2. ;
-	body.shapeType = shapeType::box;
+	body->width = width;
+	body->height = height;
+	body->halfWidth = width / 2.f;
+	body->halfHeight = height / 2.f ;
+	body->shapeType = shapeType::box;
 
 	// storage: bottom left -> bottom right -> top right -> top left
-	body.vertices.emplace_back(pos.x - body.halfWidth, pos.y - body.halfHeight);
-	body.vertices.emplace_back(pos.x + body.halfWidth, pos.y - body.halfHeight);
-	body.vertices.emplace_back(pos.x + body.halfWidth, pos.y + body.halfHeight);
-	body.vertices.emplace_back(pos.x - body.halfWidth, pos.y + body.halfHeight);
+	body->vertices.emplace_back(0.f - body->halfWidth, 0.f - body->halfHeight);
+	body->vertices.emplace_back(0.f - body->halfWidth, 0.f + body->halfHeight);
+	body->vertices.emplace_back(0.f + body->halfWidth, 0.f + body->halfHeight);
+	body->vertices.emplace_back(0.f + body->halfWidth, 0.f - body->halfHeight);
 	
-	body.transformedVertices.resize(body.vertices.size());
-	body.plsUpdateTfm = true;
+	body->transformedVertices = body->vertices;
+	//body->transformedVertices.resize(body->vertices.size());
 
-	body.tri.emplace_back(0);
-	body.tri.emplace_back(1);
-	body.tri.emplace_back(2);
-	body.tri.emplace_back(0);
-	body.tri.emplace_back(2);
-	body.tri.emplace_back(3);
+
+	body->plsUpdateTfm = true;
+		
+	body->tri.emplace_back(0);
+	body->tri.emplace_back(1);
+	body->tri.emplace_back(2);
+	body->tri.emplace_back(0);
+	body->tri.emplace_back(2);
+	body->tri.emplace_back(3);
 }
 
 float physicsRigidBody::getRad()
@@ -185,9 +190,34 @@ void physicsRigidBody::setPos(vector2D::Point2D position)
 	pos = position;
 }
 
+void physicsRigidBody::setCollidability(bool collisionflag)
+{
+	isCollidable = collisionflag;
+}
+
 vector2D::vec2D physicsRigidBody::getPos()
 {
 	return pos;
+}
+
+float physicsRigidBody::getWidth()
+{
+	return width;
+}
+
+float physicsRigidBody::getHeight()
+{
+	return height;
+}
+
+std::vector<vector2D::vec2D> physicsRigidBody::getTfmVtx()
+{
+	return transformedVertices;
+}
+
+bool physicsRigidBody::getCollidability()
+{
+	return isCollidable;
 }
 
 //void physicsRigidBody::setTransformRequired(bool transform)
@@ -215,7 +245,6 @@ void physicsRigidBody::transformVertices()
 		for (size_t i {0} ; i < vertices.size() ; ++i)
 			transformedVertices[i] = physicsTransform::phyTransform(vertices[i], transformMtx);
 		plsUpdateTfm = false;
-		//transformMtx.physicsTransform(pos, rot);
 	}
 }
 

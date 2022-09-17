@@ -34,9 +34,14 @@ namespace vector3D
  /**************************************************************************/
 	typedef union vec3D
 	{
+
 		struct
 		{
 			float x, y, z;
+		};
+		struct
+		{
+			float r, g, b; // RGB for colours
 		};
 
 		float m[3];

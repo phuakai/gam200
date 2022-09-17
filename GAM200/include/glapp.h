@@ -87,7 +87,7 @@ struct GLApp {
 	  std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 	  //added for physics testing
-	  glm::vec3 color{};
+	  vector3D::vec3D color{};
 	  matrix3x3::mat3x3 mdlXform{};															// model to world transformation
 	  vector2D::vec2D worldCenterPos{};
 	  std::vector<vector2D::vec2D> boundingBoxWorldVertices;									
@@ -104,7 +104,7 @@ struct GLApp {
 	  // function to update the object's model transformation matrix
 	  void update(GLdouble delta_time);
 
-	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos); // Temp
+	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, bool collisionflag = true); // Temp
   };
 
 
