@@ -15,7 +15,7 @@ an OpenGL context and implement a game loop.
 #include <glapp.h>
 #include <collision.h>
 #include <iostream>
-#include "ECS.h"
+
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
 
@@ -111,10 +111,6 @@ static void init() {
     std::exit(EXIT_FAILURE);
   }
  
-  ecs.RegisterComponent<Position>();
-  ecs.RegisterComponent<he>();
-  Entity ent1(ecs);
-  ent1.Add<Position>({ 1,2 });
   //ent1.Add<Velocity>({ .5f,.5f });
   // Part 2
   //GLHelper::print_specs();
