@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vec2D.h>
 #include <mat3x3.h>
 

@@ -62,6 +62,8 @@ struct GLHelper
   static GLboolean keystateL;  // Player right
   static GLboolean keystateP;  // Pause game
   static GLboolean keystateQ;  // Add new object
+  static GLboolean keystateE;  // Pause game
+  static GLboolean keystateQ;  // Add new object
   static GLboolean keystateM;  // Toggle Modulate (Colour on texture)
   static GLboolean keystateT;  // Toggle Texture
   static GLboolean keystateB;  // Toggle Alpha blend

@@ -1,3 +1,4 @@
+#pragma once
 
 #include <GL/glew.h> // for access to OpenGL API declarations 
 #include <glm/glm.hpp>

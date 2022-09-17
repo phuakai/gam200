@@ -37,10 +37,11 @@ GLboolean GLHelper::keystateK = GL_FALSE;  // Player backward
 GLboolean GLHelper::keystateJ = GL_FALSE;  // Player left
 GLboolean GLHelper::keystateL = GL_FALSE;  // Player right
 GLboolean GLHelper::keystateP = GL_FALSE;  // Pause game
-GLboolean GLHelper::keystateQ = GL_FALSE;  // Add new object
 GLboolean GLHelper::keystateM = GL_FALSE;  // Modulate
 GLboolean GLHelper::keystateT = GL_FALSE;  // Toggle Texture
 GLboolean GLHelper::keystateB = GL_FALSE;  // Toggle Alpha blend
+GLboolean GLHelper::keystateQ = GL_FALSE;  // Add new circle
+GLboolean GLHelper::keystateE = GL_FALSE;  // Add new square
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
 /*  _________________________________________________________________________ */
@@ -222,6 +223,7 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
 
         keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
         keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
+        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Q
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
@@ -265,6 +267,7 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
         keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
         keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
+        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
     }
     else if (GLFW_RELEASE == action) {
         // key start changes from pressed to released
@@ -331,6 +334,10 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (key == GLFW_KEY_B)
         {
             keystateB = GL_FALSE;
+        }
+        if (key == GLFW_KEY_E)
+        {
+            keystateE = GL_FALSE;
         }
     }
 }
