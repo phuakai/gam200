@@ -30,8 +30,8 @@ namespace physics
 		vector2D::Vector2DNormalize(dirNorm, staticCenter - kineticCenter);
 		depth = sqrt(sumOfRad) - sqrt(distanceBtnCenters);
 
-		vector2D::vec2D tmpNorm{ dirNorm * (depth / 2.f) };
-		vector2D::vec2D reverseTmpNorm{ tmpNorm * -1};
+		//vector2D::vec2D tmpNorm{ dirNorm * (depth / 2.f) };
+		//vector2D::vec2D reverseTmpNorm{ tmpNorm * -1};
 
 		//move(tmpNorm, staticCenter);
 		//move(reverseTmpNorm, kineticCenter);
@@ -59,9 +59,10 @@ namespace physics
 		// There is collision, provide response
 		vector2D::Vector2DNormalize(dirNorm, staticCenter - kineticCenter);
 		depth = sqrt(sumOfRad) - sqrt(distanceBtnCenters);
+		dirNorm *= -1;
 
-		vector2D::vec2D tmpNorm{ dirNorm * depth };
-		vector2D::vec2D reverseTmpNorm{ tmpNorm * -1 };
+		//vector2D::vec2D tmpNorm{ dirNorm * depth };
+		//vector2D::vec2D reverseTmpNorm{ tmpNorm * -1 };
 
 		//move(reverseTmpNorm, kineticCenter);
 
@@ -249,7 +250,7 @@ namespace physics
 
 	/******************************************************************************/
 	/*!
-
+		
 	*/
 	/******************************************************************************/
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2)
@@ -306,7 +307,6 @@ namespace physics
 				/***********************************
 				* Check AABB collision
 				***********************************/
-				//
 				if (!(shape2Max >= shape1Min && shape1Max >= shape2Min))
 					return false; //shape is not in collision
 			}
@@ -314,217 +314,218 @@ namespace physics
 		return true;
 	}
 
-	/******************************************************************************/
-	/*!
-
-	*/
-	/******************************************************************************/
-	bool shapeOverlapDIAGONAL(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2)
+	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx)
 	{
-		GLApp::GLObject const* shape1 = &polygon1;
-		GLApp::GLObject const* shape2 = &polygon2;
-		static float myInf{ std::numeric_limits<float>::infinity() };
 
-		for (int i = 0; i < 2; ++i)
+		vector2D::vec2D staticMinMax{ 0.f, 0.f }, kineticMinMax{ 0.f, 0.f };
+		for (size_t i{ 0 }; i < staticVtx.size(); ++i)
 		{
-			if (i == 1)									// swap both shapes
-			{
-				shape1 = &polygon2;
-				shape2 = &polygon1;
-			}
+			vector2D::vec2D staticStart{ staticVtx[i] };
+			vector2D::vec2D staticEnd{ staticVtx[(i + 1) % staticVtx.size()] };
 
-			/***********************************
-			* Check diagonals of polygon 1
-			***********************************/
-			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
-			{
-				physics::LineSegment lineSeg1{ vector2D::vec2D(shape1->worldCenterPos.x, shape1->worldCenterPos.y),					// Start point
-											   vector2D::vec2D(shape1->worldVertices[j].x, shape1->worldVertices[j].y) };			// End point
+			vector2D::vec2D edge{ staticEnd - staticStart };
+			vector2D::vec2D projAxis{-edge.y, edge.x};					//clockwise normal
+			
+			staticMinMax = projectVtx(staticVtx, projAxis) ;
+			kineticMinMax = projectVtx(kineticVtx, projAxis) ;
 
-				/***********************************
-				* Check edges of polygon 2
-				***********************************/
-				for (size_t k = 0; k < shape2->worldVertices.size(); ++k)
-				{
-					int l = (k + 1) % shape2->worldVertices.size();
-					physics::LineSegment lineSeg2{ vector2D::vec2D(shape2->worldVertices[k].x, shape2->worldVertices[k].y),					// Start point
-												   vector2D::vec2D(shape2->worldVertices[l].x, shape2->worldVertices[l].y) };				// End point
-
-					/***********************************
-					* Check for line segments
-					* intersection
-					***********************************/
-					float h{ (lineSeg2.pt1.x - lineSeg2.pt0.x) * (lineSeg1.pt0.y - lineSeg1.pt1.y) - (lineSeg1.pt0.x - lineSeg1.pt1.x) * (lineSeg2.pt1.y - lineSeg2.pt0.y) };
-					float t1{ ((lineSeg2.pt0.y - lineSeg2.pt1.y) * (lineSeg1.pt0.x - lineSeg2.pt0.x) + (lineSeg2.pt1.x - lineSeg2.pt0.x) * (lineSeg1.pt0.y - lineSeg2.pt0.y)) / h};
-					float t2{ ((lineSeg1.pt0.y - lineSeg1.pt1.y) * (lineSeg1.pt0.x - lineSeg2.pt0.x) + (lineSeg1.pt1.x - lineSeg1.pt0.x) * (lineSeg1.pt0.y - lineSeg2.pt0.y)) / h};
-
-					if (t1 >= 0.f && t1 < 1.f && t2 >= 0.f && t2 < 1.f)
-						return true;
-				}
-			}
+			//if (!(kineticMinMax.y >= staticMinMax.x && staticMinMax.y >= kineticMinMax.x))
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
 		}
-		return false;
+
+		for (size_t i{ 0 }; i < kineticVtx.size(); ++i)
+		{
+			vector2D::vec2D kineticStart{ kineticVtx[i] };
+			vector2D::vec2D kineticEnd{ kineticVtx[(i + 1) % kineticVtx.size()] };
+
+			vector2D::vec2D edge{ kineticEnd - kineticStart };
+			vector2D::vec2D projAxis{ -edge.y, edge.x };				//clockwise normal
+
+			staticMinMax = projectVtx(staticVtx, projAxis);
+			kineticMinMax = projectVtx(kineticVtx, projAxis);
+
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
+		}
+
+		//std::cout << "--------------------\nthis is static vtx: \n"
+		//	<< staticVtx[0].x << " " << staticVtx[0].y << std::endl
+		//	<< staticVtx[1].x << " " << staticVtx[1].y << std::endl
+		//	<< staticVtx[2].x << " " << staticVtx[2].y << std::endl
+		//	<< staticVtx[3].x << " " << staticVtx[3].y << std::endl;
+		//std::cout << "--------------------\nthis is kinetic vtx: \n"
+		//	<< kineticVtx[0].x << " " << kineticVtx[0].y << std::endl
+		//	<< kineticVtx[1].x << " " << kineticVtx[1].y << std::endl
+		//	<< kineticVtx[2].x << " " << kineticVtx[2].y << std::endl
+		//	<< kineticVtx[3].x << " " << kineticVtx[3].y << std::endl;
+
+		std::cout << "there is collision\n";
+		return true;
 	}
 
-	/******************************************************************************/
-	/*!
-
-	*/
-	/******************************************************************************/
-	bool shapeOverlapSnapStaticDIAGONAL(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
+	bool CollisionPushPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, 
+										vector2D::vec2D& norm, float &depth)
 	{
-		GLApp::GLObject * shape1 = &polygon1;
-		GLApp::GLObject * shape2 = &polygon2;
-		static float myInf{ std::numeric_limits<float>::infinity() };
 
-		for (int i = 0; i < 2; ++i)
+		vector2D::vec2D staticMinMax{ 0.f, 0.f }, kineticMinMax{ 0.f, 0.f };
+		for (size_t i{ 0 }; i < staticVtx.size(); ++i)
 		{
-			if (i == 1)									// swap both shapes
+			vector2D::vec2D staticStart{ staticVtx[i] };
+			vector2D::vec2D staticEnd{ staticVtx[(i + 1) % staticVtx.size()] };
+
+			vector2D::vec2D edge{ staticEnd - staticStart };
+			vector2D::vec2D projAxis{ -edge.y, edge.x };					//clockwise normal
+			//vector2D::Vector2DNormalize(projAxis, projAxis);
+
+			staticMinMax = projectVtx(staticVtx, projAxis);
+			kineticMinMax = projectVtx(kineticVtx, projAxis);
+
+			//if (!(kineticMinMax.y >= staticMinMax.x && staticMinMax.y >= kineticMinMax.x))
+			// No collision
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
+
+			// There is collision, provide response
+			float axisDepth = std::min(kineticMinMax.y - staticMinMax.x, staticMinMax.y - kineticMinMax.x);
+			if (axisDepth < depth)
 			{
-				shape1 = &polygon2;
-				shape2 = &polygon1;
-			}
-
-			/***********************************
-			* Check diagonals of polygon 1
-			***********************************/
-			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
-			{
-				physics::LineSegment lineSeg1{ vector2D::vec2D(shape1->worldCenterPos.x, shape1->worldCenterPos.y),					// Start point
-											   vector2D::vec2D(shape1->worldVertices[j].x, shape1->worldVertices[j].y) };			// End point
-				vector2D::vec2D displacement{ 0.f, 0.f };
-
-				/***********************************
-				* Check edges of polygon 2
-				***********************************/
-				for (size_t k = 0; k < shape2->worldVertices.size(); ++k)
-				{
-					int l = (k + 1) % shape2->worldVertices.size();
-					physics::LineSegment lineSeg2{ vector2D::vec2D(shape2->worldVertices[k].x, shape2->worldVertices[k].y),					// Start point
-												   vector2D::vec2D(shape2->worldVertices[l].x, shape2->worldVertices[l].y) };				// End point
-
-					/***********************************
-					* Check for line segments
-					* intersection
-					***********************************/
-					float h{ (lineSeg2.pt1.x - lineSeg2.pt0.x) * (lineSeg1.pt0.y - lineSeg1.pt1.y) - (lineSeg1.pt0.x - lineSeg1.pt1.x) * (lineSeg2.pt1.y - lineSeg2.pt0.y) };
-					float t1{ ((lineSeg2.pt0.y - lineSeg2.pt1.y) * (lineSeg1.pt0.x - lineSeg2.pt0.x) + (lineSeg2.pt1.x - lineSeg2.pt0.x) * (lineSeg1.pt0.y - lineSeg2.pt0.y)) / h };
-					float t2{ ((lineSeg1.pt0.y - lineSeg1.pt1.y) * (lineSeg1.pt0.x - lineSeg2.pt0.x) + (lineSeg1.pt1.x - lineSeg1.pt0.x) * (lineSeg1.pt0.y - lineSeg2.pt0.y)) / h };
-
-					if (t1 >= 0.f && t1 < 1.f && t2 >= 0.f && t2 < 1.f)
-					{
-						displacement.x += (1.f - t1) * (lineSeg1.pt1.x - lineSeg1.pt0.x);
-						displacement.y += (1.f - t1) * (lineSeg1.pt1.y - lineSeg1.pt0.y);
-						shape1->overlap = true;
-					}
-					//std::cout << displacement.x << " " << displacement.y << std::endl;
-
-				}
-				for (size_t m{ 0 }; m < shape1->worldVertices.size(); ++m)
-				{
-					shape1->worldVertices[m].x += displacement.x * (i == 0 ? -1 : +1);
-					shape1->worldVertices[m].y += displacement.y * (i == 0 ? -1 : +1);
-				}
-				shape1->worldCenterPos.x += displacement.x * (i == 0 ? -1 : +1);
-				shape1->worldCenterPos.y += displacement.y * (i == 0 ? -1 : +1);
+				depth = axisDepth;
+				norm = projAxis;
 			}
 		}
-		return false;
+
+		for (size_t i{ 0 }; i < kineticVtx.size(); ++i)
+		{
+			vector2D::vec2D kineticStart{ kineticVtx[i] };
+			vector2D::vec2D kineticEnd{ kineticVtx[(i + 1) % kineticVtx.size()] };
+
+			vector2D::vec2D edge{ kineticEnd - kineticStart };
+			vector2D::vec2D projAxis{ -edge.y, edge.x };				//clockwise normal
+			//vector2D::Vector2DNormalize(projAxis, projAxis);
+
+			staticMinMax = projectVtx(staticVtx, projAxis);
+			kineticMinMax = projectVtx(kineticVtx, projAxis);
+
+			// No collision
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
+
+			// There is collision, provide response
+			float axisDepth = std::min(kineticMinMax.y - staticMinMax.x, staticMinMax.y - kineticMinMax.x);
+			if (axisDepth < depth)
+			{
+				depth = axisDepth;
+				norm = projAxis;
+			}
+		}
+
+		depth /= vector2D::Vector2DLength(norm);
+		vector2D::Vector2DNormalize(norm, norm);
+
+		vector2D::vec2D staticCenter{ meanOfVertices(staticVtx) };
+		vector2D::vec2D kineticCenter{ meanOfVertices(kineticVtx) };
+
+		vector2D::vec2D direction{ staticCenter - kineticCenter };
+
+		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
+			norm = -norm;
+
+		std::cout << "there is collision\n";
+		return true;
 	}
 
-	///******************************************************************************/
-	///*!
-	//	Check for both circle & pillar and circle & circle collision
-	// */
-	// /******************************************************************************/
-	//int CollisionIntersection_CircleCircle(const Circle& circleA,		//ball
-	//										const vector2D::vec2D& velA,  //ball vel
-	//										const Circle& circleB,		//pillar
-	//										const  vector2D::vec2D& velB,  //pillar vel
-	//										vector2D::vec2D & interPtA,	//ball's intersection pt
-	//										vector2D::vec2D & interPtB,	//pillar's intersection pt
-	//										float& interTime)			//intersection time -> B(ti)
-	//{
-	//	// make circleB static
-	//	float m{ 0.f };
-	//	vector2D::vec2D velATmp{ velA };
-	//	vector2D::Vector2DNormalize(velATmp, velA);
-	//	m = vector2D::Vector2DDotProduct(circleB.m_center - circleA.m_center, velATmp);
+	bool CollisionBlockPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx,
+		vector2D::vec2D& norm, float& depth)
+	{
 
-	//	float radiusSum{ circleA.m_radius + circleB.m_radius };
-	//	float distanceBtnCircles{ Vector2DLength(circleA.m_center - circleB.m_center) };
-	//	float nSquare = distanceBtnCircles * distanceBtnCircles - m * m;
+		vector2D::vec2D staticMinMax{ 0.f, 0.f }, kineticMinMax{ 0.f, 0.f };
+		for (size_t i{ 0 }; i < staticVtx.size(); ++i)
+		{
+			vector2D::vec2D staticStart{ staticVtx[i] };
+			vector2D::vec2D staticEnd{ staticVtx[(i + 1) % staticVtx.size()] };
 
-	//	if (m < 0 && distanceBtnCircles > radiusSum)
-	//	{
-	//		return 0;
-	//	}
-	//	else if (nSquare > radiusSum * radiusSum)
-	//	{
-	//		return 0;
-	//	}
-	//	else
-	//	{
-	//		float sSquare{ radiusSum * radiusSum - nSquare };
-	//		float interTimeTmp0{ 0.f }, interTimeTmp1{ 0.f };
-	//		interTimeTmp0 = (m - sqrt(sSquare)) / Vector2DLength(velA);
-	//		interTimeTmp1 = (m + sqrt(sSquare)) / Vector2DLength(velA);
-	//		interTime = std::min(interTimeTmp0, interTimeTmp1);
-	//		if (interTime >= 0 && interTime <= 1)
-	//		{
-	//			interPtA = circleA.m_center + velA * interTime;
-	//			return 1;
-	//		}
-	//	}
-	//	return 0;
-	//}
+			vector2D::vec2D edge{ staticEnd - staticStart };
+			vector2D::vec2D projAxis{ -edge.y, edge.x };					//clockwise normal
+			//vector2D::Vector2DNormalize(projAxis, projAxis);
 
-	///******************************************************************************/
-	///*!
-	//	Computes the new circle position if there is collision between the circle
-	//	and the pillar
-	// */
-	// /******************************************************************************/
-	//void CollisionResponse_CirclePillar(const vector2D::vec2D & normal,
-	//									const float& interTime,
-	//									const vector2D::vec2D& ptStart,
-	//									const vector2D::vec2D& ptInter,
-	//									vector2D::vec2D& ptEnd,
-	//									vector2D::vec2D& reflectedVectorNormalized)
-	//{
-	//	reflectedVectorNormalized = 2 * (vector2D::Vector2DDotProduct(ptStart - ptInter, normal)) * normal - (ptStart - ptInter);
-	//	vector2D::Vector2DNormalize(reflectedVectorNormalized, reflectedVectorNormalized);
-	//	ptEnd = ptInter + vector2D::Vector2DLength(ptEnd - ptStart) * reflectedVectorNormalized * (1 - interTime);
-	//}
+			staticMinMax = projectVtx(staticVtx, projAxis);
+			kineticMinMax = projectVtx(kineticVtx, projAxis);
 
-	///******************************************************************************/
-	///*!
+			//if (!(kineticMinMax.y >= staticMinMax.x && staticMinMax.y >= kineticMinMax.x))
+			// No collision
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
 
-	//*/
-	// /******************************************************************************/
-	//void CollisionResponse_CircleCircle(vector2D::vec2D & normal,
-	//									const float interTime,
-	//									vector2D::vec2D & velA,
-	//									const float& massA,
-	//									vector2D::vec2D & interPtA,
-	//									vector2D::vec2D & velB,
-	//									const float& massB,
-	//									vector2D::vec2D & interPtB,
-	//									vector2D::vec2D & reflectedVectorA,
-	//									vector2D::vec2D & ptEndA,
-	//									vector2D::vec2D & reflectedVectorB,
-	//									vector2D::vec2D & ptEndB)
-	//{
-	//	float tmpVecA{ vector2D::Vector2DDotProduct(velA, normal) };
-	//	float tmpVecB{ vector2D::Vector2DDotProduct(velB, normal) };
+			// There is collision, provide response
+			float axisDepth = std::min(kineticMinMax.y - staticMinMax.x, staticMinMax.y - kineticMinMax.x);
+			if (axisDepth < depth)
+			{
+				depth = axisDepth;
+				norm = projAxis;
+			}
+		}
 
-	//	reflectedVectorA = velA - (2 * (tmpVecA - tmpVecB) / (massA + massB)) * massB * normal;
+		for (size_t i{ 0 }; i < kineticVtx.size(); ++i)
+		{
+			vector2D::vec2D kineticStart{ kineticVtx[i] };
+			vector2D::vec2D kineticEnd{ kineticVtx[(i + 1) % kineticVtx.size()] };
 
-	//	ptEndA = interPtA + (1 - interTime) * reflectedVectorA;
+			vector2D::vec2D edge{ kineticEnd - kineticStart };
+			vector2D::vec2D projAxis{ -edge.y, edge.x };				//clockwise normal
+			//vector2D::Vector2DNormalize(projAxis, projAxis);
 
-	//	reflectedVectorB = velB + (2 * (tmpVecA - tmpVecB) / (massA + massB)) * massA * normal;
+			staticMinMax = projectVtx(staticVtx, projAxis);
+			kineticMinMax = projectVtx(kineticVtx, projAxis);
 
-	//	ptEndB = interPtB + (1 - interTime) * reflectedVectorB;
-	//}
+			// No collision
+			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+				return false;
+
+			// There is collision, provide response
+			float axisDepth = std::min(kineticMinMax.y - staticMinMax.x, staticMinMax.y - kineticMinMax.x);
+			if (axisDepth < depth)
+			{
+				depth = axisDepth;
+				norm = projAxis;
+			}
+		}
+
+		depth /= vector2D::Vector2DLength(norm);
+		vector2D::Vector2DNormalize(norm, norm);
+
+		vector2D::vec2D staticCenter{ meanOfVertices(staticVtx) };
+		vector2D::vec2D kineticCenter{ meanOfVertices(kineticVtx) };
+
+		vector2D::vec2D direction{ staticCenter - kineticCenter };
+
+		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
+			norm = -norm;
+
+		std::cout << "there is collision\n";
+		return true;
+	}
+
+	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis)
+	{
+		vector2D::vec2D minMax{ FLT_MAX , -FLT_MAX };
+
+		for (size_t i{ 0 }; i < vtx.size(); ++i)
+		{
+			float length{ vector2D::Vector2DDotProduct(axis, vtx[i]) };
+			minMax.x = std::min(minMax.x, length);
+			minMax.y = std::max(minMax.y, length);
+		}
+		return minMax;
+	}
+
+	vector2D::vec2D meanOfVertices(std::vector<vector2D::vec2D> vtx)
+	{
+		vector2D::vec2D sum{ 0.f, 0.f };
+
+		for (int i{ 0 }; i < vtx.size(); ++i)
+			sum += vtx[i];
+		return (sum / (float)vtx.size());
+	}
 
 }
