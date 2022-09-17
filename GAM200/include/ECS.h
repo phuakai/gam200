@@ -139,12 +139,12 @@ public:
 
 //templated child class
 
-template<class C>
 
 
 // i dont even know whats going on
 
 
+template<class C>
 class Component : public ComponentBase {
 
 public:
@@ -210,8 +210,8 @@ public:
     template<class C>
     void RemoveComponent(const EntityID& entityId);
 
-    //template<class C>
-   // C* GetComponent(const EntityID& entityId);
+    template<class C>
+    C* GetComponent(const EntityID& entityId);
 
     //template<class C>
   //  bool HasComponent(const EntityID& entityId);
@@ -273,27 +273,6 @@ private:
         //ecs.AddComponent<Physics>(myEntity, { 2.f, 5.f, .34f, .1f });
 };
 
-
-struct Position
-{
-    float x;
-    float y;
-};
-
-struct Velocity
-{
-    float x;
-    float y;
-};
-
-struct Randomness
-{
-    float a;
-};
-
-struct he {
-    int a;
-};
 
 
 
@@ -387,7 +366,6 @@ void ECS::RegisterComponent()
      if (m_componentMap.contains(componentTypeId))
          return; // can't re-register a type
 
-     std::cout << componentTypeId;
     m_componentMap.emplace(componentTypeId, new Component<C>);
 }
 
@@ -742,6 +720,35 @@ void ECS::RemoveComponent(const EntityID& entityId)
     record.archetype = newArchetype;
 }
 
+template<class C>
+C* ECS::GetComponent(const EntityID& entityId)
+{
+    ComponentTypeID compTypeId = Component<C>::GetTypeID();
+    if (!m_entityArchetypeMap.contains(entityId))
+        return nullptr; // it doesn't exist
+
+    Record& record = m_entityArchetypeMap[entityId];
+
+    Archetype* archetype = record.archetype;
+    if (!archetype)
+        return nullptr; // there's no components anyway
+
+    ArchetypeID* archetypeID;
+    archetypeID = std::find(archetype->type.begin(), archetype->type.end(), compTypeId);
+
+    if (std::find(archetype->type.begin(), archetype->type.end(), compTypeId) == archetype->type.end())
+    {
+        // this entity doesn't have this component
+        return nullptr;
+    }
+
+
+    
+    std::cout << "test" << archetypeID[0] << std::endl;
+    C* test = nullptr;
+    return test;
+}
+
 void ECS::RemoveEntity(const EntityID& entityId)
 {
     // if (!m_entityArchetypeMap.contains(entityId))
@@ -942,26 +949,5 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
     m_func(elapsedMilliseconds, entityIDs, ts...);
 }
 
-//void registerPos()
-//{
-    //ecs.RegisterComponent<Position>();
-    //ecs.RegisterComponent<he>();
-//}
-
-
-//void registerComponent()
-//{
-//    Entity ent1(ecs);
-//    ent1.Add<Position>({ 1,2 });
-//}
-
-//void registerPos();
-//
-//void registerComponent();
-
-
 ////#include "ECS.hpp"
 #endif //__ECS__
-
-
-

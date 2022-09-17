@@ -34,6 +34,36 @@ to OpenGL implementations.
 #include <buffer.h>
 #include <model.h>
 #include <random>
+#include "ECS.h"
+
+
+
+struct Position
+{
+	float x;
+	float y;
+};
+
+struct Movement
+{
+	vector2D::vec2D velocity;
+	vector2D::vec2D force;
+	vector2D::vec2D target;
+	
+};
+
+struct Sprite
+{
+	vector2D::vec2D size;
+	std::string type;
+};
+
+struct Stats {
+	std::string name;
+	int health;
+	
+};
+
 
 
 
@@ -178,9 +208,11 @@ void GLApp::init()
 	// GLApp::models, store shader programs of type GLSLShader in
 	// container GLApp::shdrpgms, and store repositories of objects of
 	// type GLObject in container GLApp::objects
-	GLApp::init_scene("../scenes/gam200.scn");
+	//GLApp::init_scene("../scenes/gam200.scn");
 
-	// Part 4: initialize camera
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0));
+
+	// Part 4: initialize 
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
 
 	// Store physics related info to be printed in title bar
@@ -193,6 +225,29 @@ void GLApp::init()
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 	
 
+	ecs.RegisterComponent<Position>();
+	ecs.RegisterComponent<Movement>();
+	ecs.RegisterComponent<Sprite>();
+	ecs.RegisterComponent<Stats>();
+	
+
+	std::vector<Entity> enemies(2500);
+	for (int i = 0; i < enemies.size(); ++i) {
+		enemies[i].Add<Position>((-450+(i % 45 * 20 ), 400 - ((int)i/30 * 10)));
+		enemies[i].Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
+		enemies[i].Add<Sprite>(vector2D::vec2D(10, 10), "square");
+		enemies[i].Add<Stats>("enemy" + std::to_string(i + 1), 10);
+		//enemies[i].Add<Movement>({ 0.5f,0.5f });
+		//std::cout << enemies[i].GetID() << std::endl;
+		
+		//std::cout <<
+		ecs.GetComponent<Movement>(enemies[i].GetID());
+
+		//GLApp::GLObject::gimmeObject(enemies[i], "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0));
+	}
+	ecs.GetComponent<Movement>(enemies[1].GetID());
+	//std::cout << enemies[1].GetID();
+	
 	
 	
 	// Part 5: Print OpenGL context and GPU specs
@@ -216,6 +271,20 @@ void GLApp::update()
 	objects["Camera"].update(GLHelper::delta_time);
 
 	// update other inputs for physics
+
+
+	if (GLHelper::mousestateLeft)
+	{
+		GLHelper::mousestateLeft = false;
+		double mousePosx, mousePosy;
+
+		Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+
+		std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+
+		//obj->second.modelCenterPos.x = (float)mousePosx;
+		//obj->second.modelCenterPos.y = (float)mousePosy;
+	}
 
 	if (GLHelper::keystateP)
 	{
@@ -305,18 +374,6 @@ void GLApp::update()
 				break;
 			default:
 				break;
-			}
-			if (GLHelper::mousestateLeft)
-			{
-				GLHelper::mousestateLeft = false;
-				double mousePosx, mousePosy;
-
-				Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
-
-				std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
-
-				obj->second.modelCenterPos.x = (float)mousePosx;
-				obj->second.modelCenterPos.y = (float)mousePosy;
 			}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
 			{
