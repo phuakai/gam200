@@ -4,10 +4,35 @@
 #include <mat3x3.h>
 #include <vec2D.h>
 #include <iostream>
+#include <sstream>
 
-void collisionDebug(GLApp::GLObject& object)
+static int tmpcollisionobjcounter{ 0 };
+
+void Graphics::collisionDebugInit(GLApp::GLObject& object)
 {
-	//std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
+	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
+	matrix3x3::mat3x3 worldtondc = transform.getWorldtoNDC();
+	float width{ 0 }, height{ 0 };
+	for (int i = 0; i < object.body.getTfmVtx().size(); i++)
+	{
+		vector2D::Vec2 newndc = worldtondc * tmp[i];
+		width = object.body.getWidth();
+		height = object.body.getHeight();
+
+	}
+	std::string tmpobjname = "ACollisionObj";
+	tmpcollisionobjcounter++;
+	std::stringstream tmpstream;
+	tmpstream << tmpobjname << tmpcollisionobjcounter;
+	std::string finalobjname = tmpstream.str();
+	//std::cout << "Final obj name " << finalobjname << std::endl;
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width + 10.f, height + 10.f), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
+
+}
+
+void Graphics::collisionDebugCreate(GLApp::GLObject& object)
+{
+	std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
 
 	matrix3x3::mat3x3 worldtondc = transform.getWorldtoNDC();
@@ -23,6 +48,13 @@ void collisionDebug(GLApp::GLObject& object)
 
 	}
 	//std::cout << "Width & Height " << width << ", " << height << std::endl;
-	GLApp::GLObject::gimmeObject("square", "atest", vector2D::vec2D(width + 10.f, height + 10.f), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), false);
+	
+	std::string tmpobjname = "ACollisionObj";
+	tmpcollisionobjcounter++;
+	std::stringstream tmpstream;
+	tmpstream << tmpobjname << tmpcollisionobjcounter;
+	std::string finalobjname = tmpstream.str();
+	//std::cout << "Final obj name " << finalobjname << std::endl;
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width + 7.f, height + 7.f), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
 	
 }
