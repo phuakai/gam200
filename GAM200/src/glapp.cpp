@@ -48,7 +48,7 @@ std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
 Graphics::Texture texobj;
 
-short GLApp::currentCollision;
+GLApp::collisionType GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
 bool modulate, alphablend, textures;
@@ -232,15 +232,17 @@ void GLApp::init()
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
 
 	// Store physics related info to be printed in title bar
-	currentCollision = 0;
+	currentCollision = collisionType::NIL;
 	stepByStepCollision = false;
 	collisionInfo[collisionType::NIL] = "NIL";
-	collisionInfo[collisionType::SAT] = "SAT";
-	collisionInfo[collisionType::DIAG] = "DIAG";
-	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
-	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
-	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
-	collisionInfo[collisionType::AABBDYNAMIC] = "AABBDYNAMIC";
+	collisionInfo[collisionType::CircleDetection] = "CircleDetection";
+	collisionInfo[collisionType::CirclePushResolution] = "CirclePushResolution";
+	collisionInfo[collisionType::CircleBlockResolution] = "CircleBlockResolution";
+	collisionInfo[collisionType::PolygonDetection] = "PolygonDetection";
+	collisionInfo[collisionType::PolygonPushResolution] = "PolygonPushResolution";
+	collisionInfo[collisionType::PolygonBlockResolution] = "PolygonBlockResolution";
+	collisionInfo[collisionType::PolygonCircleDetection] = "PolygonCircleDetection";
+	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
@@ -272,7 +274,8 @@ void GLApp::update()
 
 	if (GLHelper::keystateC)
 	{
-		currentCollision = ++currentCollision % 2;
+		int tmp = (int)(currentCollision);
+		currentCollision = (collisionType)(++tmp % 9);
 		GLHelper::keystateC = false;
 	}
 	if (GLHelper::keystateM)
@@ -355,161 +358,263 @@ void GLApp::update()
 		}
 	}
 
-#if false
-	// Check for circle circle collision with push (WORKING CODE)
-	for (int i{ 0 }; i < 8; ++i)
+	switch (currentCollision)
 	{
-		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-		{
-			if (obj1->first != "Camera")
-			{
-				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-				{
-					if (obj2->first != "Camera" && obj1->first != obj2->first)
-					{
-						float depth;
-						vector2D::vec2D velocity{ 0.f, 0.f };
-						if (physics::CollisionPushResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-							obj2->second.modelCenterPos, obj2->second.scaling.x,
-							velocity, depth))
-						{
-							velocity *= (depth / 2.f);
-							obj1->second.body.move(velocity);
-							velocity *= -1;
-							obj2->second.body.move(velocity);
-							obj1->second.modelCenterPos = obj1->second.body.getPos();
-							obj2->second.modelCenterPos = obj2->second.body.getPos();
-						}
-					}
-				}
-			}
-		}
-	}
-
-#endif
-#if false
-	// Check for circle circle collision with block (WORKING CODE)
-	for (int i{ 0 }; i < 8; ++i)
-	{
-		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-		{
-			//if (obj1->first != "Camera")
-			if (obj1->first != "Banana1" && obj1->first != "Camera")
-			{
-				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-				{
-					if (obj2->first == "Banana1")
-					{
-						float depth;
-						vector2D::vec2D velocity{ 0.f, 0.f };
-						if (physics::CollisionBlockResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-							obj2->second.modelCenterPos, obj2->second.scaling.x,
-							velocity, depth))
-						{
-							velocity *= depth;
-							obj2->second.body.move(velocity);
-							obj2->second.modelCenterPos = obj2->second.body.getPos();
-						}
-					}
-				}
-			}
-		}
-	}
-
-#endif
-
-
-	//#if false
-		// Check for polygon polygon collision detection
-		for (int i{ 0 }; i < 3; ++i)
+	case collisionType::CircleDetection:
+		// Check for circle circle collision detection (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
 		{
 			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 			{
-				if (obj1->first != "Camera" && obj1->second.body.getCollidability())
+				if (obj1->first != "Camera")
 				{
-					std::stringstream tmpstream;
-					tmpstream << "CollisionObj" << obj1->second.objId;
-					std::string finalobjname = tmpstream.str();
-					objects[finalobjname].color = vector3D::vec3D(1.0f, 1.0f, 1.0f);
 					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 					{
-						if (obj2->first != "Camera" && obj1->first != obj2->first && obj2->second.body.getCollidability())
+						if (obj2->first != "Camera" && obj1->first != obj2->first)
 						{
-							float depth;
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							//std::cout << "this is in glapp: " << obj1->second.body.getTfmVtx()[i].x << " " << obj1->second.body.getTfmVtx()[i].y << std::endl;
-							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+							if (physics::CollisionDetectionCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+																		obj2->second.modelCenterPos, obj2->second.scaling.x))
 							{
-								objects[finalobjname].color = vector3D::vec3D(1.0f, 0.0f, 0.0f);
-								//obj1->second.body.move(velocity);
-								//obj1->second.body.move(velocity);
-								//obj1->second.modelCenterPos = obj1->second.body.getPos();
-								//obj2->second.modelCenterPos = obj2->second.body.getPos();
-								//obj1->second.body.setPos(obj1->second.modelCenterPos);
-								//obj2->second.body.setPos(obj2->second.modelCenterPos);
+								obj1->second.overlap = true;
+								obj2->second.overlap = true;
 							}
 						}
 					}
 				}
 			}
 		}
-//#endif
-	#if false
-	for (int i{ 0 }; i < 8; ++i)
-	{
-		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+		break;
+	case collisionType::CirclePushResolution:
+	//#if false
+		// Check for circle circle collision with push (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
 		{
-			if (obj1->first == "Banana1")
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 			{
-				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+				if (obj1->first != "Camera")
 				{
-					if (obj2->first != "Camera" && obj1->first != obj2->first)
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 					{
-						float depth{ FLT_MAX };
-						vector2D::vec2D velocity{ 0.f, 0.f };
-						if (physics::CollisionPushPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+						if (obj2->first != "Camera" && obj1->first != obj2->first)
 						{
-							velocity *= (depth / 2.f);
-							obj1->second.body.move(velocity);
-							velocity *= -1;
-							obj2->second.body.move(velocity);
-							obj1->second.modelCenterPos = obj1->second.body.getPos();
-							obj2->second.modelCenterPos = obj2->second.body.getPos();
+							float depth;
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionPushResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+								obj2->second.modelCenterPos, obj2->second.scaling.x,
+								velocity, depth))
+							{
+								velocity *= (depth / 2.f);
+								obj1->second.body.move(velocity);
+								velocity *= -1;
+								obj2->second.body.move(velocity);
+								obj1->second.modelCenterPos = obj1->second.body.getPos();
+								obj2->second.modelCenterPos = obj2->second.body.getPos();
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	#endif
-#if false
-	for (int i{ 0 }; i < 8; ++i)
-	{
-		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+	//#endif
+	case collisionType::CircleBlockResolution:
+		//#if false
+		// Check for circle circle collision with block (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
 		{
-			if (obj1->first != "Camera")
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 			{
-				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+				if (obj1->first != "Banana1")
 				{
-					if (obj2->first != "Camera" && obj1->first != obj2->first)
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 					{
-						float depth{ FLT_MAX };
-						vector2D::vec2D velocity{ 0.f, 0.f };
-						if (physics::CollisionBlockPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+						if (obj2->second.body.getShape() == ShapeType::circle && obj1->first != "Camera" && obj1->first != obj2->first)
 						{
-							velocity *= depth;
-							velocity *= -1;
-							obj2->second.body.move(velocity);
-							obj2->second.modelCenterPos = obj2->second.body.getPos();
+							float depth;
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionBlockResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+								obj2->second.modelCenterPos, obj2->second.scaling.x,
+								velocity, depth))
+							{
+								velocity *= depth;
+								obj2->second.body.move(velocity);
+								obj2->second.modelCenterPos = obj2->second.body.getPos();
+							}
 						}
 					}
 				}
 			}
 		}
+		//#endif
+		break;
+	case collisionType::PolygonDetection:
+		//#if false
+		// Check for polygon polygon collision detection (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
+		{
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			{
+				//if (obj1->first != "Camera")
+				if (obj1->second.body.getShape() == ShapeType::box && obj1->first != "Camera")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+						{
+							float depth;
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+							{
+								obj1->second.overlap = true;
+								obj2->second.overlap = true;
+							}
+						}
+					}
+				}
+				else if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+						{
+							float depth;
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+							{
+								obj1->second.overlap = true;
+								obj2->second.overlap = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		//#endif
+		break;
+	case collisionType::PolygonPushResolution:
+		//#if false
+		// Check for polygon polygon collision with push (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
+		{
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			{
+				if (obj1->first == "Banana1")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+						{
+							float depth{ FLT_MAX };
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionPushPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+							{
+								velocity *= (depth / 2.f);
+								obj1->second.body.move(velocity);
+								velocity *= -1;
+								obj2->second.body.move(velocity);
+								obj1->second.body.transformVertices();
+								obj2->second.body.transformVertices();
+								obj1->second.modelCenterPos = obj1->second.body.getPos();
+								obj2->second.modelCenterPos = obj2->second.body.getPos();
+							}
+						}
+					}
+				}
+			}
+		}
+		//#endif
+		break;
+	case collisionType::PolygonBlockResolution:
+		//#if false
+		// Check for polygon polygon collision with block (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
+		{
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			{
+				if (obj1->first != "Banana1")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+						{
+							float depth{ FLT_MAX };
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionBlockPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+							{
+								velocity *= depth;
+								velocity *= -1;
+								obj2->second.body.move(velocity);
+								obj1->second.body.transformVertices();
+								obj2->second.body.transformVertices();
+								obj2->second.modelCenterPos = obj2->second.body.getPos();
+							}
+						}
+					}
+				}
+			}
+		}
+		//#endif
+		break;
+	case collisionType::PolygonCircleDetection:
+		//#if false
+		// Check for circle polygon collision detection (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
+		{
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			{
+				if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
+						{
+							if (physics::CollisionDetectionCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx()))
+							{
+								obj2->second.overlap = true;
+								obj2->second.overlap = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		//#endif
+		break;
+	case collisionType::PolygonCircleResolution:
+		//#if false
+		// Check for circle polygon collision block (WORKING CODE)
+		for (int i{ 0 }; i < 8; ++i)
+		{
+			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			{
+				if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+				{
+					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					{
+						if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
+						{
+							float depth{ FLT_MAX };
+							vector2D::vec2D velocity{ 0.f, 0.f };
+							if (physics::CollisionBlockCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx(), velocity, depth))
+							{
+								vector2D::Vector2DNormalize(velocity, velocity);
+								velocity *= depth;
+								obj2->second.body.move(velocity);
+								velocity *= -1;
+								obj2->second.body.transformVertices();
+								obj2->second.modelCenterPos = obj2->second.body.getPos();
+							}
+						}
+					}
+				}
+			}
+		}
+		//#endif
+		break;
+	default:
+		break;
 	}
-#endif
 
-	
+
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
@@ -517,6 +622,7 @@ void GLApp::update()
 			obj1->second.update(GLHelper::delta_time);
 		}
 	}
+	
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end() ; ++obj1)
 	{
 		for (GLuint i = 0; i < obj1->second.mdl_ref->second.posvtx_cnt; i++)
@@ -525,7 +631,6 @@ void GLApp::update()
 		}
 	}
 
-	
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw

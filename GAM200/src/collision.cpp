@@ -91,6 +91,27 @@ namespace physics
 		return true;
 	}
 
+	/**************************************************************************/
+	/*!
+		CollisionResponse_CircleCircle checks for collision between two circcles
+		and returns true on collision else it returns false
+	*/
+	/**************************************************************************/
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad)
+	{
+		float distanceBtnCenters{ vector2D::Vector2DSquareDistance(staticCenter, kineticCenter) };
+		float sumOfRad{ (staticRad + kineticRad) * (staticRad + kineticRad) };
+
+		// No collision
+		if (distanceBtnCenters >= sumOfRad)
+			return false;
+
+		// There is collision
+		return true;
+	}
+
 
 	/**************************************************************************/
 	/*!
@@ -360,7 +381,7 @@ namespace physics
 		//	<< kineticVtx[2].x << " " << kineticVtx[2].y << std::endl
 		//	<< kineticVtx[3].x << " " << kineticVtx[3].y << std::endl;
 
-		//std::cout << "there is collision\n";
+		std::cout << "there is polygon polygon collision detection\n";
 		return true;
 	}
 
@@ -431,7 +452,7 @@ namespace physics
 		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
 			norm = -norm;
 
-		std::cout << "there is collision\n";
+		std::cout << "there is polygon polygon collision and push response\n";
 		return true;
 	}
 
@@ -490,8 +511,8 @@ namespace physics
 			}
 		}
 
-		//depth /= vector2D::Vector2DLength(norm);
-		//vector2D::Vector2DNormalize(norm, norm);
+		depth /= vector2D::Vector2DLength(norm);
+		vector2D::Vector2DNormalize(norm, norm);
 
 		vector2D::vec2D staticCenter{ meanOfVertices(staticVtx) };
 		vector2D::vec2D kineticCenter{ meanOfVertices(kineticVtx) };
@@ -501,39 +522,132 @@ namespace physics
 		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
 			norm = -norm;
 
-		std::cout << "there is collision\n";
+		std::cout << "there is polygon polygon collision and block response\n";
 		return true;
 	}
 
-	bool CollisionDetecgtionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
-		vector2D::vec2D& norm, float& depth)
+	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx)
 	{
-		vector2D::vec2D staticMinMax{ 0.f, 0.f }, kineticMinMax{ 0.f, 0.f };
+		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };
+		float axisDepth{ 0.f };
+
 		for (size_t i{ 0 }; i < boxVtx.size(); ++i)
 		{
-			vector2D::vec2D staticStart{ boxVtx[i] };
-			vector2D::vec2D staticEnd{ boxVtx[(i + 1) % boxVtx.size()] };
+			vector2D::vec2D boxStart{ boxVtx[i] };
+			vector2D::vec2D boxEnd{ boxVtx[(i + 1) % boxVtx.size()] };
 
-			vector2D::vec2D edge{ staticEnd - staticStart };
-			vector2D::vec2D projAxis{ -edge.y, edge.x };					//clockwise normal
+			vector2D::vec2D edge{ boxEnd - boxStart };
+			projAxis = vector2D::vec2D(-edge.y, edge.x);					//clockwise normal
 			vector2D::Vector2DNormalize(projAxis, projAxis);
 
-			staticMinMax = projectVtx(boxVtx, projAxis);
+			boxMinMax = projectVtx(boxVtx, projAxis);
+			circleMinMax = projectCircle(circleCenter, rad, projAxis);
 
 			// No collision
-			if (staticMinMax.x >= kineticMinMax.y || kineticMinMax.x >= staticMinMax.y)
+			if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
+				return false;
+		}
+
+		int closestPtIdx{ closestPointOfCircleToPolygon(circleCenter, boxVtx) };
+		vector2D::vec2D closestPt{ boxVtx[closestPtIdx] };
+
+		projAxis = closestPt - circleCenter;
+
+		boxMinMax = projectVtx(boxVtx, projAxis);
+		circleMinMax = projectCircle(circleCenter, rad, projAxis);
+
+		// No collision
+		if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
+			return false;
+
+		std::cout << "there is circle polygon collision detection\n";
+
+		return true;
+	}
+
+	bool CollisionBlockCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
+		vector2D::vec2D& norm, float& depth)
+	{
+		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };
+		float axisDepth{ 0.f };
+
+		for (size_t i{ 0 }; i < boxVtx.size(); ++i)
+		{
+			vector2D::vec2D boxStart{ boxVtx[i] };
+			vector2D::vec2D boxEnd{ boxVtx[(i + 1) % boxVtx.size()] };
+
+			vector2D::vec2D edge{ boxEnd - boxStart };
+			projAxis = vector2D::vec2D (-edge.y, edge.x);					//clockwise normal
+			vector2D::Vector2DNormalize(projAxis, projAxis);
+
+			boxMinMax = projectVtx(boxVtx, projAxis);
+			circleMinMax = projectCircle(circleCenter, rad, projAxis);
+
+			// No collision
+			if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
 				return false;
 
 			// There is collision, provide response
-			float axisDepth = std::min(kineticMinMax.y - staticMinMax.x, staticMinMax.y - kineticMinMax.x);
+			axisDepth = std::min(circleMinMax.y - boxMinMax.x, boxMinMax.y - circleMinMax.x);
 			if (axisDepth < depth)
 			{
 				depth = axisDepth;
 				norm = projAxis;
 			}
 		}
+
+		int closestPtIdx{ closestPointOfCircleToPolygon(circleCenter, boxVtx) };
+		vector2D::vec2D closestPt{ boxVtx[closestPtIdx] };
+
+		projAxis = closestPt - circleCenter;
+
+		boxMinMax = projectVtx(boxVtx, projAxis);
+		circleMinMax = projectCircle(circleCenter, rad, projAxis);
+
+		// No collision
+		if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
+			return false;
+
+		// There is collision, provide response
+		axisDepth = std::min(circleMinMax.y - boxMinMax.x, boxMinMax.y - circleMinMax.x);
+		if (axisDepth < depth)
+		{
+			depth = axisDepth;
+			norm = projAxis;
+		}
+
+		depth /= vector2D::Vector2DLength(norm);
+		vector2D::Vector2DNormalize(norm, norm);
+
+		vector2D::vec2D boxCenter{ meanOfVertices(boxVtx) };
+
+		vector2D::vec2D direction{ boxCenter - circleCenter };
+
+		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
+			norm = -norm;
+
+		std::cout << "there is circle polygon collision\n";
+
+		return true;
 	}
 
+	int closestPointOfCircleToPolygon(vector2D::vec2D circleCenter, std::vector<vector2D::vec2D> boxVtx)
+	{
+		int closestPoint { 0 }; //the vector index
+		float minDist{ FLT_MAX };
+
+		for (int i{ 0 }; i < boxVtx.size(); ++i)
+		{
+			//vector2D::vec2D vtx{  };
+			float dist{ vector2D::Vector2DDistance(boxVtx[i], circleCenter) };
+			if (dist < minDist)
+			{
+				minDist = dist;
+				closestPoint = i;
+			}
+		}
+		return closestPoint;
+	}
 
 	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis)
 	{
@@ -548,11 +662,25 @@ namespace physics
 		return minMax;
 	}
 
-	void projectCircle(vector2D::vec2D circleCenter, float rad, vector2D::vec2D projAxis)
+	vector2D::vec2D projectCircle(vector2D::vec2D circleCenter, float rad, vector2D::vec2D projAxis)
 	{
 		vector2D::vec2D dir;
 		vector2D::Vector2DNormalize(dir, projAxis);
 		vector2D::vec2D radVec(dir * rad); //scale the directional vec by the rad to get a point on the circle
+
+		vector2D::vec2D point1{ circleCenter + radVec };
+		vector2D::vec2D point2{ circleCenter - radVec };
+
+		vector2D::vec2D circleMinMax{ vector2D::Vector2DDotProduct(point1, projAxis), vector2D::Vector2DDotProduct(point2, projAxis) };
+
+		if (circleMinMax.x > circleMinMax.y)
+		{
+			float tmp{ circleMinMax.x };
+			circleMinMax.x = circleMinMax.y;
+			circleMinMax.y = tmp;
+		}
+
+		return circleMinMax;
 	}
 
 	vector2D::vec2D meanOfVertices(std::vector<vector2D::vec2D> vtx)

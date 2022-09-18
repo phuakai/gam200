@@ -25,7 +25,7 @@ physicsRigidBody::physicsRigidBody()
 	height = 0.f;
 	halfWidth = 0.f;
 	halfHeight = 0.f;
-	shapeType = shapeType::box;
+	shapeType = ShapeType::box;
 	plsUpdateTfm = true;
 }
 
@@ -53,9 +53,8 @@ physicsRigidBody::physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVe
 	height = Height;
 	halfWidth = Width/2.f;
 	halfHeight = Height/2.f;
-	shapeType = shapeType::box;
+	shapeType = ShapeType::box;
 	plsUpdateTfm = false;
-
 }
 
 bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body, std::string errMsg)
@@ -63,7 +62,6 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	//body = NULL;
 	errMsg.clear();
 	float area = rad * rad * M_PI;
-
 
 	// Check area
 	if (area < world.minBodySize)
@@ -104,7 +102,7 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 
 	//body->width = 0.f;
 	//body->height = 0.f;
-	body->shapeType = shapeType::circle;
+	body->shapeType = ShapeType::circle;
 	body->plsUpdateTfm = false;
 
 }
@@ -153,7 +151,7 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->height = height;
 	body->halfWidth = width / 2.f;
 	body->halfHeight = height / 2.f ;
-	body->shapeType = shapeType::box;
+	body->shapeType = ShapeType::box;
 
 	// storage: bottom left -> bottom right -> top right -> top left
 	body->vertices.emplace_back(0.f - body->halfWidth, 0.f - body->halfHeight);
@@ -214,10 +212,14 @@ std::vector<vector2D::vec2D> physicsRigidBody::getTfmVtx()
 {
 	return transformedVertices;
 }
-
 bool physicsRigidBody::getCollidability()
 {
 	return isCollidable;
+}
+
+ShapeType physicsRigidBody::getShape()
+{
+	return shapeType;
 }
 
 //void physicsRigidBody::setTransformRequired(bool transform)

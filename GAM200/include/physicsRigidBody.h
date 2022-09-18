@@ -5,7 +5,7 @@
 #include <vector>
 
 //#if false
-enum class shapeType
+enum class ShapeType
 {
 	circle = 0, 
 	box
@@ -33,7 +33,7 @@ private:
 	float halfWidth;				//for box
 	float halfHeight;				//for box
 
-	shapeType shapeType;
+	ShapeType shapeType;
 	
 	std::vector <vector2D::vec2D> vertices;
 	std::vector <int> tri;
@@ -70,6 +70,7 @@ public:
 	float getWidth();
 	float getHeight();
 	std::vector<vector2D::vec2D> getTfmVtx();
+	ShapeType getShape();
 	bool getCollidability();
 
 	/********************
