@@ -313,7 +313,7 @@ void GLApp::update()
 			float randwidth = (float)sizerandom(generator);
 			float randheight = (float)sizerandom(generator);
 
-			std::uniform_real_distribution<float> colour(0.f, 1.f);
+			std::uniform_real_distribution<float> colour(0.2f, 0.8f);
 			float randr = colour(generator);
 			float randg = colour(generator);
 			float randb = colour(generator);
@@ -337,7 +337,7 @@ void GLApp::update()
 		if (obj1->first != "Camera")
 		{
 			std::stringstream tmpstream;
-			tmpstream << "ACollisionObj" << obj1->second.objId;
+			tmpstream << "CollisionObj" << obj1->second.objId;
 			std::string finalobjname = tmpstream.str();
 			if (obj1->first == "Banana1")
 			{
@@ -428,9 +428,9 @@ void GLApp::update()
 				if (obj1->first != "Camera" && obj1->second.body.getCollidability())
 				{
 					std::stringstream tmpstream;
-					tmpstream << "ACollisionObj" << obj1->second.objId;
+					tmpstream << "CollisionObj" << obj1->second.objId;
 					std::string finalobjname = tmpstream.str();
-					objects[finalobjname].color = vector3D::vec3D(0.0f, 0.0f, 0.0f);
+					objects[finalobjname].color = vector3D::vec3D(1.0f, 1.0f, 1.0f);
 					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 					{
 						if (obj2->first != "Camera" && obj1->first != obj2->first && obj2->second.body.getCollidability())
@@ -440,7 +440,7 @@ void GLApp::update()
 							//std::cout << "this is in glapp: " << obj1->second.body.getTfmVtx()[i].x << " " << obj1->second.body.getTfmVtx()[i].y << std::endl;
 							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
 							{
-								objects[finalobjname].color = vector3D::vec3D(1.0f, 1.0f, 1.0f);
+								objects[finalobjname].color = vector3D::vec3D(1.0f, 0.0f, 0.0f);
 								//obj1->second.body.move(velocity);
 								//obj1->second.body.move(velocity);
 								//obj1->second.modelCenterPos = obj1->second.body.getPos();
@@ -590,9 +590,16 @@ void GLApp::draw()
 			break;
 
 		default:
-			if (obj->first != "Camera")
+			if (obj->first != "Camera" && obj->second.body.getCollidability() == true)
 			{	
+				
 				obj->second.draw();
+			}
+			if (obj->second.body.getCollidability() == false)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				obj->second.draw();
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 			
 			break;

@@ -20,13 +20,13 @@ void Graphics::collisionDebugInit(GLApp::GLObject& object)
 		height = object.body.getHeight();
 
 	}
-	std::string tmpobjname = "ACollisionObj";
+	std::string tmpobjname = "CollisionObj";
 	tmpcollisionobjcounter++;
 	std::stringstream tmpstream;
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width + 10.f, height + 10.f), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
 
 }
 
@@ -49,12 +49,12 @@ void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 	}
 	//std::cout << "Width & Height " << width << ", " << height << std::endl;
 	
-	std::string tmpobjname = "ACollisionObj";
+	std::string tmpobjname = "CollisionObj";
 	tmpcollisionobjcounter++;
 	std::stringstream tmpstream;
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width + 7.f, height + 7.f), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
 	
 }
