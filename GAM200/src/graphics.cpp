@@ -4,8 +4,68 @@
 #include <iostream>
 
 
+Graphics::BatchRenderer::BatchRenderer()
+{
+	Model batchmodel{};
+	GLSLShader batchshader{};
+	GLenum primtype = 0; // Primitive type for all objects in batch
+	int totaldrawcnt = 0; // Total count of all vertices to be drawn
+	int totalsize = 0; // To add via subdata
+	std::vector<vertexData> batchdata{}; // All vertices in batch
+
+	int vboid = 0;
+	int vaoid = 0;
+}
+
+void Graphics::BatchRenderer::BatchRender()
+{
+	//shd_ref->second.Use();
+	//glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
+	//glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
+	//GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
+	//glUniform1i(tex_loc, 0);
+
+	//GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
+	//glUniform1i(UniformModulate, modulate);
+
+	//GLboolean UniformTextures = glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
+	//glUniform1i(UniformTextures, textures);
+	//// call glDrawElements with appropriate arguments
+	//glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
+
+	//// unbind VAO and unload shader program
+	//glBindVertexArray(0);
+
+	//shd_ref->second.UnUse();
+	batchshader.Use();
+	glBindVertexArray(vaoid);
+
+	for (int i = 0; i < batchdata.size(); i++)
+	{
+		//std::cout << "This is I " << i << std::endl;
+		//std::cout << "Coords " << batchdata[i].posVtx.x << ", " << batchdata[i].posVtx.y << std::endl;
+	}
+
+	glNamedBufferSubData(vboid, 0, sizeof(Graphics::vertexData) * totalsize, batchdata.data());
+	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
+	glUniform1i(tex_loc, 0);
+
+	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
+	glUniform1i(UniformModulate, false); // Modulate bool temp
+
+	GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
+	glUniform1i(UniformTextures, false); // Texture bool temp
+
+	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
+
+	glBindVertexArray(0);
+
+	batchshader.UnUse();
 
 
+	//std::cout << "Cleared\n";
+	batchdata.clear();
+}
 
 /*  _________________________________________________________________________*/
 /*! Graphics::Camera2D::init

@@ -46,6 +46,8 @@ std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
+Graphics::BatchRenderer basicbatch; // Batch render object
+
 Graphics::Texture texobj;
 
 GLApp::collisionType GLApp::currentCollision;
@@ -126,130 +128,185 @@ set the transformation matrix for the model and render using glDrawElements
 */
 void GLApp::GLObject::draw() const
 {
-	// load shader program in use by this object
-	shd_ref->second.Use();
-
-	// bind VAO of this object's model
-	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-	
-	std::vector<vector2D::Vec2> tex_coord
+	if (mdl_ref->first == "circle")
 	{
-		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
-		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
-	};
-	std::vector<vector3D::Vec3> clr_vtx
-	{
-		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-	};
+		
+																																  // load shader program in use by this object
+		shd_ref->second.Use();
 
-
-	std::vector<Graphics::vertexData> vertexData;
-	for (int i = 0; i < ndc_coords.size(); ++i)
-	{
-		Graphics::vertexData tmpVtxData;
-		tmpVtxData.posVtx = ndc_coords[i];
-		if (mdl_ref->first == "circle")
-		{
-			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-		}
-		else
-		{
-			tmpVtxData.clrVtx = clr_vtx[i];
-		}
-		tmpVtxData.txtVtx = tex_coord[i];
-		vertexData.emplace_back(tmpVtxData);
-	}
-	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
-
-
-	// copy object's model-to-NDC matrix to vertex shader's
-	// uniform variable uModelToNDC
-	glm::mat3 glm_mdl_to_ndc_xform
-	{
-		mdl_to_ndc_xform.m[0], mdl_to_ndc_xform.m[1], mdl_to_ndc_xform.m[2],
-		mdl_to_ndc_xform.m[3], mdl_to_ndc_xform.m[4], mdl_to_ndc_xform.m[5],
-		mdl_to_ndc_xform.m[6], mdl_to_ndc_xform.m[7], mdl_to_ndc_xform.m[8]
-	};
-	//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
-	//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
-	GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
-	glUniform1i(tex_loc, 0);
-
-	GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
-	glUniform1i(UniformModulate, modulate);
-
-	GLboolean UniformTextures= glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
-	glUniform1i(UniformTextures, textures);
-
-	// call glDrawElements with appropriate arguments
-	glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-
-	// unbind VAO and unload shader program
-	glBindVertexArray(0);
-
-	if (coldebug == true)
-	{
-
-
+		// bind VAO of this object's model
 		glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
 		//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 
-		std::vector<vector2D::Vec2> tex_coord2
+		std::vector<vector2D::Vec2> tex_coord
 		{
 			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
 			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
 		};
-
-
-		std::vector<vector3D::Vec3> clr_vtx2
+		std::vector<vector3D::Vec3> clr_vtx
 		{
-			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f),
-			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f)
+			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 		};
-		if (overlap == true)
-		{
-			//std::cout << "Overlapping" << std::endl;
-			for (int i = 0; i < 4; i++)
-			{
-				clr_vtx2[i] = vector3D::Vec3(1.f, 0.f, 0.f);
-			}
-		}
 
-		std::vector<Graphics::vertexData> vertexData2;
+
+		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
 		{
 			Graphics::vertexData tmpVtxData;
 			tmpVtxData.posVtx = ndc_coords[i];
 			if (mdl_ref->first == "circle")
 			{
-				if (overlap == true)
-				{
-					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
-				}
-				else
-				{
-					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 0.f);
-				}
+				tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
 			}
 			else
 			{
-				tmpVtxData.clrVtx = clr_vtx2[i];
-
+				tmpVtxData.clrVtx = clr_vtx[i];
 			}
-			tmpVtxData.txtVtx = tex_coord2[i];
-			vertexData2.emplace_back(tmpVtxData);
+			tmpVtxData.txtVtx = tex_coord[i];
+			vertexData.emplace_back(tmpVtxData);
 		}
-		glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData2.size(), vertexData2.data()); // Set new buffer index with subdata
+		glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		// copy object's model-to-NDC matrix to vertex shader's
+		// uniform variable uModelToNDC
+		glm::mat3 glm_mdl_to_ndc_xform
+		{
+			mdl_to_ndc_xform.m[0], mdl_to_ndc_xform.m[1], mdl_to_ndc_xform.m[2],
+			mdl_to_ndc_xform.m[3], mdl_to_ndc_xform.m[4], mdl_to_ndc_xform.m[5],
+			mdl_to_ndc_xform.m[6], mdl_to_ndc_xform.m[7], mdl_to_ndc_xform.m[8]
+		};
+		//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
+		//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
+		GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
+		glUniform1i(tex_loc, 0);
+
+		GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
+		glUniform1i(UniformModulate, modulate);
+
+		GLboolean UniformTextures = glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
+		glUniform1i(UniformTextures, textures);
+
+		// call glDrawElements with appropriate arguments
 		glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		// unbind VAO and unload shader program
 		glBindVertexArray(0);
+
+		if (coldebug == true)
+		{
+
+
+			glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
+			//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
+
+			std::vector<vector2D::Vec2> tex_coord2
+			{
+				vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
+				vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
+			};
+
+
+			std::vector<vector3D::Vec3> clr_vtx2
+			{
+				vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f),
+				vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f)
+			};
+			if (overlap == true)
+			{
+				//std::cout << "Overlapping" << std::endl;
+				for (int i = 0; i < 4; i++)
+				{
+					clr_vtx2[i] = vector3D::Vec3(1.f, 0.f, 0.f);
+				}
+			}
+
+			std::vector<Graphics::vertexData> vertexData2;
+			for (int i = 0; i < ndc_coords.size(); ++i)
+			{
+				Graphics::vertexData tmpVtxData;
+				tmpVtxData.posVtx = ndc_coords[i];
+				if (mdl_ref->first == "circle")
+				{
+					if (overlap == true)
+					{
+						tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
+					}
+					else
+					{
+						tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 0.f);
+					}
+				}
+				else
+				{
+					tmpVtxData.clrVtx = clr_vtx2[i];
+
+				}
+				tmpVtxData.txtVtx = tex_coord2[i];
+				vertexData2.emplace_back(tmpVtxData);
+			}
+			glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData2.size(), vertexData2.data()); // Set new buffer index with subdata
+
+			std::cout << "Buffer size " << vertexData2.size() << " Draw count " << mdl_ref->second.getDrawCnt() << std::endl;
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glBindVertexArray(0);
+		}
+		//glDisable(GL_BLEND);
+		shd_ref->second.UnUse();
 	}
-	//glDisable(GL_BLEND);
-	shd_ref->second.UnUse();
+	else
+	{
+		basicbatch.batchmodel = mdl_ref->second;
+		basicbatch.batchshader = shd_ref->second;
+		//shd_ref->second.Use();
+		//glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
+		std::vector<vector2D::Vec2> tex_coord
+		{
+			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
+			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
+		};
+		std::vector<vector3D::Vec3> clr_vtx
+		{
+			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
+		};
+
+
+		std::vector<Graphics::vertexData> vertexData;
+		for (int i = 0; i < ndc_coords.size(); ++i)
+		{
+			Graphics::vertexData tmpVtxData;
+			tmpVtxData.posVtx = ndc_coords[i];
+			//std::cout << "Inputted ndc " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
+			if (mdl_ref->first == "circle")
+			{
+				tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
+			}
+			else
+			{
+				tmpVtxData.clrVtx = clr_vtx[i];
+			}
+			tmpVtxData.txtVtx = tex_coord[i];
+			vertexData.emplace_back(tmpVtxData);
+		}
+		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+		basicbatch.vaoid = mdl_ref->second.getVAOid();
+		basicbatch.vboid = mdl_ref->second.getVBOid();
+		basicbatch.totalsize += vertexData.size();
+		basicbatch.primtype = mdl_ref->second.getPrimitiveType();
+		basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+
+		//for (int i = 0; i < basicbatch.batchdata.size(); i++)
+		//{
+		//	std::cout << "This is I " << i << std::endl;
+		//	std::cout << "Coords " << basicbatch.batchdata[i].posVtx.x << ", " << basicbatch.batchdata[i].posVtx.y << std::endl;
+		//}
+		//glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData)* vertexData.size(), vertexData.data()); // Set new buffer index with subdata
+		//glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
+	}
 }
 
 
@@ -771,6 +828,7 @@ void GLApp::draw()
 	}
 
 	//objects["Camera"].draw();
+	basicbatch.BatchRender();
 	glDisable(GL_BLEND);
 }
 

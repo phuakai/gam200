@@ -4,9 +4,30 @@
 #include <glm/glm.hpp>
 #include <glapp.h>
 #include <vec2D.h>
+#include <vec3D.h>
 #include <mat3x3.h>
+#include <model.h>
 
 namespace Graphics {
+
+	class BatchRenderer
+	{
+	public:
+
+		Model batchmodel{}; // Model of all objects in batch
+		GLSLShader batchshader{}; // Shader of all objects in batch
+		GLenum primtype{}; // Primitive type for all objects in batch
+		int totaldrawcnt{}; // Total count of all vertices to be drawn
+		int totalsize{}; // To add via subdata
+		std::vector<vertexData> batchdata{}; // All vertices in batch
+
+		int vboid{};
+		int vaoid{};
+		
+		BatchRenderer();
+		void BatchRender(); // batch renders all objects in render
+
+	};
 
 	struct GLViewport 
 	{
