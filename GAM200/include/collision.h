@@ -73,6 +73,10 @@ namespace physics
 		vector2D::vec2D& kineticCenter, float& kineticRad,
 		float& distanceBtnCenters, float& sumOfRad);
 
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad);
+
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
 	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
@@ -84,7 +88,9 @@ namespace physics
 	bool CollisionPushPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D &norm, float& depth);
 	bool CollisionBlockPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D& norm, float& depth);
 
-	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
+	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx);
+
+	bool CollisionBlockCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
 		vector2D::vec2D& norm, float& depth);
 
 	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis);

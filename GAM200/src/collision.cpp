@@ -91,6 +91,27 @@ namespace physics
 		return true;
 	}
 
+	/**************************************************************************/
+	/*!
+		CollisionResponse_CircleCircle checks for collision between two circcles
+		and returns true on collision else it returns false
+	*/
+	/**************************************************************************/
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad)
+	{
+		float distanceBtnCenters{ vector2D::Vector2DSquareDistance(staticCenter, kineticCenter) };
+		float sumOfRad{ (staticRad + kineticRad) * (staticRad + kineticRad) };
+
+		// No collision
+		if (distanceBtnCenters >= sumOfRad)
+			return false;
+
+		// There is collision
+		return true;
+	}
+
 
 	/**************************************************************************/
 	/*!
@@ -505,7 +526,46 @@ namespace physics
 		return true;
 	}
 
-	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
+	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx)
+	{
+		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };
+		float axisDepth{ 0.f };
+
+		for (size_t i{ 0 }; i < boxVtx.size(); ++i)
+		{
+			vector2D::vec2D boxStart{ boxVtx[i] };
+			vector2D::vec2D boxEnd{ boxVtx[(i + 1) % boxVtx.size()] };
+
+			vector2D::vec2D edge{ boxEnd - boxStart };
+			projAxis = vector2D::vec2D(-edge.y, edge.x);					//clockwise normal
+			vector2D::Vector2DNormalize(projAxis, projAxis);
+
+			boxMinMax = projectVtx(boxVtx, projAxis);
+			circleMinMax = projectCircle(circleCenter, rad, projAxis);
+
+			// No collision
+			if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
+				return false;
+		}
+
+		int closestPtIdx{ closestPointOfCircleToPolygon(circleCenter, boxVtx) };
+		vector2D::vec2D closestPt{ boxVtx[closestPtIdx] };
+
+		projAxis = closestPt - circleCenter;
+
+		boxMinMax = projectVtx(boxVtx, projAxis);
+		circleMinMax = projectCircle(circleCenter, rad, projAxis);
+
+		// No collision
+		if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
+			return false;
+
+		std::cout << "there is circle polygon collision detection\n";
+
+		return true;
+	}
+
+	bool CollisionBlockCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
 		vector2D::vec2D& norm, float& depth)
 	{
 		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };

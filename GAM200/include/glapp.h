@@ -46,20 +46,20 @@ struct GLApp {
   static constexpr glm::vec3 blue{0.f, 0.f, 1.f};
   enum class collisionType
   {
-	NIL,			//0
-	SAT,			//1
-	DIAG,			//2
-	SNAPDIAGSTATIC, //3
-	AABBSTATIC,		//4
-	AABBDYNAMIC,	//5
-	SATSTATIC		//6
+	NIL = 0,						//0
+	CircleDetection,			//1
+	CirclePushResolution,		//2
+	CircleBlockResolution,		//3
+	PolygonDetection,			//4
+	PolygonPushResolution,		//5
+	PolygonBlockResolution,		//6
+	PolygonCircleDetection,		//7
+	PolygonCircleResolution		//8
   };
 
-  static short currentCollision;
+  static collisionType currentCollision;
   static bool stepByStepCollision;
   static std::unordered_map<collisionType, std::string> collisionInfo;
-
- 
 
   struct GLObject {
 	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
