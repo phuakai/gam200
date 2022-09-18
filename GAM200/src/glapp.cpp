@@ -268,7 +268,7 @@ void GLApp::update()
 				//obj1->second.body.rotate(45.f);
 				//float rad{45.f / 180.f * M_PI};
 				//obj1->second.orientation.x = rad;
-				vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed);
+				vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				obj1->second.body.move(velocity);
 			}
 			obj1->second.body.transformVertices();
@@ -340,7 +340,7 @@ void GLApp::update()
 
 #endif
 #if false
-	// Check for polygon polygon collision detection
+	// Check for polygon polygon collision detection (WORKING CODE)
 	for (int i{ 0 }; i < 8; ++i)
 	{
 		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
@@ -370,6 +370,7 @@ void GLApp::update()
 	}
 #endif
 #if false
+	// Check for polygon polygon collision with push (WORKING CODE)
 	for (int i{ 0 }; i < 8; ++i)
 	{
 		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
@@ -388,6 +389,8 @@ void GLApp::update()
 							obj1->second.body.move(velocity);
 							velocity *= -1;
 							obj2->second.body.move(velocity);
+							obj1->second.body.transformVertices();
+							obj2->second.body.transformVertices();
 							obj1->second.modelCenterPos = obj1->second.body.getPos();
 							obj2->second.modelCenterPos = obj2->second.body.getPos();
 						}
@@ -397,12 +400,12 @@ void GLApp::update()
 		}
 	}
 #endif
-	//#if false
+#if false
 	for (int i{ 0 }; i < 8; ++i)
 	{
 		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 		{
-			if (obj1->first != "Camera")
+			if (obj1->first != "Banana2")
 			{
 				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 				{
@@ -415,6 +418,8 @@ void GLApp::update()
 							velocity *= depth;
 							velocity *= -1;
 							obj2->second.body.move(velocity);
+							obj1->second.body.transformVertices();
+							obj2->second.body.transformVertices();
 							obj2->second.modelCenterPos = obj2->second.body.getPos();
 						}
 					}
@@ -422,17 +427,53 @@ void GLApp::update()
 			}
 		}
 	}
-	//#endif
+#endif
 
+//#if false
+	for (int i{ 0 }; i < 8; ++i)
+	{
+		for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+		{
+			if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+			{
+				for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+				{
+					if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
+					{
+						float depth{ FLT_MAX };
+						vector2D::vec2D velocity{ 0.f, 0.f };
+						if (physics::CollisionDetectionCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx(), velocity, depth))
+						{
 
-	
-	bool GraceObj{ true };
+							vector2D::Vector2DNormalize(velocity, velocity);
+							velocity *= depth;
+							obj2->second.body.move(velocity);
+							velocity *= -1;
+							//obj1->second.body.transformVertices();
+							obj2->second.body.transformVertices();
+							obj2->second.modelCenterPos = obj2->second.body.getPos();
+
+							//velocity *= (depth);
+							//velocity *= -1;
+							//obj2->second.body.move(velocity);
+							////obj2->second.body.move(velocity);
+							//obj2->second.modelCenterPos = obj1->second.body.getPos();
+							////obj1->second.body.transformVertices();
+							//obj2->second.body.transformVertices();
+							//obj2->second.modelCenterPos = obj1->second.body.getPos();
+						}
+					}
+				}
+			}
+		}
+	}
+//#endif
+
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
 		{
 			obj1->second.update(GLHelper::delta_time);
-
 		}
 	}
 	
