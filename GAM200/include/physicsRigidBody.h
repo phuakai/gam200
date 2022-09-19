@@ -25,7 +25,6 @@ private:
 	float area;
 	
 	bool isStatic;					//will not be affected by physics
-	bool isCollidable;              //for collision debugger
 
 	float radius;					//for circle
 	float width;					//for box
@@ -71,14 +70,12 @@ public:
 	float getHeight();
 	std::vector<vector2D::vec2D> getTfmVtx();
 	ShapeType getShape();
-	bool getCollidability();
 
 	/********************
 	* Setters
 	********************/
 	void setRad(float rad);
 	void setPos(vector2D::Point2D position);
-	void setCollidability(bool collisionflag);
 
 	/********************
 	* Others
