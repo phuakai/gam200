@@ -407,10 +407,16 @@ void GLApp::update()
 		{
 			if (obj1->first == "Banana1")
 			{
-				obj1->second.body.rotate(45.f);
-				float rad{ 45.f / 180.f * M_PI };
-				obj1->second.orientation.x = rad;
-				vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
+				//obj1->second.body.rotate(45.f);
+				//float rad{ 45.f / 180.f * M_PI };
+				//obj1->second.orientation.x = rad;
+
+				double destX, destY;
+				Graphics::Input::getCursorPos(&destX, &destY);
+
+				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed, stepByStepCollision);
+				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
+				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				obj1->second.body.move(velocity);
 			}
 			obj1->second.overlap = false;

@@ -5,35 +5,40 @@
 #include <input.h>
 #include <iostream>
 
-//void movement(GLApp::GLObject& obj, GLApp::GLObject const& cam, bool const& stepByStep)
-vector2D::vec2D movement (vector2D::vec2D &pos, float &speed, bool stepByStep)
+
+vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed, bool stepByStep)
 {
 	float dt = GLHelper::delta_time;
 
-	//if (GLHelper::mousestateLeft)
-	//{
-	//	GLHelper::mousestateLeft = false;
-	//	double destX, destY;
+	static vector2D::vec2D destination{ 0.f, 0.f };
+	static vector2D::vec2D mouseVel{ 0.f, 0.f };
 
-	//	// Get mouse pos in world
-	//	Graphics::Input::getCursorPos(&destX, &destY);
-	//	obj.untravelledDistance.first = vector2D::vec2D{ static_cast<float>(destX) , static_cast<float>(destY) }; // travel destination
+	if (GLHelper::mousestateLeft)
+	{
+		vector2D::Vector2DNormalize(mouseVel, dest - src);
+		destination = dest;
+	}
 
-	//	obj.directionVec = obj.untravelledDistance.first - obj.modelCenterPos;					// travel direction
-	//	obj.untravelledDistance.second = vector2D::Vector2DLength(obj.directionVec);			// total travel distance
-	//	vector2D::Vector2DNormalize(obj.directionVec, obj.directionVec);						// normalize travel direction
-	//}
+	else if (mouseVel.x != 0.f && mouseVel.y != 0.f)
+	{
+		vector2D::Vector2DNormalize(mouseVel, destination - src); //normalized directional vec
+		mouseVel *= dt * speed;
+		vector2D::vec2D pos{ src };
+		pos += mouseVel;
+		if (vector2D::Vector2DDistance(dest, pos) < vector2D::Vector2DLength(mouseVel)) //position has passed dest
+		{
+			src = destination;
+			mouseVel = vector2D::vec2D(0.f, 0.f);
+			return mouseVel;
+		}
+	}
 
-	//if (obj.untravelledDistance.second > 0.f)
-	//{
-	//	vector2D::vec2D velocity{ obj.directionVec * obj.speed * dt};
-	//	//std::cout << "direction vec in phy: " << vecTravelled.x << " " << vecTravelled.y << std::endl;
+	return mouseVel;
+}
 
-	//	float distanceTravelled{ vector2D::Vector2DLength(velocity) };						// distance travelled this frame
-	//	
-	//	obj.modelCenterPos = distanceTravelled < obj.untravelledDistance.second ? obj.modelCenterPos + velocity : lerpVec(obj.modelCenterPos, obj.untravelledDistance.first, obj.untravelledDistance.second/ distanceTravelled);
-	//	obj.untravelledDistance.second = distanceTravelled < obj.untravelledDistance.second ? obj.untravelledDistance.second - distanceTravelled : 0.f;
-	//}
+vector2D::vec2D keyboardMovement (vector2D::vec2D &pos, float &speed, bool stepByStep)
+{
+	float dt = GLHelper::delta_time;
 
 	vector2D::vec2D keyboardVel{0.f, 0.f};
 	if (GLHelper::keystateI == true) //up
