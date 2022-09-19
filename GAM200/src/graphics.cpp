@@ -1,20 +1,27 @@
 #include <graphics.h>
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>
+#include <buffer.h>
+#include <texture.h>
 #include <iostream>
 
+extern bool modulate, alphablend, textures;
+extern Graphics::Texture texobj;
 
 Graphics::BatchRenderer::BatchRenderer()
 {
-	Model batchmodel{};
-	GLSLShader batchshader{};
-	GLenum primtype = 0; // Primitive type for all objects in batch
-	int totaldrawcnt = 0; // Total count of all vertices to be drawn
-	int totalsize = 0; // To add via subdata
-	std::vector<vertexData> batchdata{}; // All vertices in batch
+	//Model batchmodel{};
+	//GLSLShader batchshader{};
+	primtype = 0; // Primitive type for all objects in batch
+	totaldrawcnt = 0; // Total count of all vertices to be drawn
+	totalsize = 0; // To add via subdata
+	//std::vector<vertexData> batchdata{}; // All vertices in batch
+	totalindicesize = 0;
+	//std::vector<GLushort> ebodata{};
 
-	int vboid = 0;
-	int vaoid = 0;
+	vboid = 0;
+	vaoid = 0;
+	eboid = 0;
 }
 
 void Graphics::BatchRenderer::BatchRender()
@@ -37,6 +44,7 @@ void Graphics::BatchRenderer::BatchRender()
 	//glBindVertexArray(0);
 
 	//shd_ref->second.UnUse();
+
 	batchshader.Use();
 	glBindVertexArray(vaoid);
 
@@ -46,25 +54,71 @@ void Graphics::BatchRenderer::BatchRender()
 		//std::cout << "Coords " << batchdata[i].posVtx.x << ", " << batchdata[i].posVtx.y << std::endl;
 	}
 
-	glNamedBufferSubData(vboid, 0, sizeof(Graphics::vertexData) * totalsize, batchdata.data());
+
+	vboid = Graphics::VBO::init();
+	//std::cout << "Size " << sizeof(Graphics::vertexData) * totalsize << std::endl;
+	Graphics::VBO::store(vboid, sizeof(Graphics::vertexData) * totalsize, batchdata);
+
+	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
+	Graphics::VBO::bind(vaoid, 0, vboid, 0, sizeof(float) * 7); // Set buffer binding point 0
+	Graphics::VAO::setattrib(vboid, 0, 2); // Attrib format
+	Graphics::VAO::bindattrib(vaoid, 0, 0); // Bind attrib
+
+	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 0
+	Graphics::VBO::bind(vaoid, 1, vboid, sizeof(float) * 2, sizeof(float) * 7); // Set buffer binding point 0
+	Graphics::VAO::setattrib(vaoid, 1, 3); // Attrib format
+	Graphics::VAO::bindattrib(vaoid, 1, 1); // Bind attrib
+
+
+	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 1
+	Graphics::VBO::bind(vaoid, 2, vboid, sizeof(float) * 5, sizeof(float) * 7); // Set buffer binding point 1
+	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 1
+	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 1
+
+	eboid = Graphics::EBO::init();
+	int offset = 0;
+	for (int i = 0; i < totalindicesize; i+=6)
+	{
+		ebodata[i + 0] = 0 + offset;
+		ebodata[i + 1] = 1 + offset;
+		ebodata[i + 2] = 2 + offset;
+		ebodata[i + 3] = 2 + offset;
+		ebodata[i + 4] = 3 + offset;
+		ebodata[i + 5] = 0 + offset;
+
+		offset += 4;
+	}
+
+	Graphics::EBO::store(eboid, sizeof(GLushort) * totalindicesize, ebodata);
+
+	Graphics::EBO::bind(vaoid, eboid);
+
+	//glNamedBufferSubData(vboid, 0, sizeof(Graphics::vertexData) * totalsize, batchdata.data());
+	//std::cout << "Inside batch render batch shader " << batchshader.GetHandle() << std::endl;
 	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
 	glUniform1i(tex_loc, 0);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
-	glUniform1i(UniformModulate, false); // Modulate bool temp
+	glUniform1i(UniformModulate, modulate); // Modulate bool temp
 
 	GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
-	glUniform1i(UniformTextures, false); // Texture bool temp
+	glUniform1i(UniformTextures, textures); // Texture bool temp
 
 	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
-	glBindVertexArray(0);
+	Graphics::VAO::unbind();
 
 	batchshader.UnUse();
 
 
 	//std::cout << "Cleared\n";
+	totalindicesize = 0;
+	totaldrawcnt = 0;
+	totalsize = 0;
+	ebodata.clear();
 	batchdata.clear();
+	glDeleteBuffers(1, &vboid);
+	glDeleteBuffers(1, &eboid);
 }
 
 /*  _________________________________________________________________________*/

@@ -20,9 +20,12 @@ namespace Graphics {
 		int totaldrawcnt{}; // Total count of all vertices to be drawn
 		int totalsize{}; // To add via subdata
 		std::vector<vertexData> batchdata{}; // All vertices in batch
+		int totalindicesize{}; // For ebo
+		std::vector<GLushort> ebodata{}; // Ebo/indices data
 
-		int vboid{};
-		int vaoid{};
+		GLuint vboid{};
+		GLuint vaoid{};
+		GLuint eboid{};
 		
 		BatchRenderer();
 		void BatchRender(); // batch renders all objects in render

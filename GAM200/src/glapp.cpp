@@ -153,6 +153,7 @@ void GLApp::GLObject::draw() const
 		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
 		{
+			//std::cout << "I here " << i << std::endl;
 			Graphics::vertexData tmpVtxData;
 			tmpVtxData.posVtx = ndc_coords[i];
 			if (mdl_ref->first == "circle")
@@ -179,6 +180,7 @@ void GLApp::GLObject::draw() const
 		};
 		//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
 		//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
+		std::cout << "Shdr handle " << shd_ref->second.GetHandle() << std::endl;
 		GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
 		glUniform1i(tex_loc, 0);
 
@@ -261,6 +263,7 @@ void GLApp::GLObject::draw() const
 	{
 		basicbatch.batchmodel = mdl_ref->second;
 		basicbatch.batchshader = shd_ref->second;
+		//std::cout << "Batch shader " << basicbatch.batchshader.GetHandle() << std::endl;
 		//shd_ref->second.Use();
 		//glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
 		std::vector<vector2D::Vec2> tex_coord
@@ -293,8 +296,16 @@ void GLApp::GLObject::draw() const
 			vertexData.emplace_back(tmpVtxData);
 		}
 		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+		for (int i = 0; i < mdl_ref->second.primitive.size(); i++)
+		{
+			//std::cout << "Primitive info " << mdl_ref->second.primitive[i] << std::endl;
+		}
+		//std::cout << std::endl;
+		basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+		basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
 		basicbatch.vaoid = mdl_ref->second.getVAOid();
 		basicbatch.vboid = mdl_ref->second.getVBOid();
+		basicbatch.eboid = mdl_ref->second.getEBOid();
 		basicbatch.totalsize += vertexData.size();
 		basicbatch.primtype = mdl_ref->second.getPrimitiveType();
 		basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
@@ -403,6 +414,7 @@ void GLApp::update()
 	if (GLHelper::keystateT)
 	{
 		textures = !textures;
+		std::cout << "T pressed\n";
 		GLHelper::keystateT = GL_FALSE;
 	}
 	if (GLHelper::keystateX)
@@ -412,7 +424,7 @@ void GLApp::update()
 	}
 	if (GLHelper::keystateQ || GLHelper::keystateE)
 	{
-		for (int j = 0; j < 1; j++)
+		for (int j = 0; j < 100; j++)
 		{
 			std::string tmpobjname = "Banana";
 			tmpobjcounter++;
