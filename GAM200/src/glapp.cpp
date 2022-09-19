@@ -695,7 +695,7 @@ void GLApp::draw()
 		switch (currentCollision)
 		{
 			
-		case 0: //collisionType::NIL
+		case collisionType::NIL:
 			if (obj->first != "Camera" &&  obj->second.body.getCollidability())
 			{
 				obj->second.draw();
