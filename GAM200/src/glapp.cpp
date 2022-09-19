@@ -52,7 +52,6 @@ GLApp::collisionType GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
 bool modulate, alphablend, textures;
-bool coldebug = false;
 
 int tmpobjcounter{};
 /*  _________________________________________________________________________*/
@@ -66,7 +65,7 @@ This function is called once per frame to update an object's scale, rotation and
 */
 void GLApp::GLObject::update(GLdouble delta_time)
 {
-	//overlap = false;					//change overlap to false
+	overlap = false;					//change overlap to false
 
 	matrix3x3::mat3x3 scale
 	(scaling.x, 0, 0,
@@ -130,6 +129,7 @@ void GLApp::GLObject::draw() const
 	shd_ref->second.Use();
 
 	// bind VAO of this object's model
+	GLuint buffer;
 	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
 	//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
 	
@@ -148,21 +148,26 @@ void GLApp::GLObject::draw() const
 	std::vector<Graphics::vertexData> vertexData;
 	for (int i = 0; i < ndc_coords.size(); ++i)
 	{
+		//std::cout << "Coords " << i << std::endl;
 		Graphics::vertexData tmpVtxData;
 		tmpVtxData.posVtx = ndc_coords[i];
-		if (mdl_ref->first == "circle")
-		{
-			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-		}
-		else
-		{
-			tmpVtxData.clrVtx = clr_vtx[i];
-		}
+		tmpVtxData.clrVtx = clr_vtx[i];
 		tmpVtxData.txtVtx = tex_coord[i];
 		vertexData.emplace_back(tmpVtxData);
 	}
 	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
 
+	//glVertexArrayAttribBinding(mdl_ref->second.getVAOid(), 0, 0);
+
+
+	
+
+	
+	//std::cout << "Tex obj id " << texobj.getTexid() << std::endl;
+	
+
+	// copy object's color to fragment shader uniform variable uColor
+	//shd_ref->second.SetUniform("uColor", color);
 
 	// copy object's model-to-NDC matrix to vertex shader's
 	// uniform variable uModelToNDC
@@ -188,66 +193,6 @@ void GLApp::GLObject::draw() const
 
 	// unbind VAO and unload shader program
 	glBindVertexArray(0);
-
-	if (coldebug == true)
-	{
-
-
-		glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-		//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-
-		std::vector<vector2D::Vec2> tex_coord2
-		{
-			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
-			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
-		};
-
-
-		std::vector<vector3D::Vec3> clr_vtx2
-		{
-			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f),
-			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f)
-		};
-		if (overlap == true)
-		{
-			//std::cout << "Overlapping" << std::endl;
-			for (int i = 0; i < 4; i++)
-			{
-				clr_vtx2[i] = vector3D::Vec3(1.f, 0.f, 0.f);
-			}
-		}
-
-		std::vector<Graphics::vertexData> vertexData2;
-		for (int i = 0; i < ndc_coords.size(); ++i)
-		{
-			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndc_coords[i];
-			if (mdl_ref->first == "circle")
-			{
-				if (overlap == true)
-				{
-					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
-				}
-				else
-				{
-					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 0.f);
-				}
-			}
-			else
-			{
-				tmpVtxData.clrVtx = clr_vtx2[i];
-
-			}
-			tmpVtxData.txtVtx = tex_coord2[i];
-			vertexData2.emplace_back(tmpVtxData);
-		}
-		glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData2.size(), vertexData2.data()); // Set new buffer index with subdata
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glBindVertexArray(0);
-	}
 	//glDisable(GL_BLEND);
 	shd_ref->second.UnUse();
 }
@@ -348,11 +293,6 @@ void GLApp::update()
 		textures = !textures;
 		GLHelper::keystateT = GL_FALSE;
 	}
-	if (GLHelper::keystateX)
-	{
-		coldebug = !coldebug;
-		GLHelper::keystateX = GL_FALSE;
-	}
 	if (GLHelper::keystateQ || GLHelper::keystateE)
 	{
 		for (int j = 0; j < 1; j++)
@@ -381,7 +321,6 @@ void GLApp::update()
 			float randg = colour(generator);
 			float randb = colour(generator);
 			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
-			//vector3D::vec3D tmpcolor = vector3D::vec3D(0.f, 0.f, 0.f);
 			//std::cout << "Values " << randx << ", " << randy << std::endl;
 			if (GLHelper::keystateQ)
 			{
@@ -400,17 +339,22 @@ void GLApp::update()
 	{
 		if (obj1->first != "Camera")
 		{
+			std::stringstream tmpstream;
+			tmpstream << "CollisionObj" << obj1->second.objId;
+			std::string finalobjname = tmpstream.str();
 			if (obj1->first == "Banana1")
 			{
-				obj1->second.body.rotate(45.f);
-				float rad{45.f / 180.f * M_PI};
-				obj1->second.orientation.x = rad;
+				//obj1->second.body.rotate(45.f);
+				//float rad{45.f / 180.f * M_PI};
+				//obj1->second.orientation.x = rad;
 				vector2D::vec2D velocity = movement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				obj1->second.body.move(velocity);
+				objects[finalobjname].body.move(velocity);
 			}
-			obj1->second.overlap = false;
 			obj1->second.body.transformVertices();
+			objects[finalobjname].body.transformVertices();
 			obj1->second.modelCenterPos = obj1->second.body.getPos();
+			objects[finalobjname].modelCenterPos = objects[finalobjname].body.getPos();
 		}
 	}
 
@@ -521,7 +465,6 @@ void GLApp::update()
 							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
 							{
 								obj1->second.overlap = true;
-								//std::cout << "Overlap update " << obj1->second.overlap << std::endl;
 								obj2->second.overlap = true;
 							}
 						}
@@ -626,7 +569,7 @@ void GLApp::update()
 						{
 							if (physics::CollisionDetectionCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx()))
 							{
-								obj1->second.overlap = true;
+								obj2->second.overlap = true;
 								obj2->second.overlap = true;
 							}
 						}
@@ -741,33 +684,31 @@ void GLApp::draw()
 	// Part 4: Render each object in container GLApp::objects
 	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
-		//switch (currentCollision)
-		//{
-		//	
-		//case collisionType::NIL: //
-		if (obj->first != "Camera")
+		switch (currentCollision)
 		{
-			//std::cout << "Overlap draw " << obj->second.overlap << std::endl;
-			obj->second.draw();
-		}
-		//	break;
+			
+		case 0: //collisionType::NIL
+			if (obj->first != "Camera" &&  obj->second.body.getCollidability())
+			{
+				obj->second.draw();
+			}
+			break;
 
-		//default:
-		//	//std::cout << "currentCollision " << currentCollision << std::endl;
-		//	if (obj->first != "Camera" && obj->second.body.getCollidability() == true)
-		//	{	
-		//		
-		//		obj->second.draw();
-		//	}
-		//	if (obj->second.body.getCollidability() == false)
-		//	{
-		//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//		obj->second.draw();
-		//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//	}
-		//	
-		//	break;
-		//}
+		default:
+			if (obj->first != "Camera" && obj->second.body.getCollidability() == true)
+			{	
+				
+				obj->second.draw();
+			}
+			if (obj->second.body.getCollidability() == false)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				obj->second.draw();
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+			
+			break;
+		}
 	}
 
 	//objects["Camera"].draw();
@@ -823,7 +764,7 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 
 void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour,  int id, bool collisionflag)
 {
-	//bool colDebugCreated = false;
+	bool colDebugCreated = false;
 	GLObject tmpObj;
 	std::string hi;
 
@@ -859,6 +800,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
 	tmpObj.speed = 200.f;
+	tmpObj.body.setCollidability(collisionflag);
 
 	if (shdrpgms.find("gam200-shdrpgm") != shdrpgms.end())
 	{
@@ -881,7 +823,15 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 		models[modelname] = Model;
 		tmpObj.mdl_ref = models.find(modelname);
 	}
+
+	
+
 	objects[objname] = tmpObj;
+	if (colDebugCreated == false && objects[objname].body.getCollidability())
+	{
+		Graphics::collisionDebugCreate(objects[objname]);
+		colDebugCreated = true;
+	}
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::init_scene

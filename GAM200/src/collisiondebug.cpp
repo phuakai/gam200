@@ -26,7 +26,7 @@ void Graphics::collisionDebugInit(GLApp::GLObject& object)
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
 
 }
 
@@ -55,6 +55,6 @@ void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
+	GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
 	
 }

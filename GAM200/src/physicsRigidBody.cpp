@@ -19,6 +19,7 @@ physicsRigidBody::physicsRigidBody()
 	restitution = 0.f;
 	area = 0.f;
 	isStatic = false;
+	isCollidable = true;
 	radius = 0.f;
 	width = 0.f;
 	height = 0.f;
@@ -46,6 +47,7 @@ physicsRigidBody::physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVe
 	restitution = Restituition;
 	area = Area;
 	isStatic = IsStatic;
+	isCollidable = true;
 	radius = Radius;
 	width = Width;
 	height = Height;
@@ -95,6 +97,7 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	body->restitution = restituition;
 	body->area = area;
 	body->isStatic = isStatic;
+	body->isCollidable = true;
 	body->radius = rad;
 
 	//body->width = 0.f;
@@ -142,6 +145,7 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->restitution = restituition;
 	body->area = area;
 	body->isStatic = isStatic;
+	body->isCollidable = true;
 	//body.radius = 0.f;
 	body->width = width;
 	body->height = height;
@@ -184,6 +188,11 @@ void physicsRigidBody::setPos(vector2D::Point2D position)
 	pos = position;
 }
 
+void physicsRigidBody::setCollidability(bool collisionflag)
+{
+	isCollidable = collisionflag;
+}
+
 vector2D::vec2D physicsRigidBody::getPos()
 {
 	return pos;
@@ -202,6 +211,10 @@ float physicsRigidBody::getHeight()
 std::vector<vector2D::vec2D> physicsRigidBody::getTfmVtx()
 {
 	return transformedVertices;
+}
+bool physicsRigidBody::getCollidability()
+{
+	return isCollidable;
 }
 
 ShapeType physicsRigidBody::getShape()

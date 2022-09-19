@@ -67,7 +67,6 @@ struct GLHelper
   static GLboolean keystateM;  // Toggle Modulate (Colour on texture)
   static GLboolean keystateT;  // Toggle Texture
   static GLboolean keystateB;  // Toggle Alpha blend
-  static GLboolean keystateX;  // Toggle collision debug
   static GLboolean mousestateLeft;
 };
 
