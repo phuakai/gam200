@@ -729,24 +729,16 @@ C* ECS::GetComponent(const EntityID& entityId)
 
     Record& record = m_entityArchetypeMap[entityId];
 
-    Archetype* archetype = record.archetype;
-    if (!archetype)
+    if (!record.archetype)
         return nullptr; // there's no components anyway
 
-    ArchetypeID* archetypeID;
-    archetypeID = std::find(archetype->type.begin(), archetype->type.end(), compTypeId);
-
-    if (std::find(archetype->type.begin(), archetype->type.end(), compTypeId) == archetype->type.end())
+    if (std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId) == record.archetype->type.end())
     {
         // this entity doesn't have this component
         return nullptr;
     }
 
-
-    
-    std::cout << "test" << archetypeID[0] << std::endl;
-    C* test = nullptr;
-    return test;
+    return reinterpret_cast<C*>(record.archetype->componentData[compTypeId] + record.index * m_componentMap[compTypeId]->GetSize());
 }
 
 void ECS::RemoveEntity(const EntityID& entityId)

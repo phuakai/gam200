@@ -54,8 +54,8 @@ struct Movement
 
 struct Sprite
 {
-	vector2D::vec2D size;
 	std::string type;
+	vector2D::vec2D size;
 };
 
 struct Stats {
@@ -230,25 +230,25 @@ void GLApp::init()
 	ecs.RegisterComponent<Sprite>();
 	ecs.RegisterComponent<Stats>();
 	
+	//Entity enemy;
+	//enemy.Add<Sprite>("square", vector2D::vec2D(10, 10));
+	//enemy.Add<Stats>("enemy", 10);
+	//ecs.GetComponent<Sprite>(enemy.GetID());
 
-	std::vector<Entity> enemies(2500);
+	std::vector<Entity> enemies(25);
 	for (int i = 0; i < enemies.size(); ++i) {
-		enemies[i].Add<Position>((-450+(i % 45 * 20 ), 400 - ((int)i/30 * 10)));
+		enemies[i].Add<Position>(-450+(i % 45 * 20 ), 400 - (i/30 * 10));
+		//enemies[i].Add<Position>(400 + i, 300 + i);
 		enemies[i].Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
-		enemies[i].Add<Sprite>(vector2D::vec2D(10, 10), "square");
+		enemies[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
 		enemies[i].Add<Stats>("enemy" + std::to_string(i + 1), 10);
-		//enemies[i].Add<Movement>({ 0.5f,0.5f });
-		//std::cout << enemies[i].GetID() << std::endl;
-		
-		//std::cout <<
-		ecs.GetComponent<Movement>(enemies[i].GetID());
-
-		//GLApp::GLObject::gimmeObject(enemies[i], "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0));
 	}
-	ecs.GetComponent<Movement>(enemies[1].GetID());
-	//std::cout << enemies[1].GetID();
-	
-	
+
+	//Position* p = ecs.GetComponent<Position>(enemies[0].GetID());
+	//std::cout << p->x << "\t" << p->y << std::endl;
+
+	//p = ecs.GetComponent<Position>(enemies[1].GetID());
+	//std::cout << p->x << "\t" << p->y << std::endl;
 	
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
