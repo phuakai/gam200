@@ -77,6 +77,8 @@ static void update() {
   
   // Part 3
   GLApp::update();
+
+
 }
 
 /*  _________________________________________________________________________ */
@@ -105,22 +107,17 @@ The specific initialization of OpenGL state and geometry data is
 abstracted away in GLApp::init
 */
 static void init() {
-  // Part 1
-  if (!GLHelper::init(1600, 900, "Test")) { //Original is 2400, 1350
+    // Part 1
+    if (!GLHelper::init(1600, 900, "Test")) { //Original is 2400, 1350
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
-  }
- 
-  //ecs.RegisterComponent<Position>();
-  //ecs.RegisterComponent<he>();
-  //Entity ent1(ecs);
-  //ent1.Add<Position>({ 1,2 });
-  //ent1.Add<Velocity>({ .5f,.5f });
-  // Part 2
-  //GLHelper::print_specs();
+    }
 
-  // Part 3
-  GLApp::init();
+    // Part 2
+    //GLHelper::print_specs();
+
+    // Part 3
+    GLApp::init();
 }
 
 /*  _________________________________________________________________________ */

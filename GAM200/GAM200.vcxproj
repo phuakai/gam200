@@ -31,6 +31,7 @@
     <ClCompile Include="src\mat3x3.cpp" />
     <ClCompile Include="src\collision.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\pathfinding.cpp" />
     <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="include\mat3x3.h" />
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\pathfinding.h" />
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />

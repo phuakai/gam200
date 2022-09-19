@@ -30,6 +30,7 @@ and transformations (in later labs).
 #include <vec2D.h>
 #include <mat3x3.h>
 #include <model.h>
+#include "pathfinding.h"
 
 struct GLApp {
 
@@ -99,7 +100,7 @@ struct GLApp {
 	  // function to update the object's model transformation matrix
 	  void update(GLdouble delta_time);
 
-	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos); // Temp
+	  static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, glm::vec3 colour); // Temp
   };
 
 

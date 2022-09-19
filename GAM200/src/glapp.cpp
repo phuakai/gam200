@@ -81,6 +81,15 @@ short GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
 int tmpobjcounter{};
+
+std::vector<Unit> playerList;
+std::vector<Unit> enemyList;
+extern std::vector<Unit> enemyList;
+
+extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
+std::vector<vector2D::vec2D> walls;
+float timer;
+
 /*  _________________________________________________________________________*/
 /*! GLObject::update
 
@@ -223,33 +232,81 @@ void GLApp::init()
 	collisionInfo[collisionType::DIAG] = "DIAG";
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
-	
 
-	ecs.RegisterComponent<Position>();
-	ecs.RegisterComponent<Movement>();
-	ecs.RegisterComponent<Sprite>();
-	ecs.RegisterComponent<Stats>();
-	
-	//Entity enemy;
-	//enemy.Add<Sprite>("square", vector2D::vec2D(10, 10));
-	//enemy.Add<Stats>("enemy", 10);
-	//ecs.GetComponent<Sprite>(enemy.GetID());
+	Unit player1;
+	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
+	player1.position = vector2D::vec2D(-200, 0);
+	player1.maxSpeed = 2;
+	player1.maxForce = 10;
+	player1.size = vector2D::vec2D(20, 20);
+	player1.unitName = "player1";
+	playerList.push_back(player1);
 
-	std::vector<Entity> enemies(25);
-	for (int i = 0; i < enemies.size(); ++i) {
-		enemies[i].Add<Position>(-450+(i % 45 * 20 ), 400 - (i/30 * 10));
-		//enemies[i].Add<Position>(400 + i, 300 + i);
-		enemies[i].Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
-		enemies[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
-		enemies[i].Add<Stats>("enemy" + std::to_string(i + 1), 10);
+	for (int i = 0; i < playerList.size(); ++i)
+	{
+		GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
 	}
 
-	//Position* p = ecs.GetComponent<Position>(enemies[0].GetID());
-	//std::cout << p->x << "\t" << p->y << std::endl;
+	// objects creation
+	for (int i = 0; i < 2500; ++i)
+	{
+		Unit enemy;
+		enemy.position = vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i/30 * 10));
+		enemy.maxSpeed = 2;
+		enemy.maxForce = 1;
+		enemy.size = vector2D::vec2D(10, 10);
+		enemy.unitID = i + 1;
+		enemy.unitName = "enemy" + std::to_string(i + 1);
+		enemyList.push_back(enemy);
+	}
+	timer = 4;
 
-	//p = ecs.GetComponent<Position>(enemies[1].GetID());
-	//std::cout << p->x << "\t" << p->y << std::endl;
-	
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
+	for (int i = 0; i < enemyList.size(); ++i)
+	{
+
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
+
+		enemyList[i].target = &playerList[0];
+		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(randr, randg, randb));
+		//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+	}
+
+	// walls
+	//walls.push_back(vector2D::vec2D(10, 11));
+	//walls.push_back(vector2D::vec2D(10, 12));
+	//walls.push_back(vector2D::vec2D(10, 13));
+	//walls.push_back(vector2D::vec2D(10, 14));
+	//walls.push_back(vector2D::vec2D(10, 15));
+
+	generateDijkstraCost(playerList[0].position, walls);
+	generateFlowField();
+	//enemyList[5].Print();
+
+	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
+
+	int counter = 1;
+	for (int i = 0; i < MAX_GRID_Y; ++i)
+	{
+		for (int j = 0; j < MAX_GRID_X; ++j)
+		{
+			// wall
+			if (dijkstraField[i][j] == WALL)
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(0.5, 0.5, 0.5));
+			else
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(1, 1, 1));
+
+			++counter;
+		}
+	}
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), glm::vec3(0, 0, 0));
+
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
 }
@@ -272,15 +329,16 @@ void GLApp::update()
 
 	// update other inputs for physics
 
-
+	double mousePosX, mousePosY;
+	bool mouseClick = false;
 	if (GLHelper::mousestateLeft)
 	{
 		GLHelper::mousestateLeft = false;
-		double mousePosx, mousePosy;
 
-		Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+		mouseClick = true;
 
-		std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+		std::cout << "this is my mouse pos: " << mousePosX << " " << mousePosY << std::endl;
 
 		//obj->second.modelCenterPos.x = (float)mousePosx;
 		//obj->second.modelCenterPos.y = (float)mousePosy;
@@ -319,7 +377,7 @@ void GLApp::update()
 		float randwidth = (float)sizerandom(generator);
 		float randheight = (float)sizerandom(generator);
 		//std::cout << "Values " << randx << ", " << randy << std::endl;
-		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy));
+		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), glm::vec3(0, 0, 0));
 		GLHelper::keystateQ = false;
 	}
 	// next, iterate through each element of container objects
@@ -333,12 +391,6 @@ void GLApp::update()
 		if (obj->first != "Camera")
 		{
 			obj->second.update(GLHelper::delta_time);
-			//update phsyics according to input
-			if (test)
-			{
-				test = false;
-				movement(obj->second, objects["Camera"], stepByStepCollision);
-			}
 
 			//check for physics collision after update
 			switch (currentCollision)
@@ -375,15 +427,52 @@ void GLApp::update()
 			default:
 				break;
 			}
+			//if (GLHelper::mousestateLeft)
+			//{
+			//	GLHelper::mousestateLeft = false;
+			//	double mousePosx, mousePosy;
+
+			//	Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
+
+			//	std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
+
+			//	//obj->second.modelCenterPos.x = (float)mousePosx;
+			//	//obj->second.modelCenterPos.y = (float)mousePosy;
+			//}
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
 			{
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
+
+		// movement
+		if (timer <= 0)
+		{
+			for (int i = 0; i < enemyList.size(); ++i)
+			{
+				// found object
+				if (enemyList[i].unitName == obj->first)
+				{
+					enemyList[i].Move();
+					obj->second.modelCenterPos = enemyList[i].position;
+				}
+			}
+		}
+
+		if (playerList[0].unitName == obj->first && mouseClick)
+		{
+			playerList[0].position.x = mousePosX;
+			playerList[0].position.y = mousePosY;
+			obj->second.modelCenterPos = playerList[0].position;
+
+			generateDijkstraCost(playerList[0].position, walls);
+			generateFlowField();
+		}
+
 	}
 
-	
-	
+	if (timer > 0)
+		timer -= GLHelper::delta_time;
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
@@ -400,7 +489,6 @@ void GLApp::draw()
 {
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
-
 
 	std::stringstream title;
 	title << std::fixed;
@@ -494,7 +582,6 @@ void GLApp::draw()
 		}
 	}
 
-	objects["Camera"].draw();
 }
 
 /*  _________________________________________________________________________*/
@@ -544,19 +631,14 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
 }
 
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos)
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, glm::vec3 colour)
 {
 	GLObject tmpObj;
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
 	std::default_random_engine generator(seed);
 
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
-
-	float randr = colour(generator);
-	float randg = colour(generator);
-	float randb = colour(generator);
-	tmpObj.color = glm::vec3(randr, randg, randb);
+	tmpObj.color = colour;
 	tmpObj.scaling = scale;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
