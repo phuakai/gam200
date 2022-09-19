@@ -130,9 +130,11 @@ public:
     virtual void ConstructData(unsigned char* data) const = 0;
     virtual void MoveData(unsigned char* source, unsigned char* destination) const = 0;
     virtual void DestroyData(unsigned char* data) const = 0;
-
-
+    virtual std::string GetName() const = 0;
+    virtual void SetName(std::string name) = 0;
     virtual std::size_t GetSize() const = 0;
+
+
 };
 
 
@@ -156,7 +158,15 @@ public:
 
     virtual std::size_t GetSize() const override;
 
+    virtual std::string GetName() const override;
+
     static ComponentTypeID GetTypeID();
+
+    virtual void SetName(std::string name) override;
+
+
+private:
+    std::string componentName;
 };
 
  class ECS {
@@ -191,7 +201,7 @@ public:
     EntityID GetNewID();
 
     template<class C>
-    void RegisterComponent();
+    void RegisterComponent(std::string name);
 
     //template<class C>
     //bool IsComponentRegistered();
@@ -221,6 +231,12 @@ public:
     //template<class... Cs>
    // std::vector<EntityID> GetEntitiesWith();
 
+
+    ComponentTypeIDBaseMap getComponents();
+
+
+
+    //change back to priv 
 private:
 
     EntityArchetypeMap m_entityArchetypeMap;
@@ -274,27 +290,6 @@ private:
 };
 
 
-struct Position
-{
-    float x;
-    float y;
-};
-
-struct Velocity
-{
-    float x;
-    float y;
-};
-
-struct Randomness
-{
-    float a;
-};
-
-struct he {
-    int a;
-};
-
 
 
 //-----------------------------------------------------------------------DEFINED HERE--------------------
@@ -345,6 +340,15 @@ ComponentTypeID Component<C>::GetTypeID()
 {
     return TypeIdGenerator<ComponentBase>::GetNewID<C>();
 }
+template<class C>
+std::string Component<C>::GetName() const {
+    return componentName;
+}
+
+template<class C>
+void Component<C>::SetName(std::string name) {
+    componentName = name;
+}
 
 Archetype* ECS::GetArchetype(const ArchetypeID& id)
 {
@@ -380,15 +384,18 @@ EntityID ECS::GetNewID()
 }
 //
 template<class C>
-void ECS::RegisterComponent()
+void ECS::RegisterComponent(std::string name)
 {
     ComponentTypeID componentTypeId = Component<C>::GetTypeID();
+    
 
      if (m_componentMap.contains(componentTypeId))
          return; // can't re-register a type
 
-     std::cout << componentTypeId;
+   //  std::cout << componentTypeId;
     m_componentMap.emplace(componentTypeId, new Component<C>);
+    m_componentMap[componentTypeId]->SetName(name);
+    
 }
 
 void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
@@ -402,6 +409,11 @@ void ECS::RegisterEntity(const EntityID entityId)
     dummyRecord.archetype = nullptr;
     dummyRecord.index = 0;
     m_entityArchetypeMap[entityId] = dummyRecord;
+}
+
+
+ECS::ComponentTypeIDBaseMap ECS::getComponents() {
+    return m_componentMap;
 }
 
 

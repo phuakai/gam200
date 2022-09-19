@@ -41,6 +41,27 @@ to OpenGL implementations.
 
 
 
+struct Position
+{
+	float x;
+	float y;
+};
+
+struct Velocity
+{
+	float x;
+	float y;
+};
+
+struct Randomness
+{
+	float a;
+};
+
+struct he {
+	int a;
+};
+
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -197,6 +218,44 @@ void GLApp::init()
 	collisionInfo[collisionType::DIAG] = "DIAG";
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
+
+
+	ecs.RegisterComponent<Position>("Position");
+	ecs.RegisterComponent<Velocity>("Velocity");
+	ecs.RegisterComponent<Randomness>("Randomness");
+	ecs.RegisterComponent<he>("he");
+
+	Entity ent1(ecs);
+
+	ent1.Add<Position>({ 1,2 });
+	ent1.Add<Velocity>({ .5f,.5f });
+	ent1.Add<Randomness>({ .25f });
+
+	Entity ent2(ecs);
+
+	ent2.Add<Position>({ 4,3 });
+	ent2.Add<Velocity>({ 123.5f,123.5f });
+	ent2.Add<Randomness>({ .25f });
+
+
+	std::cout << ent2.GetID() << std::endl;
+	//auto it = ecs.m_entityArchetypeMap.find(ent2.GetID());
+
+	//std::cout << "archetype is "  << reinterpret_cast<Position*>(it->second.archetype->componentData[0]);
+	// 
+	//Velocity* dab = reinterpret_cast<Velocity*>(it->second.archetype->componentData[1]+8);
+	//std::cout << dab->x << dab->y;
+	//std::cout << "archetype is "  << (it->second.archetype->componentData[0]);
+
+	/*
+	std::unordered_map test = ecs.getComponents(); 
+	
+	for (auto i = test.begin(); i != test.end(); i++)
+		std::cout << i->first << "      " << (i->second)->GetName()
+		<< std::endl;
+	*/
+
+
 	//-----------------------------------------extra imgui stuff here
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -340,7 +399,7 @@ void GLApp::update()
 			}
 		}
 	}
-	//-----------------------------------------extra imgui stuff here
+	//-----------------------------------------extra imgui stuff here  -- we are so moving this out
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
