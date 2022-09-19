@@ -153,12 +153,13 @@ void GLApp::GLObject::draw() const
 		if (mdl_ref->first == "circle")
 		{
 			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
+			tmpVtxData.txtVtx = vector2D::Vec2(1.f, 1.f);
 		}
 		else
 		{
 			tmpVtxData.clrVtx = clr_vtx[i];
+			tmpVtxData.txtVtx = tex_coord[i];
 		}
-		tmpVtxData.txtVtx = tex_coord[i];
 		vertexData.emplace_back(tmpVtxData);
 	}
 	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
