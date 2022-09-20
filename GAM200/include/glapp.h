@@ -70,6 +70,7 @@ struct GLApp {
 		std::pair<vector2D::Point2D, float> untravelledDistance;							// destination, untravelled distance
 		physicsRigidBody body;															// param for collision
 		int objId;																		// For collision debugger
+		int texId;																		// Texture id
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -105,7 +106,7 @@ struct GLApp {
 		// function to update the object's model transformation matrix
 		void update(GLdouble delta_time);
 
-		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, bool collisionflag = true); // Temp
+		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, int texid); // Temp
 	};
 
 

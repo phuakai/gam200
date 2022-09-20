@@ -289,12 +289,7 @@ void GLApp::GLObject::draw() const
 				tmpVtxData.clrVtx = clr_vtx[i];
 			}
 			tmpVtxData.txtVtx = tex_coord[i];
-
-			unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-			std::default_random_engine generator(seed);
-			std::uniform_int_distribution<int> posrandom(0, 1);
-			float randindex = float(posrandom(generator));
-			tmpVtxData.txtIndex = 0.f;
+			tmpVtxData.txtIndex = texId;
 			vertexData.emplace_back(tmpVtxData);
 		}
 		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
@@ -445,14 +440,17 @@ void GLApp::update()
 			float randg = colour(generator);
 			float randb = colour(generator);
 			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
+
+			std::uniform_int_distribution<int> texrandom(0, 1);
+			float randindex = float(texrandom(generator));
 			if (GLHelper::keystateQ)
 			{
-				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy), tmpcolor, tmpobjcounter);
+				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy), tmpcolor, tmpobjcounter, randindex);
 				GLHelper::keystateQ = false;
 			}
 			else
 			{
-				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), tmpcolor, tmpobjcounter);
+				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), tmpcolor, tmpobjcounter, randindex);
 				GLHelper::keystateE = false;
 			}
 		}
@@ -855,12 +853,13 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
 }
 
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour,  int id, bool collisionflag)
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, int texid)
 {
 	GLObject tmpObj;
 	std::string hi;
 
 	tmpObj.objId = id;
+	tmpObj.texId = texid;
 	if (modelname == "circle")
 		tmpObj.body.createCircleBody(scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 	else if (modelname == "square")
