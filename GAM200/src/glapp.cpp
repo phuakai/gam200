@@ -48,13 +48,17 @@ std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
 Graphics::BatchRenderer basicbatch; // Batch render object
 
-Graphics::Texture texobj;
+//Graphics::Texture texobj;
+
+//std::vector<Graphics::Texture> Graphics::textureobjects;
 
 GLApp::collisionType GLApp::currentCollision;
 bool GLApp::stepByStepCollision;
 
-bool modulate, alphablend, textures;
-bool coldebug = false;
+bool GLApp::modulate;
+bool GLApp::alphablend;
+bool GLApp::textures;
+bool GLApp::coldebug;
 
 int tmpobjcounter{};
 /*  _________________________________________________________________________*/
@@ -129,15 +133,10 @@ set the transformation matrix for the model and render using glDrawElements
 void GLApp::GLObject::draw() const
 {
 	if (mdl_ref->first == "circle")
-	{
-		
-																																  // load shader program in use by this object
+	{																														  // load shader program in use by this object
 		shd_ref->second.Use();
-
 		// bind VAO of this object's model
 		glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-		//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-
 		std::vector<vector2D::Vec2> tex_coord
 		{
 			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
@@ -153,7 +152,6 @@ void GLApp::GLObject::draw() const
 		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
 		{
-			//std::cout << "I here " << i << std::endl;
 			Graphics::vertexData tmpVtxData;
 			tmpVtxData.posVtx = ndc_coords[i];
 			if (mdl_ref->first == "circle")
@@ -277,13 +275,11 @@ void GLApp::GLObject::draw() const
 			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 		};
 
-
 		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
 		{
 			Graphics::vertexData tmpVtxData;
 			tmpVtxData.posVtx = ndc_coords[i];
-			//std::cout << "Inputted ndc " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
 			if (mdl_ref->first == "circle")
 			{
 				tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
@@ -293,14 +289,15 @@ void GLApp::GLObject::draw() const
 				tmpVtxData.clrVtx = clr_vtx[i];
 			}
 			tmpVtxData.txtVtx = tex_coord[i];
+
+			unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+			std::default_random_engine generator(seed);
+			std::uniform_int_distribution<int> posrandom(0, 1);
+			float randindex = float(posrandom(generator));
+			tmpVtxData.txtIndex = randindex;
 			vertexData.emplace_back(tmpVtxData);
 		}
 		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-		for (int i = 0; i < mdl_ref->second.primitive.size(); i++)
-		{
-			//std::cout << "Primitive info " << mdl_ref->second.primitive[i] << std::endl;
-		}
-		//std::cout << std::endl;
 		basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
 		basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
 		basicbatch.vaoid = mdl_ref->second.getVAOid();
@@ -310,13 +307,6 @@ void GLApp::GLObject::draw() const
 		basicbatch.primtype = mdl_ref->second.getPrimitiveType();
 		basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 
-		//for (int i = 0; i < basicbatch.batchdata.size(); i++)
-		//{
-		//	std::cout << "This is I " << i << std::endl;
-		//	std::cout << "Coords " << basicbatch.batchdata[i].posVtx.x << ", " << basicbatch.batchdata[i].posVtx.y << std::endl;
-		//}
-		//glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData)* vertexData.size(), vertexData.data()); // Set new buffer index with subdata
-		//glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
 	}
 }
 
@@ -334,6 +324,9 @@ glClearColor and glViewport to initialize the app
 
 void GLApp::init()
 {
+	Graphics::createTextureVector(Graphics::textureobjects, 2);
+	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
+	//Graphics::textureobjects.resize(2);
 	// Part 1: initialize OpenGL state ...
 	glClearColor(0.3f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
 
@@ -349,7 +342,8 @@ void GLApp::init()
 	// type GLObject in container GLApp::objects
 	GLApp::init_scene("../scenes/gam200.scn");
 
-	Graphics::Texture::loadTexture("../images/duck-rgba-256.tex", texobj);
+	Graphics::Texture::loadTexture("../images/tree.png", Graphics::textureobjects[0]);
+	Graphics::Texture::loadTexture("../images/factory.png", Graphics::textureobjects[1]);
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -404,6 +398,7 @@ void GLApp::update()
 	if (GLHelper::keystateM)
 	{
 		modulate = !modulate;
+		std::cout << "M pressed\n";
 		GLHelper::keystateM = GL_FALSE;
 	}
 	if (GLHelper::keystateB)
@@ -450,8 +445,6 @@ void GLApp::update()
 			float randg = colour(generator);
 			float randb = colour(generator);
 			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
-			//vector3D::vec3D tmpcolor = vector3D::vec3D(0.f, 0.f, 0.f);
-			//std::cout << "Values " << randx << ", " << randy << std::endl;
 			if (GLHelper::keystateQ)
 			{
 				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(-randx, -randy), tmpcolor, tmpobjcounter);
@@ -792,55 +785,26 @@ void GLApp::draw()
 
 	if (alphablend)
 	{
-		//std::cout << "Nani\n";
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	if (textures)
 	{
-		//std::cout << "Enabled\n";
-		glBindTextureUnit(0, (texobj.getTexid()));
+		//glBindTextureUnit(0, Graphics::textureobjects[0].getTexid());
 	}
 	if (!textures)
 	{
-		//std::cout << "Disabled\n";
-		glBindTextureUnit(0, 0);
-		//glBindTextureUnit(0, (texobj.getTexid()));
+		//glBindTextureUnit(0, 0);
 	}	
 	// Part 4: Render each object in container GLApp::objects
 	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
-		//switch (currentCollision)
-		//{
-		//	
-		//case collisionType::NIL: //
 		if (obj->first != "Camera")
 		{
-			//std::cout << "Overlap draw " << obj->second.overlap << std::endl;
 			obj->second.draw();
 		}
-		//	break;
-
-		//default:
-		//	//std::cout << "currentCollision " << currentCollision << std::endl;
-		//	if (obj->first != "Camera" && obj->second.body.getCollidability() == true)
-		//	{	
-		//		
-		//		obj->second.draw();
-		//	}
-		//	if (obj->second.body.getCollidability() == false)
-		//	{
-		//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//		obj->second.draw();
-		//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//	}
-		//	
-		//	break;
-		//}
 	}
-
-	//objects["Camera"].draw();
-	basicbatch.BatchRender();
+	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	glDisable(GL_BLEND);
 }
 
@@ -893,7 +857,6 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 
 void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour,  int id, bool collisionflag)
 {
-	//bool colDebugCreated = false;
 	GLObject tmpObj;
 	std::string hi;
 
@@ -902,30 +865,13 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 		tmpObj.body.createCircleBody(scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
-
-
-	//std::cout << "Creating " << pos.x << " " << pos.y << std::endl;
-	
-	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	//// create default engine as source of randomness
-	//std::default_random_engine generator(seed);
-	//std::uniform_real_distribution<float> colour(0.f, 1.f);
-	//float randr = colour(generator);
-	//float randg = colour(generator);
-	//float randb = colour(generator);
-	//tmpObj.color = glm::vec3(randr, randg, randb);
 	
 	tmpObj.color = colour;
 
-	//std::cout << "1st test " << tmpObj.color.x << ", " << tmpObj.color.y << ", " << tmpObj.color.z << std::endl;
-	//std::cout << "2nd test " << tmpObj.color.r << ", " << tmpObj.color.g << ", " << tmpObj.color.b << std::endl;
-	// 
-	//tmpObj.scaling = scale;
 	if (modelname == "circle")
 		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
 	else if (modelname == "square")
 		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getWidth(), tmpObj.body.getWidth());
-	//std::cout << "this is scale in obj and scale in scale in body: " << tmpObj.scaling.x << " " << tmpObj.scaling.y << " " << tmpObj.body.getRad() << std::endl;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
 	tmpObj.speed = 200.f;
@@ -1049,16 +995,11 @@ void GLApp::init_scene(std::string scene_filename)
 		else
 		{
 			Graphics::Model Model;
-			
 			Model = Model.init(model_name);
-
-			//std::cout << "Model " << Model.getPosvtxCnt() << std::endl;
 			models[model_name] = Model;
 			Object.mdl_ref = models.find(model_name);
 
 		}
-
-
 		/*
 		add code to do this:
 		if shader program listed in the scene file is not present in

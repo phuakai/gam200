@@ -11,7 +11,7 @@ Graphics::Texture::Texture()
 	texture = 0;
 }
 
-void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& textureobj)
+void Graphics::Texture::loadTexture(const char* path, Graphics::Texture &textureobj)
 {
 	int width, height, channels;
 	unsigned char* img = stbi_load(path, &width, &height, &channels, 0);
@@ -19,7 +19,7 @@ void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& texture
 		printf("Error in loading the image\n");
 		exit(1);
 	}
-	glGenTextures(1, &(textureobj.texture));
+	glGenTextures(1,  &(textureobj.texture));
 	glBindTexture(GL_TEXTURE_2D, (textureobj.texture));
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -45,7 +45,7 @@ void Graphics::Texture::setData(int handle, Graphics::Texture& textureobj)
 	textureobj.texture = handle;
 }
 
-void Graphics::createTextureVector(std::vector<Texture>& texobjs, int texturecount)
+void Graphics::createTextureVector(std::vector<Texture> &texobjs, int texturecount)
 {
 	Texture tmp;
 	std::cout << "Texture count " << texturecount << std::endl;

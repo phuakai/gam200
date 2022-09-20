@@ -5,8 +5,7 @@
 #include <texture.h>
 #include <iostream>
 
-extern bool modulate, alphablend, textures;
-extern Graphics::Texture texobj;
+
 
 Graphics::BatchRenderer::BatchRenderer()
 {
@@ -24,56 +23,37 @@ Graphics::BatchRenderer::BatchRenderer()
 	eboid = 0;
 }
 
-void Graphics::BatchRenderer::BatchRender()
+void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 {
-	//shd_ref->second.Use();
-	//glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-	//glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
-	//GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
-	//glUniform1i(tex_loc, 0);
-
-	//GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
-	//glUniform1i(UniformModulate, modulate);
-
-	//GLboolean UniformTextures = glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
-	//glUniform1i(UniformTextures, textures);
-	//// call glDrawElements with appropriate arguments
-	//glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-
-	//// unbind VAO and unload shader program
-	//glBindVertexArray(0);
-
-	//shd_ref->second.UnUse();
-
 	batchshader.Use();
 	glBindVertexArray(vaoid);
 
-	for (int i = 0; i < batchdata.size(); i++)
-	{
-		//std::cout << "This is I " << i << std::endl;
-		//std::cout << "Coords " << batchdata[i].posVtx.x << ", " << batchdata[i].posVtx.y << std::endl;
-	}
-
-
 	vboid = Graphics::VBO::init();
-	//std::cout << "Size " << sizeof(Graphics::vertexData) * totalsize << std::endl;
 	Graphics::VBO::store(vboid, sizeof(Graphics::vertexData) * totalsize, batchdata);
 
+	// Position
 	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
-	Graphics::VBO::bind(vaoid, 0, vboid, 0, sizeof(float) * 7); // Set buffer binding point 0
+	Graphics::VBO::bind(vaoid, 0, vboid, 0, sizeof(float) * 8); // Set buffer binding point 
 	Graphics::VAO::setattrib(vboid, 0, 2); // Attrib format
 	Graphics::VAO::bindattrib(vaoid, 0, 0); // Bind attrib
 
-	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 0
-	Graphics::VBO::bind(vaoid, 1, vboid, sizeof(float) * 2, sizeof(float) * 7); // Set buffer binding point 0
+	// Colour
+	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 1
+	Graphics::VBO::bind(vaoid, 1, vboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
 	Graphics::VAO::setattrib(vaoid, 1, 3); // Attrib format
 	Graphics::VAO::bindattrib(vaoid, 1, 1); // Bind attrib
 
+	// Texture Position (U/V)
+	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 2
+	Graphics::VBO::bind(vaoid, 2, vboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
+	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 
+	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 
 
-	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 1
-	Graphics::VBO::bind(vaoid, 2, vboid, sizeof(float) * 5, sizeof(float) * 7); // Set buffer binding point 1
-	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 1
-	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 1
+	// Texture Index
+	Graphics::VAO::enableattrib(vaoid, 3); // Attrib 3
+	Graphics::VBO::bind(vaoid, 3, vboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
+	Graphics::VAO::setattrib(vaoid, 3, 1); // Attrib format 
+	Graphics::VAO::bindattrib(vaoid, 3, 3); // Bind attrib 
 
 	eboid = Graphics::EBO::init();
 	int offset = 0;
@@ -93,16 +73,20 @@ void Graphics::BatchRenderer::BatchRender()
 
 	Graphics::EBO::bind(vaoid, eboid);
 
-	//glNamedBufferSubData(vboid, 0, sizeof(Graphics::vertexData) * totalsize, batchdata.data());
-	//std::cout << "Inside batch render batch shader " << batchshader.GetHandle() << std::endl;
+	//std::cout << "Texture units " << texobjs.size() << std::endl;
+	glBindTextureUnit(0, texobjs[0].getTexid());
+	glBindTextureUnit(1, texobjs[1].getTexid());
+
 	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	glUniform1i(tex_loc, 0);
+	int samplers[2] = { 0, 1 };
+	glUniform1iv(tex_loc, 2, samplers);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
-	glUniform1i(UniformModulate, modulate); // Modulate bool temp
+	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
+	glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
 
 	GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
-	glUniform1i(UniformTextures, textures); // Texture bool temp
+	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 
 	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
@@ -110,8 +94,6 @@ void Graphics::BatchRenderer::BatchRender()
 
 	batchshader.UnUse();
 
-
-	//std::cout << "Cleared\n";
 	totalindicesize = 0;
 	totaldrawcnt = 0;
 	totalsize = 0;

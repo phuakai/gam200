@@ -16,7 +16,7 @@ namespace Graphics
 		unsigned int texture;
 	};
 
-	void createTextureVector(std::vector<Texture>& texobjs, int texturecount);
+	void createTextureVector(std::vector<Texture> &texobjs, int texturecount);
 
 	static std::vector<Graphics::Texture> textureobjects; // Texture vector
 	//void clearTextureVector();
