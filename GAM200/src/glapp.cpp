@@ -310,7 +310,7 @@ void GLApp::init()
 
 	player1.Add<Position>(vector2D::vec2D(-200, 0));
 	// velocity, target, force, speed
-	player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
+	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
 	player1.Add<Stats>("player1", 100);
 	ecs.setEntityName(player1.GetID(), "player1");
@@ -318,8 +318,6 @@ void GLApp::init()
 	id = player1.GetID();
 	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(0.3, 0.3, 0.7));
 	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
-
-
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
@@ -907,9 +905,9 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, glm::vec3 colour)
 {
 	GLObject tmpObj;
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
+	//std::default_random_engine generator(seed);
 
 	tmpObj.color = colour;
 	tmpObj.scaling = scale;

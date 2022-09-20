@@ -171,9 +171,6 @@
     <ClInclude Include="include\ECS.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\ECS.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="include\collision.h">
       <Filter>Include</Filter>
     </ClInclude>
@@ -548,6 +545,9 @@
     </ClInclude>
     <ClInclude Include="include\imconfig.h">
       <Filter>Include\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS.hpp">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

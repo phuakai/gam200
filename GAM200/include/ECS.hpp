@@ -481,13 +481,16 @@ inline C* ECS::GetComponent(const EntityID& entityId)
     if (!record.archetype)
         return nullptr; // there's no components anyway
 
-    if (std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId) == record.archetype->type.end())
+    auto found = std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId);
+    if (found == record.archetype->type.end())
     {
         // this entity doesn't have this component
         return nullptr;
     }
 
-    return reinterpret_cast<C*>(record.archetype->componentData[compTypeId] + record.index * m_componentMap[compTypeId]->GetSize());
+    int foundComponent = std::distance(record.archetype->type.begin(), found);
+
+    return reinterpret_cast<C*>(record.archetype->componentData[foundComponent] + record.index * sizeof(C));
 }
 
 inline void ECS::RemoveEntity(const EntityID& entityId)
