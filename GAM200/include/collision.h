@@ -38,17 +38,6 @@ namespace physics
 
 	/******************************************************************************/
 	/*!
-		
-	*/
-	/******************************************************************************/
-	struct AABB
-	{
-		vector2D::vec2D	min;																// Min point of bounding box
-		vector2D::vec2D	max;																// Max point of bounding box
-	};
-
-	/******************************************************************************/
-	/*!
 		Struct that consist of the circle's center and its radius
 	*/
 	/******************************************************************************/
@@ -79,7 +68,7 @@ namespace physics
 
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
-	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
+	//void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
 
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
 						 GLApp::GLObject const& polygon2);

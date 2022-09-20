@@ -41,12 +41,9 @@ struct GLApp {
 
 
   //added for physics testing
-  static constexpr glm::vec3 red{1.f, 0.f, 0.f};
-  static constexpr glm::vec3 green{0.f, 1.f, 0.f};
-  static constexpr glm::vec3 blue{0.f, 0.f, 1.f};
   enum class collisionType
   {
-	NIL = 0,						//0
+	NIL = 0,					//0
 	CircleDetection,			//1
 	CirclePushResolution,		//2
 	CircleBlockResolution,		//3
@@ -58,7 +55,7 @@ struct GLApp {
   };
 
   static collisionType currentCollision;
-  static bool stepByStepCollision;
+  static bool movableShape;
   static std::unordered_map<collisionType, std::string> collisionInfo;
 
   struct GLObject {
@@ -66,8 +63,6 @@ struct GLApp {
 	  vector2D::vec2D scaling{};														// scaling parameters
 	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
 	  float speed{};																	// speed
-	  vector2D::vec2D directionVec{};													// directional vec
-	  std::pair<vector2D::Point2D, float> untravelledDistance;							// destination, untravelled distance
 	  physicsRigidBody body;															// param for collision
 	  int objId;																		// For collision debugger
 

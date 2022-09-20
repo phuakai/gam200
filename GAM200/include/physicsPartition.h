@@ -5,6 +5,17 @@
 #include <vector>
 #include "vec2D.h"
 
+/******************************************************************************/
+/*!
+
+*/
+/******************************************************************************/
+struct AABB
+{
+	vector2D::vec2D	min;																// Min point of bounding box
+	vector2D::vec2D	max;																// Max point of bounding box
+};
+
 struct partitionObj
 {
 private:
@@ -12,19 +23,55 @@ public:
 	int partitionId;
 	vector2D::vec2D position;
 
-	float maxAlongX;
-	float minAlongX;
-	float maxAlongY;
-	float minAlongY;
+	AABB minMaxPoints;
 
+	//float maxAlongX;
+	//float minAlongX;
+	//float maxAlongY;
+	//float minAlongY;
+
+	/******************************
+	* Constructors
+	******************************/
+	/******************************************************************************/
+	/*!
+	\brief
+		This function constructs the partiction object with a specified row and col
+	*/
+	/******************************************************************************/
 	partitionObj();
-	~partitionObj();
-	void addCreatedObj(vector2D::vec2D pos, float halfWidth, float halfHeight, float angle);
 
+	/******************************
+	* Deconstructors
+	******************************/
+	/******************************************************************************/
+	/*!
+	\brief
+		This function deconstructs the partiction object with a specified row and col
+	*/
+	/******************************************************************************/
+	~partitionObj();
+
+	/******************************
+	* Creator
+	******************************/
+	/******************************************************************************/
+	/*!
+	\brief
+		This function creates a body with the propertiels of a box
+	*/
+	/******************************************************************************/
+	void addCreatedObj(vector2D::vec2D pos, float halfWidth, float halfHeight, float angle);
 	void addCreatedObj(vector2D::vec2D pos, float rad);
 
+	/******************************
+	* Update
+	******************************/
 	void reorganizeData();
 
+	/******************************
+	* Destroyer
+	******************************/
 	void removeDeletedObj();
 };
 

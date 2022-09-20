@@ -50,7 +50,7 @@ std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 Graphics::Texture texobj;
 
 GLApp::collisionType GLApp::currentCollision;
-bool GLApp::stepByStepCollision;
+bool GLApp::movableShape;
 //std::list <std::pair<int, partitionObj>> partitionStorage;
 
 bool coldebug;
@@ -291,7 +291,7 @@ void GLApp::init()
 
 	// Store physics related info to be printed in title bar
 	currentCollision = collisionType::NIL;
-	stepByStepCollision = false;
+	movableShape = false;
 	collisionInfo[collisionType::NIL] = "NIL";
 	collisionInfo[collisionType::CircleDetection] = "CircleDetection";
 	collisionInfo[collisionType::CirclePushResolution] = "CirclePushResolution";
@@ -303,8 +303,8 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 
 	coldebug = false;
-	// Part 5: Print OpenGL context and GPU specs
-	//GLHelper::print_specs();
+	
+	// create grid from gimmeobj
 }
 
 /*  _________________________________________________________________________*/
@@ -327,7 +327,7 @@ void GLApp::update()
 
 	if (GLHelper::keystateP)
 	{
-		stepByStepCollision = !stepByStepCollision;
+		movableShape = !movableShape;
 		GLHelper::keystateP = false;
 	}
 
@@ -405,20 +405,31 @@ void GLApp::update()
 	{
 		if (obj1->first != "Camera")
 		{
-			if (obj1->first == "Banana1")
+			if (!movableShape && obj1->first == "Banana1") // first shape drawn is a box
 			{
-				//obj1->second.body.rotate(45.f);
-				//float rad{ 45.f / 180.f * M_PI };
-				//obj1->second.orientation.x = rad;
+				obj1->second.body.rotate(45.f);
+				float rad{ 45.f / 180.f * M_PI };
+				obj1->second.orientation.x = rad;
 
 				double destX, destY;
 				Graphics::Input::getCursorPos(&destX, &destY);
 
-				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed, stepByStepCollision);
+				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+				//std::cout << "this is vel: " << velocity.x << " " << velocity.y << std::endl;
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				obj1->second.body.move(velocity);
 			}
+			else if (movableShape && obj1->first == "Banana2") // first shape drawn is a circle
+			{
+				double destX, destY;
+				Graphics::Input::getCursorPos(&destX, &destY);
+
+				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+				//std::cout << "this is vel: " << velocity.x << " " << velocity.y << std::endl;
+				obj1->second.body.move(velocity);
+			}
+
 			obj1->second.overlap = false;
 			obj1->second.body.transformVertices();
 			obj1->second.modelCenterPos = obj1->second.body.getPos();
@@ -977,8 +988,6 @@ void GLApp::init_scene(std::string scene_filename)
 		std::istringstream velocity{ line };
 		velocity >> Object.speed;
 		Object.overlap = false;
-		Object.untravelledDistance.first = vector2D::vec2D{ 0.f, 0.f };
-		Object.untravelledDistance.second = 0.f;
 
 		/*
 		add code to do this:

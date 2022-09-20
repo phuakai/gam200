@@ -40,50 +40,52 @@ private:
 	bool plsUpdateTfm;				//change to true whenever there is rot/scale/trans
 
 public:
-	/********************
+	/******************************
 	* Constructors
-	********************/
+	******************************/
 	physicsRigidBody();
-
 	physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVel, float Rot, float RotVel, float Density, float Mass,
 	float Restituition, float Area, bool IsStatic, float Radius, float Width, float Height);
 	//physicsRigidBody() :pos{ 0.f, 0.f }, linearVel{ 0.f, 0.f }, rot{ 0.f }, rotVel{ 0.f }, density{ 0.f },
 	//	mass{ 0.f }, restitution{ 0.f }, area{ 0.f }, isStatic{ false }, radius{ 0.f }, width{ 0.f }, height{ 0.f }, shapeType{ shapeType::box }{}
 	
-	/********************
+	/******************************
 	* Deconstructors
-	********************/
+	******************************/
 	~physicsRigidBody();
 
-	/********************
+	/******************************
 	* Creator
-	********************/
+	******************************/
 	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
 	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
 
-	/********************
+	/******************************
 	* Getters
-	********************/
-	float getRad();
+	******************************/
 	vector2D::vec2D getPos();
+	float getRad();
 	float getWidth();
 	float getHeight();
-	std::vector<vector2D::vec2D> getTfmVtx();
+	float getHalfWidth();
+	float getHalfHeight();
 	ShapeType getShape();
+	std::vector<vector2D::vec2D> getTfmVtx();
+	bool getPlsUpdateTfm();
 
-	/********************
+	/******************************
 	* Setters
-	********************/
-	void setRad(float rad);
+	******************************/
 	void setPos(vector2D::Point2D position);
+	void setRad(float rad);
 
-	/********************
-	* Others
-	********************/
-	//void setTransformRequired(bool transform);				
-	void transformVertices();						// Transform
+	/******************************
+	* Transformations
+	******************************/
+	void transformVertices();									// Transform
 	void move(vector2D::vec2D& vel);							// Translate
 	void rotate(float angle);									// Rotate
+	//void setTransformRequired(bool transform);				
 
 
 	//{
