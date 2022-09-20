@@ -294,7 +294,7 @@ void GLApp::GLObject::draw() const
 			std::default_random_engine generator(seed);
 			std::uniform_int_distribution<int> posrandom(0, 1);
 			float randindex = float(posrandom(generator));
-			tmpVtxData.txtIndex = randindex;
+			tmpVtxData.txtIndex = 0.f;
 			vertexData.emplace_back(tmpVtxData);
 		}
 		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
