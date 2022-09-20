@@ -9,6 +9,7 @@
 vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed)
 {
 	float dt = GLHelper::delta_time;
+	dt = dt > (1 / 60.f) ? (1 / 60.f) : dt;
 
 	static vector2D::vec2D destination{ 0.f, 0.f };
 	static vector2D::vec2D mouseVel{ 0.f, 0.f };
@@ -17,6 +18,7 @@ vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest,
 	{
 		vector2D::Vector2DNormalize(mouseVel, dest - src);
 		destination = dest;
+		mouseVel *= dt * speed;
 	}
 
 	else if (mouseVel.x != 0.f && mouseVel.y != 0.f)
@@ -27,7 +29,6 @@ vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest,
 		pos += mouseVel;
 		if (vector2D::Vector2DDistance(destination, pos) <= vector2D::Vector2DLength(mouseVel)) //position has passed dest
 		{
-
 			src = destination;
 			mouseVel = vector2D::vec2D(0.f, 0.f);
 			return mouseVel;

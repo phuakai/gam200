@@ -849,11 +849,11 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 
-	partitionObj tmp;
+	//partitionObj tmp{ tmpobjcounter };
 
-	partitionStorage.emplace_back(std::make_pair(2, tmp));
+	//partitionStorage.emplace_back(std::make_pair(2, tmp));
 
-	std::cout << "this is my partitionStorage: " << partitionStorage.begin()->first << " " << partitionStorage.begin()->second.position.x << std::endl;
+	//std::cout << "this is my partitionStorage: " << partitionStorage.begin()->first << " " << partitionStorage.begin()->second.position.x << std::endl;
 	//std::cout << "Creating " << pos.x << " " << pos.y << std::endl;
 	
 	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());

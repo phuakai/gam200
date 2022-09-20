@@ -23,6 +23,35 @@ partitionObj::partitionObj()
 	//minAlongY = FLT_MAX;
 }
 
+//partitionObj::partitionObj(int id, vector2D::vec2D pos, float width, float height)
+//{
+//	partitionId = 0;
+//	position.x = 0.f;
+//	position.y = 0.f;
+//
+//	minMaxPoints.min.x = FLT_MAX;
+//	minMaxPoints.min.y = FLT_MAX;
+//	minMaxPoints.max.x = FLT_MIN;
+//	minMaxPoints.max.x = FLT_MIN;
+//
+//	//maxAlongX = FLT_MIN;
+//	//minAlongX = FLT_MAX;
+//	//maxAlongY = FLT_MIN;
+//	//minAlongY = FLT_MAX;
+//}
+//
+//partitionObj::partitionObj(int id, vector2D::vec2D pos, float rad)
+//{
+//	partitionId = 0;
+//	position.x = 0.f;
+//	position.y = 0.f;
+//
+//	minMaxPoints.min.x = FLT_MAX;
+//	minMaxPoints.min.y = FLT_MAX;
+//	minMaxPoints.max.x = FLT_MIN;
+//	minMaxPoints.max.x = FLT_MIN;
+//}
+
 partitionObj::~partitionObj()
 {
 
@@ -62,7 +91,6 @@ void partitionObj::reorganizeData()
 void partitionObj::removeDeletedObj()
 {
 	--partitionId;
-
 }
 
 
