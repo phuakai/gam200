@@ -38,6 +38,7 @@ to OpenGL implementations.
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <stdint.h>
 
 
 
@@ -61,7 +62,49 @@ struct Randomness
 struct he {
 	int a;
 };
+struct Stats {
+	std::string name;
+	int health;
+};
 
+//-----------------------------------RANDOM IMGUI FUNCTION LOL
+//if (ImGui::TreeNode("Entities")) {
+//	for (int i = 1; i < ecs.getEntities().size() + 1; ++i) {
+//		std::string str = ecs.getEntityName(i);
+//		const char* c = str.c_str();
+//		if (ImGui::TreeNode((void*)(intptr_t)i, c)) {
+//			std::vector<std::string> names = ecs.getEntityComponents(i);
+//			//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
+//			for (int j = 0; j < names.size(); ++j) {
+//				std::string str2 = names[j];
+//				const char* c2 = str2.c_str();
+//				ImGui::Text(c2);
+//
+//				if (str2 == "Position") {
+//					//ecs.GetComponent<Position>(i)->x;
+//					//ImGui::SameLine();
+//					ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->x, inputs_step ? &f32_one : NULL);
+//					//ImGui::SameLine(); 
+//					ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->y, inputs_step ? &f32_one : NULL);
+//				}
+//			}
+//			ImGui::TreePop();
+//		}
+//	}
+//	ImGui::TreePop();
+//}
+
+//void imguiComponent(EntityID& id)
+//{
+//	std::vector<std::string> componentNames = ecs.getEntityComponents(id);
+//
+//
+//}
+
+//Entity createEntity()
+//{
+//
+//}
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -225,20 +268,29 @@ void GLApp::init()
 	ecs.RegisterComponent<Randomness>("Randomness");
 	ecs.RegisterComponent<he>("he");
 
-	Entity ent1(ecs);
+	Entity ent1( ecs);
 
-	ent1.Add<Position>({ 1,2 });
+	ent1.Add<Position>({ 1.45,2 });
 	ent1.Add<Velocity>({ .5f,.5f });
 	ent1.Add<Randomness>({ .25f });
+	ecs.setEntityName(ent1.GetID(), "enemy1");
 
-	Entity ent2(ecs);
+	Entity ent2( ecs);
 
 	ent2.Add<Position>({ 4,3 });
 	ent2.Add<Velocity>({ 123.5f,123.5f });
 	ent2.Add<Randomness>({ .25f });
+	ecs.setEntityName(ent2.GetID(), "enemy2");
 
 
-	std::cout << ent2.GetID() << std::endl;
+	//ecs.getEntityComponents(1);
+
+	//std::cout << ent2.GetID() << std::endl;
+
+	//for (auto i : ecs.getEntities()) {
+	//	std::cout << "entity ID " << i.first << std::endl;
+	//	
+	//}
 	//auto it = ecs.m_entityArchetypeMap.find(ent2.GetID());
 
 	//std::cout << "archetype is "  << reinterpret_cast<Position*>(it->second.archetype->componentData[0]);
@@ -247,14 +299,20 @@ void GLApp::init()
 	//std::cout << dab->x << dab->y;
 	//std::cout << "archetype is "  << (it->second.archetype->componentData[0]);
 
-	/*
-	std::unordered_map test = ecs.getComponents(); 
-	
-	for (auto i = test.begin(); i != test.end(); i++)
-		std::cout << i->first << "      " << (i->second)->GetName()
-		<< std::endl;
-	*/
+	//
+	//std::unordered_map test = ecs.getComponents(); 
+	//
+	//for (auto i = test.begin(); i != test.end(); i++)
+	//	std::cout << i->first << "      " << (i->second)->GetName()
+	//	<< std::endl;
+	//
 
+
+	
+	//for (int i : ecs.getEntities()) {
+	//	std::cout << i << std::endl;
+	//	std::cout << ecs.getEntityName(i);
+	//}
 
 	//-----------------------------------------extra imgui stuff here
 	IMGUI_CHECKVERSION();
@@ -268,6 +326,7 @@ void GLApp::init()
 	show_demo_window = true;
 	show_another_window = false;
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	
 	
 	// Part 5: Print OpenGL context and GPU specs
@@ -404,41 +463,138 @@ void GLApp::update()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	
-		ImGui::ShowDemoWindow(&show_demo_window);
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	ImGui::ShowDemoWindow(&show_demo_window);
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
 	
-		static float f = 0.0f;
-		static int counter = 0;
+	static float f = 0.0f;
+	static int counter = 0;
 
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
 
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+	//std::vector<EntityID> entities = ecs.getEntities();
 
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
 
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
-	
-		if (show_another_window)
-		{
-			ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
-			ImGui::End();
+	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
+		
+	//if (ImGui::TreeNode("list")) {
+	//	ImGui::TreeNode("test");
+	//}
+	static bool inputs_step = true;
+	//static float  f32_v = 0.123f;
+	const float f32_one = 1.f;
+	/*
+	for (auto i : ecs.getEntities()) {
+		std::string str = ecs.getEntityName(i);
+		const char* c = str.c_str();
+		if (ImGui::TreeNode(c)) {
+			ImGui::TreeNode("test");
+			ImGui::TreePop();
 		}
 
-		ImGui::Render();
+	}
+	*/
+	//for (auto i : ecs.getEntities()) {
+	if (ImGui::TreeNode("Entities")) {
+		for (int i = 1; i < ecs.getEntities().size()+1; ++i) {
+			std::string str = ecs.getEntityName(i);
+			const char* c = str.c_str();
+			if (ImGui::TreeNode((void*)(intptr_t)i, c)) {	
+				std::vector<std::string> names = ecs.getEntityComponents(i);
+				//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
+				for (int j = 0; j < names.size(); ++j) {
+					std::string str2 = names[j];
+					const char* c2 = str2.c_str();
+					ImGui::Text(c2);
+
+					if (str2 == "Position") {
+						//ecs.GetComponent<Position>(i)->x;
+						//ImGui::SameLine();
+						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->x, inputs_step ? &f32_one : NULL);
+						//ImGui::SameLine(); 
+						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->y, inputs_step ? &f32_one : NULL);
+					}
+				}
+				ImGui::TreePop();
+			}
+		}
+		ImGui::TreePop();
+	}
+
+	// button to create entity
+	static char name[100]{ '\0' };
+	static std::string createEntityButtonName = "Create Entity";
+	const char* text = createEntityButtonName.c_str();
+	if (ImGui::Button(text))
+	{
+		if (name[0] != '\0')
+		{
+			// creating entity
+			ecs.RegisterEntity(ecs.GetNewID(), name);
+			memset(name, 0, sizeof(name));
+		}
+
+		createEntityButtonName = "Create Entity";
+		text = createEntityButtonName.c_str();
+		counter++;
+	}
+	if (counter & 1)
+	{
+		ImGui::InputText("Entity Name", name, 100);
+
+		createEntityButtonName = "Cancel";
+		text = createEntityButtonName.c_str();
+
+		if (ImGui::Button("Create Entity"))
+		{
+			if (name[0] != '\0')
+			{
+				// creating entity
+				ecs.RegisterEntity(ecs.GetNewID(), name);
+				memset(name, 0, sizeof(name));
+			}
+			createEntityButtonName = "Create Entity";
+			text = createEntityButtonName.c_str();
+			counter++;
+		}
+	}
+	
+	//ImGui::TreeNode("THE REST");
+	/*
+	for (auto i : ecs.getEntities()) {
+		std::string str = ecs.getEntityName(i);
+		const char* c = str.c_str();
+		ImGui::Text(c);	
+	}
+	*/
+	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+	ImGui::Text("Test");
+	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+	ImGui::Checkbox("Another Window", &show_another_window);
+
+	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+	//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+	//	counter++;
+	ImGui::SameLine();
+	ImGui::Text("counter = %d", counter);
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::End();
+	
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
+
+	ImGui::Render();
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw

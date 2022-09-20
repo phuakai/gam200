@@ -180,6 +180,7 @@ private:
     struct Record {
         Archetype* archetype;
         std::size_t index;
+        std::string entityName;
     };
 
     typedef std::unordered_map<EntityID, Record> EntityArchetypeMap;
@@ -208,7 +209,7 @@ public:
 
     void RegisterSystem(const std::uint8_t& layer, SystemBase* system);
 
-    void RegisterEntity(const EntityID entityId);
+    void RegisterEntity(const EntityID entityId, const std::string name);
 
     void RunSystems(const std::uint8_t& layer, const float elapsedMilliseconds);
 
@@ -220,8 +221,10 @@ public:
     template<class C>
     void RemoveComponent(const EntityID& entityId);
 
-    //template<class C>
-   // C* GetComponent(const EntityID& entityId);
+    void setEntityName(const EntityID& entityId, std::string name);
+
+    template<class C>
+    C* GetComponent(const EntityID& entityId);
 
     //template<class C>
   //  bool HasComponent(const EntityID& entityId);
@@ -232,9 +235,12 @@ public:
    // std::vector<EntityID> GetEntitiesWith();
 
 
-    ComponentTypeIDBaseMap getComponents();
+    std::vector<std::string> getAllRegisteredComponents();
+    std::vector<std::string> getEntityComponents(const EntityID& entityId);
 
+    std::vector<EntityID> getEntities();
 
+    std::string getEntityName(const EntityID& entityId);
 
     //change back to priv 
 private:
@@ -258,8 +264,8 @@ private:
 class Entity {
 public:
 
-    explicit Entity(ECS& ecs = ecs) : m_id(ecs.GetNewID()), m_ecs(ecs) {
-        m_ecs.RegisterEntity(m_id);
+    explicit Entity(ECS& ecs = ecs, std::string name = "nil") : m_id(ecs.GetNewID()), m_ecs(ecs) {
+        m_ecs.RegisterEntity(m_id,name);
     }
     template<class C, typename... Args>
     C* Add(Args&&... args)
@@ -275,6 +281,7 @@ public:
     {
         return m_id;
     }
+
 
 private:
     EntityID m_id;
@@ -403,17 +410,71 @@ void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
     m_systems[layer].push_back(system);
 }
 
-void ECS::RegisterEntity(const EntityID entityId)
+void ECS::RegisterEntity(const EntityID entityId, const std::string name)
 {
     Record dummyRecord;
     dummyRecord.archetype = nullptr;
     dummyRecord.index = 0;
+    dummyRecord.entityName = name;
     m_entityArchetypeMap[entityId] = dummyRecord;
 }
 
+void ECS::setEntityName(const EntityID& entityId, std::string name)
+{
+    Record& record = m_entityArchetypeMap[entityId];
+    record.entityName = name;
+}
 
-ECS::ComponentTypeIDBaseMap ECS::getComponents() {
-    return m_componentMap;
+std::vector<std::string> ECS::getAllRegisteredComponents() {
+    std::vector<std::string> componentNames;
+    for (auto i : m_componentMap) {
+        componentNames.push_back((i.second)->GetName());
+    }
+    return componentNames;
+}
+std::vector<EntityID> ECS::getEntities() {
+
+    std::vector<EntityID> entityIDs;
+    for (auto i : m_entityArchetypeMap) {
+        entityIDs.push_back(i.first);
+    }
+    return entityIDs;
+}
+
+std::string ECS::getEntityName(const EntityID& entityId) {
+    Record& record = m_entityArchetypeMap[entityId];
+    return record.entityName ;
+}
+
+std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId) {
+
+    std::vector<std::string> components;
+
+    Record& record = m_entityArchetypeMap[entityId];
+
+    if (!record.archetype)
+        return components; // there's no components anyway    
+
+    for (auto i : record.archetype->type) {
+        auto it = m_componentMap.find(i);
+        components.push_back(it->second->GetName());
+
+   }
+    return components;
+}
+
+template<class C> inline C* ECS::GetComponent(const EntityID& entityId) {
+    ComponentTypeID compTypeId = Component<C>::GetTypeID();
+    if (!m_entityArchetypeMap.contains(entityId))    
+        return nullptr; // it doesn't exist     
+    Record& record = m_entityArchetypeMap[entityId];      
+    if (!record.archetype)     
+        return nullptr; // there's no components anyway      
+    if (std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId) == record.archetype->type.end())   
+    {         // this entity doesn't have this component       
+        return nullptr;     
+    }      
+    return reinterpret_cast<C*>(record.archetype->componentData[compTypeId] + record.index * m_componentMap[compTypeId]->GetSize());
 }
 
 
