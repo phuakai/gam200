@@ -34,37 +34,11 @@ to OpenGL implementations.
 #include <buffer.h>
 #include <model.h>
 #include <random>
-#include "ECS.h"
+#include "pathfinding.h"
 
-
-
-struct Position
-{
-	float x;
-	float y;
-};
-
-struct Movement
-{
-	vector2D::vec2D velocity;
-	vector2D::vec2D force;
-	vector2D::vec2D target;
-	
-};
-
-struct Sprite
-{
-	std::string type;
-	vector2D::vec2D size;
-};
-
-struct Stats {
-	std::string name;
-	int health;
-	
-};
-
-
+#include <registration.h>
+//#include <instance.h>
+#include <type>
 
 
 
@@ -82,13 +56,35 @@ bool GLApp::stepByStepCollision;
 
 int tmpobjcounter{};
 
-std::vector<Unit> playerList;
-std::vector<Unit> enemyList;
-extern std::vector<Unit> enemyList;
+ECS ecs;
+
+Entity player1;
+std::vector<Entity> enemyUnits(1000);
+System<Movement, Position> system1(ecs, 1);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 std::vector<vector2D::vec2D> walls;
 float timer;
+
+
+class test_class {
+public:
+	test_class(int value) : m_value(value) {}
+	void print_value() const { std::cout << m_value; }
+private:
+	int m_value;
+	RTTR_ENABLE();
+
+};
+
+RTTR_REGISTRATION{
+	rttr::registration::class_<test_class>("test_class")
+	.constructor<int>()
+	.method("print_value", &test_class::print_value);
+
+	//i think we cant register private vars anymore, just use setters /getters and register the method
+	//.property("value", &test_class::m_value)
+}
 
 /*  _________________________________________________________________________*/
 /*! GLObject::update
@@ -219,7 +215,7 @@ void GLApp::init()
 	// type GLObject in container GLApp::objects
 	//GLApp::init_scene("../scenes/gam200.scn");
 
-	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0));
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), glm::vec3(1, 1, 1));
 
 	// Part 4: initialize 
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -233,50 +229,83 @@ void GLApp::init()
 	collisionInfo[collisionType::AABBSTATIC] = "AABBSTATIC";
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 
-	Unit player1;
-	//player1.position = vector2D::vec2D(-19800 + 20, -20250 + 20);
-	player1.position = vector2D::vec2D(-200, 0);
-	player1.maxSpeed = 2;
-	player1.maxForce = 10;
-	player1.size = vector2D::vec2D(20, 20);
-	player1.unitName = "player1";
-	playerList.push_back(player1);
+	ecs.RegisterComponent<Position>();
+	ecs.RegisterComponent<Movement>();
+	ecs.RegisterComponent<Sprite>();
+	ecs.RegisterComponent<Stats>();
 
-	for (int i = 0; i < playerList.size(); ++i)
-	{
-		GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
-	}
 
-	// objects creation
-	for (int i = 0; i < 2500; ++i)
-	{
-		Unit enemy;
-		enemy.position = vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i/30 * 10));
-		enemy.maxSpeed = 2;
-		enemy.maxForce = 1;
-		enemy.size = vector2D::vec2D(10, 10);
-		enemy.unitID = i + 1;
-		enemy.unitName = "enemy" + std::to_string(i + 1);
-		enemyList.push_back(enemy);
-	}
-	timer = 4;
+	EntityID id;
+
+	player1.Add<Position>(vector2D::vec2D(-200, 0));
+	// velocity, target, force, speed
+	player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
+	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
+	player1.Add<Stats>("player1");
+
+	id = player1.GetID();
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(0.3, 0.3, 0.7));
+	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
+
+
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
 	std::default_random_engine generator(seed);
 	std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	for (int i = 0; i < enemyList.size(); ++i)
+	for (int i = 0; i < enemyUnits.size(); ++i)
 	{
-
 		float randr = colour(generator);
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyList[i].target = &playerList[0];
-		GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(randr, randg, randb));
-		//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+		enemyUnits[i].Add<Position>(vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)));
+		// velocity, target, force, speed
+		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Position>(player1.GetID())->position, 1, 2);
+		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<Stats>("enemy" + std::to_string(i + 1), 100);
+
+		id = enemyUnits[i].GetID();
+		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(randr, randg, randb));
 	}
+
+
+
+
+	//---------------------------------------------------------------------------------RTTR stuff
+
+	//test_class obj(42);
+	//rttr::type class_type = rttr::type::get("test_class");
+	//class_type.invoke("print_value", obj, {});
+
+
+	//std::vector<Entity> playerUnits(1000);
+
+	// objects creation
+	//for (int i = 0; i < 2500; ++i)
+	//{
+	//	Unit enemy;
+	//	enemy.position = vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i/30 * 10));
+	//	enemy.maxSpeed = 2;
+	//	enemy.maxForce = 1;
+	//	enemy.size = vector2D::vec2D(10, 10);
+	//	enemy.unitID = i + 1;
+	//	enemy.unitName = "enemy" + std::to_string(i + 1);
+	//	enemyList.push_back(enemy);
+
+
+	//for (int i = 0; i < enemyList.size(); ++i)
+	//{
+
+	//	float randr = colour(generator);
+	//	float randg = colour(generator);
+	//	float randb = colour(generator);
+
+	//	enemyList[i].target = &playerList[0];
+	//	GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(randr, randg, randb));
+	//	//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+	//}
 
 	// walls
 	//walls.push_back(vector2D::vec2D(10, 11));
@@ -285,8 +314,10 @@ void GLApp::init()
 	//walls.push_back(vector2D::vec2D(10, 14));
 	//walls.push_back(vector2D::vec2D(10, 15));
 
-	generateDijkstraCost(playerList[0].position, walls);
-	generateFlowField();
+	timer = 4;
+
+	generateDijkstraCost(ecs.GetComponent<Position>(id)->position, walls);
+	generateFlowField(ecs.GetComponent<Position>(id)->position);
 	//enemyList[5].Print();
 
 	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
@@ -309,6 +340,36 @@ void GLApp::init()
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
+
+
+	system1.Action([](const float elapsedMilliseconds,
+	const std::vector<EntityID>& entities,
+	Movement* m,
+	Position* p)
+	{
+		for (std::size_t i = 0; i < entities.size(); ++i)
+		{
+			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+			vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+
+			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+
+			movementFlocking(entities[i], m[i].target, allVelocity);
+
+			//m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
+
+			//// capping speed
+			//if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
+			//{
+			//	m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
+			//}
+
+			//p[i].position += m[i].velocity * GLHelper::delta_time * 100;
+
+			p[i].position += vector2D::vec2D(-1, -1);
+		}
+	});
 }
 
 /*  _________________________________________________________________________*/
@@ -380,6 +441,16 @@ void GLApp::update()
 		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), glm::vec3(0, 0, 0));
 		GLHelper::keystateQ = false;
 	}
+
+	Position* playerPosition = ecs.GetComponent<Position>(player1.GetID());
+	Stats* playerInfo = ecs.GetComponent<Stats>(player1.GetID());
+
+	if (timer > 0)
+		timer -= GLHelper::delta_time;
+
+	else
+		ecs.RunSystems(1, 100);
+
 	// next, iterate through each element of container objects
 	// for each object of type GLObject in container objects
 	// call update function GLObject::update(delta_time) except on
@@ -445,34 +516,25 @@ void GLApp::update()
 			}
 		}
 
-		// movement
-		if (timer <= 0)
+		if (playerInfo->name == obj->first && mouseClick)
 		{
-			for (int i = 0; i < enemyList.size(); ++i)
+			playerPosition->position = vector2D::vec2D(mousePosX, mousePosY);
+			obj->second.modelCenterPos = playerPosition->position;
+
+			generateDijkstraCost(playerPosition->position, walls);
+			generateFlowField(playerPosition->position);
+		}
+
+		for (int i = 0; i < enemyUnits.size(); ++i)
+		{
+			if (ecs.GetComponent<Stats>(enemyUnits[i].GetID())->name == obj->first)
 			{
-				// found object
-				if (enemyList[i].unitName == obj->first)
-				{
-					enemyList[i].Move();
-					obj->second.modelCenterPos = enemyList[i].position;
-				}
+				obj->second.modelCenterPos = ecs.GetComponent<Position>(enemyUnits[i].GetID())->position;
+				break;
 			}
 		}
 
-		if (playerList[0].unitName == obj->first && mouseClick)
-		{
-			playerList[0].position.x = mousePosX;
-			playerList[0].position.y = mousePosY;
-			obj->second.modelCenterPos = playerList[0].position;
-
-			generateDijkstraCost(playerList[0].position, walls);
-			generateFlowField();
-		}
-
 	}
-
-	if (timer > 0)
-		timer -= GLHelper::delta_time;
 }
 /*  _________________________________________________________________________*/
 /*! GLApp::draw

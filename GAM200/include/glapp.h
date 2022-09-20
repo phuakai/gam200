@@ -30,8 +30,6 @@ and transformations (in later labs).
 #include <vec2D.h>
 #include <mat3x3.h>
 #include <model.h>
-#include "pathfinding.h"
-
 struct GLApp {
 
   static void init();

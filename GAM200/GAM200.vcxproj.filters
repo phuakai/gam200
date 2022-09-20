@@ -1,117 +1,648 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\glapp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glhelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glslshader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mat3x3.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\buffer.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\collision.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vec2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physics.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\collisiondebug.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\buffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\glapp.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glhelper.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glslshader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mat3x3.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\model.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\ECS.hpp">
     <ClCompile Include="src\pathfinding.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\glapp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\glhelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\glslshader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\mat3x3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\collision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\vec2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\collisiondebug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\buffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ECS.h">
-    <ClInclude Include="include\pathfinding.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="src\physics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\transform.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vec2D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\comparison\compare_equal.cpp">
+      <Filter>Source\rttr\detail\comparsion</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\comparison\compare_less.cpp">
+      <Filter>Source\rttr\detail\comparsion</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\constructor\constructor_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\constructor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\conversion\std_conversion_functions.cpp">
+      <Filter>Source\rttr\detail\conversion</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\destructor\destructor_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\destructor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\enumeration\enumeration_helper.cpp">
+      <Filter>Source\rttr\detail\enumeration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\enumeration\enumeration_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\enumeration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\library\library_unix.cpp">
+      <Filter>Source\rttr\detail\library</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\library\library_win.cpp">
+      <Filter>Source\rttr\detail\library</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\method\method_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\method</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\misc\standard_types.cpp">
+      <Filter>Source\rttr\detail\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\parameter_info</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\property\property_wrapper_base.cpp">
+      <Filter>Source\rttr\detail\property</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\registration\registration_executer.cpp">
+      <Filter>Source\rttr\detail\registration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\registration\registration_state_saver.cpp">
+      <Filter>Source\rttr\detail\registration</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\type\type_data.cpp">
+      <Filter>Source\rttr\detail\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\type\type_register.cpp">
+      <Filter>Source\rttr\detail\type</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\detail\variant\variant_compare.cpp">
+      <Filter>Source\rttr\detail\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\constructor.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\destructor.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\enumeration.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\library.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\method.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\parameter_info.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\policy.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\property.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\registration.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\type.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\variant.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\variant_associative_view.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rttr\variant_sequential_view.cpp">
+      <Filter>Source\rttr\detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />
     <None Include="..\shaders\gam200.vert" />
+    <None Include="src\rttr\detail\base\version.h.in">
+      <Filter>Source\rttr\detail\base</Filter>
+    </None>
+    <None Include="src\rttr\detail\base\version.rc.in">
+      <Filter>Source\rttr\detail\base</Filter>
+    </None>
+    <None Include="src\rttr\rttr.cmake">
+      <Filter>Source\rttr\detail</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{3b3b6692-b152-40ca-bee0-e20ada6c6f5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{5b86614c-50b3-4555-b7e9-09e5568c46e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr">
+      <UniqueIdentifier>{7daaf81e-a117-4fb9-a49e-d72078a7e6a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr">
+      <UniqueIdentifier>{0464acea-ef97-4fb3-9f1b-d9a77bd40a3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail">
+      <UniqueIdentifier>{287c9bb1-33f9-42e4-af7b-2551156cc664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\base">
+      <UniqueIdentifier>{2f4eb24f-5202-4a5b-8d6f-7ea7e7826616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\comparsion">
+      <UniqueIdentifier>{384d81ce-f968-4884-89c5-63f0b41dfb2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\constructor">
+      <UniqueIdentifier>{67ac86e7-7b7e-4c68-920a-b76a884e4f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\conversion">
+      <UniqueIdentifier>{dae2442a-eaf8-457f-ad2c-08b0aef3505e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\destructor">
+      <UniqueIdentifier>{8e561890-3376-42a9-8b27-1be2aee7f3ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\enumeration">
+      <UniqueIdentifier>{d9912c73-367d-4c40-b5f0-ac85f1034e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\library">
+      <UniqueIdentifier>{bfd7c380-ae09-4cd0-8beb-4ec81f7939c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\method">
+      <UniqueIdentifier>{31b90ceb-ffb0-48ee-843e-9f8430a7cf31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\misc">
+      <UniqueIdentifier>{0d5cbf2e-c4b9-46ef-9c8c-13c1f879130f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\variant">
+      <UniqueIdentifier>{29b08193-37d6-424f-acf8-05b9c618a5f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\type">
+      <UniqueIdentifier>{c3e3173d-517f-4858-9591-b7c87f1e074b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\registration">
+      <UniqueIdentifier>{037fbf60-2168-454f-bca9-e03bcd75f34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\property">
+      <UniqueIdentifier>{948f06b4-fdeb-404e-be63-a337679c528f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\rttr\detail\parameter_info">
+      <UniqueIdentifier>{ac0f87e4-743e-4099-b495-5e5b4b4b462e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail">
+      <UniqueIdentifier>{1be40c2a-0e10-4fe9-b04d-9e675b388e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\conversion">
+      <UniqueIdentifier>{c0d737b9-0d19-4cfc-8ab0-9f13390cbdcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\base">
+      <UniqueIdentifier>{83550272-3078-418f-81e4-69183e599217}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\comparison">
+      <UniqueIdentifier>{39497a2b-9132-4a61-8cf1-ec5227461e4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\constructor">
+      <UniqueIdentifier>{40315b23-8771-423a-aa4c-6de55b3c147b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\dafault_arguments">
+      <UniqueIdentifier>{150493e6-3d71-4c8b-9c24-5852491f47b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\destructor">
+      <UniqueIdentifier>{9deaec9c-8529-4020-bc99-0a557e1c7b0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\ennumeration">
+      <UniqueIdentifier>{d10af5f6-9a7f-4ada-a33f-1c10c8e0c1a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\filter">
+      <UniqueIdentifier>{7f34f88c-d8e4-4e6f-87e4-93f74f729dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\impl">
+      <UniqueIdentifier>{775a8368-9cde-4273-acd1-3cffcfa1e6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\library">
+      <UniqueIdentifier>{fa65ae7c-a745-46bf-8b01-818820e590a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\metadata">
+      <UniqueIdentifier>{5797a5fa-dd25-4b04-a74c-07795710dd73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\method">
+      <UniqueIdentifier>{f7bf777d-f803-4b19-8815-960bc1020b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\misc">
+      <UniqueIdentifier>{010e935a-a539-4463-a208-3bf5b300257a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\parameter_info">
+      <UniqueIdentifier>{86c3cf81-971e-4b42-b1ca-f4ecd0559589}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\policies">
+      <UniqueIdentifier>{d9ac2753-c810-4bc7-935f-2f358907b054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\property">
+      <UniqueIdentifier>{aae8608b-941f-45da-8309-8b66f343bd15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\registration">
+      <UniqueIdentifier>{2e4931b0-7205-4fa3-9ba5-10aa3809cb38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\type">
+      <UniqueIdentifier>{98ba6247-8b9f-45ea-86ee-2e4d5ac2cc21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\variant">
+      <UniqueIdentifier>{081ae9e6-e2f7-42fb-b9d6-65a78f9de801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\variant_associative_view">
+      <UniqueIdentifier>{34571326-d08f-455b-8842-a43589da2b39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\rttr\detail\variant_sequential_view">
+      <UniqueIdentifier>{d2179a21-03cb-49e5-8907-211ef93b1cd1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\buffer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\collision.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\collisiondebug.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glapp.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glhelper.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\glslshader.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\main.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mat3x3.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pathfinding.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transform.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vec2D.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\base\core_prerequisites.h">
+      <Filter>Include\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\base\pch.h">
+      <Filter>Include\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\base\version.h">
+      <Filter>Include\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\comparable_types.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal_impl.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_less.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_less_impl.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_equal.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_equal_impl.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_less.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\comparison\compare_less_impl.h">
+      <Filter>Include\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\constructor\constructor_invoker.h">
+      <Filter>Include\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper.h">
+      <Filter>Include\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_base.h">
+      <Filter>Include\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_defaults.h">
+      <Filter>Include\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\conversion\std_conversion_functions.h">
+      <Filter>Include\rttr\detail\conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\conversion\number_conversion.h">
+      <Filter>Include\rttr\detail\conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\default_arguments\default_arguments.h">
+      <Filter>Include\rttr\detail\dafault_arguments</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\default_arguments\invoke_with_defaults.h">
+      <Filter>Include\rttr\detail\dafault_arguments</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper.h">
+      <Filter>Include\rttr\detail\destructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper_base.h">
+      <Filter>Include\rttr\detail\destructor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\enumeration\enum_data.h">
+      <Filter>Include\rttr\detail\ennumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_helper.h">
+      <Filter>Include\rttr\detail\ennumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper.h">
+      <Filter>Include\rttr\detail\ennumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper_base.h">
+      <Filter>Include\rttr\detail\ennumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\filter\filter_item_funcs.h">
+      <Filter>Include\rttr\detail\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\argument_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\array_range_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\associative_mapper_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\enum_flags_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\instance_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\rttr_cast_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\sequential_mapper_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\string_view_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\impl\wrapper_mapper_impl.h">
+      <Filter>Include\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\library\library_p.h">
+      <Filter>Include\rttr\detail\library</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\metadata\metadata.h">
+      <Filter>Include\rttr\detail\metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\metadata\metadata_handler.h">
+      <Filter>Include\rttr\detail\metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\method\method_accessor.h">
+      <Filter>Include\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\method\method_invoker.h">
+      <Filter>Include\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\method\method_wrapper.h">
+      <Filter>Include\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\method\method_wrapper_base.h">
+      <Filter>Include\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\class_item_mapper.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\data_address_container.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\flat_map.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\flat_multimap.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\function_traits.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\iterator_wrapper.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\misc_type_traits.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\register_wrapper_mapper_conversion.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\sequential_container_type_traits.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\std_type_traits.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\template_type_trait.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\template_type_trait_impl.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\utility.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\argument_extractor.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\misc\argument_wrapper.h">
+      <Filter>Include\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_names.h">
+      <Filter>Include\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos_compare.h">
+      <Filter>Include\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos.h">
+      <Filter>Include\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper_base.h">
+      <Filter>Include\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper.h">
+      <Filter>Include\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\policies\ctor_policies.h">
+      <Filter>Include\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\policies\meth_policies.h">
+      <Filter>Include\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\policies\prop_policies.h">
+      <Filter>Include\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_accessor.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_base.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_func.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_func.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_object.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_object.h">
+      <Filter>Include\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\bind_impl.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\bind_types.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\register_base_class_from_accessor.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\registration_executer.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\registration_impl.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\registration_manager.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\registration\registration_state_saver.h">
+      <Filter>Include\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\accessor_type.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\base_classes.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\get_create_variant_func.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\get_derived_info_func.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_comparator.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_converter.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_data.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_impl.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_name.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_register.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_register_p.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\type\type_string_utils.h">
+      <Filter>Include\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant\variant_compare.h">
+      <Filter>Include\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant\variant_data.h">
+      <Filter>Include\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant\variant_data_converter.h">
+      <Filter>Include\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant\variant_data_policy.h">
+      <Filter>Include\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant\variant_impl.h">
+      <Filter>Include\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator.h">
+      <Filter>Include\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h">
+      <Filter>Include\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_private.h">
+      <Filter>Include\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h">
+      <Filter>Include\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h">
+      <Filter>Include\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h">
+      <Filter>Include\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\rttr\CMakeLists.txt">
+      <Filter>Source\rttr\detail</Filter>
+    </Text>
   </ItemGroup>
 </Project>

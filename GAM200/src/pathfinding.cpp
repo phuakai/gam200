@@ -4,7 +4,7 @@
 #include <iomanip>
 
 
-extern std::vector<Unit> enemyList;
+
 // make these parameters instead of global (pointers)
 int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 // empty grid of vectors
@@ -14,119 +14,51 @@ int LOSgrid[MAX_GRID_Y][MAX_GRID_X];
 
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
 
-// make these parameters instead of global (pointers)
-extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
-// empty grid of vectors
-extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
-
 // MOVEMENT ==============================================================================
 
-void Unit::Move()
+void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity)
 {
-	nodePosition = (position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+	Position* position = ecs.GetComponent<Position>(id);
+	Movement* movement = ecs.GetComponent<Movement>(id);
+	Sprite* measurement = ecs.GetComponent<Sprite>(id);
 
-	if (position.x < target->position.x + target->size.x + 10 && position.x > target->position.x - target->size.x - 10 &&
-		position.y < target->position.y + target->size.y + 10 && position.y > target->position.y - target->size.y - 10)
-	{
-		velocity.x = 0;
-		velocity.y = 0;
-		//return;
-	}
-	else
-	{
-		if (LOSgrid[(int)nodePosition.y][(int)nodePosition.x])
-		{
-			vector2D::Vector2DNormalize(velocity, target->position - position);
-		}
-		else
-		{
-			vector2D::Vector2DNormalize(velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
-		}
-	}
-
-	std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
-
-	movementFlocking(*this, target->position, allVelocity);
-
-	//if (unitName == "enemy1")
-	//	std::cout << velocity.x << "\t" << velocity.y << "\t\t";
-
-	velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
-
-	//if (unitName == "enemy1")
-	//	std::cout << velocity.x << "\t" << velocity.y << std::endl;
-
-	// capping speed
-	if (vector2D::Vector2DLength(velocity) > maxSpeed)
-	{
-		velocity *= maxSpeed / vector2D::Vector2DLength(velocity);
-	}
-
-	//std::cout << (int)nodePosition.x << "\t" <<  (int)nodePosition.y << std::endl;
-	position += velocity * GLHelper::delta_time * 100;
-	//std::cout << position.x << "\t" << position.y << std::endl;
-}
-
-void Unit::Print()
-{
-	nodePosition = (target->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-	for (int i = MAX_GRID_Y - 1; i >= 0; --i)
-	{
-		for (int j = 0; j < MAX_GRID_X; ++j)
-		{
-			std::cout << std::setw(3) << dijkstraField[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-
-	std::cout << std::endl;
-
-	for (int i = MAX_GRID_Y - 1; i >= 0; --i)
-	{
-		for (int j = 0; j < MAX_GRID_X; ++j)
-		{
-			std::cout << std::setw(3) << LOSgrid[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
-void movementFlocking(Unit& unit, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity)
-{
 	vector2D::vec2D desiredVelocity;
 
 	// make these not hardcoded please
-	float agentRadius = ((unit.size.x + unit.size.y) / 2) / 10;
-	float minimumSeparation = ((unit.size.x + unit.size.y) / 2) * 0.9;		// used for Separation
-	float maximumCohesion = ((unit.size.x + unit.size.y) / 2) * 0.9;			// used for Cohesion and Alignment
+	float agentRadius = ((measurement->size.x + measurement->size.y) / 2) / 10;
+	float minimumSeparation = ((measurement->size.x + measurement->size.y) / 2) * 0.9;		// used for Separation
+	float maximumCohesion = ((measurement->size.x + measurement->size.y) / 2) * 0.9;			// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
 	// 1 count for each part of flocking -> separation, cohesion, and alignment
 	int neighbourCount[3] = { 0 , 0 , 0 };
 
-	vector2D::vec2D centerForCohesion = unit.position;
+	vector2D::vec2D centerForCohesion = position->position;
 	vector2D::vec2D averageDirection{ 0,0 };
 
 	// Direction to destination
-	desiredVelocity = destination - unit.position;
+	desiredVelocity = destination - position->position;
 	// Moving at maximum speed
-	Vector2DNormalize(desiredVelocity, desiredVelocity * unit.maxSpeed);
+	Vector2DNormalize(desiredVelocity, desiredVelocity * movement->speed);
 
 	// for each agent
-	for (int i = 0; i < enemyList.size(); ++i)
+	for (int i = 0; i < enemyUnits.size(); ++i)
 	{
 		// skip if it is the input agent
-		if (enemyList[i].unitID == unit.unitID)
+		if (enemyUnits[i].GetID() == id)
 			continue;
 
-		float distance = Vector2DDistance(enemyList[i].position, unit.position);
+		Position* agentPosition = ecs.GetComponent<Position>(enemyUnits[i].GetID());
+		Movement* agentMovement = ecs.GetComponent<Movement>(enemyUnits[i].GetID());
+
+		float distance = Vector2DDistance(agentPosition->position, position->position);
 
 		// SEPARATION --------------------------------------------------------------------
 
 		// the 2 agents are too close to each other
 		if (distance < minimumSeparation && distance > 0)
 		{
-			vector2D::vec2D separationForce = unit.position - enemyList[i].position;
+			vector2D::vec2D separationForce = position->position - agentPosition->position;
 			totalForce += separationForce / agentRadius;
 			++neighbourCount[0];
 		}
@@ -136,14 +68,14 @@ void movementFlocking(Unit& unit, vector2D::vec2D destination, std::vector<vecto
 		// the 2 agents are too close to each other
 		if (distance < maximumCohesion)
 		{
-			centerForCohesion += enemyList[i].position;
+			centerForCohesion += agentPosition->position;
 			++neighbourCount[1];
 
 			// ALIGNMENT ---------------------------------------------------------------------
-			if (vector2D::Vector2DLength(enemyList[i].velocity) > 0)
+			if (vector2D::Vector2DLength(agentMovement->velocity) > 0)
 			{
 				vector2D::vec2D temp;
-				vector2D::Vector2DNormalize(temp, enemyList[i].velocity);
+				vector2D::Vector2DNormalize(temp, agentMovement->velocity);
 				averageDirection += temp;
 
 				++neighbourCount[2];
@@ -159,33 +91,33 @@ void movementFlocking(Unit& unit, vector2D::vec2D destination, std::vector<vecto
 		{
 			allVelocity[i] = vector2D::vec2D{ 0 , 0 };
 		}
-		else 
+		else
 		{
 			switch (i)
 			{
 			case 0:
 				//SEPARATION
 				totalForce /= neighbourCount[i];
-				allVelocity[i] = totalForce * unit.maxForce;
+				allVelocity[i] = totalForce * movement->force;
 				break;
 
 			case 1:
 				// COHESION
 				centerForCohesion /= neighbourCount[i];
 
-				allVelocity[i] = centerForCohesion - unit.position;
-				vector2D::Vector2DNormalize(allVelocity[i], allVelocity[i] * unit.maxSpeed);
-				force = allVelocity[i] - unit.velocity;
-				force *= unit.maxForce / unit.maxSpeed;
+				allVelocity[i] = centerForCohesion - position->position;
+				vector2D::Vector2DNormalize(allVelocity[i], allVelocity[i] * movement->speed);
+				force = allVelocity[i] - movement->velocity;
+				force *= movement->force / movement->speed;
 				break;
 
 			case 2:
 				// ALIGNMENT
 				averageDirection /= neighbourCount[i];
 
-				allVelocity[i] = averageDirection * unit.maxSpeed;
-				force = allVelocity[i] - unit.velocity;
-				force *= unit.maxForce / unit.maxSpeed;
+				allVelocity[i] = averageDirection * movement->speed;
+				force = allVelocity[i] - movement->velocity;
+				force *= movement->force / movement->speed;
 				break;
 			}
 		}
@@ -246,7 +178,7 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D:
 				dijkstraField[(int)neighbour.y][(int)neighbour.x] = dijkstraField[(int)toCalculate[i].y][(int)toCalculate[i].x] + 1;
 				toCalculate.push_back(neighbour);
 			}
-			
+
 		}
 	}
 }
@@ -265,14 +197,14 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 
 	bool haveLos = false;
 
-	if (differenceAbsX >= differenceAbsY) 
+	if (differenceAbsX >= differenceAbsY)
 	{
 		if (LOSgrid[(int)(startingNode.y)][(int)(startingNode.x + differenceSignX)]) {
 			haveLos = true;
 		}
 	}
 	//Check in the y direction
-	else if (differenceAbsX < differenceAbsY) 
+	else if (differenceAbsX < differenceAbsY)
 	{
 		if (LOSgrid[(int)(startingNode.y + differenceSignY)][(int)(startingNode.x)]) {
 			haveLos = true;
@@ -284,7 +216,7 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 		{
 			haveLos = false;
 		}
-		else if (differenceSignX == differenceSignY) 
+		else if (differenceSignX == differenceSignY)
 		{
 			if (dijkstraField[(int)startingNode.y][(int)(startingNode.x + differenceSignX)] == WALL ||
 				dijkstraField[(int)(startingNode.y + differenceSignY)][(int)startingNode.x] == WALL)
@@ -295,27 +227,12 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 
 	}
 
-	// checking why line of sign does not work
-	//if (haveLos == false)
-	if ((int)startingNode.x == 6 && (int)startingNode.y == 11)
-	{
-		std::cout << "Position " << startingNode.x << "\t" << startingNode.y << std::endl;
-		std::cout << "End " << endingPosition.x << "\t" << endingPosition.y << std::endl;
-
-		std::cout << "Diff " << difference.x << "\t" << difference.y << std::endl;
-		std::cout << "Abs " << differenceAbsX << "\t" << differenceAbsY << std::endl;
-		std::cout << "Sign " << differenceSignX << "\t" << differenceSignY << std::endl;
-
-		std::cout << "LOS from position + diffX " << LOSgrid[(int)(startingNode.y)][(int)(startingNode.x) + differenceSignX] << std::endl;
-		std::cout << "LOS from position + diffY " << LOSgrid[(int)(startingNode.y) + differenceSignY][(int)(startingNode.x)] << std::endl;
-		std::cout << "LOS from position + diffX + diffY " << LOSgrid[(int)(startingNode.y) + differenceSignY][(int)(startingNode.x) + differenceSignX] << std::endl;
-	}
-
 	LOSgrid[(int)(startingNode.y)][(int)(startingNode.x)] = haveLos;
 }
 
-void generateFlowField()
+void generateFlowField(vector2D::vec2D& endingPosition)
 {
+	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 	//generateDijkstraCost(endingNode);
 
 	// resetting flow field to zero vectors
@@ -338,6 +255,14 @@ void generateFlowField()
 
 			vector2D::vec2D targetPosition{ MAX_GRID_X , MAX_GRID_Y };
 			int minimumDistance = MAX_GRID_X * MAX_GRID_Y;
+
+			// checking if there is line of sight
+			if (LOSgrid[i][j] != 0)
+			{
+				// line of sight = true
+				Vector2DNormalize(flowField[i][j], endingNode - vector2D::vec2D(j, i));
+				continue;
+			}
 
 			// for each neighbour
 			for (int k = -1; k <= 1; ++k)
@@ -377,7 +302,7 @@ void generateFlowField()
 			if (targetPosition.x != MAX_GRID_X || targetPosition.y != MAX_GRID_Y)
 			{
 				// direction vector of the node
-				Vector2DNormalize(flowField[i][j], targetPosition - vector2D::vec2D(j , i));
+				Vector2DNormalize(flowField[i][j], targetPosition - vector2D::vec2D(j, i));
 			}
 		}
 	}
