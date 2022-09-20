@@ -1,5 +1,5 @@
-inline Entity::Entity(ECS& ecs) : m_id(ecs.GetNewID()), m_ecs(ecs) {
-    m_ecs.RegisterEntity(m_id);
+inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) {
+    m_ecs.RegisterEntity(m_id, name);
 }
 template<class C, typename... Args>
 inline C* Entity::Add(Args&&... args)
@@ -21,6 +21,16 @@ template<class U>
 const IDType TypeIdGenerator<T>::GetNewID() {
     static const IDType idCounter = m_count++;
     return idCounter;
+}
+
+template<class C>
+void Component<C>::SetName(std::string name) {
+    componentName = name;
+}
+
+template<class C>
+std::string Component<C>::GetName() const {
+    return componentName;
 }
 
 // not 100% sure how this works but finds the correct place to delete memory
@@ -97,14 +107,16 @@ inline EntityID ECS::GetNewID()
 }
 //
 template<class C>
-inline void ECS::RegisterComponent()
+void ECS::RegisterComponent(std::string name)
 {
     ComponentTypeID componentTypeId = Component<C>::GetTypeID();
+
 
     if (m_componentMap.contains(componentTypeId))
         return; // can't re-register a type
 
     m_componentMap.emplace(componentTypeId, new Component<C>);
+    m_componentMap[componentTypeId]->SetName(name);
 }
 
 inline void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
@@ -112,15 +124,14 @@ inline void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
     m_systems[layer].push_back(system);
 }
 
-inline void ECS::RegisterEntity(const EntityID entityId)
+inline void ECS::RegisterEntity(const EntityID entityId, const std::string name)
 {
     Record dummyRecord;
     dummyRecord.archetype = nullptr;
     dummyRecord.index = 0;
+    dummyRecord.entityName = name;
     m_entityArchetypeMap[entityId] = dummyRecord;
 }
-
-
 
 template<class C, typename... Args>
 inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
@@ -677,4 +688,48 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
     Ts... ts)
 {
     m_func(elapsedMilliseconds, entityIDs, ts...);
+}
+
+inline void ECS::setEntityName(const EntityID& entityId, std::string name)
+{
+    Record& record = m_entityArchetypeMap[entityId];
+    record.entityName = name;
+}
+
+inline std::vector<std::string> ECS::getAllRegisteredComponents() {
+    std::vector<std::string> componentNames;
+    for (auto i : m_componentMap) {
+        componentNames.push_back((i.second)->GetName());
+    }
+    return componentNames;
+}
+inline std::vector<EntityID> ECS::getEntities() {
+
+    std::vector<EntityID> entityIDs;
+    for (auto i : m_entityArchetypeMap) {
+        entityIDs.push_back(i.first);
+    }
+    return entityIDs;
+}
+
+inline std::string ECS::getEntityName(const EntityID& entityId) {
+    Record& record = m_entityArchetypeMap[entityId];
+    return record.entityName;
+}
+
+inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId) {
+
+    std::vector<std::string> components;
+
+    Record& record = m_entityArchetypeMap[entityId];
+
+    if (!record.archetype)
+        return components; // there's no components anyway    
+
+    for (auto i : record.archetype->type) {
+        auto it = m_componentMap.find(i);
+        components.push_back(it->second->GetName());
+
+    }
+    return components;
 }

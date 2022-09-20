@@ -266,11 +266,8 @@ private:
 class Entity {
 public:
 
-    explicit Entity(ECS& ecs = ecs);
+    explicit Entity(ECS& ecs = ecs, std::string name = "nil");
 
-    explicit Entity(ECS& ecs = ecs, std::string name = "nil") : m_id(ecs.GetNewID()), m_ecs(ecs) {
-        m_ecs.RegisterEntity(m_id,name);
-    }
     template<class C, typename... Args>
     C* Add(Args&&... args);
 

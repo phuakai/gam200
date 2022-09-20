@@ -45,32 +45,6 @@ to OpenGL implementations.
 //#include <instance.h>
 #include <type>
 
-
-struct Position
-{
-	float x;
-	float y;
-};
-
-struct Velocity
-{
-	float x;
-	float y;
-};
-
-struct Randomness
-{
-	float a;
-};
-
-struct he {
-	int a;
-};
-struct Stats {
-	std::string name;
-	int health;
-};
-
 //-----------------------------------RANDOM IMGUI FUNCTION LOL
 //if (ImGui::TreeNode("Entities")) {
 //	for (int i = 1; i < ecs.getEntities().size() + 1; ++i) {
@@ -127,7 +101,7 @@ int tmpobjcounter{};
 ECS ecs;
 
 Entity player1;
-std::vector<Entity> enemyUnits(1000);
+std::vector<Entity> enemyUnits(100);
 System<Movement, Position> system1(ecs, 1);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
@@ -300,51 +274,12 @@ void GLApp::init()
 	collisionInfo[collisionType::SNAPDIAGSTATIC] = "SNAPDIAGSTATIC";
 
 
-	ecs.RegisterComponent<Position>("Position");
-	ecs.RegisterComponent<Velocity>("Velocity");
-	ecs.RegisterComponent<Randomness>("Randomness");
-	ecs.RegisterComponent<he>("he");
-
-	Entity ent1( ecs);
-
-	ent1.Add<Position>({ 1.45,2 });
-	ent1.Add<Velocity>({ .5f,.5f });
-	ent1.Add<Randomness>({ .25f });
-	ecs.setEntityName(ent1.GetID(), "enemy1");
-
-	Entity ent2( ecs);
-
-	ent2.Add<Position>({ 4,3 });
-	ent2.Add<Velocity>({ 123.5f,123.5f });
-	ent2.Add<Randomness>({ .25f });
-	ecs.setEntityName(ent2.GetID(), "enemy2");
-
-
-	//ecs.getEntityComponents(1);
-
-	//std::cout << ent2.GetID() << std::endl;
-
-	//for (auto i : ecs.getEntities()) {
-	//	std::cout << "entity ID " << i.first << std::endl;
-	//	
-	//}
-	//auto it = ecs.m_entityArchetypeMap.find(ent2.GetID());
-
-	//std::cout << "archetype is "  << reinterpret_cast<Position*>(it->second.archetype->componentData[0]);
-	// 
-	//Velocity* dab = reinterpret_cast<Velocity*>(it->second.archetype->componentData[1]+8);
-	//std::cout << dab->x << dab->y;
-	//std::cout << "archetype is "  << (it->second.archetype->componentData[0]);
-
 	//
 	//std::unordered_map test = ecs.getComponents(); 
 	//
 	//for (auto i = test.begin(); i != test.end(); i++)
 	//	std::cout << i->first << "      " << (i->second)->GetName()
 	//	<< std::endl;
-	//
-
-
 	
 	//for (int i : ecs.getEntities()) {
 	//	std::cout << i << std::endl;
@@ -364,10 +299,11 @@ void GLApp::init()
 	show_another_window = false;
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	ecs.RegisterComponent<Position>();
-	ecs.RegisterComponent<Movement>();
-	ecs.RegisterComponent<Sprite>();
-	ecs.RegisterComponent<Stats>();
+
+	ecs.RegisterComponent<Position>("Position");
+	ecs.RegisterComponent<Movement>("Movement");
+	ecs.RegisterComponent<Sprite>("Sprite");
+	ecs.RegisterComponent<Stats>("Stats");
 
 
 	EntityID id;
@@ -376,7 +312,8 @@ void GLApp::init()
 	// velocity, target, force, speed
 	player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
-	player1.Add<Stats>("player1");
+	player1.Add<Stats>("player1", 100);
+	ecs.setEntityName(player1.GetID(), "player1");
 
 	id = player1.GetID();
 	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(0.3, 0.3, 0.7));
@@ -400,6 +337,7 @@ void GLApp::init()
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Position>(player1.GetID())->position, 1, 2);
 		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
 		enemyUnits[i].Add<Stats>("enemy" + std::to_string(i + 1), 100);
+		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
 		id = enemyUnits[i].GetID();
 		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(randr, randg, randb));
@@ -492,17 +430,15 @@ void GLApp::init()
 
 			movementFlocking(entities[i], m[i].target, allVelocity);
 
-			//m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
+			m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
 
-			//// capping speed
-			//if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
-			//{
-			//	m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
-			//}
+			// capping speed
+			if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
+			{
+				m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
+			}
 
-			//p[i].position += m[i].velocity * GLHelper::delta_time * 100;
-
-			p[i].position += vector2D::vec2D(-1, -1);
+			p[i].position += m[i].velocity * GLHelper::delta_time * 100;
 		}
 	});
 }
@@ -650,6 +586,24 @@ void GLApp::update()
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
+
+		if (playerInfo->name == obj->first && mouseClick)
+		{
+			playerPosition->position = vector2D::vec2D(mousePosX, mousePosY);
+			obj->second.modelCenterPos = playerPosition->position;
+
+			generateDijkstraCost(playerPosition->position, walls);
+			generateFlowField(playerPosition->position);
+		}
+
+		for (int i = 0; i < enemyUnits.size(); ++i)
+		{
+			if (ecs.GetComponent<Stats>(enemyUnits[i].GetID())->name == obj->first)
+			{
+				obj->second.modelCenterPos = ecs.GetComponent<Position>(enemyUnits[i].GetID())->position;
+				break;
+			}
+		}
 	}
 	//-----------------------------------------extra imgui stuff here  -- we are so moving this out
 	ImGui_ImplOpenGL3_NewFrame();
@@ -705,9 +659,9 @@ void GLApp::update()
 					if (str2 == "Position") {
 						//ecs.GetComponent<Position>(i)->x;
 						//ImGui::SameLine();
-						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->x, inputs_step ? &f32_one : NULL);
+						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->position.x, inputs_step ? &f32_one : NULL);
 						//ImGui::SameLine(); 
-						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->y, inputs_step ? &f32_one : NULL);
+						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Position>(i)->position.y, inputs_step ? &f32_one : NULL);
 					}
 				}
 				ImGui::TreePop();
@@ -790,26 +744,6 @@ void GLApp::update()
 	ImGui::Render();
 }
 
-		if (playerInfo->name == obj->first && mouseClick)
-		{
-			playerPosition->position = vector2D::vec2D(mousePosX, mousePosY);
-			obj->second.modelCenterPos = playerPosition->position;
-
-			generateDijkstraCost(playerPosition->position, walls);
-			generateFlowField(playerPosition->position);
-		}
-
-		for (int i = 0; i < enemyUnits.size(); ++i)
-		{
-			if (ecs.GetComponent<Stats>(enemyUnits[i].GetID())->name == obj->first)
-			{
-				obj->second.modelCenterPos = ecs.GetComponent<Position>(enemyUnits[i].GetID())->position;
-				break;
-			}
-		}
-
-	}
-}
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
 

@@ -257,7 +257,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			int minimumDistance = MAX_GRID_X * MAX_GRID_Y;
 
 			// checking if there is line of sight
-			if (LOSgrid[i][j] != 0)
+			if (LOSgrid[i][j])
 			{
 				// line of sight = true
 				Vector2DNormalize(flowField[i][j], endingNode - vector2D::vec2D(j, i));
