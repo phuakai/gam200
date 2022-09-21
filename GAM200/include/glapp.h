@@ -40,37 +40,32 @@ struct GLApp {
 	static void cleanup();
 
 
-	//added for physics testing
-	static constexpr glm::vec3 red{ 1.f, 0.f, 0.f };
-	static constexpr glm::vec3 green{ 0.f, 1.f, 0.f };
-	static constexpr glm::vec3 blue{ 0.f, 0.f, 1.f };
-	enum class collisionType
-	{
-		NIL = 0,						//0
-		CircleDetection,			//1
-		CirclePushResolution,		//2
-		CircleBlockResolution,		//3
-		PolygonDetection,			//4
-		PolygonPushResolution,		//5
-		PolygonBlockResolution,		//6
-		PolygonCircleDetection,		//7
-		PolygonCircleResolution		//8
-	};
+  //added for physics testing
+  enum class collisionType
+  {
+	NIL = 0,					//0
+	CircleDetection,			//1
+	CirclePushResolution,		//2
+	CircleBlockResolution,		//3
+	PolygonDetection,			//4
+	PolygonPushResolution,		//5
+	PolygonBlockResolution,		//6
+	PolygonCircleDetection,		//7
+	PolygonCircleResolution		//8
+  };
 
-	static collisionType currentCollision;
-	static bool stepByStepCollision;
-	static std::unordered_map<collisionType, std::string> collisionInfo;
+  static collisionType currentCollision;
+  static bool movableShape;
+  static std::unordered_map<collisionType, std::string> collisionInfo;
 
-	struct GLObject {
-		vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
-		vector2D::vec2D scaling{};														// scaling parameters
-		vector2D::vec2D modelCenterPos{};													// center of shape coordinates
-		float speed{};																	// speed
-		vector2D::vec2D directionVec{};													// directional vec
-		std::pair<vector2D::Point2D, float> untravelledDistance;							// destination, untravelled distance
-		physicsRigidBody body;															// param for collision
-		int objId;																		// For collision debugger
-		int texId;																		// Texture id
+  struct GLObject {
+	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
+	  vector2D::vec2D scaling{};														// scaling parameters
+	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
+	  float speed{};																	// speed
+	  physicsRigidBody body;															// param for collision
+	  int objId;																		// For collision debugger
+	  int texId;
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation

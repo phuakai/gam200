@@ -78,8 +78,16 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 		//std::cout << "Nani Pos " << tempmodel.pos_vtx[i].x << ", " << tempmodel.pos_vtx[i].y << std::endl;
 		//std::cout << "Nani Texture " << tex_coord[i].x << ", " << tex_coord[i].y << std::endl;
 		tmpVtxData.posVtx = tempmodel.pos_vtx[i];
-		tmpVtxData.clrVtx = clr_vtx[i];
-		tmpVtxData.txtVtx = tex_coord[i];
+		if (modelname != "circle")
+		{
+			tmpVtxData.clrVtx = clr_vtx[i];
+			tmpVtxData.txtVtx = tex_coord[i];
+		}
+		else
+		{
+			tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
+			tmpVtxData.txtVtx = vector2D::Vec2(0.f, 0.f);
+		}
 		vertexData.emplace_back(tmpVtxData);
 	}
 

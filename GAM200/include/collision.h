@@ -9,6 +9,8 @@
 
 #include <vector>
 
+
+
 namespace physics
 {
 	/******************************************************************************/
@@ -34,17 +36,6 @@ namespace physics
 		vector2D::vec2D	pt0;																// Start point
 		vector2D::vec2D	pt1;																// end point
 		vector2D::vec2D	normal;																// Outward normalized normal
-	};
-
-	/******************************************************************************/
-	/*!
-		
-	*/
-	/******************************************************************************/
-	struct AABB
-	{
-		vector2D::vec2D	min;																// Min point of bounding box
-		vector2D::vec2D	max;																// Max point of bounding box
 	};
 
 	/******************************************************************************/
@@ -79,7 +70,7 @@ namespace physics
 
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
-	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
+	//void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
 
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
 						 GLApp::GLObject const& polygon2);

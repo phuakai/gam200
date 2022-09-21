@@ -8,6 +8,9 @@
 
 //#if false
 
+/******************************
+* Constructors
+******************************/
 physicsRigidBody::physicsRigidBody()
 {
 	pos = vector2D::vec2D{ 0.f, 0.f };
@@ -26,12 +29,6 @@ physicsRigidBody::physicsRigidBody()
 	halfHeight = 0.f;
 	shapeType = ShapeType::box;
 	plsUpdateTfm = true;
-}
-
-
-physicsRigidBody::~physicsRigidBody()
-{
-
 }
 
 physicsRigidBody::physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVel, float Rot, float RotVel, float Density, float Mass,
@@ -55,6 +52,17 @@ physicsRigidBody::physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVe
 	plsUpdateTfm = false;
 }
 
+/******************************
+* Deconstructors
+******************************/
+physicsRigidBody::~physicsRigidBody()
+{
+
+}
+
+/******************************
+* Creator
+******************************/
 bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body, std::string errMsg)
 {
 	//body = NULL;
@@ -82,10 +90,6 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	// Check density
 	// Check restituition
 
-	// Create circle body
-
-	//body = new physicsRigidBody;
-	//std::cout << "this is rad in init: " << body->getRad() << std::endl;
 	//body->linearVel = LinearVel;
 	//body->rot = Rot;
 	//body->rotVel = RotVel;
@@ -96,12 +100,8 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	body->area = area;
 	body->isStatic = isStatic;
 	body->radius = rad;
-
-	//body->width = 0.f;
-	//body->height = 0.f;
 	body->shapeType = ShapeType::circle;
 	body->plsUpdateTfm = false;
-
 }
 
 
@@ -131,8 +131,6 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	// Check density
 	// Check restituition
 
-	// Create box body
-
 	body->pos = pos;
 	//body->linearVel = LinearVel;
 	//body->rot = Rot;
@@ -142,7 +140,6 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->restitution = restituition;
 	body->area = area;
 	body->isStatic = isStatic;
-	//body.radius = 0.f;
 	body->width = width;
 	body->height = height;
 	body->halfWidth = width / 2.f;
@@ -158,7 +155,6 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->transformedVertices = body->vertices;
 	//body->transformedVertices.resize(body->vertices.size());
 
-
 	body->plsUpdateTfm = true;
 		
 	body->tri.emplace_back(0);
@@ -169,21 +165,9 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->tri.emplace_back(3);
 }
 
-float physicsRigidBody::getRad()
-{
-	return radius;
-}
-
-void physicsRigidBody::setRad(float rad)
-{
-	radius = rad;
-}
-
-void physicsRigidBody::setPos(vector2D::Point2D position)
-{
-	pos = position;
-}
-
+/******************************
+* Getters
+******************************/
 vector2D::vec2D physicsRigidBody::getPos()
 {
 	return pos;
@@ -199,6 +183,20 @@ float physicsRigidBody::getHeight()
 	return height;
 }
 
+float physicsRigidBody::getRad()
+{
+	return radius;
+}
+
+float physicsRigidBody::getHalfWidth()
+{
+	return halfWidth;
+}
+float physicsRigidBody::getHalfHeight()
+{
+	return halfHeight;
+}
+
 std::vector<vector2D::vec2D> physicsRigidBody::getTfmVtx()
 {
 	return transformedVertices;
@@ -209,11 +207,27 @@ ShapeType physicsRigidBody::getShape()
 	return shapeType;
 }
 
-//void physicsRigidBody::setTransformRequired(bool transform)
-//{
-//	plsUpdateTfm = transform;
-//}
+bool physicsRigidBody::getPlsUpdateTfm()
+{
+	return plsUpdateTfm;
+}
 
+/******************************
+* Setters
+******************************/
+void physicsRigidBody::setPos(vector2D::Point2D position)
+{
+	pos = position;
+}
+
+void physicsRigidBody::setRad(float rad)
+{
+	radius = rad;
+}
+
+/******************************
+* Transformations
+******************************/
 void physicsRigidBody::rotate(float angle)
 {
 	rot = angle;
@@ -236,6 +250,12 @@ void physicsRigidBody::transformVertices()
 		plsUpdateTfm = false;
 	}
 }
+
+//void physicsRigidBody::setTransformRequired(bool transform)
+//{
+//	plsUpdateTfm = transform;
+//}
+
 
 
 //#endif

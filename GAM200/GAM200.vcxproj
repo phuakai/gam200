@@ -30,6 +30,7 @@
     <ClCompile Include="src\mat3x3.cpp" />
     <ClCompile Include="src\collision.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\physicsPartition.cpp" />
     <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\physicsRigidBody.cpp" />
     <ClCompile Include="src\physicsTransform.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="include\mat3x3.h" />
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\physicsPartition.h" />
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\physicsRigidBody.h" />
     <ClInclude Include="include\physicsTransform.h" />

@@ -112,7 +112,7 @@ namespace physics
 		return true;
 	}
 
-
+#if false
 	/**************************************************************************/
 	/*!
 		CollisionIntersection_RectRect checks for collision between two rectangles
@@ -178,6 +178,8 @@ namespace physics
 
 	}
 
+#endif
+#if false
 	void computeBoundingBox(GLApp::GLObject& polygon)
 	{
 		polygon.boundingBoxWorldVertices.clear();
@@ -192,7 +194,8 @@ namespace physics
 		polygon.boundingBoxWorldVertices.emplace_back(vector2D::vec2D(poly.min.x, poly.max.y));
 
 	}
-
+#endif
+#if false
 	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
 	//const AABB& aabb2, const vector2D::vec2D& vel2)
 	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon)
@@ -268,7 +271,7 @@ namespace physics
 			dynamicPolygon.overlap = true;
 		}
 	}
-
+#endif
 	/******************************************************************************/
 	/*!
 		

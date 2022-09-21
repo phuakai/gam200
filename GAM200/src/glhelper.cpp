@@ -213,18 +213,19 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
             keystateL = GL_TRUE;
         }
 
-        keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
-        keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
-        keystateC = (key == GLFW_KEY_C) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is V
-        keystateP = (key == GLFW_KEY_P) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is P
+        keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE;
+        keystateV = (key == GLFW_KEY_V) ? GL_TRUE : GL_FALSE;
+        keystateC = (key == GLFW_KEY_C) ? GL_TRUE : GL_FALSE;
+        keystateP = (key == GLFW_KEY_P) ? GL_TRUE : GL_FALSE;
 
-        keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Q
+        keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE;
 
         keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
 
         keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
         keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
-        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE; 
+        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
+        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
         keystateX = (key == GLFW_KEY_X) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_REPEAT == action) {
@@ -264,13 +265,13 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateV = GL_FALSE;
         keystateC = GL_FALSE;
         keystateP = GL_FALSE;
-        keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
-        keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE; // ternary condition to check if key is Z
+        keystateX = GL_FALSE;
+        keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE;
+        keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE;
         keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
         keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
         keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
-        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE; 
-        keystateX = (key == GLFW_KEY_X) ? GL_TRUE : GL_FALSE;
+        keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_RELEASE == action) {
         // key start changes from pressed to released
