@@ -60,6 +60,9 @@ matrix3x3::mat3x3 Transform::getWorldtoNDC()
 matrix3x3::mat3x3 Transform::getNDCtoWorld()
 {
 	matrix3x3::mat3x3 world_to_ndc = Graphics::camera2d.getWorldtoNDCxForm();
+	//std::cout << "World to ndc " << world_to_ndc.m[0] << ", " << world_to_ndc.m[1] << ", " << world_to_ndc.m[2] << std::endl
+	//	<< world_to_ndc.m[3] << ", " << world_to_ndc.m[4] << ", " << world_to_ndc.m[5] << std::endl
+	//	<< world_to_ndc.m[6] << ", " << world_to_ndc.m[7] << ", " << world_to_ndc.m[8] << std::endl;
 	matrix3x3::mat3x3 ndc_to_world;
 	matrix3x3::Mtx33Inverse(&ndc_to_world, world_to_ndc);
 	

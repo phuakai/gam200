@@ -127,6 +127,7 @@ This function is called once at the initialization of the camera to compute and 
 */
 void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 {
+	std::cout << "Function\n";
 	// assign address of object of type GLApp::GLObject with
 	// name "Camera" in std::map container GLApp::objects ...
 	pgo = ptr;
@@ -149,6 +150,11 @@ void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 		0, float(2 / height), 0,
 		0, 0, 1);
 	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
+	camera2d.world_to_ndc_xform = world_to_ndc_xform;
+	//std::cout << "Width and height " << float( 2.f / width) << ", " << float(2.f / height) << std::endl;
+	//std::cout << "World to ndc " << world_to_ndc_xform.m[0] << ", " << world_to_ndc_xform.m[1] << ", " << world_to_ndc_xform.m[2] << std::endl
+	//	<< world_to_ndc_xform.m[3] << ", " << world_to_ndc_xform.m[4] << ", " << world_to_ndc_xform.m[5] << std::endl
+	//	<< world_to_ndc_xform.m[6] << ", " << world_to_ndc_xform.m[7] << ", " << world_to_ndc_xform.m[8] << std::endl;
 }
 
 /*  _________________________________________________________________________*/
@@ -280,6 +286,9 @@ matrix3x3::mat3x3 Graphics::Camera2D::getCamwintoNDCForm()
 }
 matrix3x3::mat3x3 Graphics::Camera2D::getWorldtoNDCxForm()
 {
+	//std::cout << "World to ndc in cam " << world_to_ndc_xform.m[0] << ", " << world_to_ndc_xform.m[1] << ", " << world_to_ndc_xform.m[2] << std::endl
+	//	<< world_to_ndc_xform.m[3] << ", " << world_to_ndc_xform.m[4] << ", " << world_to_ndc_xform.m[5] << std::endl
+	//	<< world_to_ndc_xform.m[6] << ", " << world_to_ndc_xform.m[7] << ", " << world_to_ndc_xform.m[8] << std::endl;
 	return Graphics::camera2d.world_to_ndc_xform;
 }
 

@@ -269,16 +269,28 @@ void GLApp::GLObject::draw() const
 		//std::cout << "Batch shader " << basicbatch.batchshader.GetHandle() << std::endl;
 		//shd_ref->second.Use();
 		//glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-		std::vector<vector2D::Vec2> tex_coord
-		{
-			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
-			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
-		};
+		//std::vector<vector2D::Vec2> tex_coord
+		//{
+		//	vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
+		//	vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
+		//};
 		std::vector<vector3D::Vec3> clr_vtx
 		{
 			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
 			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 		};
+		int totalframes = 4;
+		int curframe = 1;
+		std::vector<vector2D::Vec2> texcoord;
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
+		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f + float(curframe)));
+
+		for (int i = 0; i < 4; i++)
+		{
+			//std::cout << "Tex coord " << texcoord[i].x << ", " << texcoord[i].y << std::endl;
+		}
 
 		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
@@ -293,7 +305,7 @@ void GLApp::GLObject::draw() const
 			{
 				tmpVtxData.clrVtx = clr_vtx[i];
 			}
-			tmpVtxData.txtVtx = tex_coord[i];
+			tmpVtxData.txtVtx = texcoord[i];
 			tmpVtxData.txtIndex = texId;
 			vertexData.emplace_back(tmpVtxData);
 		}
@@ -306,6 +318,8 @@ void GLApp::GLObject::draw() const
 		basicbatch.totalsize += vertexData.size();
 		basicbatch.primtype = mdl_ref->second.getPrimitiveType();
 		basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+
+		texcoord.clear();
 
 	}
 }
@@ -362,6 +376,9 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 
 	coldebug = false;
+
+	vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
+	//std::cout << (float)bottomleft.x << ", " << (float)bottomleft.y << std::endl;
 	
 	// create grid from gimmeobj
 }
@@ -766,8 +783,8 @@ void GLApp::update()
 			//std::cout << "Object coords " << obj1->second.ndc_coords[i].x << " ," << obj1->second.ndc_coords[i].y << std::endl;
 		}
 	}
-	vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
-	std::cout << "Bottom left " << bottomleft.x << ", " << bottomleft.y << std::endl;
+	//vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
+	//std::cout << "Bottom left " << bottomleft.x << ", " << bottomleft.y << std::endl;
 
 }
 /*  _________________________________________________________________________*/
