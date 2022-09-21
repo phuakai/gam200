@@ -8,49 +8,39 @@
 
 partitionObj::partitionObj()
 {
-	partitionId = 0;
+	//partitionId = 0;
 	position.x = 0.f;
 	position.y = 0.f;
 
-	minMaxPoints.min.x = FLT_MAX;
-	minMaxPoints.min.y = FLT_MAX;
-	minMaxPoints.max.x = FLT_MIN;
-	minMaxPoints.max.x = FLT_MIN;
-
-	//maxAlongX = FLT_MIN;
-	//minAlongX = FLT_MAX;
-	//maxAlongY = FLT_MIN;
-	//minAlongY = FLT_MAX;
+	boudingBox.min.x = FLT_MAX;
+	boudingBox.min.y = FLT_MAX;
+	boudingBox.max.x = FLT_MIN;
+	boudingBox.max.x = FLT_MIN;
 }
 
-//partitionObj::partitionObj(int id, vector2D::vec2D pos, float width, float height)
-//{
-//	partitionId = 0;
-//	position.x = 0.f;
-//	position.y = 0.f;
-//
-//	minMaxPoints.min.x = FLT_MAX;
-//	minMaxPoints.min.y = FLT_MAX;
-//	minMaxPoints.max.x = FLT_MIN;
-//	minMaxPoints.max.x = FLT_MIN;
-//
-//	//maxAlongX = FLT_MIN;
-//	//minAlongX = FLT_MAX;
-//	//maxAlongY = FLT_MIN;
-//	//minAlongY = FLT_MAX;
-//}
-//
-//partitionObj::partitionObj(int id, vector2D::vec2D pos, float rad)
-//{
-//	partitionId = 0;
-//	position.x = 0.f;
-//	position.y = 0.f;
-//
-//	minMaxPoints.min.x = FLT_MAX;
-//	minMaxPoints.min.y = FLT_MAX;
-//	minMaxPoints.max.x = FLT_MIN;
-//	minMaxPoints.max.x = FLT_MIN;
-//}
+partitionObj::partitionObj(int id, vector2D::vec2D pos, float width, float height, float angle)
+{
+	//partitionId = id;
+	position.x = pos.x;
+	position.y = pos.y;
+
+	boudingBox.min.x = FLT_MAX;
+	boudingBox.min.y = FLT_MAX;
+	boudingBox.max.x = FLT_MIN;
+	boudingBox.max.x = FLT_MIN;
+}
+
+partitionObj::partitionObj(int id, vector2D::vec2D pos, float rad)
+{
+	//partitionId = id;
+	position.x = pos.x;
+	position.y = pos.y;
+
+	boudingBox.min.x = pos.x - rad;
+	boudingBox.min.y = pos.y - rad;
+	boudingBox.max.x = pos.x + rad;
+	boudingBox.max.x = pos.y + rad;
+}
 
 partitionObj::~partitionObj()
 {
@@ -59,17 +49,17 @@ partitionObj::~partitionObj()
 
 void partitionObj::addCreatedObj(vector2D::vec2D pos, float halfWidth, float halfHeight, float angle)
 {
-	++partitionId;
+	//++partitionId;
 	position = pos;
 
 	// Box is aligned with x and y axis
 	if (((int)angle % 90) == 0 && (angle - (int)angle) == 0)
 	{
 
-		minMaxPoints.max.x = position.x + halfWidth;
-		minMaxPoints.min.x = position.x +-halfWidth;
-		minMaxPoints.max.y = position.y + halfHeight;
-		minMaxPoints.min.y = position.y - halfHeight;
+		boudingBox.max.x = position.x + halfWidth;
+		boudingBox.min.x = position.x +-halfWidth;
+		boudingBox.max.y = position.y + halfHeight;
+		boudingBox.min.y = position.y - halfHeight;
 	}
 	// Box is NOT aligned with x and y axis
 	else
@@ -80,7 +70,7 @@ void partitionObj::addCreatedObj(vector2D::vec2D pos, float halfWidth, float hal
 
 void partitionObj::addCreatedObj(vector2D::vec2D pos, float rad)
 {
-	++partitionId;
+	//++partitionId;
 }
 
 void partitionObj::reorganizeData()
@@ -90,7 +80,7 @@ void partitionObj::reorganizeData()
 
 void partitionObj::removeDeletedObj()
 {
-	--partitionId;
+	//--partitionId;
 }
 
 

@@ -20,10 +20,10 @@ struct partitionObj
 {
 private:
 public:
-	int partitionId;
+	//int partitionId;
 	vector2D::vec2D position;
 
-	AABB minMaxPoints;
+	AABB boudingBox;
 
 	//float maxAlongX;
 	//float minAlongX;
@@ -40,6 +40,8 @@ public:
 	*/
 	/******************************************************************************/
 	partitionObj();
+	partitionObj(int id, vector2D::vec2D pos, float width, float height, float angle);
+	partitionObj(int id, vector2D::vec2D pos, float rad);
 
 	/******************************
 	* Deconstructors

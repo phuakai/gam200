@@ -415,7 +415,6 @@ void GLApp::update()
 				Graphics::Input::getCursorPos(&destX, &destY);
 
 				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
-				//std::cout << "this is vel: " << velocity.x << " " << velocity.y << std::endl;
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				obj1->second.body.move(velocity);
@@ -426,7 +425,6 @@ void GLApp::update()
 				Graphics::Input::getCursorPos(&destX, &destY);
 
 				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
-				//std::cout << "this is vel: " << velocity.x << " " << velocity.y << std::endl;
 				obj1->second.body.move(velocity);
 			}
 
@@ -849,7 +847,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 
-	//partitionObj tmp{ tmpobjcounter };
+	//partitionObj tmp;
 
 	//partitionStorage.emplace_back(std::make_pair(2, tmp));
 

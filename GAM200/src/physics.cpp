@@ -5,7 +5,6 @@
 #include <input.h>
 #include <iostream>
 
-
 vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed)
 {
 	float dt = GLHelper::delta_time;
