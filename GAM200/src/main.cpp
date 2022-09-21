@@ -18,6 +18,10 @@ an OpenGL context and implement a game loop.
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
 
+//template<class C>
+//extern class ECS ecs;
+
+
 /*                                                      function declarations
 ----------------------------------------------------------------------------- */
 static void draw();
@@ -72,6 +76,8 @@ static void update() {
   
   // Part 3
   GLApp::update();
+
+
 }
 
 /*  _________________________________________________________________________ */
@@ -104,13 +110,13 @@ static void init() {
   if (!GLHelper::init(2400, 900, "Test")) { //Original is 2400, 1350
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
-  }
+    }
 
-  // Part 2
-  //GLHelper::print_specs();
+    // Part 2
+    //GLHelper::print_specs();
 
-  // Part 3
-  GLApp::init();
+    // Part 3
+    GLApp::init();
 }
 
 /*  _________________________________________________________________________ */

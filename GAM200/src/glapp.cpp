@@ -13,6 +13,7 @@ to OpenGL implementations.
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
+
 #include <glapp.h>
 #include <iostream>
 #include <array>
@@ -37,6 +38,55 @@ to OpenGL implementations.
 #include <random>
 #include <physicsRigidBody.h>
 #include <physicsPartition.h>
+#include "ECS.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <stdint.h>
+#include "pathfinding.h"
+
+#include <registration.h>
+//#include <instance.h>
+#include <type>
+
+//-----------------------------------RANDOM IMGUI FUNCTION LOL
+//if (ImGui::TreeNode("Entities")) {
+//	for (int i = 1; i < ecs.getEntities().size() + 1; ++i) {
+//		std::string str = ecs.getEntityName(i);
+//		const char* c = str.c_str();
+//		if (ImGui::TreeNode((void*)(intptr_t)i, c)) {
+//			std::vector<std::string> names = ecs.getEntityComponents(i);
+//			//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
+//			for (int j = 0; j < names.size(); ++j) {
+//				std::string str2 = names[j];
+//				const char* c2 = str2.c_str();
+//				ImGui::Text(c2);
+//
+//				if (str2 == "Object") {
+//					//ecs.GetComponent<Object>(i)->x;
+//					//ImGui::SameLine();
+//					ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->x, inputs_step ? &f32_one : NULL);
+//					//ImGui::SameLine(); 
+//					ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->y, inputs_step ? &f32_one : NULL);
+//				}
+//			}
+//			ImGui::TreePop();
+//		}
+//	}
+//	ImGui::TreePop();
+//}
+
+//void imguiComponent(EntityID& id)
+//{
+//	std::vector<std::string> componentNames = ecs.getEntityComponents(id);
+//
+//
+//}
+
+//Entity createEntity()
+//{
+//
+//}
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -64,6 +114,37 @@ bool GLApp::textures;
 bool GLApp::coldebug;
 
 int tmpobjcounter{};
+
+ECS ecs;
+
+Entity player1;
+std::vector<Entity> enemyUnits(100);
+System<Movement, Object> system1(ecs, 1);
+
+extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
+std::vector<vector2D::vec2D> walls;
+float timer;
+
+
+class test_class {
+public:
+	test_class(int value) : m_value(value) {}
+	void print_value() const { std::cout << m_value; }
+private:
+	int m_value;
+	RTTR_ENABLE();
+
+};
+
+RTTR_REGISTRATION{
+	rttr::registration::class_<test_class>("test_class")
+	.constructor<int>()
+	.method("print_value", &test_class::print_value);
+
+	//i think we cant register private vars anymore, just use setters /getters and register the method
+	//.property("value", &test_class::m_value)
+}
+
 /*  _________________________________________________________________________*/
 /*! GLObject::update
 
@@ -324,6 +405,9 @@ void GLApp::GLObject::draw() const
 	}
 }
 
+bool show_demo_window;
+bool show_another_window;
+ImVec4 clear_color;
 
 /*  _________________________________________________________________________*/
 /*! GLApp::init
@@ -354,12 +438,15 @@ void GLApp::init()
 	// GLApp::models, store shader programs of type GLSLShader in
 	// container GLApp::shdrpgms, and store repositories of objects of
 	// type GLObject in container GLApp::objects
-	GLApp::init_scene("../scenes/gam200.scn");
+	//GLApp::init_scene("../scenes/gam200.scn");
 
 	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
 	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]);
 
 	// Part 4: initialize camera
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
+
+	// Part 4: initialize 
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
 
 	// Store physics related info to be printed in title bar
@@ -377,10 +464,112 @@ void GLApp::init()
 
 	coldebug = false;
 
-	vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
-	//std::cout << (float)bottomleft.x << ", " << (float)bottomleft.y << std::endl;
-	
-	// create grid from gimmeobj
+	//-----------------------------------------extra imgui stuff here
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(GLHelper::ptr_window, true);
+	ImGui_ImplOpenGL3_Init(NULL);
+
+	show_demo_window = true;
+	show_another_window = false;
+	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+	ecs.RegisterComponent<Object>("Object");
+	ecs.RegisterComponent<Movement>("Movement");
+	ecs.RegisterComponent<Sprite>("Sprite");
+	ecs.RegisterComponent<Stats>("Stats");
+
+	player1.Add<Object>(vector2D::vec2D(-200, 0));
+	// velocity, target, force, speed
+	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
+	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
+	player1.Add<Stats>("player1", 100);
+	ecs.setEntityName(player1.GetID(), "player1");
+
+	EntityID playerID = player1.GetID();
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(playerID)->type, ecs.GetComponent<Stats>(playerID)->name, ecs.GetComponent<Sprite>(playerID)->size, ecs.GetComponent<Object>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
+	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
+
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
+	for (int i = 0; i < enemyUnits.size(); ++i)
+	{
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
+
+		enemyUnits[i].Add<Object>(vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)));
+		// velocity, target, force, speed
+		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Object>(player1.GetID())->position, 1, 2);
+		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<Stats>("enemy" + std::to_string(i + 1), 100);
+		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
+
+		EntityID enemyID = enemyUnits[i].GetID();
+		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(enemyID)->type, ecs.GetComponent<Stats>(enemyID)->name, ecs.GetComponent<Sprite>(enemyID)->size, ecs.GetComponent<Object>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
+	}
+
+	timer = 4;
+
+	generateDijkstraCost(ecs.GetComponent<Object>(playerID)->position, walls);
+	generateFlowField(ecs.GetComponent<Object>(playerID)->position);
+	//enemyList[5].Print();
+
+	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
+
+	int counter = 1;
+	for (int i = 0; i < MAX_GRID_Y; ++i)
+	{
+		for (int j = 0; j < MAX_GRID_X; ++j)
+		{
+			// wall
+			if (dijkstraField[i][j] == WALL)
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(0.5, 0.5, 0.5));
+			else
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
+
+			++counter;
+		}
+	}
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
+
+	// Part 5: Print OpenGL context and GPU specs
+	//GLHelper::print_specs();
+
+
+	system1.Action([](const float elapsedMilliseconds,
+	const std::vector<EntityID>& entities,
+	Movement* m,
+	Object* p)
+	{
+		for (std::size_t i = 0; i < entities.size(); ++i)
+		{
+			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+			vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+
+			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+
+			movementFlocking(entities[i], m[i].target, allVelocity);
+
+			m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
+
+			// capping speed
+			if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
+			{
+				m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
+			}
+
+			p[i].position += m[i].velocity * GLHelper::delta_time * 100;
+		}
+	});
 }
 
 /*  _________________________________________________________________________*/
@@ -400,6 +589,21 @@ void GLApp::update()
 	objects["Camera"].update(GLHelper::delta_time);
 
 	// update other inputs for physics
+
+	double mousePosX, mousePosY;
+	bool mouseClick = false;
+	if (GLHelper::mousestateLeft)
+	{
+		GLHelper::mousestateLeft = false;
+
+		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+		mouseClick = true;
+
+		std::cout << "this is my mouse pos: " << mousePosX << " " << mousePosY << std::endl;
+
+		//obj->second.modelCenterPos.x = (float)mousePosx;
+		//obj->second.modelCenterPos.y = (float)mousePosy;
+	}
 
 	if (GLHelper::keystateP)
 	{
@@ -481,6 +685,7 @@ void GLApp::update()
 		}
 	}
 	//check for movement
+	/*
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
@@ -513,260 +718,416 @@ void GLApp::update()
 			obj1->second.modelCenterPos = obj1->second.body.getPos();
 		}
 	}
+	*/
+	Object* playerPosition = ecs.GetComponent<Object>(player1.GetID());
+	Stats* playerInfo = ecs.GetComponent<Stats>(player1.GetID());
 
-	switch (currentCollision)
+	if (timer > 0)
+		timer -= GLHelper::delta_time;
+
+	else
+		ecs.RunSystems(1, 100);
+
+	// next, iterate through each element of container objects
+	// for each object of type GLObject in container objects
+	// call update function GLObject::update(delta_time) except on
+	// object which has camera embedded in it - this is because
+	// the camera has already updated the object's orientation
+	bool test{ true };
+	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
-	case collisionType::CircleDetection:
-		// Check for circle circle collision detection (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
+		if (playerInfo->name == obj->first && mouseClick)
 		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			playerPosition->position = vector2D::vec2D(mousePosX, mousePosY);
+			obj->second.modelCenterPos = playerPosition->position;
+
+			generateDijkstraCost(playerPosition->position, walls);
+			generateFlowField(playerPosition->position);
+		}
+
+		for (int i = 0; i < enemyUnits.size(); ++i)
+		{
+			if (ecs.GetComponent<Stats>(enemyUnits[i].GetID())->name == obj->first)
 			{
-				if (obj1->first != "Camera")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->first != "Camera" && obj1->first != obj2->first)
-						{
-							if (physics::CollisionDetectionCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-																		obj2->second.modelCenterPos, obj2->second.scaling.x))
-							{
-								obj1->second.overlap = true;
-								obj2->second.overlap = true;
-							}
-						}
-					}
-				}
+				obj->second.modelCenterPos = ecs.GetComponent<Object>(enemyUnits[i].GetID())->position;
+				break;
 			}
 		}
-		break;
-	case collisionType::CirclePushResolution:
-	//#if false
-		// Check for circle circle collision with push (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
+
+		if (obj->first != "Camera")
 		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+			obj->second.update(GLHelper::delta_time);
+
+			/*
+			switch (currentCollision)
 			{
-				if (obj1->first != "Camera")
+			case collisionType::CircleDetection:
+				// Check for circle circle collision detection (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
 				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 					{
-						if (obj2->first != "Camera" && obj1->first != obj2->first)
+						if (obj1->first != "Camera")
 						{
-							float depth;
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							if (physics::CollisionPushResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-								obj2->second.modelCenterPos, obj2->second.scaling.x,
-								velocity, depth))
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
 							{
-								velocity *= (depth / 2.f);
-								obj1->second.body.move(velocity);
-								velocity *= -1;
-								obj2->second.body.move(velocity);
-								obj1->second.modelCenterPos = obj1->second.body.getPos();
-								obj2->second.modelCenterPos = obj2->second.body.getPos();
+								if (obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									if (physics::CollisionDetectionCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+																				obj2->second.modelCenterPos, obj2->second.scaling.x))
+									{
+										obj1->second.overlap = true;
+										obj2->second.overlap = true;
+									}
+								}
 							}
 						}
 					}
 				}
+				break;
+			case collisionType::CirclePushResolution:
+			//#if false
+				// Check for circle circle collision with push (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->first != "Camera")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									float depth;
+									vector2D::vec2D velocity{ 0.f, 0.f };
+									if (physics::CollisionPushResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+										obj2->second.modelCenterPos, obj2->second.scaling.x,
+										velocity, depth))
+									{
+										velocity *= (depth / 2.f);
+										obj1->second.body.move(velocity);
+										velocity *= -1;
+										obj2->second.body.move(velocity);
+										obj1->second.modelCenterPos = obj1->second.body.getPos();
+										obj2->second.modelCenterPos = obj2->second.body.getPos();
+									}
+								}
+							}
+						}
+					}
+				}
+			//#endif
+			case collisionType::CircleBlockResolution:
+				//#if false
+				// Check for circle circle collision with block (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->first != "Banana1")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->second.body.getShape() == ShapeType::circle && obj1->first != "Camera" && obj1->first != obj2->first)
+								{
+									float depth;
+									vector2D::vec2D velocity{ 0.f, 0.f };
+									if (physics::CollisionBlockResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
+										obj2->second.modelCenterPos, obj2->second.scaling.x,
+										velocity, depth))
+									{
+										velocity *= depth;
+										obj2->second.body.move(velocity);
+										obj2->second.modelCenterPos = obj2->second.body.getPos();
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			case collisionType::PolygonDetection:
+				//#if false
+				// Check for polygon polygon collision detection (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						//if (obj1->first != "Camera")
+						if (obj1->second.body.getShape() == ShapeType::box && obj1->first != "Camera")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+									{
+										obj1->second.overlap = true;
+										obj2->second.overlap = true;
+									}
+								}
+							}
+						}
+						else if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
+									{
+										obj1->second.overlap = true;
+										obj2->second.overlap = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			case collisionType::PolygonPushResolution:
+				//#if false
+				// Check for polygon polygon collision with push (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->first == "Banana1")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									float depth{ FLT_MAX };
+									vector2D::vec2D velocity{ 0.f, 0.f };
+									if (physics::CollisionPushPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+									{
+										velocity *= (depth / 2.f);
+										obj1->second.body.move(velocity);
+										velocity *= -1;
+										obj2->second.body.move(velocity);
+										obj1->second.body.transformVertices();
+										obj2->second.body.transformVertices();
+										obj1->second.modelCenterPos = obj1->second.body.getPos();
+										obj2->second.modelCenterPos = obj2->second.body.getPos();
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			case collisionType::PolygonBlockResolution:
+				//#if false
+				// Check for polygon polygon collision with block (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->first != "Banana1")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
+								{
+									float depth{ FLT_MAX };
+									vector2D::vec2D velocity{ 0.f, 0.f };
+									if (physics::CollisionBlockPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
+									{
+										velocity *= depth;
+										velocity *= -1;
+										obj2->second.body.move(velocity);
+										obj1->second.body.transformVertices();
+										obj2->second.body.transformVertices();
+										obj2->second.modelCenterPos = obj2->second.body.getPos();
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			case collisionType::PolygonCircleDetection:
+				//#if false
+				// Check for circle polygon collision detection (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
+								{
+									if (physics::CollisionDetectionCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx()))
+									{
+										obj1->second.overlap = true;
+										obj2->second.overlap = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			case collisionType::PolygonCircleResolution:
+				//#if false
+				// Check for circle polygon collision block (WORKING CODE)
+				for (int i{ 0 }; i < 8; ++i)
+				{
+					for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+					{
+						if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
+						{
+							for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
+							{
+								if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
+								{
+									float depth{ FLT_MAX };
+									vector2D::vec2D velocity{ 0.f, 0.f };
+									if (physics::CollisionBlockCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx(), velocity, depth))
+									{
+										vector2D::Vector2DNormalize(velocity, velocity);
+										velocity *= depth;
+										obj2->second.body.move(velocity);
+										velocity *= -1;
+										obj2->second.body.transformVertices();
+										obj2->second.modelCenterPos = obj2->second.body.getPos();
+									}
+								}
+							}
+						}
+					}
+				}
+				//#endif
+				break;
+			default:
+				break;
+			}
+			*/
+
+			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
+			{
+
+				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
-	//#endif
-	case collisionType::CircleBlockResolution:
-		//#if false
-		// Check for circle circle collision with block (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				if (obj1->first != "Banana1")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->second.body.getShape() == ShapeType::circle && obj1->first != "Camera" && obj1->first != obj2->first)
-						{
-							float depth;
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							if (physics::CollisionBlockResponseCircleCircle(obj1->second.modelCenterPos, obj1->second.scaling.x,
-								obj2->second.modelCenterPos, obj2->second.scaling.x,
-								velocity, depth))
-							{
-								velocity *= depth;
-								obj2->second.body.move(velocity);
-								obj2->second.modelCenterPos = obj2->second.body.getPos();
-							}
-						}
+	}
+	//-----------------------------------------extra imgui stuff here  -- we are so moving this out
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	ImGui::ShowDemoWindow(&show_demo_window);
+
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+	
+	static float f = 0.0f;
+	static int counter = 0;
+
+	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+
+	//std::vector<EntityID> entities = ecs.getEntities();
+
+
+	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
+		
+	//if (ImGui::TreeNode("list")) {
+	//	ImGui::TreeNode("test");
+	//}
+	static bool inputs_step = true;
+	//static float  f32_v = 0.123f;
+	const float f32_one = 1.f;
+	/*
+	for (auto i : ecs.getEntities()) {
+		std::string str = ecs.getEntityName(i);
+		const char* c = str.c_str();
+		if (ImGui::TreeNode(c)) {
+			ImGui::TreeNode("test");
+			ImGui::TreePop();
+		}
+
+	}
+	*/
+	//for (auto i : ecs.getEntities()) {
+	if (ImGui::TreeNode("Entities")) {
+		for (int i = 1; i < ecs.getEntities().size()+1; ++i) {
+			std::string str = ecs.getEntityName(i);
+			const char* c = str.c_str();
+			if (ImGui::TreeNode((void*)(intptr_t)i, c)) {	
+				std::vector<std::string> names = ecs.getEntityComponents(i);
+				//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
+				for (int j = 0; j < names.size(); ++j) {
+					std::string str2 = names[j];
+					const char* c2 = str2.c_str();
+					ImGui::Text(c2);
+
+					if (str2 == "Object") {
+						//ecs.GetComponent<Object>(i)->x;
+						//ImGui::SameLine();
+						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->position.x, inputs_step ? &f32_one : NULL);
+						//ImGui::SameLine(); 
+						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->position.y, inputs_step ? &f32_one : NULL);
 					}
 				}
+				ImGui::TreePop();
 			}
 		}
-		//#endif
-		break;
-	case collisionType::PolygonDetection:
-		//#if false
-		// Check for polygon polygon collision detection (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				//if (obj1->first != "Camera")
-				if (obj1->second.body.getShape() == ShapeType::box && obj1->first != "Camera")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
-						{
-							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
-							{
-								obj1->second.overlap = true;
-								obj2->second.overlap = true;
-							}
-						}
-					}
-				}
-				else if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
-						{
-							if (physics::CollisionDetectionPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx()))
-							{
-								obj1->second.overlap = true;
-								obj2->second.overlap = true;
-							}
-						}
-					}
-				}
-			}
-		}
-		//#endif
-		break;
-	case collisionType::PolygonPushResolution:
-		//#if false
-		// Check for polygon polygon collision with push (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				if (obj1->first == "Banana1")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
-						{
-							float depth{ FLT_MAX };
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							if (physics::CollisionPushPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
-							{
-								velocity *= (depth / 2.f);
-								obj1->second.body.move(velocity);
-								velocity *= -1;
-								obj2->second.body.move(velocity);
-								obj1->second.body.transformVertices();
-								obj2->second.body.transformVertices();
-								obj1->second.modelCenterPos = obj1->second.body.getPos();
-								obj2->second.modelCenterPos = obj2->second.body.getPos();
-							}
-						}
-					}
-				}
-			}
-		}
-		//#endif
-		break;
-	case collisionType::PolygonBlockResolution:
-		//#if false
-		// Check for polygon polygon collision with block (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				if (obj1->first != "Banana1")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->second.body.getShape() == ShapeType::box && obj2->first != "Camera" && obj1->first != obj2->first)
-						{
-							float depth{ FLT_MAX };
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							if (physics::CollisionBlockPolygonPolygon(obj1->second.body.getTfmVtx(), obj2->second.body.getTfmVtx(), velocity, depth))
-							{
-								velocity *= depth;
-								velocity *= -1;
-								obj2->second.body.move(velocity);
-								obj1->second.body.transformVertices();
-								obj2->second.body.transformVertices();
-								obj2->second.modelCenterPos = obj2->second.body.getPos();
-							}
-						}
-					}
-				}
-			}
-		}
-		//#endif
-		break;
-	case collisionType::PolygonCircleDetection:
-		//#if false
-		// Check for circle polygon collision detection (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
-						{
-							if (physics::CollisionDetectionCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx()))
-							{
-								obj1->second.overlap = true;
-								obj2->second.overlap = true;
-							}
-						}
-					}
-				}
-			}
-		}
-		//#endif
-		break;
-	case collisionType::PolygonCircleResolution:
-		//#if false
-		// Check for circle polygon collision block (WORKING CODE)
-		for (int i{ 0 }; i < 8; ++i)
-		{
-			for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-			{
-				if (obj1->second.body.getShape() == ShapeType::circle && obj1->first != "Camera")
-				{
-					for (std::map <std::string, GLObject>::iterator obj2 = objects.begin(); obj2 != objects.end(); ++obj2)
-					{
-						if (obj2->first != "Camera" && obj2->second.body.getShape() == ShapeType::box && obj1->first != obj2->first)
-						{
-							float depth{ FLT_MAX };
-							vector2D::vec2D velocity{ 0.f, 0.f };
-							if (physics::CollisionBlockCirclePolygon(obj1->second.body.getPos(), obj1->second.body.getRad(), obj2->second.body.getTfmVtx(), velocity, depth))
-							{
-								vector2D::Vector2DNormalize(velocity, velocity);
-								velocity *= depth;
-								obj2->second.body.move(velocity);
-								velocity *= -1;
-								obj2->second.body.transformVertices();
-								obj2->second.modelCenterPos = obj2->second.body.getPos();
-							}
-						}
-					}
-				}
-			}
-		}
-		//#endif
-		break;
-	default:
-		break;
+		ImGui::TreePop();
 	}
 
+	// button to create entity
+	static char name[100]{ '\0' };
 
+	if (ImGui::Button("Create Entity"))
+	{
+		if ((counter & 1) && name[0] != '\0')
+		{
+			// creating entity
+			ecs.RegisterEntity(ecs.GetNewID(), name);
+			memset(name, 0, sizeof(name));
+		}
+
+		counter++;
+	}
+	if (counter & 1)
+	{
+		ImGui::InputText("Entity Name", name, 100);
+
+		std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
+		std::vector<int>::iterator it = componentCheck.begin();
+
+		bool check;
+		//for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
+		//{
+		//	// odd numbers, to join the 2nd checkbox in the same line
+		//	if (i & 1)
+		//		ImGui::SameLine();
+
+		//	ImGui::Checkbox(ecs.getAllRegisteredComponents()[i].c_str(), (bool*)* it);
+		//}
+
+		if (ImGui::Button("Cancel"))
+		{
+			memset(name, 0, sizeof(name));
+			counter++;
+		}
+	}
+	
+	//ImGui::TreeNode("THE REST");
+	/*
+	for (auto i : ecs.getEntities()) {
+		std::string str = ecs.getEntityName(i);
+		const char* c = str.c_str();
+		ImGui::Text(c);	
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
@@ -783,10 +1144,37 @@ void GLApp::update()
 			//std::cout << "Object coords " << obj1->second.ndc_coords[i].x << " ," << obj1->second.ndc_coords[i].y << std::endl;
 		}
 	}
+	*/
+	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+	ImGui::Text("Test");
+	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+	ImGui::Checkbox("Another Window", &show_another_window);
+
+	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+	//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+	//	counter++;
+	ImGui::SameLine();
+	ImGui::Text("counter = %d", counter);
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::End();
+	
+	if (show_another_window)
+	{
+		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		if (ImGui::Button("Close Me"))
+			show_another_window = false;
+		ImGui::End();
+	}
 	//vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
 	//std::cout << "Bottom left " << bottomleft.x << ", " << bottomleft.y << std::endl;
 
+	ImGui::Render();
 }
+
 /*  _________________________________________________________________________*/
 /*! GLApp::draw
 
@@ -802,7 +1190,6 @@ void GLApp::draw()
 {
 	// write window title with appropriate information using
 	// glfwSetWindowTitle() ...
-
 
 	std::stringstream title;
 	title << std::fixed;
@@ -846,6 +1233,10 @@ void GLApp::draw()
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	basicbatch.BatchClear();
 	glDisable(GL_BLEND);
+
+	objects["Camera"].draw();
+	//-----------------------------------------extra imgui stuff here
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 /*  _________________________________________________________________________*/
 /*! cleanup
@@ -916,6 +1307,8 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
 	else if (modelname == "square")
 		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getWidth(), tmpObj.body.getWidth());
+	tmpObj.color = colour;
+	tmpObj.scaling = scale;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
 	tmpObj.speed = 200.f;
