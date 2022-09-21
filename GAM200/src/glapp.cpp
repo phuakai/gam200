@@ -390,6 +390,9 @@ void GLApp::GLObject::draw() const
 	}
 }
 
+bool show_demo_window;
+bool show_another_window;
+ImVec4 clear_color;
 
 /*  _________________________________________________________________________*/
 /*! GLApp::init
@@ -426,7 +429,7 @@ void GLApp::init()
 	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[1]);
 
 	// Part 4: initialize camera
-	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), glm::vec3(1, 1, 1));
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
 
 	// Part 4: initialize 
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -490,8 +493,8 @@ void GLApp::init()
 	ecs.setEntityName(player1.GetID(), "player1");
 
 	id = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(0.3, 0.3, 0.7));
-	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), glm::vec3(0.3, 0.3, 0.7));
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, vector3D::vec3D(0.3, 0.3, 0.7));
+	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
@@ -512,7 +515,7 @@ void GLApp::init()
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
 		id = enemyUnits[i].GetID();
-		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, glm::vec3(randr, randg, randb));
+		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(id)->type, ecs.GetComponent<Stats>(id)->name, ecs.GetComponent<Sprite>(id)->size, ecs.GetComponent<Position>(id)->position, vector3D::vec3D(randr, randg, randb));
 	}
 
 
@@ -548,8 +551,8 @@ void GLApp::init()
 	//	float randb = colour(generator);
 
 	//	enemyList[i].target = &playerList[0];
-	//	GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(randr, randg, randb));
-	//	//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), glm::vec3(0.7, 0.3, 0.3));
+	//	GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), vector3D::vec3D(randr, randg, randb));
+	//	//GLApp::GLObject::gimmeObject("square", enemyList[i].unitName, enemyList[i].size, vector2D::vec2D(enemyList[i].position.x, enemyList[i].position.y), vector3D::vec3D(0.7, 0.3, 0.3));
 	//}
 
 	// walls
@@ -574,14 +577,14 @@ void GLApp::init()
 		{
 			// wall
 			if (dijkstraField[i][j] == WALL)
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(0.5, 0.5, 0.5));
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(0.5, 0.5, 0.5));
 			else
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), glm::vec3(1, 1, 1));
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
 
 			++counter;
 		}
 	}
-	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), glm::vec3(0, 0, 0));
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
@@ -760,13 +763,6 @@ void GLApp::update()
 			obj1->second.modelCenterPos = obj1->second.body.getPos();
 		}
 	}
-		std::uniform_int_distribution<int> sizerandom(50, 150);
-		float randwidth = (float)sizerandom(generator);
-		float randheight = (float)sizerandom(generator);
-		//std::cout << "Values " << randx << ", " << randy << std::endl;
-		GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(-randx, -randy), glm::vec3(0, 0, 0));
-		GLHelper::keystateQ = false;
-	}
 
 	Position* playerPosition = ecs.GetComponent<Position>(player1.GetID());
 	Stats* playerInfo = ecs.GetComponent<Stats>(player1.GetID());
@@ -789,7 +785,7 @@ void GLApp::update()
 		{
 			obj->second.update(GLHelper::delta_time);
 
-	switch (currentCollision)
+			switch (currentCollision)
 	{
 	case collisionType::CircleDetection:
 		// Check for circle circle collision detection (WORKING CODE)
@@ -1040,53 +1036,7 @@ void GLApp::update()
 	default:
 		break;
 	}
-			//check for physics collision after update
-			switch (currentCollision)
-			{
-			case 1: //collisionType::SAT
-				if (physics::shapeOverlapSAT(objects["Camera"], obj->second))
-				{
-					obj->second.overlap = true;
-					objects["Camera"].overlap = true;
-				}
-				break;
-			case 2: //collisionType::DIAG
-				if (physics::shapeOverlapDIAGONAL(objects["Camera"], obj->second))
-				{
-					obj->second.overlap = true;
-					objects["Camera"].overlap = true;
-				}
-				break;
-			case 3: //collisionType::SNAPDIAGSTATIC
-				//if (physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second))
-				physics::shapeOverlapSnapStaticDIAGONAL(objects["Camera"], obj->second);
-				//if (objects["Camera"].overlap)
-				//{
-					//objects["Camera"].modelCenterPos = objects["Camera"].worldToMdlXform * glm::vec3(objects["Camera"].worldCenterPos, 1.f);
-				//}
-				break;
-			case 4: //AABB collision
-				if (physics::shapeOverlapStaticAABB(objects["Camera"], obj->second))
-				{
-					obj->second.overlap = true;
-					objects["Camera"].overlap = true;
-				}
-				break;
-			default:
-				break;
-			}
-			//if (GLHelper::mousestateLeft)
-			//{
-			//	GLHelper::mousestateLeft = false;
-			//	double mousePosx, mousePosy;
-
-			//	Graphics::Input::getCursorPos(&mousePosx, &mousePosy);
-
-			//	std::cout << "this is my mouse pos: " << mousePosx << " " << mousePosy << std::endl;
-
-			//	//obj->second.modelCenterPos.x = (float)mousePosx;
-			//	//obj->second.modelCenterPos.y = (float)mousePosy;
-			//}
+			
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
 			{
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
