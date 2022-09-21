@@ -337,8 +337,8 @@ void GLApp::init()
 	// type GLObject in container GLApp::objects
 	GLApp::init_scene("../scenes/gam200.scn");
 
-	Graphics::Texture::loadTexture("../images/tree.png", Graphics::textureobjects[0]);
-	Graphics::Texture::loadTexture("../images/factory.png", Graphics::textureobjects[1]);
+	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[0]); // BaseTree
+	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[1]);
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
