@@ -37,8 +37,12 @@
     <ClCompile Include="src\mat3x3.cpp" />
     <ClCompile Include="src\collision.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\physicsPartition.cpp" />
     <ClCompile Include="src\pathfinding.cpp" />
     <ClCompile Include="src\physics.cpp" />
+    <ClCompile Include="src\physicsRigidBody.cpp" />
+    <ClCompile Include="src\physicsTransform.cpp" />
+    <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\rttr\constructor.cpp" />
     <ClCompile Include="src\rttr\destructor.cpp" />
     <ClCompile Include="src\rttr\detail\comparison\compare_equal.cpp" />
@@ -72,6 +76,8 @@
     <ClCompile Include="src\rttr\variant_sequential_view.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
+    <ClCompile Include="src\vec3D.cpp" />
+    <ClCompile Include="src\physicsWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />
@@ -103,8 +109,12 @@
     <ClInclude Include="include\main.h" />
     <ClInclude Include="include\mat3x3.h" />
     <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\physicsPartition.h" />
     <ClInclude Include="include\pathfinding.h" />
     <ClInclude Include="include\physics.h" />
+    <ClInclude Include="include\physicsRigidBody.h" />
+    <ClInclude Include="include\physicsTransform.h" />
+    <ClInclude Include="include\texture.h" />
     <ClInclude Include="include\rttr\detail\base\core_prerequisites.h" />
     <ClInclude Include="include\rttr\detail\base\pch.h" />
     <ClInclude Include="include\rttr\detail\base\version.h" />
@@ -210,6 +220,8 @@
     <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
+    <ClInclude Include="include\vec3D.h" />
+    <ClInclude Include="include\physicsWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />

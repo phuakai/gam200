@@ -1,25 +1,9 @@
-3            # number of objects in scene
-square        # name of model (there should be a corresponding square.dpm in $(SolutionDir)meshes)
-Object1       # name of game object - this name must be unique in the scene
-gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag # names of shader program, vertex and fragment shaders for rendering model square
-1.0 1.0 1.0   # (r, g, b) color used for painting object
-1800.0 1000.0   # scaling factors of object along horizontal and vertices axes, respectively
-0.0 0.0       # orientation factors of object: initial angular orientation (where am i looking at start up?) and angular speed in degrees/sec (how fast will i rotate)
--19300 -19750 # object's position in game world
-10.0 10.0
+1            # number of objects in scene
 triangle
 Camera
 gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
 1.0 1.0 1.0
 50.0 100.0
 30.0 2.0      
--19300 -19750
-10.0 10.0
-square
-Object2
-gam200-shdrpgm ../shaders/gam200.vert ../shaders/gam200.frag
-1.0 1.0 1.0
-50.0 50.0
-0.0 0.0       
--20175 -19750
-10.0 10.0
+-0 -0
+200.0

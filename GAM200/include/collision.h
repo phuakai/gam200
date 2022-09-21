@@ -1,14 +1,18 @@
-#ifndef PHYSICS_H
-#define PHYSICS_H
+#pragma once
+#ifndef COLLISION_H
+#define COLLISION_H
 
 #include "vec2D.h"
 #include "mat3x3.h"
 #include "glapp.h"
+//#include "rigidBody.h"
+
 #include <vector>
+
+
 
 namespace physics
 {
-
 	/******************************************************************************/
 	/*!
 		Struct that consist of the start and end point of a line, and the normal
@@ -36,17 +40,6 @@ namespace physics
 
 	/******************************************************************************/
 	/*!
-		
-	*/
-	/******************************************************************************/
-	struct AABB
-	{
-		vector2D::vec2D	min;																// Min point of bounding box
-		vector2D::vec2D	max;																// Max point of bounding box
-	};
-
-	/******************************************************************************/
-	/*!
 		Struct that consist of the circle's center and its radius
 	*/
 	/******************************************************************************/
@@ -56,55 +49,47 @@ namespace physics
 		float	m_radius;
 	};
 
-	/******************************************************************************/
-	/*!
-		Builds a line segment to be used for collision check
-	*/
-	/******************************************************************************/
-	void BuildLineSegment(LineSegmentWNormal& lineSegment,									// Line segment reference - input/output
-						  const vector2D::vec2D& pos,										// Position - input
-						  float scale,														// Scale - input
-						  float dir);														// Direction - input
+	bool CollisionPushResponseCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad,
+		vector2D::vec2D& dirNorm, float& depth);
 
+	bool CollisionBlockResponseCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad,
+		vector2D::vec2D& dirNorm, float& depth);
+		
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad,
+		float& distanceBtnCenters, float& sumOfRad);
 
-	// Intersection functions
-	/******************************************************************************/
-	/*!
-		Checks for collision between a circule and a line segment
-	*/
-	/******************************************************************************/
-	int CollisionIntersection_CircleLineSegment(const Circle& circle,						// Circle data - input
-												const vector2D::vec2D& ptEnd,				// End circle position - input
-												const LineSegmentWNormal& lineSeg,			// Line segment - input
-												vector2D::vec2D& interPt,					// Intersection point - output
-												vector2D::vec2D& normalAtCollision,			// Normal vector at collision time - output
-												float& interTime);							// Intersection time ti - output
-
-	// Response functions
-	/******************************************************************************/
-	/*!
-		Computes the new circle position if there is collision between the circle
-		and line segment
-	*/
-	/******************************************************************************/
-	void CollisionResponse_CircleLineSegment(const vector2D::vec2D& ptInter,				// Intersection position of the circle - input
-											 const vector2D::vec2D& normal,					// Normal vector of reflection on collision time - input
-											 vector2D::vec2D& ptEnd,						// Final position of the circle after reflection - output
-											 vector2D::vec2D& reflected);					// Normalized reflection vector direction - output
+	bool CollisionDetectionCircleCircle(
+		vector2D::vec2D& staticCenter, float& staticRad,
+		vector2D::vec2D& kineticCenter, float& kineticRad);
 
 	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
-	bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
-		const AABB& aabb2, const vector2D::vec2D& vel2);
+	//void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
 
 	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
 						 GLApp::GLObject const& polygon2);
 
-	bool shapeOverlapDIAGONAL(GLApp::GLObject const& polygon1, 
-							  GLApp::GLObject const& polygon2);
+	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx);
+	bool CollisionPushPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D &norm, float& depth);
+	bool CollisionBlockPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D& norm, float& depth);
 
-	bool shapeOverlapSnapStaticDIAGONAL(GLApp::GLObject & polygon1,
-										GLApp::GLObject & polygon2);
+	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx);
+
+	bool CollisionBlockCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
+		vector2D::vec2D& norm, float& depth);
+
+	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis);
+	vector2D::vec2D projectCircle(vector2D::vec2D circleCenter, float rad, vector2D::vec2D projAxis);
+	int closestPointOfCircleToPolygon(vector2D::vec2D circleCenter, std::vector<vector2D::vec2D> boxVtx);
+	vector2D::vec2D meanOfVertices(std::vector<vector2D::vec2D> vtx);
+
+	void computeBoundingBox(GLApp::GLObject& polygon);
 
 }
 #endif /* PHYSICS_H */

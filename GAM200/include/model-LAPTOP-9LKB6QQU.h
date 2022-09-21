@@ -39,7 +39,7 @@ namespace Graphics
 		GLenum primitive_type = GL_TRIANGLES; // which OpenGL primitive to be rendered?
 		GLuint primitive_cnt = 0; // added for tutorial 2
 		GLuint posvtx_cnt = 0;
-		GLuint draw_cnt = 0;
+		GLuint draw_cnt = 0; 
 
 		std::vector <vector2D::vec2D> pos_vtx;
 		std::vector <vector2D::vec2D> model_coords;
@@ -49,7 +49,7 @@ namespace Graphics
 		GLuint vboid = 0;
 		GLuint eboid = 0;
 	};
-
+	
 	//std::map<std::string, Model> models;
 }
 

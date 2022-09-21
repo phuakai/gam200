@@ -1,3 +1,10 @@
+#pragma once
+
 #include <glapp.h>
 
-void collisionDebug(GLApp::GLObject& object);
+namespace Graphics
+{
+	void collisionDebugInit(GLApp::GLObject& object);
+
+	void collisionDebugCreate(GLApp::GLObject& object);
+}
