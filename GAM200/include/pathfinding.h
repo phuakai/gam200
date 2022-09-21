@@ -1,5 +1,6 @@
 #include "ECS.h"
 #include "vec2D.h"
+#include "vec3D.h"
 #include <vector>
 #include <string>
 
@@ -7,10 +8,27 @@
 #define MAX_GRID_Y 25
 #define WALL 255
 
-
-struct Position
+struct Object
 {
 	vector2D::vec2D position;
+
+	vector3D::vec3D color;
+	int textureID;
+
+	vector2D::vec2D dimension;
+	int spriteStep;
+	int numberOfSprites;
+
+	unsigned int vaoID;
+	unsigned int vboID;
+	unsigned int eboID;
+	std::string shaderName;
+};
+
+struct Texture
+{
+	int textureID;
+	std::string textureName;
 };
 
 struct Movement

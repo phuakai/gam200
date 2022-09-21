@@ -4,12 +4,6 @@
     <ClCompile Include="src\buffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\collision.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\collisiondebug.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\glhelper.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -28,22 +22,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\mat3x3.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\model.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\pathfinding.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\transform.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vec2D.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\rttr\constructor.cpp">
@@ -160,23 +145,38 @@
     <ClCompile Include="src\imgui_widgets.cpp">
       <Filter>Source\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\physicsPartition.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsRigidBody.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsTransform.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsWorld.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\texture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\collision.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\collisiondebug.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physicsWorld.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physicsTransform.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physicsRigidBody.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physicsPartition.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
     <ClCompile Include="src\vec3D.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vec2D.cpp">
+      <Filter>Source\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mat3x3.cpp">
+      <Filter>Source\physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -819,6 +819,9 @@
     </Filter>
     <Filter Include="Include\physics">
       <UniqueIdentifier>{446cec80-fc7a-47f1-838c-dc277e444f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\physics">
+      <UniqueIdentifier>{517b7683-5e06-4045-8e2a-5f91620b9a4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

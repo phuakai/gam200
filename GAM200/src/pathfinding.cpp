@@ -18,7 +18,7 @@ vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0)
 
 void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity)
 {
-	Position* position = ecs.GetComponent<Position>(id);
+	Object* position = ecs.GetComponent<Object>(id);
 	Movement* movement = ecs.GetComponent<Movement>(id);
 	Sprite* measurement = ecs.GetComponent<Sprite>(id);
 
@@ -48,7 +48,7 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 		if (enemyUnits[i].GetID() == id)
 			continue;
 
-		Position* agentPosition = ecs.GetComponent<Position>(enemyUnits[i].GetID());
+		Object* agentPosition = ecs.GetComponent<Object>(enemyUnits[i].GetID());
 		Movement* agentMovement = ecs.GetComponent<Movement>(enemyUnits[i].GetID());
 
 		float distance = Vector2DDistance(agentPosition->position, position->position);
@@ -253,16 +253,16 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			if (dijkstraField[i][j] == MAX_GRID_X * MAX_GRID_Y)
 				continue;
 
-			vector2D::vec2D targetPosition{ MAX_GRID_X , MAX_GRID_Y };
-			int minimumDistance = MAX_GRID_X * MAX_GRID_Y;
-
 			// checking if there is line of sight
 			if (LOSgrid[i][j])
 			{
 				// line of sight = true
-				Vector2DNormalize(flowField[i][j], endingNode - vector2D::vec2D(j, i));
+				Vector2DNormalize(flowField[i][j], endingPosition - vector2D::vec2D(j * (1000 / MAX_GRID_Y) - 500 + (1000 / MAX_GRID_Y / 2), i * (1000 / MAX_GRID_X) - 500 + (1000 / MAX_GRID_X / 2)));
 				continue;
 			}
+
+			vector2D::vec2D targetPosition{ MAX_GRID_X , MAX_GRID_Y };
+			int minimumDistance = MAX_GRID_X * MAX_GRID_Y;
 
 			// for each neighbour
 			for (int k = -1; k <= 1; ++k)
