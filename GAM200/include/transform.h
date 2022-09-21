@@ -24,7 +24,6 @@ public:
 	matrix3x3::mat3x3 getNDCtoWorld();
 
 
-
 private:
 	//// Model to NDC
 	//matrix3x3::mat3x3 model_to_ndc_xform{};
@@ -44,5 +43,7 @@ private:
 	//// Temp
 	//matrix3x3::mat3x3 ndc_to_viewport_xform{};
 };
+
+vector2D::vec2D convertNDCtoWorld(vector2D::vec2D ndc);
 
 static Transform transform;

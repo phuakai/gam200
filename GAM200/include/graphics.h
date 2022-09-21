@@ -30,6 +30,8 @@ namespace Graphics {
 
 		BatchRenderer();
 		void BatchRender(std::vector<Texture>& texobjs); // batch renders all objects in render
+		void BatchClear(); // batch renders all objects in render
+		void BatchDelete();
 
 	};
 

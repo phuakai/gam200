@@ -33,6 +33,7 @@ to OpenGL implementations.
 #include <buffer.h>
 #include <model.h>
 #include <texture.h>
+#include <transform.h>
 #include <random>
 #include <physicsRigidBody.h>
 #include <physicsPartition.h>
@@ -341,8 +342,8 @@ void GLApp::init()
 	// type GLObject in container GLApp::objects
 	GLApp::init_scene("../scenes/gam200.scn");
 
-	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[0]); // BaseTree
-	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[1]);
+	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
+	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]);
 
 	// Part 4: initialize camera
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
@@ -762,8 +763,11 @@ void GLApp::update()
 		for (GLuint i = 0; i < obj1->second.mdl_ref->second.posvtx_cnt; i++)
 		{
 			obj1->second.ndc_coords[i] = obj1->second.world_to_ndc_xform * obj1->second.worldVertices[i], 1.f;
+			//std::cout << "Object coords " << obj1->second.ndc_coords[i].x << " ," << obj1->second.ndc_coords[i].y << std::endl;
 		}
 	}
+	vector2D::vec2D bottomleft = convertNDCtoWorld(vector2D::vec2D(-1.f, -1.f));
+	std::cout << "Bottom left " << bottomleft.x << ", " << bottomleft.y << std::endl;
 
 }
 /*  _________________________________________________________________________*/
@@ -819,7 +823,11 @@ void GLApp::draw()
 			obj->second.draw();
 		}
 	}
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//basicbatch.BatchRender(Graphics::textureobjects);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
+	basicbatch.BatchClear();
 	glDisable(GL_BLEND);
 }
 /*  _________________________________________________________________________*/
@@ -831,6 +839,10 @@ void GLApp::draw()
 This function is empty for now
 */
 void GLApp::cleanup() {
+	std::cout << "Cleaning" << std::endl;
+	basicbatch.BatchDelete();
+	Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
+	Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 	// empty for now
 }
 

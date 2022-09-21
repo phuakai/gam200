@@ -35,6 +35,11 @@ void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& texture
 	stbi_image_free(img);
 }
 
+void Graphics::Texture::deleteTexture(Graphics::Texture& textureobj)
+{
+	glDeleteTextures(1, &(textureobj.texture));
+}
+
 int Graphics::Texture::getTexid()
 {
 	return texture;

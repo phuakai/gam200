@@ -94,6 +94,10 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 
 	batchshader.UnUse();
 
+}
+
+void Graphics::BatchRenderer::BatchClear()
+{
 	totalindicesize = 0;
 	totaldrawcnt = 0;
 	totalsize = 0;
@@ -101,6 +105,11 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 	batchdata.clear();
 	glDeleteBuffers(1, &vboid);
 	glDeleteBuffers(1, &eboid);
+}
+
+void Graphics::BatchRenderer::BatchDelete()
+{
+	glDeleteBuffers(1, &vaoid);
 }
 
 /*  _________________________________________________________________________*/

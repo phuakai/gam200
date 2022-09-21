@@ -127,7 +127,7 @@ bool GLHelper::init(GLint w, GLint h, std::string t) {
               << std::endl;
     return false;
   }
-
+  glfwSwapInterval(0);
   return true;
 }
 

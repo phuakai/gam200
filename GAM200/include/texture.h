@@ -10,6 +10,7 @@ namespace Graphics
 	public:
 		Texture();
 		static void loadTexture(const char* path, Graphics::Texture& textureobj);
+		static void deleteTexture(Graphics::Texture& textureobj);
 		static void setData(int handle, Graphics::Texture& textureobj);
 		int getTexid();
 	private:

@@ -66,3 +66,9 @@ matrix3x3::mat3x3 Transform::getNDCtoWorld()
 	
 	return ndc_to_world;
 }
+
+vector2D::vec2D convertNDCtoWorld(vector2D::vec2D ndc)
+{
+	vector2D::vec2D bottomleft = transform.getNDCtoWorld() * vector2D::vec2D(-1.0f, -1.0f);
+	return bottomleft;
+}
