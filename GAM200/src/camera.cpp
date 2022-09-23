@@ -23,7 +23,7 @@ void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 	// assign address of object of type GLApp::GLObject with
 	// name "Camera" in std::map container GLApp::objects ...
 	pgo = ptr;
-	
+	pgo->orientation.y = 2.f * float(M_PI / 180); // Rotation amount
 	// compute camera window's aspect ratio ...
 	GLsizei fb_width, fb_height;
 	glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);

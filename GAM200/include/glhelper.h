@@ -67,6 +67,11 @@ struct GLHelper
   static GLboolean keystateT;  // Toggle Texture
   static GLboolean keystateB;  // Toggle Alpha blend
   static GLboolean keystateX;  // Toggle Alpha blend
+  static GLboolean keystateG;  // Toggle for graphics module
+  static GLboolean keystatePlus; // Object scaling
+  static GLboolean keystateMinus; // Object scaling
+  static GLboolean keystateSquareBracketLeft; // Object rotation
+  static GLboolean keystateSquareBracketRight; // Object rotation
   static GLboolean mousestateLeft;
 };
 

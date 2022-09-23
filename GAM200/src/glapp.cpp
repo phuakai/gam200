@@ -170,6 +170,8 @@ void GLApp::GLObject::update(GLdouble delta_time)
 		orientation.x += orientation.y * float(delta_time);
 	}
 
+	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
+	
 	matrix3x3::mat3x3 rotation
 	(cos(orientation.x), -sin(orientation.x), 0,
 	sin(orientation.x), cos(orientation.x), 0,
@@ -747,9 +749,38 @@ void GLApp::update()
 		GLHelper::keystateX = GL_FALSE;
 	}
 
+	if (GLHelper::keystateG)
+	{
+		if (GLHelper::keystatePlus)
+		{
+			std::cout << "INCREASING" << std::endl;
+			objects["Banana1"].scaling *= 1.1f;
+
+		}
+		if (GLHelper::keystateMinus)
+		{
+			std::cout << "DECREASING" << std::endl;
+			objects["Banana1"].scaling /= 1.1f;
+		}
+		if (GLHelper::keystateSquareBracketLeft)
+		{
+			std::cout << "ROT LEFT" << std::endl;
+			//objects["Banana1"].orientation.x += -1.5f;
+			objects["Banana1"].orientation.y += -1.5f;
+			//std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
+		}
+		if (GLHelper::keystateSquareBracketRight)
+		{
+			std::cout << "ROT RIGHT" << std::endl;
+			//objects["Banana1"].orientation.x += 1.5f;
+			objects["Banana1"].orientation.y += 1.5f;
+			//std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
+		}
+	}
+
 	if (GLHelper::keystateQ || GLHelper::keystateE)
 	{
-		for (int j = 0; j < 100; j++)
+		for (int j = 0; j < 1; j++)
 		{
 			std::string tmpobjname = "Banana";
 			tmpobjcounter++;
