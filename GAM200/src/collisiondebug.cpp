@@ -11,7 +11,7 @@ static int tmpcollisionobjcounter{ 0 };
 void Graphics::collisionDebugInit(GLApp::GLObject& object)
 {
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
-	matrix3x3::mat3x3 worldtondc = transform.getWorldtoNDC();
+	matrix3x3::mat3x3 worldtondc = transform.createWorldtoNDC();
 	float width{ 0 }, height{ 0 };
 	for (int i = 0; i < object.body.getTfmVtx().size(); i++)
 	{
@@ -35,7 +35,7 @@ void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 	std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
 
-	matrix3x3::mat3x3 worldtondc = transform.getWorldtoNDC();
+	matrix3x3::mat3x3 worldtondc = transform.createWorldtoNDC();
 	float width{0}, height{0};
 
 	for (int i = 0; i < object.body.getTfmVtx().size(); i++)

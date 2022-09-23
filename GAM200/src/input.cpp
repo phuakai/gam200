@@ -60,9 +60,9 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 	}
 	else
 	{
-		matrix3x3::mat3x3 viewport_to_ndc = transform.getViewporttoNDC();
+		matrix3x3::mat3x3 viewport_to_ndc = transform.createViewporttoNDC();
 
-		matrix3x3::mat3x3 ndc_to_world = transform.getNDCtoWorld();
+		matrix3x3::mat3x3 ndc_to_world = transform.createNDCtoWorld();
 
 		vector2D::Vec2 worldCursorPos = ndc_to_world * viewport_to_ndc * vector2D::Vec2((float)tmpx, (float) -tmpy);
 		*xpos = worldCursorPos.x;

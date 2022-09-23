@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\buffer.cpp" />
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\collisiondebug.cpp" />
     <ClCompile Include="src\glapp.cpp" />
     <ClCompile Include="src\glhelper.cpp" />
@@ -91,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h" />
+    <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\collisiondebug.h" />
     <ClInclude Include="include\ECS.h" />

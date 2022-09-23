@@ -44,7 +44,7 @@ to OpenGL implementations.
 #include "imgui_impl_opengl3.h"
 #include <stdint.h>
 #include "pathfinding.h"
-
+#include <camera.h>
 #include <iomanip>
 
 #include <registration.h>
@@ -791,40 +791,40 @@ void GLApp::update()
 		}
 	}
 	//check for movement
-	/*
+	
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
 		{
 			if (!movableShape && obj1->first == "Banana1") // first shape drawn is a box
 			{
-				obj1->second.body.rotate(45.f);
+				obj1->second.body.rotate(45.f); // Change for rotation
 				float rad{ 45.f / 180.f * M_PI };
 				obj1->second.orientation.x = rad;
 
-				double destX, destY;
-				Graphics::Input::getCursorPos(&destX, &destY);
+				//double destX, destY;
+				//Graphics::Input::getCursorPos(&destX, &destY);
 
-				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+				//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
 				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
-				obj1->second.body.move(velocity);
+				//obj1->second.body.move(velocity);
 			}
 			else if (movableShape && obj1->first == "Banana2") // first shape drawn is a circle
 			{
-				double destX, destY;
-				Graphics::Input::getCursorPos(&destX, &destY);
+				//double destX, destY;
+				//Graphics::Input::getCursorPos(&destX, &destY);
 
-				vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
-				obj1->second.body.move(velocity);
+				//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+				//obj1->second.body.move(velocity);
 			}
 
-			obj1->second.overlap = false;
+			//obj1->second.overlap = false;
 			obj1->second.body.transformVertices();
-			obj1->second.modelCenterPos = obj1->second.body.getPos();
+			//obj1->second.modelCenterPos = obj1->second.body.getPos();
 		}
 	}
-	*/
+	
 	Object* playerPosition = ecs.GetComponent<Object>(player1.GetID());
 	Stats* playerInfo = ecs.GetComponent<Stats>(player1.GetID());
 

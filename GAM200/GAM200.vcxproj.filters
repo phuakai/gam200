@@ -178,6 +178,9 @@
     <ClCompile Include="src\mat3x3.cpp">
       <Filter>Source\physics</Filter>
     </ClCompile>
+    <ClCompile Include="src\camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h">
@@ -662,6 +665,9 @@
     </ClInclude>
     <ClInclude Include="include\mat3x3.h">
       <Filter>Include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\camera.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
