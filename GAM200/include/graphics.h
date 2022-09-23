@@ -35,7 +35,7 @@ namespace Graphics {
 
 	};
 
-	static BatchRenderer basicbatch;
+	//static BatchRenderer basicbatch;
 
 	struct GLViewport
 	{
@@ -74,7 +74,7 @@ namespace Graphics {
 		matrix3x3::mat3x3 camwin_to_ndc_xform{};
 		matrix3x3::mat3x3 world_to_ndc_xform{};
 
-		GLint height{ 1000 };
+		GLint height{ 900 };
 		GLfloat ar{};
 
 		// window change parameters ...

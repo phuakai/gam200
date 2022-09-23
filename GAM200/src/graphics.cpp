@@ -175,6 +175,7 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 	ar = static_cast<GLfloat>(fb_width) / fb_height;
 	int width = int(ar * height);
 
+	//std::cout << "Height and width " << height << ", " << width << std::endl;
 	// compute camera's up and right vectors ...
 	up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
 	right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
