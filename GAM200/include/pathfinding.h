@@ -10,6 +10,7 @@
 
 struct Object
 {
+	std::string name;
 	vector2D::vec2D position;
 
 	vector3D::vec3D color;
@@ -23,12 +24,16 @@ struct Object
 	unsigned int vboID;
 	unsigned int eboID;
 	std::string shaderName;
+
+	//RTTR_ENABLE();
 };
 
 struct Texture
 {
 	int textureID;
 	std::string textureName;
+
+	//RTTR_ENABLE();
 };
 
 struct Movement
@@ -37,17 +42,22 @@ struct Movement
 	vector2D::vec2D target;
 	float force;
 	float speed;
+
+	//RTTR_ENABLE();
 };
 
 struct Sprite
 {
 	std::string type;
 	vector2D::vec2D size;
+
+	//RTTR_ENABLE();
 };
 
 struct Stats {
-	std::string name;
 	int health;
+
+	//RTTR_ENABLE();
 };
 
 struct Node {

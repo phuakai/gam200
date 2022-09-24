@@ -258,6 +258,10 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			{
 				// line of sight = true
 				Vector2DNormalize(flowField[i][j], endingPosition - vector2D::vec2D(j * (1000 / MAX_GRID_Y) - 500 + (1000 / MAX_GRID_Y / 2), i * (1000 / MAX_GRID_X) - 500 + (1000 / MAX_GRID_X / 2)));
+				
+				if (i == (int)endingNode.y && j == (int)endingNode.x)
+					std::cout << flowField[i][j].x << "\t" << flowField[i][j].y << std::endl;
+				
 				continue;
 			}
 
