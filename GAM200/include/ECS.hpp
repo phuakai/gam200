@@ -10,18 +10,6 @@
 //    ++count;
 //}
 
-inline void registerEntityRTTR()
-{
-    static int count = 1;
-
-    rttr::registration::class_<Entity>("Entity" + std::to_string(count))
-        .constructor<Entity>()
-        .method("Add", &Entity::Add);
-
-    ++count;
-}
-
-
 template<typename T>
 template<typename U>
 const IDType TypeIdGenerator<T>::GetNewID() {
@@ -31,7 +19,6 @@ const IDType TypeIdGenerator<T>::GetNewID() {
 
 
 inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) {
-    registerEntityRTTR();
     m_ecs.RegisterEntity(m_id, name);
 }
 template<typename C, typename... Args>

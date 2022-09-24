@@ -18,26 +18,25 @@ vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0)
 
 void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity)
 {
-	Object* position = ecs.GetComponent<Object>(id);
 	Movement* movement = ecs.GetComponent<Movement>(id);
-	Sprite* measurement = ecs.GetComponent<Sprite>(id);
+	Render* entity = ecs.GetComponent<Render>(id);
 
 	vector2D::vec2D desiredVelocity;
 
 	// make these not hardcoded please
-	float agentRadius = ((measurement->size.x + measurement->size.y) / 2) / 10;
-	float minimumSeparation = ((measurement->size.x + measurement->size.y) / 2) * 0.9;		// used for Separation
-	float maximumCohesion = ((measurement->size.x + measurement->size.y) / 2) * 0.9;			// used for Cohesion and Alignment
+	float agentRadius = ((entity->dimension.x + entity->dimension.y) / 2) / 10;
+	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2) * 0.9;		// used for Separation
+	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2) * 0.9;			// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
 	// 1 count for each part of flocking -> separation, cohesion, and alignment
 	int neighbourCount[3] = { 0 , 0 , 0 };
 
-	vector2D::vec2D centerForCohesion = position->position;
+	vector2D::vec2D centerForCohesion = entity->position;
 	vector2D::vec2D averageDirection{ 0,0 };
 
 	// Direction to destination
-	desiredVelocity = destination - position->position;
+	desiredVelocity = destination - entity->position;
 	// Moving at maximum speed
 	Vector2DNormalize(desiredVelocity, desiredVelocity * movement->speed);
 
@@ -48,17 +47,17 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 		if (enemyUnits[i].GetID() == id)
 			continue;
 
-		Object* agentPosition = ecs.GetComponent<Object>(enemyUnits[i].GetID());
+		Render* agentPosition = ecs.GetComponent<Render>(enemyUnits[i].GetID());
 		Movement* agentMovement = ecs.GetComponent<Movement>(enemyUnits[i].GetID());
 
-		float distance = Vector2DDistance(agentPosition->position, position->position);
+		float distance = Vector2DDistance(agentPosition->position, entity->position);
 
 		// SEPARATION --------------------------------------------------------------------
 
 		// the 2 agents are too close to each other
 		if (distance < minimumSeparation && distance > 0)
 		{
-			vector2D::vec2D separationForce = position->position - agentPosition->position;
+			vector2D::vec2D separationForce = entity->position - agentPosition->position;
 			totalForce += separationForce / agentRadius;
 			++neighbourCount[0];
 		}
@@ -105,7 +104,7 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 				// COHESION
 				centerForCohesion /= neighbourCount[i];
 
-				allVelocity[i] = centerForCohesion - position->position;
+				allVelocity[i] = centerForCohesion - entity->position;
 				vector2D::Vector2DNormalize(allVelocity[i], allVelocity[i] * movement->speed);
 				force = allVelocity[i] - movement->velocity;
 				force *= movement->force / movement->speed;

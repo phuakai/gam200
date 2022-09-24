@@ -115,7 +115,8 @@ ECS ecs;
 
 Entity player1;
 std::vector<Entity> enemyUnits(100);
-System<Movement, Object> system1(ecs, 1);
+System<Render> renderingSystem(ecs, 1);
+System<Movement, Render> system1(ecs, 2);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 std::vector<vector2D::vec2D> walls;
@@ -147,18 +148,19 @@ RTTR_REGISTRATION{
 		.property("x", &vector2D::vec2D::x)
 		.property("y", &vector2D::vec2D::y);
 
-	rttr::registration::class_<Object>("Object")
-		.property("name", &Object::name)
-		.property("position", &Object::position)
-		.property("color", &Object::color)
-		.property("textureID", &Object::textureID)
-		.property("dimension", &Object::dimension)
-		.property("spriteStep", &Object::spriteStep)
-		.property("numberOfSprites", &Object::numberOfSprites)
-		.property("vaoID", &Object::vaoID)
-		.property("vboID", &Object::vboID)
-		.property("eboID", &Object::eboID)
-		.property("shaderName", &Object::shaderName);
+	rttr::registration::class_<Render>("Render")
+		.property("name", &Render::name)
+		.property("type", &Render::type)
+		.property("position", &Render::position)
+		.property("color", &Render::color)
+		.property("textureID", &Render::textureID)
+		.property("dimension", &Render::dimension)
+		.property("spriteStep", &Render::spriteStep)
+		.property("numberOfSprites", &Render::numberOfSprites)
+		.property("vaoID", &Render::vaoID)
+		.property("vboID", &Render::vboID)
+		.property("eboID", &Render::eboID)
+		.property("shaderName", &Render::shaderName);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -170,9 +172,7 @@ RTTR_REGISTRATION{
 		.property("force", &Movement::force)
 		.property("speed", &Movement::speed);
 
-	rttr::registration::class_<Sprite>("Sprite")
-		.property("type", &Sprite::type)
-		.property("size", &Sprite::size);
+	//rttr::registration::class_<Sprite>("Sprite")
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::health);
@@ -449,15 +449,12 @@ glClearColor and glViewport to initialize the app
 void GLApp::init()
 {	
 	Graphics::createTextureVector(Graphics::textureobjects, 2);
-	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
-	//Graphics::textureobjects.resize(2);
+
 	// Part 1: initialize OpenGL state ...
-	glClearColor(0.3f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
+	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 
 	// Part 2: use the entire window as viewport ...
-	GLint w = GLHelper::width, h = GLHelper::height;
-
-	glViewport(0, 0, w, h);
+	glViewport(0, 0, GLHelper::width, GLHelper::height);
 
 	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
 	// and store repositories of models of type GLModel in container
@@ -469,12 +466,11 @@ void GLApp::init()
 	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[0]); // BaseTree
 	Graphics::Texture::loadTexture("../images/FactoryBuilding256.png", Graphics::textureobjects[1]);
 
-	// Part 4: initialize camera
+	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
-
-	// Part 4: initialize 
 	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
 
+	// ======================================================================================================================================
 	// Store physics related info to be printed in title bar
 	currentCollision = collisionType::NIL;
 	movableShape = false;
@@ -487,10 +483,10 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonBlockResolution] = "PolygonBlockResolution";
 	collisionInfo[collisionType::PolygonCircleDetection] = "PolygonCircleDetection";
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
-
 	coldebug = false;
 
-	//-----------------------------------------extra imgui stuff here
+	// ======================================================================================================================================
+	// IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -503,29 +499,29 @@ void GLApp::init()
 	show_another_window = false;
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-
-	ecs.RegisterComponent<Object>("Object");
-	//rttr::type t = rttr::type::get_by_name("Object");
-	rttr::type t = rttr::type::get_by_name("Object");
-	
-//	t.set_property_value("componentName", "trst");
-	std::cout << "THIS IS A TEST " << t.get_property("componentName").get_name() << "END" << std::endl;
-	
-
+	// ======================================================================================================================================
+	// ECS: Register structs as components 
+	ecs.RegisterComponent<Render>("Render");
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Movement>("Movement");
-	ecs.RegisterComponent<Sprite>("Sprite");
+	//ecs.RegisterComponent<Sprite>("Sprite");
 	ecs.RegisterComponent<Stats>("Stats");
 
-	player1.Add<Object>("player1", vector2D::vec2D(-200, 0));
+	// ECS: Adding components into Entities
+
+	// Render: name, type, position, color, textureID, dimension, spriteStep, numberOPfSprites, vaoID, vboID, eboID, shaderName(?)
+	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), 0, vector2D::vec2D(20, 20), 0, 1, 0, 0, 0);
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
-	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
+	player1.Add<Texture>(0, "texture");
+
+
 	player1.Add<Stats>(100);
-	ecs.setEntityName(player1.GetID(), "player1");
+	ecs.setEntityName(player1.GetID(), "player1");													// may not need this after rttr
+
 
 	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(playerID)->type, ecs.GetComponent<Object>(playerID)->name, ecs.GetComponent<Sprite>(playerID)->size, ecs.GetComponent<Object>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
 	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
@@ -539,21 +535,21 @@ void GLApp::init()
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Object>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)));
+		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), 0, vector2D::vec2D(10, 10), 0, 1, 0, 0, 0);
 		// velocity, target, force, speed
-		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Object>(player1.GetID())->position, 1, 2);
-		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(player1.GetID())->position, 1, 2);
+		//enemyUnits[i].Add<Sprite>();
 		enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
 		EntityID enemyID = enemyUnits[i].GetID();
-		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(enemyID)->type, ecs.GetComponent<Object>(enemyID)->name, ecs.GetComponent<Sprite>(enemyID)->size, ecs.GetComponent<Object>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
+		GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
 	}
 
 	timer = 4;
 
-	generateDijkstraCost(ecs.GetComponent<Object>(playerID)->position, walls);
-	generateFlowField(ecs.GetComponent<Object>(playerID)->position);
+	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
+	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
 	//enemyList[5].Print();
 
 	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
@@ -581,7 +577,7 @@ void GLApp::init()
 	system1.Action([](const float elapsedMilliseconds,
 	const std::vector<EntityID>& entities,
 	Movement* m,
-	Object* p)
+	Render* p)
 	{
 		for (std::size_t i = 0; i < entities.size(); ++i)
 		{
@@ -604,13 +600,6 @@ void GLApp::init()
 			p[i].position += m[i].velocity * (GLHelper::delta_time > 1/60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
 		}
 	});
-}
-
-// function to help check data type and draws an input
-template <typename C>
-rttr::type IMGuiInput(C& )
-{
-
 }
 
 /*  _________________________________________________________________________*/
@@ -760,13 +749,13 @@ void GLApp::update()
 		}
 	}
 	*/
-	Object* player = ecs.GetComponent<Object>(player1.GetID());
+	Render* player = ecs.GetComponent<Render>(player1.GetID());
 
 	if (timer > 0)
 		timer -= GLHelper::delta_time;
 
 	else
-		ecs.RunSystems(1, 100);
+		ecs.RunSystems(2, 100);
 
 	// next, iterate through each element of container objects
 	// for each object of type GLObject in container objects
@@ -787,9 +776,9 @@ void GLApp::update()
 
 		for (int i = 0; i < enemyUnits.size(); ++i)
 		{
-			if (ecs.GetComponent<Object>(enemyUnits[i].GetID())->name == obj->first)
+			if (ecs.GetComponent<Render>(enemyUnits[i].GetID())->name == obj->first)
 			{
-				obj->second.modelCenterPos = ecs.GetComponent<Object>(enemyUnits[i].GetID())->position;
+				obj->second.modelCenterPos = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
 				break;
 			}
 		}
@@ -1110,12 +1099,12 @@ void GLApp::update()
 					const char* c2 = str2.c_str();
 					ImGui::Text(c2);
 
-					if (str2 == "Object") {
+					if (str2 == "Render") {
 						//ecs.GetComponent<Object>(i)->x;
 						//ImGui::SameLine();
-						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->position.x, inputs_step ? &f32_one : NULL);
+						ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Render>(i)->position.x, inputs_step ? &f32_one : NULL);
 						//ImGui::SameLine(); 
-						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->position.y, inputs_step ? &f32_one : NULL);
+						ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Render>(i)->position.y, inputs_step ? &f32_one : NULL);
 					}
 				}
 				ImGui::TreePop();
@@ -1157,13 +1146,12 @@ void GLApp::update()
 	if (counter & 1)
 	{
 		ImGui::InputText("Entity Name", name, 100);
-		// means component not created
-		//if (!ecs.GetComponent<Object>(temp))
-		//{
-
-		//}
-
 		std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
+
+		static Render* render;
+		static Texture* texture;
+		static Movement* movement;
+		static Stats* stats;
 		
 		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
 		{
@@ -1183,14 +1171,12 @@ void GLApp::update()
 				if (!componentCheck[i])
 				{
 					// i wanna make this not hardcoded :((
-					if (componentName == "Object")
-						ecs.AddComponent<Object>(temp);
+					if (componentName == "Render")
+						ecs.AddComponent<Render>(temp);
 					else if (componentName == "Texture")
 						ecs.AddComponent<Texture>(temp);
 					else if (componentName == "Movement")
 						ecs.AddComponent<Movement>(temp);
-					else if (componentName == "Sprite")
-						ecs.AddComponent<Sprite>(temp);
 					else if (componentName == "Stats")
 						ecs.AddComponent<Stats>(temp);
 
@@ -1200,17 +1186,15 @@ void GLApp::update()
 				std::string comp = ecs.getAllRegisteredComponents()[i];
 				rttr::type theComp = rttr::type::get_by_name(ecs.getAllRegisteredComponents()[i]);
 				
-				//void* pointer;
-				//if (componentName == "Object")
-				//	pointer = ecs.GetComponent<Object>(temp);
-				//else if (componentName == "Texture")
-				//	pointer = ecs.GetComponent<Texture>(temp);
-				//else if (componentName == "Movement")
-				//	pointer = ecs.GetComponent<Movement>(temp);
-				//else if (componentName == "Sprite")
-				//	pointer = ecs.GetComponent<Sprite>(temp);
-				//else if (componentName == "Stats")
-				//	pointer = ecs.GetComponent<Stats>(temp);
+				void* pointer;
+				if (componentName == "Render")
+					pointer = ecs.GetComponent<Render>(temp);
+				else if (componentName == "Texture")
+					pointer = ecs.GetComponent<Texture>(temp);
+				else if (componentName == "Movement")
+					pointer = ecs.GetComponent<Movement>(temp);
+				else if (componentName == "Stats")
+					pointer = ecs.GetComponent<Stats>(temp);
 
 				//rttr::instance IR = r.create();
 				
@@ -1245,14 +1229,12 @@ void GLApp::update()
 			else if (componentCheck[i])
 			{
 				// i wanna make this not hardcoded :((
-				if (componentName == "Object")
-					ecs.RemoveComponent<Object>(temp);
+				if (componentName == "Render")
+					ecs.RemoveComponent<Render>(temp);
 				else if (componentName == "Texture")
 					ecs.RemoveComponent<Texture>(temp);
 				else if (componentName == "Movement")
 					ecs.RemoveComponent<Movement>(temp);
-				else if (componentName == "Sprite")
-					ecs.RemoveComponent<Sprite>(temp);
 				else if (componentName == "Stats")
 					ecs.RemoveComponent<Stats>(temp);
 
