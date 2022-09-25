@@ -31,6 +31,8 @@ and transformations (in later labs).
 #include <mat3x3.h>
 #include <model.h>
 #include <physicsRigidBody.h>
+#include <graphics.h>
+
 
 struct GLApp {
 
@@ -59,13 +61,13 @@ struct GLApp {
   static std::unordered_map<collisionType, std::string> collisionInfo;
 
   struct GLObject {
-	  vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
-	  vector2D::vec2D scaling{};														// scaling parameters
-	  vector2D::vec2D modelCenterPos{};													// center of shape coordinates
-	  float speed{};																	// speed
-	  physicsRigidBody body;															// param for collision
-	  int objId;																		// For collision debugger
-	  int texId;
+		vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
+		vector2D::vec2D scaling{};														// scaling parameters
+		vector2D::vec2D modelCenterPos{};													// center of shape coordinates
+		float speed{};																	// speed
+		physicsRigidBody body;															// param for collision
+		int objId;																		// For collision debugger
+		int texId;
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -105,7 +107,7 @@ struct GLApp {
 	};
 
 
-
+	static void entitydraw();
 	//static void init_models_cont(); // new in tutorial 3
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
@@ -131,6 +133,8 @@ struct GLApp {
 	static bool alphablend;
 	static bool textures;
 	static bool coldebug;
+
+	static int objectcounter;
 };
 
 #endif /* GLAPP_H */

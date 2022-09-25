@@ -27,7 +27,7 @@ public:
 
 	vector2D::vec2D convertNDCtoWorld(vector2D::vec2D ndc);
 
-
+	vector2D::vec2D convertWorldtoNDC(vector2D::vec2D world);
 private:
 	//// Model to NDC
 	//matrix3x3::mat3x3 model_to_ndc_xform{};

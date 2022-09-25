@@ -107,6 +107,8 @@ Graphics::BatchRenderer debugbatch; // Batch render object for collision debug
 
 //std::vector<Graphics::Texture> Graphics::textureobjects;
 
+Graphics::Camera2D camera2d;
+
 GLApp::collisionType GLApp::currentCollision;
 bool GLApp::movableShape;
 //std::list <std::pair<int, partitionObj>> partitionStorage;
@@ -116,17 +118,22 @@ bool GLApp::alphablend;
 bool GLApp::textures;
 bool GLApp::coldebug;
 
-int tmpobjcounter{};
+int GLApp::objectcounter;
 
 ECS ecs;
 
 Entity player1;
 std::vector<Entity> enemyUnits(100);
+std::vector<Entity> createdUnits(0);
 System<Movement, Object> system1(ecs, 1);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 std::vector<vector2D::vec2D> walls;
 float timer;
+
+bool show_demo_window;
+bool show_another_window;
+ImVec4 clear_color;
 
 
 class test_class {
@@ -147,6 +154,185 @@ RTTR_REGISTRATION{
 	//i think we cant register private vars anymore, just use setters /getters and register the method
 	//.property("value", &test_class::m_value)
 }
+
+
+/*  _________________________________________________________________________*/
+/*! GLApp::init
+
+@param none
+@return none
+
+This function is called once on initialization to initialize values and call setup functions
+It uses OpenGL functions such as:
+glClearColor and glViewport to initialize the app
+*/
+
+void GLApp::init()
+{
+	GLApp::objectcounter = 0;
+	GLApp::modulate = false;
+	GLApp::alphablend = false;
+	GLApp::textures = false;
+	GLApp::coldebug = false;
+
+	Graphics::createTextureVector(Graphics::textureobjects, 2);
+	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
+	//Graphics::textureobjects.resize(2);
+	// Part 1: initialize OpenGL state ...
+	glClearColor(0.3f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
+
+	// Part 2: use the entire window as viewport ...
+	GLint w = GLHelper::width, h = GLHelper::height;
+
+	glViewport(0, 0, w, h);
+
+	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
+	// and store repositories of models of type GLModel in container
+	// GLApp::models, store shader programs of type GLSLShader in
+	// container GLApp::shdrpgms, and store repositories of objects of
+	// type GLObject in container GLApp::objects
+	//GLApp::init_scene("../scenes/gam200.scn");
+
+	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
+	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]);
+
+	// Part 4: initialize camera
+	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(5, 5), vector3D::vec3D(1, 1, 1));
+
+	// Part 4: initialize 
+	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
+
+	// Store physics related info to be printed in title bar
+	currentCollision = collisionType::NIL;
+	movableShape = false;
+	collisionInfo[collisionType::NIL] = "NIL";
+	collisionInfo[collisionType::CircleDetection] = "CircleDetection";
+	collisionInfo[collisionType::CirclePushResolution] = "CirclePushResolution";
+	collisionInfo[collisionType::CircleBlockResolution] = "CircleBlockResolution";
+	collisionInfo[collisionType::PolygonDetection] = "PolygonDetection";
+	collisionInfo[collisionType::PolygonPushResolution] = "PolygonPushResolution";
+	collisionInfo[collisionType::PolygonBlockResolution] = "PolygonBlockResolution";
+	collisionInfo[collisionType::PolygonCircleDetection] = "PolygonCircleDetection";
+	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
+
+	coldebug = false;
+
+	//-----------------------------------------extra imgui stuff here
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(GLHelper::ptr_window, true);
+	ImGui_ImplOpenGL3_Init(NULL);
+
+	show_demo_window = true;
+	show_another_window = false;
+	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+	ecs.RegisterComponent<Object>("Object");
+	ecs.RegisterComponent<Movement>("Movement");
+	ecs.RegisterComponent<Sprite>("Sprite");
+	ecs.RegisterComponent<Stats>("Stats");
+	ecs.RegisterComponent<Texture>("Texture");
+
+	// Position, Colour, Texture id, Dimension, Current frame, Number of frames, vao, vbo, ebo, shadername
+	player1.Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(20, 20), 1, 4, 0, 0, 0, "gam200-shdrpgm");
+	// velocity, target, force, speed
+	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
+	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));  // Sprite size to be moved to dimension in object
+	player1.Add<Stats>("player1", 100);
+	player1.Add<Texture>(0, "none");
+	ecs.setEntityName(player1.GetID(), "player1");
+
+	EntityID playerID = player1.GetID();
+	// CANT REMOVE PLAYER CAUSE TIED TO MOUSE
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(playerID)->type, ecs.GetComponent<Stats>(playerID)->name, ecs.GetComponent<Sprite>(playerID)->size, ecs.GetComponent<Object>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
+	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
+
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
+	for (int i = 0; i < enemyUnits.size(); ++i)
+	{
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
+
+		//enemyUnits[i].Add<Object>(vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)));
+		//Position, Colour, Texture id, Dimension, Current frame, Number of frames, vao, vbo, ebo, shadername
+		//player1.Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(100, 100), 1, 4, 0, 0, 0, "test");
+		enemyUnits[i].Add<Object>(vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), 1, vector2D::vec2D(10, 10), 1, 4, 0, 0, 0, "gam200-shdrpgm");
+		// velocity, target, force, speed
+		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Object>(player1.GetID())->position, 1, 2);
+		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10)); // Sprite size to be moved to dimension in object
+		enemyUnits[i].Add<Stats>("enemy" + std::to_string(i + 1), 100);
+		enemyUnits[i].Add<Texture>(0, "none");
+		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
+
+		EntityID enemyID = enemyUnits[i].GetID();
+		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(enemyID)->type, ecs.GetComponent<Stats>(enemyID)->name, ecs.GetComponent<Sprite>(enemyID)->size, ecs.GetComponent<Object>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
+	}
+
+	timer = 4;
+
+	generateDijkstraCost(ecs.GetComponent<Object>(playerID)->position, walls);
+	generateFlowField(ecs.GetComponent<Object>(playerID)->position);
+	//enemyList[5].Print();
+
+	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
+
+	int counter = 1;
+	for (int i = 0; i < MAX_GRID_Y; ++i)
+	{
+		for (int j = 0; j < MAX_GRID_X; ++j)
+		{
+			// wall
+			if (dijkstraField[i][j] == WALL)
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(0.5, 0.5, 0.5));
+			else
+				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
+
+			++counter;
+		}
+	}
+	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
+
+	// Part 5: Print OpenGL context and GPU specs
+	//GLHelper::print_specs();
+
+
+	system1.Action([](const float elapsedMilliseconds,
+		const std::vector<EntityID>& entities,
+		Movement* m,
+		Object* p)
+		{
+			for (std::size_t i = 0; i < entities.size(); ++i)
+			{
+				vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+				vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+
+				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+
+				movementFlocking(entities[i], m[i].target, allVelocity);
+
+				m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
+
+				// capping speed
+				if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
+				{
+					m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
+				}
+
+				p[i].position += m[i].velocity * GLHelper::delta_time * 100;
+			}
+		});
+}
+
 
 /*  _________________________________________________________________________*/
 /*! GLObject::update
@@ -350,335 +536,118 @@ void GLApp::GLObject::draw() const
 	}
 	else
 	{
-	//ecs.GetComponent<Object>(1);
-	// 
-	// FOR ECS STUFF
-		//std::vector<EntityID> entities = ecs.getEntities();
-		//for (int i = 0; i < 1; i++)
+	 
+		//ecs.GetComponent<Object>(1);
+	 //FOR ECS STUFF
+	  
+	  
+	
+	}
+	
+
+
+		//basicbatch.batchmodel = mdl_ref->second;
+		//basicbatch.batchshader = shd_ref->second;
+
+		//
+		//std::vector<vector3D::Vec3> clr_vtx
 		//{
-		//	//std::cout << "Integers " << entities[i] << std::endl;
-		//	Object* curobj = ecs.GetComponent<Object>(entities[i]);
-		//	//std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
-		//	basicbatch.batchmodel = models["square"];
-		//	basicbatch.batchshader = shdrpgms["shaderName"];
-		//	std::vector<vector3D::Vec3> clr_vtx
-		//	{
-		//		vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
-		//		vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
-		//	};
-		//	int totalframes = 4;
-		//	int curframe = 1;
+		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
+		//};
+		//int totalframes = 4;
+		//int curframe = 4;
+		//std::vector<vector2D::Vec2> texcoord;
+		//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f)); // Bottom left
+		//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f)); // Bottom right
+		//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 1.f)); // Top right
+		//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 1.f)); // Top left
+		////std::cout << "Texture coords " << std::endl
+		////	<< texcoord[0].x << ", " << texcoord[0].y << std::endl
+		////	<< texcoord[1].x << ", " << texcoord[1].y << std::endl
+		////	<< texcoord[2].x << ", " << texcoord[2].y << std::endl
+		////	<< texcoord[3].x << ", " << texcoord[3].y << std::endl;
 
-		//	std::vector<vector2D::Vec2> texcoord;
-		//	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f));
-		//	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f));
-		//	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
-		//	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f + float(curframe)));
-
-		//	/*for (int i = 0; i < 4; i++)
+		//std::vector<Graphics::vertexData> vertexData;
+		//for (int i = 0; i < ndc_coords.size(); ++i)
+		//{
+		//	Graphics::vertexData tmpVtxData;
+		//	tmpVtxData.posVtx = ndc_coords[i];
+		//	if (mdl_ref->first == "circle")
 		//	{
-		//		std::cout << "Tex coord " << texcoord[i].x << ", " << texcoord[i].y << std::endl;
+		//		tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
 		//	}
-		//	std::cout << std::endl;*/
+		//	else
+		//	{
+		//		tmpVtxData.clrVtx = clr_vtx[i];
+		//	}
+		//	tmpVtxData.txtVtx = texcoord[i];
+		//	tmpVtxData.txtIndex = texId;
+		//	vertexData.emplace_back(tmpVtxData);
+		//}
+		//basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+		//basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+		//basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
+		//basicbatch.vaoid = mdl_ref->second.getVAOid();
+		//basicbatch.vboid = mdl_ref->second.getVBOid();
+		//basicbatch.eboid = mdl_ref->second.getEBOid();
+		//basicbatch.totalsize += vertexData.size();
+		//basicbatch.primtype = mdl_ref->second.getPrimitiveType();
+		//basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 
-		//	std::vector<vector2D::Vec2> poscoord; // CALCULATE POSITION FROM CENTER
-		//	float halfwidth = curobj->dimension.x / 2.f;
-		//	float halfheight = curobj->dimension.y / 2.f;
-		//	poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y - halfheight));
-		//	poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y - halfheight));
-		//	poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y + halfheight));
-		//	poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
-		//	std::vector<Graphics::vertexData> vertexData;
-		//	for (int i = 0; i < 4; ++i)
+		//if (coldebug == true)
+		//{
+
+		//	debugbatch.batchmodel = mdl_ref->second;
+		//	debugbatch.batchshader = shd_ref->second;
+		//	std::vector<vector3D::Vec3> clr_vtxcoldebug;
+		//	for (int i = 0; i < 4; i++)
+		//	{
+		//		if (overlap == true)
+		//		{
+		//			clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.8f, 0.f, 0.2f)); // red if overlapping
+		//		}
+		//		else
+		//		{
+		//			clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.f, 0.2f, 0.7f)); // blue if not overlapping
+		//		}
+		//	}
+
+		//	std::vector<Graphics::vertexData> colDebugData;
+		//	for (int i = 0; i < ndc_coords.size(); ++i)
 		//	{
 		//		Graphics::vertexData tmpVtxData;
-		//		tmpVtxData.posVtx = poscoord[i];
-		//		tmpVtxData.clrVtx = curobj->color;
-
+		//		tmpVtxData.posVtx = ndc_coords[i];
+		//		if (mdl_ref->first == "circle")
+		//		{
+		//			tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 1.f);
+		//		}
+		//		else
+		//		{
+		//			//std::cout << "Colour " << clr_vtxcoldebug[i].x << ", " << clr_vtxcoldebug[i].y << ", " << clr_vtxcoldebug[i].z << std::endl;
+		//			tmpVtxData.clrVtx = clr_vtxcoldebug[i];
+		//		}
 		//		tmpVtxData.txtVtx = texcoord[i];
-		//		tmpVtxData.txtIndex = curobj->textureID;
-		//		vertexData.emplace_back(tmpVtxData);
+		//		tmpVtxData.txtIndex = texId; // notexture for coldebug
+		//		colDebugData.emplace_back(tmpVtxData);
 		//	}
 
-		//	basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-		//	basicbatch.ebodata.insert(basicbatch.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
-		//	basicbatch.totalindicesize += models["square"].getPrimitiveCnt();
-		//	basicbatch.vaoid = models["square"].getVAOid();
-		//	basicbatch.vboid = models["square"].getVBOid();
-		//	basicbatch.eboid = models["square"].getEBOid();
-		//	basicbatch.totalsize += vertexData.size();
-		//	basicbatch.primtype = models["square"].getPrimitiveType();
-		//	basicbatch.totaldrawcnt += models["square"].getDrawCnt();
-
-		//	texcoord.clear();
-
-		//	basicbatch.BatchClear();
+		//	debugbatch.batchdata.insert(debugbatch.batchdata.end(), colDebugData.begin(), colDebugData.end());
+		//	debugbatch.ebodata.insert(debugbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+		//	debugbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
+		//	debugbatch.vaoid = mdl_ref->second.getVAOid();
+		//	debugbatch.vboid = mdl_ref->second.getVBOid();
+		//	debugbatch.eboid = mdl_ref->second.getEBOid();
+		//	debugbatch.totalsize += colDebugData.size();
+		//	debugbatch.primtype = mdl_ref->second.getPrimitiveType();
+		//	debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 		//}
+		//texcoord.clear();
 
-
-		basicbatch.batchmodel = mdl_ref->second;
-		basicbatch.batchshader = shd_ref->second;
-		
-		std::vector<vector3D::Vec3> clr_vtx
-		{
-			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-			vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-		};
-		int totalframes = 4;
-		int curframe = 1;
-		std::vector<vector2D::Vec2> texcoord;
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
-		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f + float(curframe)));
-
-		std::vector<Graphics::vertexData> vertexData;
-		for (int i = 0; i < ndc_coords.size(); ++i)
-		{
-			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndc_coords[i];
-			if (mdl_ref->first == "circle")
-			{
-				tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-			}
-			else
-			{
-				tmpVtxData.clrVtx = clr_vtx[i];
-			}
-			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = texId;
-			vertexData.emplace_back(tmpVtxData);
-		}
-		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-		basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-		basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-		basicbatch.vaoid = mdl_ref->second.getVAOid();
-		basicbatch.vboid = mdl_ref->second.getVBOid();
-		basicbatch.eboid = mdl_ref->second.getEBOid();
-		basicbatch.totalsize += vertexData.size();
-		basicbatch.primtype = mdl_ref->second.getPrimitiveType();
-		basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
-
-
-		if (coldebug == true)
-		{
-
-			debugbatch.batchmodel = mdl_ref->second;
-			debugbatch.batchshader = shd_ref->second;
-			std::vector<vector3D::Vec3> clr_vtxcoldebug;
-			for (int i = 0; i < 4; i++)
-			{
-				if (overlap == true)
-				{
-					clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.8f, 0.f, 0.2f)); // red if overlapping
-				}
-				else
-				{
-					clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.f, 0.2f, 0.7f)); // blue if not overlapping
-				}
-			}
-
-			std::vector<Graphics::vertexData> colDebugData;
-			for (int i = 0; i < ndc_coords.size(); ++i)
-			{
-				Graphics::vertexData tmpVtxData;
-				tmpVtxData.posVtx = ndc_coords[i];
-				if (mdl_ref->first == "circle")
-				{
-					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 1.f);
-				}
-				else
-				{
-					//std::cout << "Colour " << clr_vtxcoldebug[i].x << ", " << clr_vtxcoldebug[i].y << ", " << clr_vtxcoldebug[i].z << std::endl;
-					tmpVtxData.clrVtx = clr_vtxcoldebug[i];
-				}
-				tmpVtxData.txtVtx = texcoord[i];
-				tmpVtxData.txtIndex = texId; // notexture for coldebug
-				colDebugData.emplace_back(tmpVtxData);
-			}
-
-			debugbatch.batchdata.insert(debugbatch.batchdata.end(), colDebugData.begin(), colDebugData.end());
-			debugbatch.ebodata.insert(debugbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-			debugbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-			debugbatch.vaoid = mdl_ref->second.getVAOid();
-			debugbatch.vboid = mdl_ref->second.getVBOid();
-			debugbatch.eboid = mdl_ref->second.getEBOid();
-			debugbatch.totalsize += colDebugData.size();
-			debugbatch.primtype = mdl_ref->second.getPrimitiveType();
-			debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
-		}
-		texcoord.clear();
-
-	}
+	
 }
 
-bool show_demo_window;
-bool show_another_window;
-ImVec4 clear_color;
-
-/*  _________________________________________________________________________*/
-/*! GLApp::init
-
-@param none
-@return none
-
-This function is called once on initialization to initialize values and call setup functions
-It uses OpenGL functions such as:
-glClearColor and glViewport to initialize the app
-*/
-
-void GLApp::init()
-{
-	Graphics::createTextureVector(Graphics::textureobjects, 2);
-	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
-	//Graphics::textureobjects.resize(2);
-	// Part 1: initialize OpenGL state ...
-	glClearColor(0.3f, 1.f, 1.f, 1.f); // clear colorbuffer with RGBA value in glClearColor
-
-	// Part 2: use the entire window as viewport ...
-	GLint w = GLHelper::width, h = GLHelper::height;
-
-	glViewport(0, 0, w, h);
-
-	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
-	// and store repositories of models of type GLModel in container
-	// GLApp::models, store shader programs of type GLSLShader in
-	// container GLApp::shdrpgms, and store repositories of objects of
-	// type GLObject in container GLApp::objects
-	//GLApp::init_scene("../scenes/gam200.scn");
-
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]);
-
-	// Part 4: initialize camera
-	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
-
-	// Part 4: initialize 
-	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
-
-	// Store physics related info to be printed in title bar
-	currentCollision = collisionType::NIL;
-	movableShape = false;
-	collisionInfo[collisionType::NIL] = "NIL";
-	collisionInfo[collisionType::CircleDetection] = "CircleDetection";
-	collisionInfo[collisionType::CirclePushResolution] = "CirclePushResolution";
-	collisionInfo[collisionType::CircleBlockResolution] = "CircleBlockResolution";
-	collisionInfo[collisionType::PolygonDetection] = "PolygonDetection";
-	collisionInfo[collisionType::PolygonPushResolution] = "PolygonPushResolution";
-	collisionInfo[collisionType::PolygonBlockResolution] = "PolygonBlockResolution";
-	collisionInfo[collisionType::PolygonCircleDetection] = "PolygonCircleDetection";
-	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
-
-	coldebug = false;
-
-	//-----------------------------------------extra imgui stuff here
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(GLHelper::ptr_window, true);
-	ImGui_ImplOpenGL3_Init(NULL);
-
-	show_demo_window = true;
-	show_another_window = false;
-	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-	ecs.RegisterComponent<Object>("Object");
-	ecs.RegisterComponent<Movement>("Movement");
-	ecs.RegisterComponent<Sprite>("Sprite");
-	ecs.RegisterComponent<Stats>("Stats");
-
-	player1.Add<Object>(vector2D::vec2D(-200, 0));
-	// velocity, target, force, speed
-	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
-	player1.Add<Sprite>("square", vector2D::vec2D(20, 20));
-	player1.Add<Stats>("player1", 100);
-	ecs.setEntityName(player1.GetID(), "player1");
-
-	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(playerID)->type, ecs.GetComponent<Stats>(playerID)->name, ecs.GetComponent<Sprite>(playerID)->size, ecs.GetComponent<Object>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
-	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
-
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
-
-	for (int i = 0; i < enemyUnits.size(); ++i)
-	{
-		float randr = colour(generator);
-		float randg = colour(generator);
-		float randb = colour(generator);
-
-		enemyUnits[i].Add<Object>(vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)));
-		// velocity, target, force, speed
-		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Object>(player1.GetID())->position, 1, 2);
-		enemyUnits[i].Add<Sprite>("square", vector2D::vec2D(10, 10));
-		enemyUnits[i].Add<Stats>("enemy" + std::to_string(i + 1), 100);
-		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
-
-		EntityID enemyID = enemyUnits[i].GetID();
-		GLApp::GLObject::gimmeObject(ecs.GetComponent<Sprite>(enemyID)->type, ecs.GetComponent<Stats>(enemyID)->name, ecs.GetComponent<Sprite>(enemyID)->size, ecs.GetComponent<Object>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
-	}
-
-	timer = 4;
-
-	generateDijkstraCost(ecs.GetComponent<Object>(playerID)->position, walls);
-	generateFlowField(ecs.GetComponent<Object>(playerID)->position);
-	//enemyList[5].Print();
-
-	vector2D::vec2D startingPoint{ 0 - 500 + 1000 / MAX_GRID_X / 2, 0 - 500 + 1000 / MAX_GRID_Y / 2 };
-
-	int counter = 1;
-	for (int i = 0; i < MAX_GRID_Y; ++i)
-	{
-		for (int j = 0; j < MAX_GRID_X; ++j)
-		{
-			// wall
-			if (dijkstraField[i][j] == WALL)
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(0.5, 0.5, 0.5));
-			else
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
-
-			++counter;
-		}
-	}
-	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
-
-	// Part 5: Print OpenGL context and GPU specs
-	//GLHelper::print_specs();
-
-
-	system1.Action([](const float elapsedMilliseconds,
-	const std::vector<EntityID>& entities,
-	Movement* m,
-	Object* p)
-	{
-		for (std::size_t i = 0; i < entities.size(); ++i)
-		{
-			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-
-			vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
-
-			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
-
-			movementFlocking(entities[i], m[i].target, allVelocity);
-
-			m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
-
-			// capping speed
-			if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
-			{
-				m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
-			}
-
-			p[i].position += m[i].velocity * GLHelper::delta_time * 100;
-		}
-	});
-}
 
 /*  _________________________________________________________________________*/
 /*! GLApp::update
@@ -766,15 +735,15 @@ void GLApp::update()
 		{
 			std::cout << "ROT LEFT" << std::endl;
 			//objects["Banana1"].orientation.x += -1.5f;
-			objects["Banana1"].orientation.y += -1.5f;
-			//std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
+			objects["Banana1"].orientation.x += (-1.5f * float(M_PI / 180));
+			std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
 		}
 		if (GLHelper::keystateSquareBracketRight)
 		{
 			std::cout << "ROT RIGHT" << std::endl;
 			//objects["Banana1"].orientation.x += 1.5f;
-			objects["Banana1"].orientation.y += 1.5f;
-			//std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
+			objects["Banana1"].orientation.x += (1.5f * float(M_PI / 180));
+			std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
 		}
 	}
 
@@ -783,9 +752,9 @@ void GLApp::update()
 		for (int j = 0; j < 1; j++)
 		{
 			std::string tmpobjname = "Banana";
-			tmpobjcounter++;
+			objectcounter++;
 			std::stringstream tmpstream;
-			tmpstream << tmpobjname << tmpobjcounter;
+			tmpstream << tmpobjname << objectcounter;
 			std::string finalobjname = tmpstream.str();
 			std::cout << "Final obj name " << finalobjname << std::endl;
 			//using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
@@ -809,53 +778,75 @@ void GLApp::update()
 
 			std::uniform_int_distribution<int> texrandom(0, 1);
 			float randindex = float(texrandom(generator));
+			std::string modelname;
 			if (GLHelper::keystateQ)
 			{
-				GLApp::GLObject::gimmeObject("circle", finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, tmpobjcounter, randindex);
+				modelname = "circle";
+				GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
 				GLHelper::keystateQ = false;
 			}
 			else
 			{
-				GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, tmpobjcounter, randindex);
+				modelname = "square";
+				GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
 				GLHelper::keystateE = false;
 			}
+			//EntityID entid = ecs.GetNewID();
+			//ecs.RegisterEntity(entid, finalobjname);
+			//ecs.AddComponent<Texture>(entid);
+			//createdUnits.resize(objectcounter);
+			createdUnits[objectcounter].Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(100, 100), 1, 4, 0, 0, 0, "gam200-shdrpgm");
+			createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(20, 20));
+			createdUnits[objectcounter].Add<Stats>(finalobjname, 100);
+			createdUnits[objectcounter].Add<Texture>(1, "tree");
+			ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
+			//EntityID testid = createdUnits[objectcounter].GetID();
+			//std::cout << "Position " << ecs.GetComponent<Object>(testid)->position.x << "," << ecs.GetComponent<Object>(testid)->position.y << std::endl;
+			
+			//createdUnits[objectcounter].Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(100, 100), 1, 4, 0, 0, 0, "test");
+			//createdUnits[objectcounter].Add<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			//createdUnits[objectcounter].Add<Texture>(entid, 1, "tree");
+			// Position, Colour, Texture id, Dimension, Current frame, Number of frames, vao, vbo, ebo, shadername
+			//std::cout << "Shader program " << tmpObj.shd_ref->second << std::endl;
+			// ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			//ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 		}
 	}
 	//check for movement
 	
-	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
-	{
-		if (obj1->first != "Camera")
-		{
-			if (!movableShape && obj1->first == "Banana1") // first shape drawn is a box
-			{
-				obj1->second.body.rotate(45.f); // Change for rotation
-				float rad{ 45.f / 180.f * M_PI };
-				obj1->second.orientation.x = rad;
+	//for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
+	//{
+	//	if (obj1->first != "Camera")
+	//	{
+	//		if (!movableShape && obj1->first == "Banana1") // first shape drawn is a box
+	//		{
+	//			//obj1->second.body.rotate(45.f); // Change for rotation
+	//			//float rad{ 45.f / 180.f * M_PI };
+	//			//obj1->second.orientation.x = rad;
 
-				//double destX, destY;
-				//Graphics::Input::getCursorPos(&destX, &destY);
+	//			//double destX, destY;
+	//			//Graphics::Input::getCursorPos(&destX, &destY);
 
-				//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
-				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
-				//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
-				//obj1->second.body.move(velocity);
-			}
-			else if (movableShape && obj1->first == "Banana2") // first shape drawn is a circle
-			{
-				//double destX, destY;
-				//Graphics::Input::getCursorPos(&destX, &destY);
+	//			//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+	//			//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
+	//			//vector2D::vec2D velocity = keyboardMovement(obj1->second.modelCenterPos, obj1->second.speed, stepByStepCollision);
+	//			//obj1->second.body.move(velocity);
+	//		}
+	//		else if (movableShape && obj1->first == "Banana2") // first shape drawn is a circle
+	//		{
+	//			//double destX, destY;
+	//			//Graphics::Input::getCursorPos(&destX, &destY);
 
-				//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
-				//obj1->second.body.move(velocity);
-			}
+	//			//vector2D::vec2D velocity = mouseMovement(obj1->second.modelCenterPos, vector2D::vec2D(static_cast<float>(destX), static_cast<float>(destY)), obj1->second.speed);
+	//			//obj1->second.body.move(velocity);
+	//		}
 
-			//obj1->second.overlap = false;
-			obj1->second.body.transformVertices();
-			//obj1->second.modelCenterPos = obj1->second.body.getPos();
-		}
-	}
-	
+	//		//obj1->second.overlap = false;
+	//		//obj1->second.body.transformVertices();
+	//		//obj1->second.modelCenterPos = obj1->second.body.getPos();
+	//	}
+	//}
+	//
 	Object* playerPosition = ecs.GetComponent<Object>(player1.GetID());
 	Stats* playerInfo = ecs.GetComponent<Stats>(player1.GetID());
 
@@ -1365,13 +1356,14 @@ void GLApp::draw()
 			obj->second.draw();
 		}
 	}
+	GLApp::entitydraw();
 	//basicbatch.BatchRender(Graphics::textureobjects);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
+	//debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
 	basicbatch.BatchClear();
-	debugbatch.BatchClear();
+	//debugbatch.BatchClear();
 	glDisable(GL_BLEND);
 
 	objects["Camera"].draw();
@@ -1389,7 +1381,7 @@ This function is empty for now
 void GLApp::cleanup() {
 	std::cout << "Cleaning" << std::endl;
 	basicbatch.BatchDelete();
-	debugbatch.BatchDelete();
+	//debugbatch.BatchDelete();
 	Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
 	Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 	// empty for now
@@ -1434,6 +1426,8 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 {
 	GLObject tmpObj;
 	std::string hi;
+
+	
 
 	tmpObj.objId = id;
 	tmpObj.texId = texid;
@@ -1587,11 +1581,14 @@ void GLApp::init_scene(std::string scene_filename)
 		if (shdrpgms.find(model_shader_pgm) != shdrpgms.end())
 		{
 			Object.shd_ref = shdrpgms.find(model_shader_pgm);
+
+			std::cout << "Shaderprog " << model_shader_pgm << std::endl;
 		}
 		else
 		{
 			insert_shdrpgm(model_shader_pgm, model_vert_shader, model_frag_shader);
 			Object.shd_ref = shdrpgms.find(model_shader_pgm);
+			std::cout << "Shaderprog " << model_shader_pgm << std::endl;
 		}
 		objects[model_object] = Object;
 	}
@@ -1609,4 +1606,132 @@ This function is currently empty
 void GLApp::GLObject::init()
 {
 
+}
+
+
+void GLApp::entitydraw()
+{
+	std::vector<EntityID> entities = ecs.getEntities();
+	for (int i = 0; i < entities.size(); i++)
+	{
+		//std::cout << "Integers " << i << ", " << entities[i] << std::endl;
+		Object* curobj = ecs.GetComponent<Object>(entities[i]);
+		//std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
+		//std::cout << "Colour " << curobj->color.r << ", " << curobj->color.g << ", " << curobj->color.b << std::endl;
+		//std::cout << "Shader prog " << curobj->shaderName << std::endl;
+		basicbatch.batchmodel = models["square"];
+		GLSLShader shaderid;
+		if (shdrpgms.find(curobj->shaderName) != shdrpgms.end())
+		{
+			shaderid = shdrpgms.find(curobj->shaderName)->second;
+		}
+		else
+		{
+			insert_shdrpgm(curobj->shaderName, "../shaders/gam200.vert", "../shaders/gam200.frag");
+			shaderid = shdrpgms.find(curobj->shaderName)->second;
+		}
+		basicbatch.batchshader = shaderid;
+
+
+		std::vector<vector3D::Vec3> clr_vtx
+		{
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
+		};
+
+		//std::vector<vector3D::Vec3> clr_vtx
+		//{
+		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
+		//};
+		int totalframes = 4;
+		int curframe = 1;
+
+		std::vector<vector2D::Vec2> texcoord;
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
+		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f + float(curframe)));
+
+		//	/*for (int i = 0; i < 4; i++)
+		//	{
+		//		std::cout << "Tex coord " << texcoord[i].x << ", " << texcoord[i].y << std::endl;
+		//	}
+		//	std::cout << std::endl;*/
+
+		std::vector<vector2D::Vec2> poscoord; // CALCULATE POSITION FROM CENTER
+		float halfwidth = curobj->dimension.x / 2.f;
+		float halfheight = curobj->dimension.y / 2.f;
+		poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y - halfheight));
+		poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y - halfheight));
+		poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y + halfheight));
+		poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y + halfheight));
+
+		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
+		(
+			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+		);
+
+		std::vector <vector2D::Vec2> ndccoord;
+		for (int i = 0; i < poscoord.size(); i++)
+		{
+			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+
+		}
+		std::vector<Graphics::vertexData> vertexData;
+		for (int i = 0; i < 4; ++i)
+		{
+			Graphics::vertexData tmpVtxData;
+			tmpVtxData.posVtx = ndccoord[i];
+			tmpVtxData.clrVtx = curobj->color;
+
+			tmpVtxData.txtVtx = texcoord[i];
+			tmpVtxData.txtIndex = curobj->textureID;
+			vertexData.emplace_back(tmpVtxData);
+		}
+
+		//	std::vector<Graphics::vertexData> vertexData;
+		//for (int i = 0; i < ndc_coords.size(); ++i)
+		//{
+		//	Graphics::vertexData tmpVtxData;
+		//	tmpVtxData.posVtx = ndc_coords[i];
+		//	if (mdl_ref->first == "circle")
+		//	{
+		//		tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
+		//	}
+		//	else
+		//	{
+		//		tmpVtxData.clrVtx = clr_vtx[i];
+		//	}
+		//	tmpVtxData.txtVtx = texcoord[i];
+		//	tmpVtxData.txtIndex = texId;
+		//	vertexData.emplace_back(tmpVtxData);
+		//}
+
+		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+		basicbatch.ebodata.insert(basicbatch.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
+		basicbatch.totalindicesize += models["square"].getPrimitiveCnt();
+		basicbatch.vaoid = models["square"].getVAOid();
+		basicbatch.vboid = models["square"].getVBOid();
+		basicbatch.eboid = models["square"].getEBOid();
+		basicbatch.totalsize += vertexData.size();
+		basicbatch.primtype = models["square"].getPrimitiveType();
+		basicbatch.totaldrawcnt += models["square"].getDrawCnt();
+
+		//basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+	//basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
+	//basicbatch.vaoid = mdl_ref->second.getVAOid();
+	//basicbatch.vboid = mdl_ref->second.getVBOid();
+	//basicbatch.eboid = mdl_ref->second.getEBOid();
+	//basicbatch.totalsize += vertexData.size();
+	//basicbatch.primtype = mdl_ref->second.getPrimitiveType();
+	//basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+
+		texcoord.clear();
+
+
+	}
 }

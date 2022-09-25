@@ -18,6 +18,7 @@ namespace Graphics
 	class Camera2D
 	{
 	public:
+		Camera2D();
 		void init(GLFWwindow* pWindow, GLApp::GLObject* ptr);
 		void update(GLFWwindow* pWindow);
 
@@ -30,8 +31,8 @@ namespace Graphics
 
 		// Get camera object
 		GLApp::GLObject getCameraObject();
-		vector2D::Vec2 getCamPosition();
-		vector2D::Vec2 getCamOrientation();
+		//vector2D::Vec2 getCamPosition();
+		//vector2D::Vec2 getCamOrientation();
 
 		// Get height
 		GLint getHeight();
@@ -41,16 +42,16 @@ namespace Graphics
 		// Get Window Width
 		int getWinWidth();
 	private:
-		GLApp::GLObject* pgo{}; // pointer to game object that embeds camera
-		vector2D::Vec2 position{}; // Camera position
-		vector2D::vec2D orientation{}; // Orientation
 
 		vector2D::Vec2 right{};
 		vector2D::Vec2 up{};
+		//vector2D::Vec2 position{}; // Camera position
+		//vector2D::vec2D orientation{}; // Orientation
+		matrix3x3::mat3x3 camworld_to_ndc_xform{};
+		GLApp::GLObject* pgo{}; // pointer to game object that embeds camera
 
 		matrix3x3::mat3x3 view_xform{};
 		matrix3x3::mat3x3 camwin_to_ndc_xform{};
-		matrix3x3::mat3x3 world_to_ndc_xform{};
 
 		GLint height{ 900 };
 		GLfloat ar{};

@@ -4,6 +4,11 @@
 #include <iostream>
 
 
+Graphics::Camera2D::Camera2D()
+{
+	//position = vector2D::Vec2(21, 21);
+	//orientation = vector2D::Vec2(20, 20);
+}
 /*  _________________________________________________________________________*/
 /*! Graphics::Camera2D::init
 
@@ -41,10 +46,11 @@ void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 	camwin_to_ndc_xform = matrix3x3::mat3x3(float(2 / width), 0, 0,
 		0, float(2 / height), 0,
 		0, 0, 1);
-	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
-	camera2d.world_to_ndc_xform = world_to_ndc_xform;
-	position = vector2D::vec2D(pgo->modelCenterPos.x, pgo->modelCenterPos.y);
-	orientation = vector2D::vec2D(pgo->orientation.x, pgo->orientation.y);
+	camworld_to_ndc_xform = camwin_to_ndc_xform * view_xform;
+	//world_to_ndc_xform = world_to_ndc_xform;
+	//camera2d.position = vector2D::vec2D(pgo->modelCenterPos.x, pgo->modelCenterPos.y);
+	//position = vector2D::vec2D(pgo->modelCenterPos.x, pgo->modelCenterPos.y);
+	//orientation = vector2D::vec2D(pgo->orientation.x, pgo->orientation.y);
 	//std::cout << "Width and height " << float( 2.f / width) << ", " << float(2.f / height) << std::endl;
 	//std::cout << "World to ndc " << world_to_ndc_xform.m[0] << ", " << world_to_ndc_xform.m[1] << ", " << world_to_ndc_xform.m[2] << std::endl
 	//	<< world_to_ndc_xform.m[3] << ", " << world_to_ndc_xform.m[4] << ", " << world_to_ndc_xform.m[5] << std::endl
@@ -63,6 +69,7 @@ This function is called once per frame to compute and update the camera window
 */
 void Graphics::Camera2D::update(GLFWwindow* pWindow)
 {
+	//std::cout << "Top of cam " << position.x << ", " << position.y << std::endl;
 	// compute camera window's aspect ratio ...
 	GLsizei fb_width, fb_height;
 	glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
@@ -89,7 +96,7 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 	{
 		pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
 	}
-
+	//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
 	if (GLHelper::keystateA == GL_TRUE)
 	{
 		if (pgo->orientation.x / M_PI * 180 >= 360)
@@ -142,45 +149,32 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 	}
 	else
 	{
-		std::cout << "isit this\n";
+		//std::cout << "isit this\n";
 		view_xform = matrix3x3::mat3x3(right.x, right.y, -(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y),
 			up.x, up.y, -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y),
 			0, 0, 1);
 	}
 
-	world_to_ndc_xform = camwin_to_ndc_xform * view_xform;
+	camworld_to_ndc_xform = camwin_to_ndc_xform * view_xform;
 	//std::cout << "camwin to ndc in cam " << camwin_to_ndc_xform.m[0] << ", " << camwin_to_ndc_xform.m[1] << ", " << camwin_to_ndc_xform.m[2] << std::endl
 	//	<< camwin_to_ndc_xform.m[3] << ", " << camwin_to_ndc_xform.m[4] << ", " << camwin_to_ndc_xform.m[5] << std::endl
 	//	<< camwin_to_ndc_xform.m[6] << ", " << camwin_to_ndc_xform.m[7] << ", " << camwin_to_ndc_xform.m[8] << std::endl;
-	//std::cout << "view transform in cam " << view_xform.m[0] << ", " << view_xform.m[1] << ", " << view_xform.m[2] << std::endl
-	//	<< view_xform.m[3] << ", " << view_xform.m[4] << ", " << view_xform.m[5] << std::endl
-	//	<< view_xform.m[6] << ", " << view_xform.m[7] << ", " << view_xform.m[8] << std::endl;
-	camera2d.world_to_ndc_xform = world_to_ndc_xform; // sets static object's world to ndc
+	//std::cout << "view transform in cam " << camworld_to_ndc_xform.m[0] << ", " << camworld_to_ndc_xform.m[1] << ", " << camworld_to_ndc_xform.m[2] << std::endl
+	//	<< camworld_to_ndc_xform.m[3] << ", " << camworld_to_ndc_xform.m[4] << ", " << camworld_to_ndc_xform.m[5] << std::endl
+	//	<< camworld_to_ndc_xform.m[6] << ", " << camworld_to_ndc_xform.m[7] << ", " << camworld_to_ndc_xform.m[8] << std::endl;
+	//std::cout << "camera's view transform in cam " << camera2d.camworld_to_ndc_xform.m[0] << ", " << camera2d.camworld_to_ndc_xform.m[1] << ", " << camera2d.camworld_to_ndc_xform.m[2] << std::endl
+	//	<< camera2d.camworld_to_ndc_xform.m[3] << ", " << camera2d.camworld_to_ndc_xform.m[4] << ", " << camera2d.camworld_to_ndc_xform.m[5] << std::endl
+	//	<< camera2d.camworld_to_ndc_xform.m[6] << ", " << camera2d.camworld_to_ndc_xform.m[7] << ", " << camera2d.camworld_to_ndc_xform.m[8] << std::endl;
+
+	camera2d.camworld_to_ndc_xform = camworld_to_ndc_xform; // sets static object's world to ndc
 	//std::cout << "World to ndc in cam " << world_to_ndc_xform.m[0] << ", " << world_to_ndc_xform.m[1] << ", " << world_to_ndc_xform.m[2] << std::endl
 	//	<< world_to_ndc_xform.m[3] << ", " << world_to_ndc_xform.m[4] << ", " << world_to_ndc_xform.m[5] << std::endl
 	//	<< world_to_ndc_xform.m[6] << ", " << world_to_ndc_xform.m[7] << ", " << world_to_ndc_xform.m[8] << std::endl;
-	position = vector2D::vec2D(pgo->modelCenterPos.x, pgo->modelCenterPos.y);
-	//std::cout << "Position " << Graphics::camera2d.getCamPosition().x << ", " << pgo->modelCenterPos.x << std::endl;
-	orientation = vector2D::vec2D(pgo->orientation.x, pgo->orientation.y);
-	// check keyboard button presses to enable camera interactivity
+	//std::cout << "Bottom of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
+	//std::cout << "Bottom of cam " << position.x << ", " << position.y << std::endl;
+	//position = vector2D::vec2D(pgo->modelCenterPos.x, pgo->modelCenterPos.y);
+	//orientation = vector2D::vec2D(pgo->orientation.x, pgo->orientation.y);
 
-	// update camera aspect ratio - this must be done every frame
-	// because it is possible for the user to change viewport
-	// dimensions
-
-	// update camera's orientation (if required)
-
-	// update camera's up and right vectors (if required)
-
-	// update camera's position (if required)
-
-	// implement camera's zoom effect (if required)
-
-	// compute appropriate world-to-camera view transformation matrix
-
-	// compute window-to-NDC transformation matrix
-
-	// compute world-to-NDC transformation matrix
 
 }
 
@@ -197,18 +191,19 @@ matrix3x3::mat3x3 Graphics::Camera2D::getWorldtoNDCxForm()
 	//std::cout << "World to ndc in cam " << world_to_ndc_xform.m[0] << ", " << world_to_ndc_xform.m[1] << ", " << world_to_ndc_xform.m[2] << std::endl
 	//	<< world_to_ndc_xform.m[3] << ", " << world_to_ndc_xform.m[4] << ", " << world_to_ndc_xform.m[5] << std::endl
 	//	<< world_to_ndc_xform.m[6] << ", " << world_to_ndc_xform.m[7] << ", " << world_to_ndc_xform.m[8] << std::endl;
-	return Graphics::camera2d.world_to_ndc_xform;
+	return Graphics::camera2d.camworld_to_ndc_xform;
 }
 
-vector2D::Vec2 Graphics::Camera2D::getCamPosition()
-{
-	return position;
-}
-
-vector2D::Vec2 Graphics::Camera2D::getCamOrientation()
-{
-	return orientation;
-}
+//vector2D::Vec2 Graphics::Camera2D::getCamPosition()
+//{
+//	//std::cout << "\nPosition " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
+//	return pgo->modelCenterPos;
+//}
+//
+//vector2D::Vec2 Graphics::Camera2D::getCamOrientation()
+//{
+//	return pgo->orientation;
+//}
 
 
 GLApp::GLObject Graphics::Camera2D::getCameraObject()
