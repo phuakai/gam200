@@ -9,6 +9,7 @@
 Graphics::Model Graphics::Model::init(std::string modelname)
 {
 	Graphics::Model tempmodel;
+	std::cout << "Models " << modelname << std::endl;
 	std::ifstream ifs{ "../meshes/" + modelname + ".msh" , std::ios::in };
 	if (!ifs)
 	{
@@ -57,43 +58,76 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			tempmodel.pos_vtx.emplace_back(vector2D::vec2D(x, y));
 			tempmodel.model_coords.emplace_back(vector2D::vec2D(x, y));
 			break;
+		case 'l': // line
+			while (linestream >> glushortstuff)
+			{
+				tempmodel.primitive.emplace_back(glushortstuff);
+			}
+			tempmodel.primitive_type = GL_LINES;
+
+			break;
 		default:
 			break;
 		}
 	}
-	std::vector<vector2D::Vec2> tex_coord
+	vbo = Graphics::VBO::init();
+	if (modelname == "square")
 	{
-		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f),
-		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f)
-	};
-	std::vector<vector3D::Vec3> clr_vtx
-	{
-		vector3D::Vec3(1.f, 0.f, 0.f), vector3D::Vec3(0.f, 1.f, 0.f),
-		vector3D::Vec3(0.f, 0.f, 1.f), vector3D::Vec3(1.f, 0.f, 1.f)
-	};
-	std::vector<Graphics::vertexData> vertexData;
-	for (int i = 0; i < tempmodel.pos_vtx.size(); ++i)
-	{
-		Graphics::vertexData tmpVtxData;
-		//std::cout << "Nani Pos " << tempmodel.pos_vtx[i].x << ", " << tempmodel.pos_vtx[i].y << std::endl;
-		//std::cout << "Nani Texture " << tex_coord[i].x << ", " << tex_coord[i].y << std::endl;
-		tmpVtxData.posVtx = tempmodel.pos_vtx[i];
-		if (modelname != "circle")
+		std::vector<vector2D::Vec2> tex_coord
 		{
+			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f),
+			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f)
+		};
+		std::vector<vector3D::Vec3> clr_vtx
+		{
+			vector3D::Vec3(1.f, 0.f, 0.f), vector3D::Vec3(0.f, 1.f, 0.f),
+			vector3D::Vec3(0.f, 0.f, 1.f), vector3D::Vec3(1.f, 0.f, 1.f)
+		};
+		std::vector<Graphics::vertexData> vertexData;
+		for (int i = 0; i < tempmodel.pos_vtx.size(); ++i)
+		{
+			Graphics::vertexData tmpVtxData;
+			//std::cout << "Nani Pos " << tempmodel.pos_vtx[i].x << ", " << tempmodel.pos_vtx[i].y << std::endl;
+			//std::cout << "Nani Texture " << tex_coord[i].x << ", " << tex_coord[i].y << std::endl;
+			tmpVtxData.posVtx = tempmodel.pos_vtx[i];
+			if (modelname != "circle")
+			{
+				tmpVtxData.clrVtx = clr_vtx[i];
+				tmpVtxData.txtVtx = tex_coord[i];
+			}
+			else
+			{
+				tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
+				tmpVtxData.txtVtx = vector2D::Vec2(0.f, 0.f);
+			}
+			vertexData.emplace_back(tmpVtxData);
+		}
+
+		Graphics::VBO::store(vbo, sizeof(Graphics::vertexData) * vertexData.size(), vertexData);
+	}
+	if (modelname == "line")
+	{
+		std::vector<vector2D::Vec2> tex_coord
+		{
+			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(0.f, 1.f)
+		};
+		std::vector<vector3D::Vec3> clr_vtx
+		{
+			vector3D::Vec3(1.f, 0.f, 0.f), vector3D::Vec3(1.f, 0.f, 0.f)
+		};
+		std::vector<Graphics::vertexData> vertexData;
+		for (int i = 0; i < tempmodel.pos_vtx.size(); ++i)
+		{
+			Graphics::vertexData tmpVtxData;
+			//std::cout << "Nani Pos " << tempmodel.pos_vtx[i].x << ", " << tempmodel.pos_vtx[i].y << std::endl;
+			//std::cout << "Nani Texture " << tex_coord[i].x << ", " << tex_coord[i].y << std::endl;
+			tmpVtxData.posVtx = tempmodel.pos_vtx[i];
 			tmpVtxData.clrVtx = clr_vtx[i];
 			tmpVtxData.txtVtx = tex_coord[i];
+			vertexData.emplace_back(tmpVtxData);
 		}
-		else
-		{
-			tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
-			tmpVtxData.txtVtx = vector2D::Vec2(0.f, 0.f);
-		}
-		vertexData.emplace_back(tmpVtxData);
+		Graphics::VBO::store(vbo, sizeof(Graphics::vertexData) * vertexData.size(), vertexData);
 	}
-
-	vbo = Graphics::VBO::init();
-	Graphics::VBO::store(vbo, sizeof(Graphics::vertexData) * vertexData.size(), vertexData);
-	
 	//Graphics::VBO::setdata(vbo, sizeof(float) * 2 * tempmodel.pos_vtx.size(), sizeof(float) * 2 * tempmodel.pos_vtx.size(), tex_coord);
 
 	vao = Graphics::VAO::init();
@@ -114,6 +148,10 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 	Graphics::VAO::bindattrib(vao, 2, 2); // Bind attrib 1
 
 	ebo = Graphics::EBO::init();
+	for (int i = 0; i < tempmodel.primitive.size(); i++)
+	{
+		std::cout << "IDS " << tempmodel.primitive[i] << std::endl;
+	}
 	Graphics::EBO::store(ebo, sizeof(GLushort) * tempmodel.primitive.size(), tempmodel.primitive);
 
 	Graphics::EBO::bind(vao, ebo);

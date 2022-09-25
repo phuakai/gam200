@@ -37,6 +37,5 @@ namespace Graphics {
 
 	//static BatchRenderer basicbatch;
 
-	
 
 }

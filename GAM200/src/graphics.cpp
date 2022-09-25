@@ -55,16 +55,29 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 
 	eboid = Graphics::EBO::init();
 	int offset = 0;
-	for (int i = 0; i < totalindicesize; i+=6)
+	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		ebodata[i + 0] = 0 + offset;
-		ebodata[i + 1] = 1 + offset;
-		ebodata[i + 2] = 2 + offset;
-		ebodata[i + 3] = 2 + offset;
-		ebodata[i + 4] = 3 + offset;
-		ebodata[i + 5] = 0 + offset;
+		for (int i = 0; i < (totalindicesize-5); i += 6)
+		{
+			ebodata[i + 0] = 0 + offset;
+			ebodata[i + 1] = 1 + offset;
+			ebodata[i + 2] = 2 + offset;
+			ebodata[i + 3] = 2 + offset;
+			ebodata[i + 4] = 3 + offset;
+			ebodata[i + 5] = 0 + offset;
 
-		offset += 4;
+			offset += 4;
+		}
+	}
+	
+	else if (primtype == GL_POINTS || primtype == GL_LINES || primtype == GL_LINE_LOOP || primtype == GL_LINE_STRIP)
+	{
+		for (int i = 0; i < (totalindicesize-1); i += 2)
+		{
+			ebodata[i + 0] = 0 + offset;
+			ebodata[i + 1] = 1 + offset;
+			offset += 2;
+		}
 	}
 
 	Graphics::EBO::store(eboid, sizeof(GLushort) * totalindicesize, ebodata);

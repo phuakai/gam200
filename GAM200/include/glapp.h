@@ -133,6 +133,8 @@ struct GLApp {
 	static bool alphablend;
 	static bool textures;
 	static bool coldebug;
+	static bool velocitydirectiondebug;
+	static bool graphicsmode;
 
 	static int objectcounter;
 };

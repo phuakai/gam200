@@ -1,3 +1,5 @@
+#ifndef MODEL_H
+#define MODEL_H
 #include <glhelper.h>
 #include <vector>
 #include <vec2D.h>
@@ -6,8 +8,6 @@
 #include <map>
 #include <unordered_map>
 
-#ifndef MODEL_H
-#define MODEL_H
 
 namespace Graphics
 {

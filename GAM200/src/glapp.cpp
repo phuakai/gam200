@@ -102,6 +102,8 @@ std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
 Graphics::BatchRenderer basicbatch; // Batch render object
 Graphics::BatchRenderer debugbatch; // Batch render object for collision debug
+Graphics::BatchRenderer debuglinebatch; // Batch render object for collision debug
+
 
 //Graphics::Texture texobj;
 
@@ -117,6 +119,8 @@ bool GLApp::modulate;
 bool GLApp::alphablend;
 bool GLApp::textures;
 bool GLApp::coldebug;
+bool GLApp::velocitydirectiondebug;
+bool GLApp::graphicsmode;
 
 int GLApp::objectcounter;
 
@@ -169,6 +173,18 @@ glClearColor and glViewport to initialize the app
 
 void GLApp::init()
 {
+	GLApp::shdrpgms.clear(); // clear shaders
+	models.clear(); // clear models
+	GLApp::objects.clear(); // clear objects
+
+	basicbatch.BatchClear(); // Clear basic batch
+	debugbatch.BatchClear(); // Clear debug batch
+	debuglinebatch.BatchClear(); // Clear debug line batch
+
+	Graphics::Model linemodel; // Init line model
+	linemodel = linemodel.init("line");
+	models["line"] = linemodel;
+
 	GLApp::objectcounter = 0;
 	GLApp::modulate = false;
 	GLApp::alphablend = false;
@@ -594,16 +610,16 @@ void GLApp::GLObject::draw() const
 
 		debugbatch.batchmodel = mdl_ref->second;
 		debugbatch.batchshader = shd_ref->second;
-		std::vector<vector3D::Vec3> clr_vtxcoldebug;
+		std::vector<vector3D::vec3D> clr_vtxcoldebug;
 		for (int i = 0; i < 4; i++)
 		{
 			if (overlap == true)
 			{
-				clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.8f, 0.f, 0.2f)); // red if overlapping
+				clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.8f, 0.f, 0.2f)); // red if overlapping
 			}
 			else
 			{
-				clr_vtxcoldebug.emplace_back(vector3D::Vec3(0.f, 0.2f, 0.7f)); // blue if not overlapping
+				clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.f, 0.2f, 0.7f)); // blue if not overlapping
 			}
 		}
 
@@ -614,7 +630,7 @@ void GLApp::GLObject::draw() const
 			tmpVtxData.posVtx = ndc_coords[i];
 			if (mdl_ref->first == "circle")
 			{
-				tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 1.f);
+				tmpVtxData.clrVtx = vector3D::vec3D(1.f, 1.f, 1.f);
 			}
 			else
 			{
@@ -705,14 +721,23 @@ void GLApp::update()
 		GLHelper::keystateT = GL_FALSE;
 	}
 
-	if (GLHelper::keystateX)
-	{
-		coldebug = !coldebug;
-		GLHelper::keystateX = GL_FALSE;
-	}
-
 	if (GLHelper::keystateG)
 	{
+		graphicsmode = !graphicsmode;
+		GLHelper::keystateG = GL_FALSE;
+	}
+	if (graphicsmode)
+	{
+		if (GLHelper::keystateX)
+		{
+			coldebug = !coldebug;
+			GLHelper::keystateX = GL_FALSE;
+		}
+		if (GLHelper::keystateO)
+		{
+			velocitydirectiondebug = !velocitydirectiondebug;
+			GLHelper::keystateX = GL_FALSE;
+		}
 		if (GLHelper::keystatePlus)
 		{
 			std::cout << "INCREASING" << std::endl;
@@ -1343,13 +1368,17 @@ void GLApp::draw()
 		}
 	}
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
-	//basicbatch.BatchRender(Graphics::textureobjects);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
+	glLineWidth(2.f);
+	debuglinebatch.BatchRender(Graphics::textureobjects);
+	glLineWidth(1.f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
+	debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
 	basicbatch.BatchClear();
-	//debugbatch.BatchClear();
+	debuglinebatch.BatchClear();
+	debugbatch.BatchClear();
 	glDisable(GL_BLEND);
 
 	objects["Camera"].draw();
@@ -1365,9 +1394,10 @@ void GLApp::draw()
 This function is empty for now
 */
 void GLApp::cleanup() {
-	std::cout << "Cleaning" << std::endl;
+	//std::cout << "Cleaning" << std::endl;
 	basicbatch.BatchDelete();
-	//debugbatch.BatchDelete();
+	debuglinebatch.BatchDelete();
+	debugbatch.BatchDelete();
 	Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
 	Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 	// empty for now
@@ -1627,10 +1657,10 @@ void GLApp::entitydraw()
 		basicbatch.batchshader = shaderid;
 
 
-		std::vector<vector3D::Vec3> clr_vtx
+		std::vector<vector3D::vec3D> clr_vtx
 		{
-			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
-			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
+			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b),
+			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
 
 		//std::vector<vector3D::Vec3> clr_vtx
@@ -1641,11 +1671,11 @@ void GLApp::entitydraw()
 		int totalframes = 4;
 		int curframe = 1;
 
-		std::vector<vector2D::Vec2> texcoord;
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
-		texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f + float(curframe)));
+		std::vector<vector2D::vec2D> texcoord;
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe - 1) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe) / float(totalframes), 0.f));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe - 1) / float(totalframes), 0.f + float(curframe)));
 
 		//	/*for (int i = 0; i < 4; i++)
 		//	{
@@ -1653,13 +1683,13 @@ void GLApp::entitydraw()
 		//	}
 		//	std::cout << std::endl;*/
 
-		std::vector<vector2D::Vec2> poscoord; // CALCULATE POSITION FROM CENTER
+		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobj->dimension.x / 2.f;
 		float halfheight = curobj->dimension.y / 2.f;
-		poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::Vec2(curobj->position.x + halfwidth, curobj->position.y + halfheight));
-		poscoord.emplace_back(vector2D::Vec2(curobj->position.x - halfwidth, curobj->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
 		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
 		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
@@ -1669,11 +1699,10 @@ void GLApp::entitydraw()
 			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
 		);
 
-		std::vector <vector2D::Vec2> ndccoord;
+		std::vector <vector2D::vec2D> ndccoord;
 		for (int i = 0; i < poscoord.size(); i++)
 		{
 			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
-
 		}
 		std::vector<Graphics::vertexData> vertexData;
 		for (int i = 0; i < 4; ++i)
@@ -1715,6 +1744,9 @@ void GLApp::entitydraw()
 		basicbatch.primtype = models["square"].getPrimitiveType();
 		basicbatch.totaldrawcnt += models["square"].getDrawCnt();
 
+		texcoord.clear();
+		ndccoord.clear();
+		vertexData.clear();
 		//basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
 	//basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
 	//basicbatch.vaoid = mdl_ref->second.getVAOid();
@@ -1723,9 +1755,70 @@ void GLApp::entitydraw()
 	//basicbatch.totalsize += vertexData.size();
 	//basicbatch.primtype = mdl_ref->second.getPrimitiveType();
 	//basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+		if (velocitydirectiondebug == true)
+		{
 
-		texcoord.clear();
 
+			if (ecs.GetComponent<Movement>(entities[i]) == nullptr) // Added check for NIL objects
+			{
+				continue;
+			}
+			Movement* objmovement = ecs.GetComponent<Movement>(entities[i]);
+			debuglinebatch.batchmodel = models["line"];
+			debuglinebatch.batchshader = shaderid;
 
+			std::vector<vector3D::vec3D> debugline_clrvtx
+			{
+				//vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
+				vector3D::vec3D(0.2f, 0.f, 0.f), vector3D::vec3D(0.2f, 0.f, 0.f)
+			};
+			std::vector<vector2D::vec2D> debugline_texcoord
+			{
+				vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f)
+			};
+
+			std::vector<vector2D::vec2D> debugline_poscoord
+			{
+				vector2D::vec2D(curobj->position.x, curobj->position.y),
+				vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
+			}; // CALCULATE POSITION FROM CENTER
+			//std::cout << "Lines " << i << std::endl;
+			//std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
+			//std::cout << "Velocity " << objmovement->velocity.x << ", " << objmovement->velocity.y << std::endl;
+			//std::cout << "Stored positions " << debugline_poscoord[0].x << ", " << debugline_poscoord[0].y << " "
+			//			 << debugline_poscoord[1].x << ", " << debugline_poscoord[1].y << std::endl;
+			//std::cout << "Target " << objmovement->target.x << ", " << objmovement->target.y << std::endl;
+
+			std::vector <vector2D::vec2D> debugline_ndccoord;
+			for (int i = 0; i < poscoord.size(); i++)
+			{
+				debugline_ndccoord.emplace_back(world_to_ndc_xform * debugline_poscoord[i]);
+
+			}
+			std::vector<Graphics::vertexData> debugline_vertexData;
+			for (int i = 0; i < 2; ++i)
+			{
+				Graphics::vertexData tmpVtxData;
+				tmpVtxData.posVtx = debugline_ndccoord[i];
+				tmpVtxData.clrVtx = debugline_clrvtx[i];
+
+				tmpVtxData.txtVtx = debugline_texcoord[i];
+				tmpVtxData.txtIndex = 0;
+				debugline_vertexData.emplace_back(tmpVtxData);
+			}
+
+			debuglinebatch.batchdata.insert(debuglinebatch.batchdata.end(), debugline_vertexData.begin(), debugline_vertexData.end());
+			debuglinebatch.ebodata.insert(debuglinebatch.ebodata.end(), models["line"].primitive.begin(), models["line"].primitive.end());
+			debuglinebatch.totalindicesize += models["line"].getPrimitiveCnt();
+			debuglinebatch.vaoid = models["line"].getVAOid();
+			debuglinebatch.vboid = models["line"].getVBOid();
+			debuglinebatch.eboid = models["line"].getEBOid();
+			debuglinebatch.totalsize += debugline_vertexData.size();
+			debuglinebatch.primtype = GL_LINES;
+			debuglinebatch.totaldrawcnt += models["line"].getDrawCnt();
+
+			debugline_ndccoord.clear();
+			debugline_vertexData.clear();
+		}
 	}
 }

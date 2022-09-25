@@ -43,6 +43,7 @@ GLboolean GLHelper::keystateB = GL_FALSE;  // Toggle Alpha blend
 GLboolean GLHelper::keystateQ = GL_FALSE;  // Add new circle
 GLboolean GLHelper::keystateE = GL_FALSE;  // Add new square
 GLboolean GLHelper::keystateX = GL_FALSE;  // Toggle collision debug
+GLboolean GLHelper::keystateO = GL_FALSE;  // Toggle velocity direction debug
 
 GLboolean GLHelper::keystateG = GL_FALSE;  // Toggle for graphics module
 GLboolean GLHelper::keystatePlus = GL_FALSE; // Object scaling
@@ -234,11 +235,9 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
         keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
         keystateX = (key == GLFW_KEY_X) ? GL_TRUE : GL_FALSE;
-        //keystateG = (key == GLFW_KEY_G) ? GL_TRUE : GL_FALSE;
-        if (key == GLFW_KEY_G)
-        {
-           keystateG = (keystateG == GL_FALSE) ? GL_TRUE : GL_FALSE;
-        }
+        keystateO = (key == GLFW_KEY_O) ? GL_TRUE : GL_FALSE;
+        keystateG = (key == GLFW_KEY_G) ? GL_TRUE : GL_FALSE;
+
         keystatePlus = (key == GLFW_KEY_EQUAL) ? GL_TRUE : GL_FALSE;
         keystateMinus = (key == GLFW_KEY_MINUS) ? GL_TRUE : GL_FALSE;
         keystateSquareBracketLeft = (key == GLFW_KEY_LEFT_BRACKET) ? GL_TRUE : GL_FALSE;
@@ -282,6 +281,7 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateC = GL_FALSE;
         keystateP = GL_FALSE;
         keystateX = GL_FALSE;
+        keystateO = GL_FALSE;
         keystateG = GL_FALSE; // G toggle
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE;
         keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE;
@@ -367,6 +367,10 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (key == GLFW_KEY_X)
         {
             keystateX = GL_FALSE;
+        }
+        if (key == GLFW_KEY_O)
+        {
+            keystateO = GL_FALSE;
         }
         if (key == GLFW_KEY_EQUAL)
         {
