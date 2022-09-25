@@ -23,6 +23,7 @@ struct Object
 	unsigned int vboID;
 	unsigned int eboID;
 	std::string shaderName;
+	
 };
 
 struct Texture
@@ -48,6 +49,7 @@ struct Sprite
 struct Stats {
 	std::string name;
 	int health;
+	int overlap;
 };
 
 struct Node {

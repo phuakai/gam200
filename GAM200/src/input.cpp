@@ -54,7 +54,6 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 {
 	double tmpx;
 	double tmpy;
-	//std::cout << "Position in input " << Graphics::camera2d.pgo->modelCenterPos.x << ", " << Graphics::camera2d.pgo->modelCenterPos.y << std::endl;
 
 	//std::cout << "Other thingy when click " << Graphics::camera2d.getWorldtoNDCxForm().m[0] << std::endl;
 	glfwGetCursorPos(GLHelper::ptr_window, &tmpx, &tmpy);
@@ -70,6 +69,7 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 		vector2D::Vec2 worldCursorPos = ndc_to_world * viewport_to_ndc * vector2D::Vec2((float)tmpx, (float) -tmpy);
 		*xpos = worldCursorPos.x;
 		*ypos = worldCursorPos.y;
+		//std::cout << "Position in input " << xpos << ", " << ypos << std::endl;
 		return true;
 	}
 }
