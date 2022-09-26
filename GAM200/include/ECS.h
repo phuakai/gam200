@@ -12,6 +12,10 @@
 #include <unordered_map>
 #include <iostream>
 #include <chrono>
+#include <registration.h>
+#include <rttr/registration_friend>
+//#include <instance.h>
+#include <type>
 
 //hang me https://indiegamedev.net/2020/05/19/an-entity-component-system-with-data-locality-in-cpp/
 
@@ -28,21 +32,21 @@ class ECS;
 class Entity;
 
 // class to generate IDs, will generate new IDs for each type of component etc
-template<class T>
-class TypeIdGenerator
-{
+template<typename T>
+class TypeIdGenerator{
 private:
 
     static IDType m_count;
+  
 
 public:
 
-    template<class U>
+    template<typename U>
     static const IDType GetNewID();
 };
 
 
-template<class T> IDType TypeIdGenerator<T>::m_count = 0;
+template<typename T> IDType TypeIdGenerator<T>::m_count = 0;
 
 typedef unsigned char* ComponentData;
 
@@ -165,8 +169,9 @@ public:
     virtual void SetName(std::string name) override;
 
 
-private:
+//private:
     std::string componentName;
+    RTTR_ENABLE();
 };
 
  class ECS {
@@ -215,15 +220,15 @@ public:
 
     Archetype* GetArchetype(const ArchetypeID& id);
 
-    template<class C, typename... Args>
+    template<typename C, typename... Args>
     C* AddComponent(const EntityID& entityId, Args&&... args);
 
-    template<class C>
+    template<typename C>
     void RemoveComponent(const EntityID& entityId);
 
     void setEntityName(const EntityID& entityId, std::string name);
 
-    template<class C>
+    template<typename C>
     C* GetComponent(const EntityID& entityId);
 
     //template<class C>
@@ -268,10 +273,10 @@ public:
 
     explicit Entity(ECS& ecs = ecs, std::string name = "nil");
 
-    template<class C, typename... Args>
+    template<typename C, typename... Args>
     C* Add(Args&&... args);
 
-    template<class C>
+    template<typename C>
     C* Add(C&& c);
 
     EntityID GetID() const;

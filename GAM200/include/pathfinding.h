@@ -8,8 +8,10 @@
 #define MAX_GRID_Y 25
 #define WALL 255
 
-struct Object
+struct Render
 {
+	std::string name;
+	std::string type;
 	vector2D::vec2D position;
 
 	vector3D::vec3D color;
@@ -40,24 +42,13 @@ struct Movement
 	float speed;
 };
 
-struct Sprite
-{
-	std::string type;
-	vector2D::vec2D size;
-};
+//struct Sprite
+//{
+//};
 
 struct Stats {
-	std::string name;
 	int health;
 	int overlap;
-};
-
-struct Node {
-	// Position of node
-	vector2D::vec2D position;
-	// Direction of node to destination
-	vector2D::vec2D direction;
-
 };
 
 // make these parameters instead of global (pointers)

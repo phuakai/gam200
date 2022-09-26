@@ -1,12 +1,32 @@
+//template <typename T>
+//inline void TypeIdGenerator<T>::registerRTTR()
+//{
+//    static int count = 1;
+//
+//    rttr::registration::class_<TypeIdGenerator<T>>("TypeIdGenerator" + std::to_string(count))
+//        .constructor<TypeIdGenerator<T>>()
+//        .method("GetNewID", &TypeIdGenerator<T>::GetNewID);
+//
+//    ++count;
+//}
+
+template<typename T>
+template<typename U>
+const IDType TypeIdGenerator<T>::GetNewID() {
+    static const IDType idCounter = m_count++;
+    return idCounter;
+}
+
+
 inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) {
     m_ecs.RegisterEntity(m_id, name);
 }
-template<class C, typename... Args>
+template<typename C, typename... Args>
 inline C* Entity::Add(Args&&... args)
 {
     return m_ecs.AddComponent<C>(m_id, std::forward<Args>(args)...);
 }
-template<class C>
+template<typename C>
 inline C* Entity::Add(C&& c)
 {
     return m_ecs.AddComponent<C>(m_id, std::forward<C>(c));
@@ -14,13 +34,6 @@ inline C* Entity::Add(C&& c)
 inline EntityID Entity::GetID() const
 {
     return m_id;
-}
-
-template<class T>
-template<class U>
-const IDType TypeIdGenerator<T>::GetNewID() {
-    static const IDType idCounter = m_count++;
-    return idCounter;
 }
 
 template<class C>
@@ -133,7 +146,7 @@ inline void ECS::RegisterEntity(const EntityID entityId, const std::string name)
     m_entityArchetypeMap[entityId] = dummyRecord;
 }
 
-template<class C, typename... Args>
+template<typename C, typename... Args>
 inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
 
     // no safety checks

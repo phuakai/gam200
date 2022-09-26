@@ -151,6 +151,10 @@ namespace vector2D
 	 /**************************************************************************/
 	void Vector2DNormalize(vec2D& pResult, const vec2D& pVec0)
 	{
+		if (Vector2DLength(pVec0) == 0) {
+			pResult = vec2D(0, 0);
+			return;
+		}
 		pResult = pVec0 / Vector2DLength(pVec0);
 	}
 
