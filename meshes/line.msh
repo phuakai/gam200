@@ -1,0 +1,5 @@
+n line
+v -0.5 0.0 # prefix v indicates vertex position attribute
+v 0.5 0.0
+l 0 1     # prefix l means triangle primitives rendered as GL_LINE 
+           

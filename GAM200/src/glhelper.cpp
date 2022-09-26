@@ -43,6 +43,14 @@ GLboolean GLHelper::keystateB = GL_FALSE;  // Toggle Alpha blend
 GLboolean GLHelper::keystateQ = GL_FALSE;  // Add new circle
 GLboolean GLHelper::keystateE = GL_FALSE;  // Add new square
 GLboolean GLHelper::keystateX = GL_FALSE;  // Toggle collision debug
+GLboolean GLHelper::keystateO = GL_FALSE;  // Toggle velocity direction debug
+
+GLboolean GLHelper::keystateG = GL_FALSE;  // Toggle for graphics module
+GLboolean GLHelper::keystatePlus = GL_FALSE; // Object scaling
+GLboolean GLHelper::keystateMinus = GL_FALSE; // Object scaling
+GLboolean GLHelper::keystateSquareBracketLeft = GL_FALSE; // Object rotation
+GLboolean GLHelper::keystateSquareBracketRight = GL_FALSE; // Object rotation
+
 GLboolean GLHelper::mousestateLeft = GL_FALSE;
 
 /*  _________________________________________________________________________ */
@@ -227,6 +235,13 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
         keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
         keystateX = (key == GLFW_KEY_X) ? GL_TRUE : GL_FALSE;
+        keystateO = (key == GLFW_KEY_O) ? GL_TRUE : GL_FALSE;
+        keystateG = (key == GLFW_KEY_G) ? GL_TRUE : GL_FALSE;
+
+        keystatePlus = (key == GLFW_KEY_EQUAL) ? GL_TRUE : GL_FALSE;
+        keystateMinus = (key == GLFW_KEY_MINUS) ? GL_TRUE : GL_FALSE;
+        keystateSquareBracketLeft = (key == GLFW_KEY_LEFT_BRACKET) ? GL_TRUE : GL_FALSE;
+        keystateSquareBracketRight = (key == GLFW_KEY_RIGHT_BRACKET) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_REPEAT == action) {
         // key state was and is being pressed
@@ -266,12 +281,18 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         keystateC = GL_FALSE;
         keystateP = GL_FALSE;
         keystateX = GL_FALSE;
+        keystateO = GL_FALSE;
+        keystateG = GL_FALSE; // G toggle
         keystateZ = (key == GLFW_KEY_Z) ? GL_TRUE : GL_FALSE;
         keystateQ = (key == GLFW_KEY_Q) ? GL_TRUE : GL_FALSE;
         keystateM = (key == GLFW_KEY_M) ? GL_TRUE : GL_FALSE;
         keystateT = (key == GLFW_KEY_T) ? GL_TRUE : GL_FALSE;
         keystateB = (key == GLFW_KEY_B) ? GL_TRUE : GL_FALSE;
         keystateE = (key == GLFW_KEY_E) ? GL_TRUE : GL_FALSE;
+        keystatePlus = (key == GLFW_KEY_EQUAL) ? GL_TRUE : GL_FALSE;
+        keystateMinus = (key == GLFW_KEY_MINUS) ? GL_TRUE : GL_FALSE;
+        keystateSquareBracketLeft = (key == GLFW_KEY_LEFT_BRACKET) ? GL_TRUE : GL_FALSE;
+        keystateSquareBracketRight = (key == GLFW_KEY_RIGHT_BRACKET) ? GL_TRUE : GL_FALSE;
     }
     else if (GLFW_RELEASE == action) {
         // key start changes from pressed to released
@@ -346,6 +367,26 @@ void GLHelper::key_cb(GLFWwindow *pwin, int key, int scancode, int action, int m
         if (key == GLFW_KEY_X)
         {
             keystateX = GL_FALSE;
+        }
+        if (key == GLFW_KEY_O)
+        {
+            keystateO = GL_FALSE;
+        }
+        if (key == GLFW_KEY_EQUAL)
+        {
+            keystatePlus = GL_FALSE;
+        }
+        if (key == GLFW_KEY_MINUS)
+        {
+            keystateMinus = GL_FALSE;
+        }
+        if (key == GLFW_KEY_LEFT_BRACKET)
+        {
+            keystateSquareBracketLeft = GL_FALSE;
+        }
+        if (key == GLFW_KEY_RIGHT_BRACKET)
+        {
+            keystateSquareBracketRight = GL_FALSE;
         }
     }
 }

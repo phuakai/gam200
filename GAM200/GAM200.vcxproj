@@ -20,51 +20,242 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\buffer.cpp" />
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\collisiondebug.cpp" />
     <ClCompile Include="src\glapp.cpp" />
     <ClCompile Include="src\glhelper.cpp" />
     <ClCompile Include="src\glslshader.cpp" />
     <ClCompile Include="src\graphics.cpp" />
+    <ClCompile Include="src\imgui.cpp" />
+    <ClCompile Include="src\imgui_demo.cpp" />
+    <ClCompile Include="src\imgui_draw.cpp" />
+    <ClCompile Include="src\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\imgui_tables.cpp" />
+    <ClCompile Include="src\imgui_widgets.cpp" />
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\mat3x3.cpp" />
     <ClCompile Include="src\collision.cpp" />
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\physicsPartition.cpp" />
+    <ClCompile Include="src\pathfinding.cpp" />
     <ClCompile Include="src\physics.cpp" />
     <ClCompile Include="src\physicsRigidBody.cpp" />
     <ClCompile Include="src\physicsTransform.cpp" />
     <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\rttr\constructor.cpp" />
+    <ClCompile Include="src\rttr\destructor.cpp" />
+    <ClCompile Include="src\rttr\detail\comparison\compare_equal.cpp" />
+    <ClCompile Include="src\rttr\detail\comparison\compare_less.cpp" />
+    <ClCompile Include="src\rttr\detail\constructor\constructor_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\conversion\std_conversion_functions.cpp" />
+    <ClCompile Include="src\rttr\detail\destructor\destructor_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\enumeration\enumeration_helper.cpp" />
+    <ClCompile Include="src\rttr\detail\enumeration\enumeration_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\library\library_unix.cpp" />
+    <ClCompile Include="src\rttr\detail\library\library_win.cpp" />
+    <ClCompile Include="src\rttr\detail\method\method_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\misc\standard_types.cpp" />
+    <ClCompile Include="src\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\property\property_wrapper_base.cpp" />
+    <ClCompile Include="src\rttr\detail\registration\registration_executer.cpp" />
+    <ClCompile Include="src\rttr\detail\registration\registration_state_saver.cpp" />
+    <ClCompile Include="src\rttr\detail\type\type_data.cpp" />
+    <ClCompile Include="src\rttr\detail\type\type_register.cpp" />
+    <ClCompile Include="src\rttr\detail\variant\variant_compare.cpp" />
+    <ClCompile Include="src\rttr\enumeration.cpp" />
+    <ClCompile Include="src\rttr\library.cpp" />
+    <ClCompile Include="src\rttr\method.cpp" />
+    <ClCompile Include="src\rttr\parameter_info.cpp" />
+    <ClCompile Include="src\rttr\policy.cpp" />
+    <ClCompile Include="src\rttr\property.cpp" />
+    <ClCompile Include="src\rttr\registration.cpp" />
+    <ClCompile Include="src\rttr\type.cpp" />
+    <ClCompile Include="src\rttr\variant.cpp" />
+    <ClCompile Include="src\rttr\variant_associative_view.cpp" />
+    <ClCompile Include="src\rttr\variant_sequential_view.cpp" />
     <ClCompile Include="src\transform.cpp" />
     <ClCompile Include="src\vec2D.cpp" />
     <ClCompile Include="src\vec3D.cpp" />
     <ClCompile Include="src\physicsWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shaders\gam200.frag" />
+    <None Include="..\shaders\gam200.vert" />
+    <None Include="include\rttr\registration" />
+    <None Include="include\rttr\registration_friend" />
+    <None Include="include\rttr\type" />
+    <None Include="src\rttr\detail\base\version.h.in" />
+    <None Include="src\rttr\detail\base\version.rc.in" />
+    <None Include="src\rttr\rttr.cmake" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="include\buffer.h" />
+    <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\collisiondebug.h" />
+    <ClInclude Include="include\ECS.h" />
+    <ClInclude Include="include\ECS.hpp" />
     <ClInclude Include="include\glapp.h" />
     <ClInclude Include="include\glhelper.h" />
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\graphics.h" />
+    <ClInclude Include="include\imconfig.h" />
+    <ClInclude Include="include\imgui.h" />
+    <ClInclude Include="include\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="include\imgui_internal.h" />
+    <ClInclude Include="include\imstb_rectpack.h" />
+    <ClInclude Include="include\imstb_textedit.h" />
+    <ClInclude Include="include\imstb_truetype.h" />
     <ClInclude Include="include\input.h" />
     <ClInclude Include="include\main.h" />
     <ClInclude Include="include\mat3x3.h" />
-    <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\physicsPartition.h" />
+    <ClInclude Include="include\pathfinding.h" />
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\physicsRigidBody.h" />
     <ClInclude Include="include\physicsTransform.h" />
+    <ClInclude Include="include\rttr\access_levels.h" />
+    <ClInclude Include="include\rttr\argument.h" />
+    <ClInclude Include="include\rttr\array_range.h" />
+    <ClInclude Include="include\rttr\associative_mapper.h" />
+    <ClInclude Include="include\rttr\constructor.h" />
+    <ClInclude Include="include\rttr\destructor.h" />
+    <ClInclude Include="include\rttr\enumeration.h" />
+    <ClInclude Include="include\rttr\enum_flags.h" />
+    <ClInclude Include="include\rttr\filter_item.h" />
+    <ClInclude Include="include\rttr\instance.h" />
+    <ClInclude Include="include\rttr\library.h" />
+    <ClInclude Include="include\rttr\method.h" />
+    <ClInclude Include="include\rttr\parameter_info.h" />
+    <ClInclude Include="include\rttr\policy.h" />
+    <ClInclude Include="include\rttr\property.h" />
+    <ClInclude Include="include\rttr\registration.h" />
+    <ClInclude Include="include\rttr\registration_friend.h" />
+    <ClInclude Include="include\rttr\rttr_cast.h" />
+    <ClInclude Include="include\rttr\rttr_enable.h" />
+    <ClInclude Include="include\rttr\sequential_mapper.h" />
+    <ClInclude Include="include\rttr\string_view.h" />
+    <ClInclude Include="include\rttr\type.h" />
+    <ClInclude Include="include\rttr\variant.h" />
+    <ClInclude Include="include\rttr\variant_associative_view.h" />
+    <ClInclude Include="include\rttr\variant_sequential_view.h" />
+    <ClInclude Include="include\rttr\wrapper_mapper.h" />
     <ClInclude Include="include\texture.h" />
+    <ClInclude Include="include\rttr\detail\base\core_prerequisites.h" />
+    <ClInclude Include="include\rttr\detail\base\pch.h" />
+    <ClInclude Include="include\rttr\detail\base\version.h" />
+    <ClInclude Include="include\rttr\detail\comparison\comparable_types.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal_impl.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_less.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_array_less_impl.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_equal.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_equal_impl.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_less.h" />
+    <ClInclude Include="include\rttr\detail\comparison\compare_less_impl.h" />
+    <ClInclude Include="include\rttr\detail\constructor\constructor_invoker.h" />
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_defaults.h" />
+    <ClInclude Include="include\rttr\detail\conversion\number_conversion.h" />
+    <ClInclude Include="include\rttr\detail\conversion\std_conversion_functions.h" />
+    <ClInclude Include="include\rttr\detail\default_arguments\default_arguments.h" />
+    <ClInclude Include="include\rttr\detail\default_arguments\invoke_with_defaults.h" />
+    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_helper.h" />
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\enumeration\enum_data.h" />
+    <ClInclude Include="include\rttr\detail\filter\filter_item_funcs.h" />
+    <ClInclude Include="include\rttr\detail\impl\argument_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\array_range_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\associative_mapper_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\enum_flags_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\instance_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\rttr_cast_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\sequential_mapper_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\string_view_impl.h" />
+    <ClInclude Include="include\rttr\detail\impl\wrapper_mapper_impl.h" />
+    <ClInclude Include="include\rttr\detail\library\library_p.h" />
+    <ClInclude Include="include\rttr\detail\metadata\metadata.h" />
+    <ClInclude Include="include\rttr\detail\metadata\metadata_handler.h" />
+    <ClInclude Include="include\rttr\detail\method\method_accessor.h" />
+    <ClInclude Include="include\rttr\detail\method\method_invoker.h" />
+    <ClInclude Include="include\rttr\detail\method\method_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\method\method_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\misc\argument_extractor.h" />
+    <ClInclude Include="include\rttr\detail\misc\argument_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\misc\class_item_mapper.h" />
+    <ClInclude Include="include\rttr\detail\misc\data_address_container.h" />
+    <ClInclude Include="include\rttr\detail\misc\flat_map.h" />
+    <ClInclude Include="include\rttr\detail\misc\flat_multimap.h" />
+    <ClInclude Include="include\rttr\detail\misc\function_traits.h" />
+    <ClInclude Include="include\rttr\detail\misc\iterator_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\misc\misc_type_traits.h" />
+    <ClInclude Include="include\rttr\detail\misc\register_wrapper_mapper_conversion.h" />
+    <ClInclude Include="include\rttr\detail\misc\sequential_container_type_traits.h" />
+    <ClInclude Include="include\rttr\detail\misc\std_type_traits.h" />
+    <ClInclude Include="include\rttr\detail\misc\template_type_trait.h" />
+    <ClInclude Include="include\rttr\detail\misc\template_type_trait_impl.h" />
+    <ClInclude Include="include\rttr\detail\misc\utility.h" />
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos.h" />
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos_compare.h" />
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\parameter_info\parameter_names.h" />
+    <ClInclude Include="include\rttr\detail\policies\ctor_policies.h" />
+    <ClInclude Include="include\rttr\detail\policies\meth_policies.h" />
+    <ClInclude Include="include\rttr\detail\policies\prop_policies.h" />
+    <ClInclude Include="include\rttr\detail\property\property_accessor.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_base.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_func.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_func.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_object.h" />
+    <ClInclude Include="include\rttr\detail\property\property_wrapper_object.h" />
+    <ClInclude Include="include\rttr\detail\registration\bind_impl.h" />
+    <ClInclude Include="include\rttr\detail\registration\bind_types.h" />
+    <ClInclude Include="include\rttr\detail\registration\register_base_class_from_accessor.h" />
+    <ClInclude Include="include\rttr\detail\registration\registration_executer.h" />
+    <ClInclude Include="include\rttr\detail\registration\registration_impl.h" />
+    <ClInclude Include="include\rttr\detail\registration\registration_manager.h" />
+    <ClInclude Include="include\rttr\detail\registration\registration_state_saver.h" />
+    <ClInclude Include="include\rttr\detail\type\accessor_type.h" />
+    <ClInclude Include="include\rttr\detail\type\base_classes.h" />
+    <ClInclude Include="include\rttr\detail\type\get_create_variant_func.h" />
+    <ClInclude Include="include\rttr\detail\type\get_derived_info_func.h" />
+    <ClInclude Include="include\rttr\detail\type\type_comparator.h" />
+    <ClInclude Include="include\rttr\detail\type\type_converter.h" />
+    <ClInclude Include="include\rttr\detail\type\type_data.h" />
+    <ClInclude Include="include\rttr\detail\type\type_impl.h" />
+    <ClInclude Include="include\rttr\detail\type\type_name.h" />
+    <ClInclude Include="include\rttr\detail\type\type_register.h" />
+    <ClInclude Include="include\rttr\detail\type\type_register_p.h" />
+    <ClInclude Include="include\rttr\detail\type\type_string_utils.h" />
+    <ClInclude Include="include\rttr\detail\variant\variant_compare.h" />
+    <ClInclude Include="include\rttr\detail\variant\variant_data.h" />
+    <ClInclude Include="include\rttr\detail\variant\variant_data_converter.h" />
+    <ClInclude Include="include\rttr\detail\variant\variant_data_policy.h" />
+    <ClInclude Include="include\rttr\detail\variant\variant_impl.h" />
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator.h" />
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h" />
+    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_private.h" />
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h" />
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h" />
+    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
     <ClInclude Include="include\vec3D.h" />
     <ClInclude Include="include\physicsWorld.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\gam200.frag" />
-    <None Include="..\shaders\gam200.vert" />
+    <Text Include="src\rttr\CMakeLists.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -122,6 +313,15 @@
     <Import Project="..\prop-pages\gam200x64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(ProjectDIr)include\rttr;$(ProjectDIr)src\rttr;$(ProjectDIr)src\rttr\detail;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -132,6 +332,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>/VERBOSE %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,6 +350,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -160,6 +363,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019\glfw3.dll" "$(TargetDir)glfw3.dll" /Y
@@ -181,6 +385,7 @@ copy "$(SolutionDir)lib\glew-2.2.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019\glfw3.dll" "$(TargetDir)glfw3.dll" /Y
