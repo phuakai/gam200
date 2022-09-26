@@ -360,6 +360,7 @@ void GLApp::init()
 	}
 	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
 	GLApp::GLObject::gimmeObject("square", "0Background", vector2D::vec2D(GLHelper::width, GLHelper::width), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 2);
+	//GLApp::GLObject::gimmeObject("square", "zDragBox", vector2D::vec2D(GLHelper::width, GLHelper::width), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -2, 5);
 
 	// Part 5: Print OpenGL context and GPU specs
 	//GLHelper::print_specs();
