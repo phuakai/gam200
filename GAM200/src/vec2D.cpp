@@ -177,7 +177,6 @@ namespace vector2D
 	{
 		if (&pVec0 == nullptr)
 		{
-			std::cout << "bye\n";
 			return 0.f;
 		}
 		return pVec0.x * pVec0.x + pVec0.y * pVec0.y;

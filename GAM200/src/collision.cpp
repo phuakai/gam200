@@ -384,7 +384,7 @@ namespace physics
 		//	<< kineticVtx[2].x << " " << kineticVtx[2].y << std::endl
 		//	<< kineticVtx[3].x << " " << kineticVtx[3].y << std::endl;
 
-		std::cout << "there is polygon polygon collision detection\n";
+		//std::cout << "there is polygon polygon collision detection\n";
 		return true;
 	}
 
