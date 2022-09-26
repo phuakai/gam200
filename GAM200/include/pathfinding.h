@@ -48,7 +48,6 @@ struct Movement
 
 struct Stats {
 	int health;
-	int overlap;
 };
 
 // make these parameters instead of global (pointers)

@@ -18,7 +18,7 @@ layout (location=2) in float vTextureIndex;
 
 layout (location=0) out vec4 fFragColor;
 
-uniform sampler2D ourTexture[5];
+uniform sampler2D ourTexture[6];
 uniform bool modulatebool;
 uniform bool texturebool;
 void main () {

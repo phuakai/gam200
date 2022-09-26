@@ -86,14 +86,15 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 
 	//std::cout << "Texture units " << texobjs.size() << std::endl;
 	glBindTextureUnit(0, texobjs[0].getTexid());
-	glBindTextureUnit(1, texobjs[1].getTexid());
-	glBindTextureUnit(2, texobjs[2].getTexid());
-	glBindTextureUnit(3, texobjs[3].getTexid());
-	glBindTextureUnit(4, texobjs[4].getTexid());
+	glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
+	glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
+	glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
+	glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
+	glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
 
 	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	int samplers[5] = { 0, 1, 2, 3, 4 };
-	glUniform1iv(tex_loc, 5, samplers);
+	int samplers[6] = { 0, 1, 2, 3, 4, 5};
+	glUniform1iv(tex_loc, 6, samplers);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;

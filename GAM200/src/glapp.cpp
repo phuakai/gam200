@@ -125,7 +125,7 @@ ECS ecs;
 
 Entity player1;
 std::vector<Entity> enemyUnits(100);
-std::vector<Entity> createdUnits(10000); // 10k precreated empty entities
+std::vector<Entity> createdUnits(1000); // precreated empty entities
 System<Render> renderingSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
 
@@ -232,7 +232,7 @@ void GLApp::init()
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	Graphics::createTextureVector(Graphics::textureobjects, 5);
+	Graphics::createTextureVector(Graphics::textureobjects, 6);
 	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
 	//Graphics::textureobjects.resize(2);
 	// Part 1: initialize OpenGL state ...
@@ -253,6 +253,7 @@ void GLApp::init()
 	Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects[2]); // Grass map
 	Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
 	Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
+	Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Yellow Circle
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
@@ -886,11 +887,13 @@ void GLApp::update()
 			//ecs.RegisterEntity(entid, finalobjname);
 			//ecs.AddComponent<Texture>(entid);
 			//createdUnits.resize(objectcounter);
-			
-			createdUnits[objectcounter].Add<Object>(vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(randwidth, randheight));
-			createdUnits[objectcounter].Add<Stats>(finalobjname, 100, false);
-			createdUnits[objectcounter].Add<Texture>(1, "tree");
+		
+
+			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
+			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			//createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(randwidth, randheight));
+			createdUnits[objectcounter].Add<Stats>(100);
+			//createdUnits[objectcounter].Add<Texture>(1, "tree");
 			ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
 			//EntityID testid = createdUnits[objectcounter].GetID();
 			//std::cout << "Position " << ecs.GetComponent<Object>(testid)->position.x << "," << ecs.GetComponent<Object>(testid)->position.y << std::endl;
@@ -1002,9 +1005,9 @@ void GLApp::update()
 									{
 										//std::cout << "IM COLLIDING\n";
 										obj1->second.overlap = true;
-										createdUnits[obj1->second.objId].Add<Stats>(obj1->first, 100, 1);
+										//createdUnits[obj1->second.objId].Add<Stats>(obj1->first, 100, 1);
 										obj2->second.overlap = true;
-										createdUnits[obj2->second.objId].Add<Stats>(obj2->first, 100, 1);
+										//createdUnits[obj2->second.objId].Add<Stats>(obj2->first, 100, 1);
 									}
 								}
 							}
@@ -1817,14 +1820,14 @@ void GLApp::entitydraw()
 	std::vector<EntityID> entities = ecs.getEntities();
 	for (int i = 0; i < entities.size(); i++)
 	{
-		if (ecs.GetComponent<Object>(entities[i]) == nullptr) // Added check for NIL objects
+		if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
 		{
 			continue;
 		}
 		
 		//std::cout << "Integers " << i << ", " << entities[i] << std::endl;
-		Object* curobj = ecs.GetComponent<Object>(entities[i]);
-		Stats* overlapobj = ecs.GetComponent<Stats>(entities[i]);
+		Render* curobj = ecs.GetComponent<Render>(entities[i]);
+		//Stats* overlapobj = ecs.GetComponent<Stats>(entities[i]);
 		//if (i > 100)
 		//{
 		//	std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
@@ -1865,21 +1868,21 @@ void GLApp::entitydraw()
 			totalframes = 1;
 			curframe = 1;
 			std::cout << "Entered here ";
-			std::cout << overlapobj->overlap << std::endl;
-			if (overlapobj->overlap)
-			{
-				if (curobj->textureID == 3)
-				{
-					curobj->textureID = 4;
-				}
-			}
-			else
-			{
-				if (curobj->textureID == 4)
-				{
-					curobj->textureID = 3;
-				}
-			}
+			//std::cout << overlapobj->overlap << std::endl;
+			//if (overlapobj->overlap)
+			//{
+			//	if (curobj->textureID == 3)
+			//	{
+			//		curobj->textureID = 4;
+			//	}
+			//}
+			//else
+			//{
+			//	if (curobj->textureID == 4)
+			//	{
+			//		curobj->textureID = 3;
+			//	}
+			//}
 		}
 
 		std::vector<vector2D::vec2D> texcoord;
