@@ -125,7 +125,7 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 
 // PATHFINDING ===========================================================================
 
-void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D::vec2D> walls)
+void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& walls)
 {
 	//while (directionToCheck != NULL)
 	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
@@ -142,8 +142,11 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D:
 
 	for (int i = 0; i < walls.size(); ++i)
 	{
-		dijkstraField[(int)walls[i].y][(int)walls[i].x] = WALL;
-		LOSgrid[(int)walls[i].y][(int)walls[i].x] = 0;
+		Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
+		vector2D::vec2D wallNode = (pointer->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+		dijkstraField[(int)wallNode.y][(int)wallNode.x] = WALL;
+		LOSgrid[(int)wallNode.y][(int)wallNode.x] = 0;
 	}
 
 	// setting ending node to 0

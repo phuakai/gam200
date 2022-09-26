@@ -127,11 +127,12 @@ ECS ecs;
 Entity player1;
 std::vector<Entity> enemyUnits(100);
 std::vector<Entity> createdUnits(100); // precreated empty entities
+std::vector<Entity> walls(3);
+
 System<Texture> textureSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
-std::vector<vector2D::vec2D> walls;
 float timer;
 
 bool show_demo_window;
@@ -314,6 +315,19 @@ void GLApp::init()
 	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
 	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
 
+
+
+	int count = 1;
+	vector2D::vec2D position = vector2D::vec2D(10, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
+	walls[0].Add<Render>("wall" + std::to_string(count++), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+	position = vector2D::vec2D(11, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
+	walls[1].Add<Render>("wall" + std::to_string(count++), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+	position = vector2D::vec2D(12, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
+	walls[2].Add<Render>("wall" + std::to_string(count), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+
+
+
+
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
 	std::default_random_engine generator(seed);
@@ -344,11 +358,6 @@ void GLApp::init()
 
 	timer = 4;
 
-	walls.push_back(vector2D::vec2D(10,10));
-	walls.push_back(vector2D::vec2D(11,10));
-	walls.push_back(vector2D::vec2D(12,10));
-
-
 	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
 	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
 	//enemyList[5].Print();
@@ -360,11 +369,7 @@ void GLApp::init()
 	{
 		for (int j = 0; j < MAX_GRID_X; ++j)
 		{
-			// wall
-			if (dijkstraField[i][j] == WALL)
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(0.5, 0.5, 0.5));
-			else
-				GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
+			GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
 
 			++counter;
 		}
