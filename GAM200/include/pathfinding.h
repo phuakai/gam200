@@ -15,11 +15,9 @@ struct Render
 	vector2D::vec2D position;
 
 	vector3D::vec3D color;
-	int textureID;
 
 	vector2D::vec2D dimension;
-	int spriteStep;
-	int numberOfSprites;
+
 
 	unsigned int vaoID;
 	unsigned int vboID;
@@ -31,6 +29,8 @@ struct Render
 struct Texture
 {
 	int textureID;
+	int spriteStep;
+	int numberOfSprites;
 	std::string textureName;
 };
 
