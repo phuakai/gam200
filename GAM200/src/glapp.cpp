@@ -43,6 +43,7 @@ to OpenGL implementations.
 #include "imgui_impl_opengl3.h"
 #include <stdint.h>
 #include "pathfinding.h"
+#include "physicsPartition.h"
 
 
 //-----------------------------------RANDOM IMGUI FUNCTION LOL
@@ -114,7 +115,7 @@ int tmpobjcounter{};
 ECS ecs;
 
 Entity player1;
-std::vector<Entity> enemyUnits(100);
+std::vector<Entity> enemyUnits(2500);
 System<Render> renderingSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
 
@@ -153,10 +154,7 @@ RTTR_REGISTRATION{
 		.property("type", &Render::type)
 		.property("position", &Render::position)
 		.property("color", &Render::color)
-		.property("textureID", &Render::textureID)
 		.property("dimension", &Render::dimension)
-		.property("spriteStep", &Render::spriteStep)
-		.property("numberOfSprites", &Render::numberOfSprites)
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
@@ -164,7 +162,9 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
-		.property("textureName", &Texture::textureName);
+		.property("textureName", &Texture::textureName)
+		.property("spriteStep", &Texture::spriteStep)
+		.property("numberOfSprites", &Texture::numberOfSprites);
 
 	rttr::registration::class_<Movement>("Movement")
 		.property("velocity", &Movement::velocity)
@@ -499,6 +499,9 @@ void GLApp::init()
 	show_another_window = false;
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	// quad tree stuff
+	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
+
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<Render>("Render");
@@ -509,11 +512,11 @@ void GLApp::init()
 
 	// ECS: Adding components into Entities
 
-	// Render: name, type, position, color, textureID, dimension, spriteStep, numberOPfSprites, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), 0, vector2D::vec2D(20, 20), 0, 1, 0, 0, 0);
+	// Render: name, type, position, color, dimension, spriteStep, numberOPfSprites, vaoID, vboID, eboID, shaderName(?)
+	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), vector2D::vec2D(20, 20), 0, 0, 0);
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
-	player1.Add<Texture>(0, "texture");
+	player1.Add<Texture>(0, "texture", 0, 1);
 
 
 	player1.Add<Stats>(100);
@@ -535,7 +538,7 @@ void GLApp::init()
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), 0, vector2D::vec2D(10, 10), 0, 1, 0, 0, 0);
+		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0);
 		// velocity, target, force, speed
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(player1.GetID())->position, 1, 2);
 		//enemyUnits[i].Add<Sprite>();
@@ -544,6 +547,12 @@ void GLApp::init()
 
 		EntityID enemyID = enemyUnits[i].GetID();
 		GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
+		
+		quadObj entity;
+		entity.key = enemyUnits[i].GetID();
+		entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
+
+		mainTree.insertSuccessfully(entity);
 	}
 
 	timer = 4;
@@ -579,8 +588,12 @@ void GLApp::init()
 	Movement* m,
 	Render* p)
 	{
+
 		for (std::size_t i = 0; i < entities.size(); ++i)
 		{
+			//std::cout << "this is in glapp: " << entities[i] << " " << ecs.GetComponent<Render>(entities[i])->position.x << " " << ecs.GetComponent<Render>(entities[i])->position.y << std::endl;
+			vector2D::vec2D oldPosition = p[i].position;
+
 			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
 			vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
@@ -598,9 +611,24 @@ void GLApp::init()
 			}
 
 			p[i].position += m[i].velocity * (GLHelper::delta_time > 1/60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
+
+			//for (std::list<quadObj>::iterator it2 = mainTree.points.begin(); it2 != mainTree.points.end(); ++it2)
+			//	std::cout << "this is in list in glapp: " << it2->key << std::endl;
+			mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
+			//quadTree::printQuadTree(mainTree);
+			//std::cout << "size of maintree: " << mainTree.points.size() << std::endl;
 		}
 	});
 }
+
+//const char* VectorOfStringGetter(std::vector<std::string> data, size_t n)
+//{
+//	const char* out_text = "";
+//	for (size_t i = 0; i < n; ++i)
+//		out_text = data[i].c_str();
+//
+//	return out_text;
+//}
 
 /*  _________________________________________________________________________*/
 /*! GLApp::update
@@ -1090,6 +1118,10 @@ void GLApp::update()
 	if (ImGui::TreeNode("Entities")) {
 		for (int i = 1; i < ecs.getEntities().size()+1; ++i) {
 			std::string str = ecs.getEntityName(i);
+
+			if (str == "")
+				continue;
+
 			const char* c = str.c_str();
 			if (ImGui::TreeNode((void*)(intptr_t)i, c)) {	
 				std::vector<std::string> names = ecs.getEntityComponents(i);
@@ -1117,6 +1149,11 @@ void GLApp::update()
 	static char name[100]{ '\0' };
 	static bool checks[100] = { false };
 	static EntityID temp;
+	static Render* render;
+	static Texture* texture;
+	static Movement* movement;
+	static Stats* stats;
+	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
 
 	if (ImGui::Button("Create Entity"))
 	{
@@ -1131,27 +1168,41 @@ void GLApp::update()
 			//	if (checks[i])
 			//		ecs.AddComponent<rttr::type::get_by_name(ecs.getAllRegisteredComponents()[i])>();
 			//}
+			if (name[0] == '\0')
+			{
+				checks[99] = true;
+			}
 
-			memset(name, 0, sizeof(name));
+			else
+			{
+				//std::string nameToString = "";
+				//for (int i = 0; i < sizeof(name) / sizeof(char); i++) {
+				//	nameToString += name[i];
+				//}
+				//render->name = nameToString;
+
+				for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
+					componentCheck[i] = 0;
+
+				memset(name, 0, sizeof(name));
+				counter++;
+			}
 		}
 		else
 		{
 			temp = ecs.GetNewID();
-			ecs.RegisterEntity(temp, name);
+			ecs.RegisterEntity(temp, "In IMGUI");
+			std::cout << temp;
+			counter++;
 		}
-
-		counter++;
 	}
 
 	if (counter & 1)
 	{
-		ImGui::InputText("Entity Name", name, 100);
-		std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
+		if (checks[99])
+			ImGui::Text("Please Input Entity Name");
 
-		static Render* render;
-		static Texture* texture;
-		static Movement* movement;
-		static Stats* stats;
+		ImGui::InputText("Entity Name", name, 100);
 		
 		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
 		{
@@ -1170,32 +1221,68 @@ void GLApp::update()
 				// setting all of the components for the 1st time
 				if (!componentCheck[i])
 				{
+					std::cout << "test" << std::endl;
 					// i wanna make this not hardcoded :((
 					if (componentName == "Render")
-						ecs.AddComponent<Render>(temp);
+						render = ecs.AddComponent<Render>(temp);
 					else if (componentName == "Texture")
-						ecs.AddComponent<Texture>(temp);
+						texture = ecs.AddComponent<Texture>(temp);
 					else if (componentName == "Movement")
-						ecs.AddComponent<Movement>(temp);
+						movement = ecs.AddComponent<Movement>(temp);
 					else if (componentName == "Stats")
-						ecs.AddComponent<Stats>(temp);
+						stats = ecs.AddComponent<Stats>(temp);
 
 					componentCheck[i] = 1;
 				}
-				
-				std::string comp = ecs.getAllRegisteredComponents()[i];
-				rttr::type theComp = rttr::type::get_by_name(ecs.getAllRegisteredComponents()[i]);
-				
-				void* pointer;
-				if (componentName == "Render")
-					pointer = ecs.GetComponent<Render>(temp);
-				else if (componentName == "Texture")
-					pointer = ecs.GetComponent<Texture>(temp);
-				else if (componentName == "Movement")
-					pointer = ecs.GetComponent<Movement>(temp);
-				else if (componentName == "Stats")
-					pointer = ecs.GetComponent<Stats>(temp);
 
+				if (componentName == "Render")
+				{
+					//static const char* types[] = { "square", "circle" };
+					//static int typeCurrent = 0;
+					//ImGui::Combo("Type", &typeCurrent, types, IM_ARRAYSIZE(types));
+					//render->type = types[typeCurrent];
+
+					ImGui::DragFloat2("Position", render->position.m, 1.0f, -500.0f, 500.0f);
+					ImGui::DragFloat3("Color", render->color.m, 0.01f, 0.0f, 1.0f);
+					ImGui::DragFloat2("Dimension", render->dimension.m, 0.5f, 0.0f, 500.0f);
+				}
+
+				else if (componentName == "Movement")
+				{
+					//static const char* types[] = { "square", "circle" };
+					//static int typeCurrent = 0;
+					//ImGui::Combo("Type", &typeCurrent, types, IM_ARRAYSIZE(types));
+					//render->type = types[typeCurrent];
+					
+/*					static std::vector<std::string> entities = ecs.getEntityNames();
+					static int currentItem = 0;*/ // Here we store our selection data as an index.
+					//	ImGui::ListBox("Target", &currentItem, 1, entities.data(), entities.size());
+
+					//static ImGuiComboFlags flags = 0;
+
+					//if (ImGui::BeginCombo("combo",combo_preview_value,flags)) {
+					//	for (int i = 0; i < entities.size(); ++i) {
+					//		const bool isSelected = (currentItem == i);
+					//		if (ImGui::Selectable(entities[i], isSelected)) {
+					//			currentItem = i;
+					//		}
+					//	}
+					//}
+					//ImGui::EndCombo;
+					//const char* list = VectorOfStringGetter(entities, entities.size());
+					//ImGui::Combo("Target", &currentItem, list, 3);
+					//ImGui::ListBox("Symbols", currentItem, VectorOfStringGetter((void*)&entities, (int)entities.size()), entities.size(), 3);
+					//ImGui::Combo("Example", &currentItem, entities);
+
+					//ImGui::DragFloat2("Target", render->position.m, 1.0f, -500.0f, 500.0f);
+					ImGui::DragFloat("Force", render->color.m, 0.01f, 0.0f, 1.0f);
+					ImGui::DragFloat("Speed", render->dimension.m, 0.5f, 0.0f, 500.0f);
+				}
+
+
+				//std::string comp = ecs.getAllRegisteredComponents()[i];
+				//rttr::type theComp = rttr::type::get_by_name(ecs.getAllRegisteredComponents()[i]);
+			
 				//rttr::instance IR = r.create();
 				
 				//auto e =r.get_properties();
@@ -1205,25 +1292,24 @@ void GLApp::update()
 				//std::cout << VR.get_type().get_name().to_string();
 				//rttr::instance instance = .get_type().get_raw_type().is_wrapper() ? componentList[i].get_wrapped_instance() : componentList[i];
 
-				for (auto& property : component.get_properties())
-				{
+				//for (auto& property : component.get_properties())
+				//{
 					//std::cout << typeid(property.get_type().get_name().to_string()) << std::endl;
 					//rttr::property propertyType = instance.get_type().get_by_name(property.get_name()).get_property();
 
-					if (property.get_type() == rttr::type::get<vector2D::vec2D>())
-					{
-						static vector2D::vec2D temp;
-						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-						
+					//if (property.get_type() == rttr::type::get<vector2D::vec2D>())
+					//{
+						//static vector2D::vec2D temp;
+						//ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
 						
 						//instance.get_type().get_by_name(property.get_name()).set_property_value(property.get_name(), temp);
 						
 						//std::cout << instance.get_type().get_property_value("position").to_string() << "test";
 						//std::cout << instance.get_type().get_name().to_string() << std::endl;
 						
-					}
+					//}
 					//ImGui::InputText(property.get_name().data(), name, 100);
-				}
+				//}
 			}
 
 			else if (componentCheck[i])
@@ -1244,6 +1330,7 @@ void GLApp::update()
 
 		if (ImGui::Button("Cancel"))
 		{
+			ecs.RemoveEntity(temp);
 			memset(name, 0, sizeof(name));
 			counter++;
 		}

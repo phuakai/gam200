@@ -728,6 +728,15 @@ inline std::vector<EntityID> ECS::getEntities() {
     return entityIDs;
 }
 
+inline std::vector<std::string> ECS::getEntityNames() {
+
+    std::vector<std::string> entitynames;
+    for (auto i : m_entityArchetypeMap) {
+        entitynames.push_back(getEntityName(i.first));
+    }
+    return entitynames;
+}
+
 inline std::string ECS::getEntityName(const EntityID& entityId) {
     Record& record = m_entityArchetypeMap[entityId];
     return record.entityName;
