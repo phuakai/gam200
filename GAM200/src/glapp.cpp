@@ -127,7 +127,7 @@ ECS ecs;
 Entity player1;
 std::vector<Entity> enemyUnits(100);
 std::vector<Entity> createdUnits(1000); // precreated empty entities
-System<Render> renderingSystem(ecs, 1);
+System<Texture> textureSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
@@ -302,11 +302,11 @@ void GLApp::init()
 
 	// ECS: Adding components into Entities
 
-	// Render: name, type, position, color, dimension, spriteStep, numberOPfSprites, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), vector2D::vec2D(20, 20), 0, 0, 0);
+	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
+	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), vector2D::vec2D(20, 20), 0, 0, 0, "gam200-shdrpgm");
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
-	player1.Add<Texture>(0, "texture", 0, 1);
+	//player1.Add<Texture>(0, 1, 1, "none");
 
 
 	player1.Add<Stats>(100);
@@ -328,7 +328,7 @@ void GLApp::init()
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0);
+		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
 		// velocity, target, force, speed
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(player1.GetID())->position, 1, 2);
 		//enemyUnits[i].Add<Sprite>();
@@ -345,7 +345,7 @@ void GLApp::init()
 		mainTree.insertSuccessfully(entity);
 	}
 
-	timer = 40;
+	timer = 4;
 
 	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
 	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
@@ -375,6 +375,30 @@ void GLApp::init()
 	//GLHelper::print_specs();
 
 
+	textureSystem.Action([](const float elapsedMilliseconds,
+	const std::vector<EntityID>& entities,
+	Texture* t)
+	{
+		//static float renderTimer = 4;
+		//std::cout << renderTimer << std::endl;
+		//if (renderTimer <= 0)
+		//{
+			for (std::size_t i = 0; i < entities.size(); ++i)
+			{
+				if (t[i].spriteStep == t[i].numberOfSprites)
+				{
+					t[i].spriteStep = 1;
+				}
+				else
+					++t[i].spriteStep;
+				std::cout << "OI I SET THIS " << t[i].spriteStep << std::endl;
+			}
+			//renderTimer = 4;
+		//}
+		//else
+			//renderTimer -= GLHelper::delta_time;
+	});
+			
 	system1.Action([](const float elapsedMilliseconds,
 	const std::vector<EntityID>& entities,
 	Movement* m,
@@ -430,7 +454,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	if (mdl_ref->first != "triangle")	// check if is black triangle
 	{
 		orientation.x += orientation.y * float(delta_time);
-	}
+	
 
 	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
 	
@@ -880,7 +904,7 @@ void GLApp::update()
 			float randb = colour(generator);
 			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
 
-			std::uniform_int_distribution<int> texrandom(0, 1);
+			std::uniform_int_distribution<int> texrandom(1, 1);
 			float randindex = float(texrandom(generator));
 			if (modelname == "circle")
 			{
@@ -902,7 +926,8 @@ void GLApp::update()
 		
 
 			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
-			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
 			//createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(randwidth, randheight));
 			createdUnits[objectcounter].Add<Stats>(100);
 			//createdUnits[objectcounter].Add<Texture>(1, "tree");
@@ -962,7 +987,12 @@ void GLApp::update()
 		timer -= GLHelper::delta_time;
 
 	else
-		ecs.RunSystems(2, 100);
+	{
+		ecs.RunSystems(1, 100);
+		timer = 0.1;
+	}
+
+	//ecs.RunSystems(1, 100);
 
 	// next, iterate through each element of container objects
 	// for each object of type GLObject in container objects
@@ -1616,10 +1646,10 @@ void GLApp::draw()
 	{
 		if (obj->first != "Camera")
 		{
-			obj->second.draw(); // Comment to stop drawing from object map
+			//obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
-	//GLApp::entitydraw(); // Comment to stop drawing from ecs
+	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -1895,6 +1925,12 @@ void GLApp::entitydraw()
 		
 		//std::cout << "Integers " << i << ", " << entities[i] << std::endl;
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
+		int texid = 0;
+		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
+		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
+		{
+			texid = curobjTexture->textureID;
+		}
 		//Stats* overlapobj = ecs.GetComponent<Stats>(entities[i]);
 		//if (i > 100)
 		//{
@@ -1927,37 +1963,42 @@ void GLApp::entitydraw()
 		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
 		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 		//};
-		int totalframes = 4;
-		int curframe = 1;
 		//std::cout << "Texture id " << curobj->textureID << std::endl;
-		if (curobj->textureID == 3 || curobj->textureID == 4)
+		int numofsprites = 0;
+		int spritestep = 0;
+		if (texid)
 		{
-			//std::cout << "Circle\n";
-			totalframes = 1;
-			curframe = 1;
-			std::cout << "Entered here ";
-			//std::cout << overlapobj->overlap << std::endl;
-			//if (overlapobj->overlap)
-			//{
-			//	if (curobj->textureID == 3)
-			//	{
-			//		curobj->textureID = 4;
-			//	}
-			//}
-			//else
-			//{
-			//	if (curobj->textureID == 4)
-			//	{
-			//		curobj->textureID = 3;
-			//	}
-			//}
+			//curobjTexture->numberOfSprites = 4;
+			//curobjTexture->spriteStep = 1;
+			numofsprites = curobjTexture->numberOfSprites;
+			spritestep = curobjTexture->spriteStep;
+			//std::cout << "This current sprite " << spritestep << std::endl;
+			if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
+			{
+				//std::cout << "Circle\n";
+				std::cout << "Entered here ";
+				//std::cout << overlapobj->overlap << std::endl;
+				//if (overlapobj->overlap)
+				//{
+				//	if (curobj->textureID == 3)
+				//	{
+				//		curobj->textureID = 4;
+				//	}
+				//}
+				//else
+				//{
+				//	if (curobj->textureID == 4)
+				//	{
+				//		curobj->textureID = 3;
+				//	}
+				//}
+			}
 		}
-
 		std::vector<vector2D::vec2D> texcoord;
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe - 1) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe) / float(totalframes), 0.f));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe) / float(totalframes), 0.f + float(curframe)));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(curframe - 1) / float(totalframes), 0.f + float(curframe)));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 0.f));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 0.f));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 1.f));
+		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 1.f));
 
 		//if (curobj->textureID == 3 || curobj->textureID == 4)
 		//{
@@ -1997,7 +2038,7 @@ void GLApp::entitydraw()
 			tmpVtxData.clrVtx = curobj->color;
 
 			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = curobj->textureID;
+			tmpVtxData.txtIndex = texid;
 			vertexData.emplace_back(tmpVtxData);
 		}
 

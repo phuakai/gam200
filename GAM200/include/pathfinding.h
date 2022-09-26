@@ -29,6 +29,8 @@ struct Render
 struct Texture
 {
 	int textureID;
+	int spriteStep;
+	int numberOfSprites;
 	std::string textureName;
 	int spriteStep;
 	int numberOfSprites;
