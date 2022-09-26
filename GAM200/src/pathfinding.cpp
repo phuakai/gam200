@@ -21,11 +21,9 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 	Movement* movement = ecs.GetComponent<Movement>(id);
 	Render* entity = ecs.GetComponent<Render>(id);
 
-	vector2D::vec2D desiredVelocity;
-
 	// make these not hardcoded please
 	float agentRadius = ((entity->dimension.x + entity->dimension.y) / 2) / 10;
-	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2);		// used for Separation
+	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Separation
 	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
@@ -34,11 +32,6 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 
 	vector2D::vec2D centerForCohesion = entity->position;
 	vector2D::vec2D averageDirection{ 0,0 };
-
-	// Direction to destination
-	desiredVelocity = destination - entity->position;
-	// Moving at maximum speed
-	Vector2DNormalize(desiredVelocity, desiredVelocity * movement->speed);
 
 	std::list<quadObj*> myList;
 	AABB range(entity->position.x - maximumCohesion,
@@ -49,46 +42,45 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 
 	for (std::list <quadObj*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{
-			// skip if it is the input agent
-			if ((*obj2)->key == id)
-				continue;
+		// skip if it is the input agent
+		if ((*obj2)->key == id)
+			continue;
 
 		
-			Render* agentPosition = ecs.GetComponent<Render>((*obj2)->key);
-			Movement* agentMovement = ecs.GetComponent<Movement>((*obj2)->key);
+		Render* agentPosition = ecs.GetComponent<Render>((*obj2)->key);
+		Movement* agentMovement = ecs.GetComponent<Movement>((*obj2)->key);
+			
+		float distance = Vector2DDistance(agentPosition->position, entity->position);
 
-			float distance = Vector2DDistance(agentPosition->position, entity->position);
+		// SEPARATION --------------------------------------------------------------------
 
-			// SEPARATION --------------------------------------------------------------------
+		// the 2 agents are too close to each other
+		if (distance < minimumSeparation && distance > 0)
+		{
+			vector2D::vec2D separationForce = entity->position - agentPosition->position;
+			totalForce += separationForce / agentRadius;
+			++neighbourCount[0];
+		}
 
-			// the 2 agents are too close to each other
-			if (distance < minimumSeparation && distance > 0)
+		// COHESION ----------------------------------------------------------------------
+
+		// the 2 agents are too close to each other
+		if (distance < maximumCohesion)
+		{
+			centerForCohesion += agentPosition->position;
+			++neighbourCount[1];
+
+			// ALIGNMENT ---------------------------------------------------------------------
+			if (vector2D::Vector2DLength(agentMovement->velocity) > 0)
 			{
-				vector2D::vec2D separationForce = entity->position - agentPosition->position;
-				totalForce += separationForce / agentRadius;
-				++neighbourCount[0];
-			}
+				vector2D::vec2D temp;
+				vector2D::Vector2DNormalize(temp, agentMovement->velocity);
+				averageDirection += temp;
 
-			// COHESION ----------------------------------------------------------------------
-
-			// the 2 agents are too close to each other
-			if (distance < maximumCohesion)
-			{
-				centerForCohesion += agentPosition->position;
-				++neighbourCount[1];
-
-				// ALIGNMENT ---------------------------------------------------------------------
-				if (vector2D::Vector2DLength(agentMovement->velocity) > 0)
-				{
-					vector2D::vec2D temp;
-					vector2D::Vector2DNormalize(temp, agentMovement->velocity);
-					averageDirection += temp;
-
-					++neighbourCount[2];
-				}
+				++neighbourCount[2];
 			}
 		}
-	//}
+	}
 
 	vector2D::vec2D force;
 

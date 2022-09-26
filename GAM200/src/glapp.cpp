@@ -126,7 +126,7 @@ ECS ecs;
 
 Entity player1;
 std::vector<Entity> enemyUnits(100);
-std::vector<Entity> createdUnits(1000); // precreated empty entities
+std::vector<Entity> createdUnits(100); // precreated empty entities
 System<Texture> textureSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
 
@@ -285,12 +285,12 @@ void GLApp::init()
 	//ImGui_ImplGlfw_InitForOpenGL(GLHelper::ptr_window, true);
 	//ImGui_ImplOpenGL3_Init(NULL);
 
-	show_demo_window = true;
-	show_another_window = false;
-	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	//show_demo_window = true;
+	//show_another_window = false;
+	//clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	// quad tree stuff
-	//mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
+	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
 
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
@@ -307,11 +307,8 @@ void GLApp::init()
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	//player1.Add<Texture>(0, 1, 1, "none");
-
-
 	player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "player1");													// may not need this after rttr
-
 
 	EntityID playerID = player1.GetID();
 	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
@@ -346,6 +343,11 @@ void GLApp::init()
 	}
 
 	timer = 4;
+
+	walls.push_back(vector2D::vec2D(10,10));
+	walls.push_back(vector2D::vec2D(11,10));
+	walls.push_back(vector2D::vec2D(12,10));
+
 
 	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
 	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
@@ -404,30 +406,31 @@ void GLApp::init()
 	Movement* m,
 	Render* p)
 	{
-
 		for (std::size_t i = 0; i < entities.size(); ++i)
 		{
 			//std::cout << "this is in glapp: " << entities[i] << " " << ecs.GetComponent<Render>(entities[i])->position.x << " " << ecs.GetComponent<Render>(entities[i])->position.y << std::endl;
 			vector2D::vec2D oldPosition = p[i].position;
+			vector2D::vec2D changedVelocity = m[i].velocity;
 
 			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-				vector2D::Vector2DNormalize(m[i].velocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+			vector2D::Vector2DNormalize(changedVelocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
 
-				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
 
-				movementFlocking(entities[i], m[i].target, allVelocity);
+			movementFlocking(entities[i], m[i].target, allVelocity);
 
-				m[i].velocity += allVelocity[0] + (allVelocity[1] * 0.05) + allVelocity[2];
+			changedVelocity += allVelocity[0] * 4 + (allVelocity[1] * 0.1) + allVelocity[2];
 
-				// capping speed
-				if (vector2D::Vector2DLength(m[i].velocity) > m[i].speed)
-				{
-					m[i].velocity *= m[i].speed / vector2D::Vector2DLength(m[i].velocity);
-				}
+			// capping speed
+			if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
+			{
+				changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
+			}
 
-			p[i].position += m[i].velocity * (GLHelper::delta_time > 1/60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
+			p[i].position += changedVelocity * (GLHelper::delta_time > 1/60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
 
+			m[i].velocity = changedVelocity;
 			mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
 		}
 	});
@@ -445,52 +448,53 @@ This function is called once per frame to update an object's scale, rotation and
 */
 void GLApp::GLObject::update(GLdouble delta_time)
 {
-	
+
 	matrix3x3::mat3x3 scale
 	(scaling.x, 0, 0,
-	0, scaling.y, 0,
-	0, 0, 1);
+		0, scaling.y, 0,
+		0, 0, 1);
 
 	if (mdl_ref->first != "triangle")	// check if is black triangle
 	{
 		orientation.x += orientation.y * float(delta_time);
-	
 
-	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-	
-	matrix3x3::mat3x3 rotation
-	(cos(orientation.x), -sin(orientation.x), 0,
-	sin(orientation.x), cos(orientation.x), 0,
-	0, 0, 1);
 
-	matrix3x3::mat3x3 translation
-	(1, 0, modelCenterPos.x,
-	0, 1, modelCenterPos.y,
-	0, 0, 1);
+		//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
 
-	mdl_to_world_xform = translation * rotation * scale;
-	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
-	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
-	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-	world_to_ndc_xform = matrix3x3::mat3x3
-	(
-		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-	);
+		matrix3x3::mat3x3 rotation
+		(cos(orientation.x), -sin(orientation.x), 0,
+			sin(orientation.x), cos(orientation.x), 0,
+			0, 0, 1);
 
-	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
+		matrix3x3::mat3x3 translation
+		(1, 0, modelCenterPos.x,
+			0, 1, modelCenterPos.y,
+			0, 0, 1);
 
-	//compute world coordinates for physics calc
-	worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
+		mdl_to_world_xform = translation * rotation * scale;
+		//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
+		//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
+		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+		world_to_ndc_xform = matrix3x3::mat3x3
+		(
+			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+		);
 
-	ndc_coords.clear();
-	worldVertices.clear();
-	std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
-		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
+		mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
+
+		//compute world coordinates for physics calc
+		worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
+
+		ndc_coords.clear();
+		worldVertices.clear();
+		std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
+		for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+		{
+			worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
+			ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
+		}
 	}
 }
 
@@ -988,11 +992,9 @@ void GLApp::update()
 
 	else
 	{
-		ecs.RunSystems(1, 100);
-		timer = 0.1;
+		ecs.RunSystems(2, 100);
+		//timer = 0.1;
 	}
-
-	//ecs.RunSystems(1, 100);
 
 	// next, iterate through each element of container objects
 	// for each object of type GLObject in container objects
@@ -1646,7 +1648,7 @@ void GLApp::draw()
 	{
 		if (obj->first != "Camera")
 		{
-			//obj->second.draw(); // Comment to stop drawing from object map
+			obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
@@ -1976,7 +1978,6 @@ void GLApp::entitydraw()
 			if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
 			{
 				//std::cout << "Circle\n";
-				std::cout << "Entered here ";
 				//std::cout << overlapobj->overlap << std::endl;
 				//if (overlapobj->overlap)
 				//{

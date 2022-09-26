@@ -32,8 +32,6 @@ struct Texture
 	int spriteStep;
 	int numberOfSprites;
 	std::string textureName;
-	int spriteStep;
-	int numberOfSprites;
 };
 
 struct Movement
