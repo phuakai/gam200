@@ -14,6 +14,7 @@ Graphics::Texture::Texture()
 void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& textureobj)
 {
 	int width, height, channels;
+	stbi_set_flip_vertically_on_load(1);
 	unsigned char* img = stbi_load(path, &width, &height, &channels, 0);
 	if (img == NULL) {
 		printf("Error in loading the image\n");
@@ -33,6 +34,11 @@ void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& texture
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	stbi_image_free(img);
+}
+
+void Graphics::Texture::deleteTexture(Graphics::Texture& textureobj)
+{
+	glDeleteTextures(1, &(textureobj.texture));
 }
 
 int Graphics::Texture::getTexid()

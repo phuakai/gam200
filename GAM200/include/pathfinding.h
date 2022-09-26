@@ -23,6 +23,7 @@ struct Render
 	unsigned int vboID;
 	unsigned int eboID;
 	std::string shaderName;
+	
 };
 
 struct Texture

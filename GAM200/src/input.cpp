@@ -1,5 +1,6 @@
 #include <input.h>
 #include <glhelper.h>
+#include <camera.h>
 #include <GLFW/glfw3.h>
 #include <transform.h>
 #include <iostream>
@@ -53,6 +54,8 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 {
 	double tmpx;
 	double tmpy;
+
+	//std::cout << "Other thingy when click " << Graphics::camera2d.getWorldtoNDCxForm().m[0] << std::endl;
 	glfwGetCursorPos(GLHelper::ptr_window, &tmpx, &tmpy);
 	if (tmpx == NULL || tmpy == NULL)
 	{
@@ -60,13 +63,13 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 	}
 	else
 	{
-		matrix3x3::mat3x3 viewport_to_ndc = transform.getViewporttoNDC();
-
-		matrix3x3::mat3x3 ndc_to_world = transform.getNDCtoWorld();
+		matrix3x3::mat3x3 viewport_to_ndc = transform.createViewporttoNDC();
+		matrix3x3::mat3x3 ndc_to_world = transform.createNDCtoWorld();
 
 		vector2D::Vec2 worldCursorPos = ndc_to_world * viewport_to_ndc * vector2D::Vec2((float)tmpx, (float) -tmpy);
 		*xpos = worldCursorPos.x;
 		*ypos = worldCursorPos.y;
+		//std::cout << "Position in input " << xpos << ", " << ypos << std::endl;
 		return true;
 	}
 }

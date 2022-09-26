@@ -240,6 +240,7 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 void generateFlowField(vector2D::vec2D& endingPosition)
 {
 	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+	//std::cout << endingNode.x << endingNode.y << std::endl;
 	//generateDijkstraCost(endingNode);
 
 	// resetting flow field to zero vectors
