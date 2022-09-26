@@ -317,15 +317,30 @@ void GLApp::init()
 
 
 
+	quadObj entity;
 	int count = 1;
 	vector2D::vec2D position = vector2D::vec2D(10, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
 	walls[0].Add<Render>("wall" + std::to_string(count++), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+
+	entity.key = walls[0].GetID();
+	std::cout << "thsi is wall: " << walls[0].GetID() << std::endl;
+	entity.position = ecs.GetComponent<Render>(walls[0].GetID())->position;
+	mainTree.insertSuccessfully(entity);
+
 	position = vector2D::vec2D(11, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
 	walls[1].Add<Render>("wall" + std::to_string(count++), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+
+	entity.key = walls[1].GetID();
+	entity.position = ecs.GetComponent<Render>(walls[1].GetID())->position;
+	mainTree.insertSuccessfully(entity);
+
 	position = vector2D::vec2D(12, 10) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
 	walls[2].Add<Render>("wall" + std::to_string(count), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D(50, 50), 0, 0, 0, "gam200-shdrpgm");
+	mainTree.insertSuccessfully(entity);
 
-
+	entity.key = walls[2].GetID();
+	entity.position = ecs.GetComponent<Render>(walls[2].GetID())->position;
+	mainTree.insertSuccessfully(entity);
 
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
@@ -348,7 +363,7 @@ void GLApp::init()
 
 		EntityID enemyID = enemyUnits[i].GetID();
 		//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
-		
+
 		quadObj entity;
 		entity.key = enemyUnits[i].GetID();
 		entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
@@ -383,13 +398,13 @@ void GLApp::init()
 
 
 	textureSystem.Action([](const float elapsedMilliseconds,
-	const std::vector<EntityID>& entities,
-	Texture* t)
-	{
-		//static float renderTimer = 4;
-		//std::cout << renderTimer << std::endl;
-		//if (renderTimer <= 0)
-		//{
+		const std::vector<EntityID>& entities,
+		Texture* t)
+		{
+			//static float renderTimer = 4;
+			//std::cout << renderTimer << std::endl;
+			//if (renderTimer <= 0)
+			//{
 			for (std::size_t i = 0; i < entities.size(); ++i)
 			{
 				if (t[i].spriteStep == t[i].numberOfSprites)
@@ -404,41 +419,93 @@ void GLApp::init()
 		//}
 		//else
 			//renderTimer -= GLHelper::delta_time;
-	});
-			
+		});
+
 	system1.Action([](const float elapsedMilliseconds,
-	const std::vector<EntityID>& entities,
-	Movement* m,
-	Render* p)
-	{
-		for (std::size_t i = 0; i < entities.size(); ++i)
+		const std::vector<EntityID>& entities,
+		Movement* m,
+		Render* p)
 		{
-			//std::cout << "this is in glapp: " << entities[i] << " " << ecs.GetComponent<Render>(entities[i])->position.x << " " << ecs.GetComponent<Render>(entities[i])->position.y << std::endl;
-			vector2D::vec2D oldPosition = p[i].position;
-			vector2D::vec2D changedVelocity = m[i].velocity;
-
-			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-
-			vector2D::Vector2DNormalize(changedVelocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
-
-			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
-
-			movementFlocking(entities[i], m[i].target, allVelocity);
-
-			changedVelocity += allVelocity[0] * 4 + (allVelocity[1] * 0.1) + allVelocity[2];
-
-			// capping speed
-			if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
+			// Check with walls
+			for (int i = 0; i < 3; ++i)
 			{
-				changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
+				Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
+				std::list<quadObj*> myList;
+				AABB range(pointer->position.x - pointer->dimension.x * 2,
+					pointer->position.y - pointer->dimension.y * 2,
+					pointer->position.x + pointer->dimension.x * 2,
+					pointer->position.y + pointer->dimension.y * 2);
+				mainTree.query(range, myList);
+
+				vector2D::vec2D wallPos = ecs.GetComponent<Render>(walls[i].GetID())->position;
+				vector2D::vec2D wallDims = ecs.GetComponent<Render>(walls[i].GetID())->dimension;
+				wallDims /= 2.f;
+
+				// Create vertices for wall
+				std::vector<vector2D::vec2D> wallVtx;
+				for (int j = -1; j < 2; j += 2)
+				{
+					for (int k = -1; k < 2; k += 2)
+					{
+						wallVtx.emplace_back(vector2D::vec2D(wallPos.x + k * wallDims.x, wallPos.y + j * wallDims.y));
+					}
+				}
+
+				for (std::list <quadObj*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
+				{
+					if ((*enemyUnit)->key != walls[0].GetID() && (*enemyUnit)->key != walls[1].GetID() && (*enemyUnit)->key != walls[2].GetID())
+					{
+						vector2D::vec2D enemyPos = ecs.GetComponent<Render>((*enemyUnit)->key)->position;
+						vector2D::vec2D enemyDims = ecs.GetComponent<Render>((*enemyUnit)->key)->dimension;
+						enemyDims /= 2.f;
+
+						// Create vertices for enemy
+						std::vector<vector2D::vec2D> enemyVtx;
+						for (int j = -1; j < 2; j += 2)
+						{
+							for (int k = -1; k < 2; k += 2)
+							{
+								enemyVtx.emplace_back(vector2D::vec2D(enemyPos.x + k * enemyDims.x, enemyPos.y + j * enemyDims.y));
+							}
+						}
+						if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
+						{
+							m[(*enemyUnit)->key].collisionFlag = true;
+						}
+					}
+				}
 			}
 
-			p[i].position += changedVelocity * (GLHelper::delta_time > 1/60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
 
-			m[i].velocity = changedVelocity;
-			mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
-		}
-	});
+			for (std::size_t i = 0; i < entities.size(); ++i)
+			{
+				//std::cout << "this is in glapp: " << entities[i] << " " << ecs.GetComponent<Render>(entities[i])->position.x << " " << ecs.GetComponent<Render>(entities[i])->position.y << std::endl;
+				vector2D::vec2D oldPosition = p[i].position;
+				vector2D::vec2D changedVelocity = m[i].velocity;
+
+				vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+				vector2D::Vector2DNormalize(changedVelocity, flowField[(int)nodePosition.y][(int)nodePosition.x]);
+
+				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+
+				movementFlocking(entities[i], m[i].target, allVelocity);
+
+				changedVelocity += allVelocity[0] * 4 + (allVelocity[1] * 0.1) + allVelocity[2];
+
+				// capping speed
+				if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
+				{
+					changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
+				}
+
+				p[i].position += changedVelocity * (GLHelper::delta_time > 1 / 60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
+
+				m[i].velocity = changedVelocity;
+				mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
+			}
+
+		});
 }
 
 
@@ -647,7 +714,7 @@ void GLApp::GLObject::draw() const
 	basicbatch.batchmodel = mdl_ref->second;
 	basicbatch.batchshader = shd_ref->second;
 
-		
+
 	std::vector<vector3D::Vec3> clr_vtx
 	{
 		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
@@ -764,7 +831,7 @@ void GLApp::GLObject::draw() const
 	}
 	texcoord.clear();
 
-	
+
 }
 
 
@@ -923,18 +990,18 @@ void GLApp::update()
 				randheight = 100;
 			}
 			GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
-				
 
-				//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
-				//
-			
-			//EntityID entid = ecs.GetNewID();
-			//ecs.RegisterEntity(entid, finalobjname);
-			//ecs.AddComponent<Texture>(entid);
-			//createdUnits.resize(objectcounter);
-		
 
-			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
+			//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
+			//
+
+		//EntityID entid = ecs.GetNewID();
+		//ecs.RegisterEntity(entid, finalobjname);
+		//ecs.AddComponent<Texture>(entid);
+		//createdUnits.resize(objectcounter);
+
+
+		// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
 			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 			createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
 			//createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(randwidth, randheight));
@@ -943,7 +1010,7 @@ void GLApp::update()
 			ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
 			//EntityID testid = createdUnits[objectcounter].GetID();
 			//std::cout << "Position " << ecs.GetComponent<Object>(testid)->position.x << "," << ecs.GetComponent<Object>(testid)->position.y << std::endl;
-			
+
 			//createdUnits[objectcounter].Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(100, 100), 1, 4, 0, 0, 0, "test");
 			//createdUnits[objectcounter].Add<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 			//createdUnits[objectcounter].Add<Texture>(entid, 1, "tree");
@@ -956,7 +1023,7 @@ void GLApp::update()
 		}
 	}
 	//check for movement
-	
+
 	//for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	//{
 	//	if (obj1->first == "Banana1")
@@ -989,7 +1056,7 @@ void GLApp::update()
 	//		obj1->second.modelCenterPos = obj1->second.body.getPos();
 	//	}
 	//}
-	
+
 	Render* player = ecs.GetComponent<Render>(player1.GetID());
 
 	if (timer > 0)
@@ -1031,7 +1098,7 @@ void GLApp::update()
 		{
 			obj->second.update(GLHelper::delta_time);
 
-			
+
 			switch (currentCollision)
 			{
 			case collisionType::CircleDetection:
@@ -1050,7 +1117,7 @@ void GLApp::update()
 									float radius = obj1->second.body.getRad();
 									float radius2 = obj2->second.body.getRad();
 									if (physics::CollisionDetectionCircleCircle(obj1->second.modelCenterPos, radius,
-																				obj2->second.modelCenterPos, radius2))
+										obj2->second.modelCenterPos, radius2))
 									{
 										//std::cout << "IM COLLIDING\n";
 										obj1->second.overlap = true;
@@ -1309,7 +1376,7 @@ void GLApp::update()
 	//ImGui::ShowDemoWindow(&show_demo_window);
 
 	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-	
+
 	//static float f = 0.0f;
 	//static int counter = 0;
 
@@ -1320,7 +1387,7 @@ void GLApp::update()
 
 
 	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
-		
+
 	//if (ImGui::TreeNode("list")) {
 	//	ImGui::TreeNode("test");
 	//}
@@ -1339,7 +1406,7 @@ void GLApp::update()
 	}
 	*/
 	//for (auto i : ecs.getEntities()) {
-	
+
 //	if (ImGui::TreeNode("Entities")) {
 //		for (int i = 1; i < ecs.getEntities().size()+1; ++i) {
 //			std::string str = ecs.getEntityName(i);
@@ -1741,12 +1808,12 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	if (modelname == "circle")
 	{
-		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
+		tmpObj.body.createCircleBody(scale.x / 2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 		std::cout << "Radius " << tmpObj.body.getRad() << std::endl;
 	}
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
-	
+
 	tmpObj.color = colour;
 
 	if (modelname == "circle")
@@ -1929,7 +1996,7 @@ void GLApp::entitydraw()
 		{
 			continue;
 		}
-		
+
 		//std::cout << "Integers " << i << ", " << entities[i] << std::endl;
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 		int texid = 0;
