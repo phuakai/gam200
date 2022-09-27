@@ -469,7 +469,8 @@ void GLApp::init()
 						}
 						if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
 						{
-							m[(*enemyUnit)->key].collisionFlag = true;
+							// Crashed via glfwterminate
+							//m[(*enemyUnit)->key].collisionFlag = true;
 						}
 					}
 				}
@@ -566,7 +567,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 			worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
 			ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
 		}
-	}
+	
 }
 
 
