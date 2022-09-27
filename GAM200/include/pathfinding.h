@@ -41,6 +41,7 @@ struct Movement
 	float force;
 	float speed;
 	bool collisionFlag;
+	vector2D::vec2D collisionResponse;
 };
 
 struct Stats {
