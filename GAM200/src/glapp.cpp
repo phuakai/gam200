@@ -381,7 +381,6 @@ void GLApp::init()
 				}
 				else
 					++t[i].spriteStep;
-				std::cout << "OI I SET THIS " << t[i].spriteStep << std::endl;
 			}
 			//renderTimer = 4;
 		//}
@@ -442,7 +441,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	if (mdl_ref->first != "triangle")	// check if is black triangle
 	{
 		orientation.x += orientation.y * float(delta_time);
-	
+	}
 
 	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
 	
@@ -1667,7 +1666,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	if (modelname == "circle")
 	{
 		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
-		std::cout << "Radius " << tmpObj.body.getRad() << std::endl;
+		//std::cout << "Radius " << tmpObj.body.getRad() << std::endl;
 	}
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
@@ -1908,7 +1907,6 @@ void GLApp::entitydraw()
 			if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
 			{
 				//std::cout << "Circle\n";
-				std::cout << "Entered here ";
 				//std::cout << overlapobj->overlap << std::endl;
 				//if (overlapobj->overlap)
 				//{

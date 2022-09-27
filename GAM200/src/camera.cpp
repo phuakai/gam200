@@ -24,7 +24,6 @@ This function is called once at the initialization of the camera to compute and 
 */
 void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 {
-	std::cout << "Function\n";
 	// assign address of object of type GLApp::GLObject with
 	// name "Camera" in std::map container GLApp::objects ...
 	pgo = ptr;
