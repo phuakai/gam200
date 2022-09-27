@@ -244,6 +244,7 @@ public:
     std::vector<std::string> getEntityComponents(const EntityID& entityId);
 
     std::vector<EntityID> getEntities();
+    std::vector<std::string> getEntityNames();
 
     std::string getEntityName(const EntityID& entityId);
 

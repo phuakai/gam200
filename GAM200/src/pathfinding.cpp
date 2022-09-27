@@ -16,17 +16,15 @@ vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0)
 
 // MOVEMENT ==============================================================================
 
-void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity)
+void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
 {
 	Movement* movement = ecs.GetComponent<Movement>(id);
 	Render* entity = ecs.GetComponent<Render>(id);
 
-	vector2D::vec2D desiredVelocity;
-
 	// make these not hardcoded please
 	float agentRadius = ((entity->dimension.x + entity->dimension.y) / 2) / 10;
-	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2) * 0.9;		// used for Separation
-	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2) * 0.9;			// used for Cohesion and Alignment
+	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Separation
+	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
 	// 1 count for each part of flocking -> separation, cohesion, and alignment
@@ -35,21 +33,23 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 	vector2D::vec2D centerForCohesion = entity->position;
 	vector2D::vec2D averageDirection{ 0,0 };
 
-	// Direction to destination
-	desiredVelocity = destination - entity->position;
-	// Moving at maximum speed
-	Vector2DNormalize(desiredVelocity, desiredVelocity * movement->speed);
+	std::list<quadObj*> myList;
+	AABB range(entity->position.x - maximumCohesion,
+		entity->position.y - maximumCohesion,
+		entity->position.x + maximumCohesion,
+		entity->position.y + maximumCohesion);
+	maintree.query(range, myList);
 
-	// for each agent
-	for (int i = 0; i < enemyUnits.size(); ++i)
+	for (std::list <quadObj*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{
 		// skip if it is the input agent
-		if (enemyUnits[i].GetID() == id)
+		if ((*obj2)->key == id)
 			continue;
 
-		Render* agentPosition = ecs.GetComponent<Render>(enemyUnits[i].GetID());
-		Movement* agentMovement = ecs.GetComponent<Movement>(enemyUnits[i].GetID());
-
+		
+		Render* agentPosition = ecs.GetComponent<Render>((*obj2)->key);
+		Movement* agentMovement = ecs.GetComponent<Movement>((*obj2)->key);
+			
 		float distance = Vector2DDistance(agentPosition->position, entity->position);
 
 		// SEPARATION --------------------------------------------------------------------
@@ -125,7 +125,7 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 
 // PATHFINDING ===========================================================================
 
-void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D::vec2D> walls)
+void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& walls)
 {
 	//while (directionToCheck != NULL)
 	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
@@ -142,8 +142,11 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<vector2D:
 
 	for (int i = 0; i < walls.size(); ++i)
 	{
-		dijkstraField[(int)walls[i].y][(int)walls[i].x] = WALL;
-		LOSgrid[(int)walls[i].y][(int)walls[i].x] = 0;
+		Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
+		vector2D::vec2D wallNode = (pointer->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+		dijkstraField[(int)wallNode.y][(int)wallNode.x] = WALL;
+		LOSgrid[(int)wallNode.y][(int)wallNode.x] = 0;
 	}
 
 	// setting ending node to 0

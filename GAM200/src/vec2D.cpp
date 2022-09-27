@@ -175,6 +175,10 @@ namespace vector2D
 	 /**************************************************************************/
 	float Vector2DSquareLength(const vec2D& pVec0)
 	{
+		if (&pVec0 == nullptr)
+		{
+			return 0.f;
+		}
 		return pVec0.x * pVec0.x + pVec0.y * pVec0.y;
 	}
 
