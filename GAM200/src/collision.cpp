@@ -202,7 +202,7 @@ namespace physics
 	{
 		if (shapeOverlapStaticAABB(staticPolygon, dynamicPolygon)) //polygon1 is pushed back
 		{
-			//float tFirst(0), tLast(GLHelper::delta_time);
+			//float tFirst(0), tLast(Graphics::Input::delta_time);
 			//vector2D::vec2D relativeVel{ staticPolygon.vel.x - dynamicPolygon.vel.x, staticPolygon.vel.y - dynamicPolygon.vel.y };
 
 			// Compute min/max points
@@ -242,9 +242,9 @@ namespace physics
 			//std::cout << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
 			
 
-			std::cout << "this is delta time: " << GLHelper::delta_time << std::endl;
-			std::cout << "direction vec in col: " << dynamicPolygon.directionVec.x * GLHelper::delta_time * 350.f << " " << dynamicPolygon.directionVec.y * GLHelper::delta_time * 200.f << std::endl;
-			vector2D::vec2D reverseDirectionalVec{ -dynamicPolygon.directionVec * GLHelper::delta_time * 400.f };// *(lengthOfOverlap / distanceBtnCenters) };
+			std::cout << "this is delta time: " << Graphics::Input::delta_time << std::endl;
+			std::cout << "direction vec in col: " << dynamicPolygon.directionVec.x * Graphics::Input::delta_time * 350.f << " " << dynamicPolygon.directionVec.y * Graphics::Input::delta_time * 200.f << std::endl;
+			vector2D::vec2D reverseDirectionalVec{ -dynamicPolygon.directionVec * Graphics::Input::delta_time * 400.f };// *(lengthOfOverlap / distanceBtnCenters) };
 			std::cout << "this is reverse direction vec: " << reverseDirectionalVec.x << " " << reverseDirectionalVec.y << std::endl;
 
 			// Add vector to modelcenterpos

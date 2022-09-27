@@ -21,7 +21,7 @@ and transformations (in later labs).
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
-#include <glhelper.h>
+#include <input.h>
 #include <glslshader.h>
 #include <list> // added in tutorial 3
 #include <random>
@@ -68,6 +68,7 @@ struct GLApp {
 		physicsRigidBody body;															// param for collision
 		int objId;																		// For collision debugger
 		int texId;
+		int totalsprites;
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -103,7 +104,7 @@ struct GLApp {
 		// function to update the object's model transformation matrix
 		void update(GLdouble delta_time);
 
-		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0); // Temp
+		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0, int totalsprite = 1); // Temp
 	};
 
 

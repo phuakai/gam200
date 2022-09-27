@@ -4,9 +4,6 @@
     <ClCompile Include="src\buffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\glhelper.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\glslshader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -190,9 +187,6 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glapp.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\glhelper.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glslshader.h">

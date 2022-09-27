@@ -11,7 +11,7 @@ an OpenGL context and implement a game loop.
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
 // Extension loader library's header must be included before GLFW's header!!!
-#include <glhelper.h>
+#include <input.h>
 #include <glapp.h>
 #include <iostream>
 
@@ -47,7 +47,7 @@ int main() {
   init();
 
   // Part 2
-  while (!glfwWindowShouldClose(GLHelper::ptr_window)) {
+  while (!glfwWindowShouldClose(Graphics::Input::ptr_to_window)) {
     // Part 2a
     update();
     // Part 2b
@@ -72,7 +72,7 @@ static void update() {
   glfwPollEvents();
 
   // Part 2
-  GLHelper::update_time(1.0);
+  Graphics::Input::update_time(1.0);
   
   // Part 3
   GLApp::update();
@@ -93,7 +93,7 @@ static void draw() {
   GLApp::draw();
 
   // Part 2: swap buffers: front <-> back
-  glfwSwapBuffers(GLHelper::ptr_window);
+  glfwSwapBuffers(Graphics::Input::ptr_to_window);
 }
 
 /*  _________________________________________________________________________ */
@@ -107,7 +107,7 @@ abstracted away in GLApp::init
 */
 static void init() {
   // Part 1
-  if (!GLHelper::init(2400, 900, "Test")) { //Original is 2400, 1350
+  if (!Graphics::Input::init(1600, 900, "Test")) { //Original is 2400, 1350
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
     }
@@ -133,5 +133,5 @@ void cleanup() {
   GLApp::cleanup();
 
   // Part 2
-  GLHelper::cleanup();
+  Graphics::Input::cleanup();
 }
