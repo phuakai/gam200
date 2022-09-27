@@ -94,8 +94,6 @@ struct GLApp {
 		std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
 		std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
-		// member functions that must be defined in glapp.cpp
-		// function to initialize object's state
 		void init();
 		// function to render object's model (specified by index mdl_ref)
 		// uses model transformation matrix mdl_to_ndc_xform matrix
@@ -109,25 +107,13 @@ struct GLApp {
 
 
 	static void entitydraw();
-	//static void init_models_cont(); // new in tutorial 3
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
 	// function to insert shader program into container GLApp::shdrpgms ...
 	static void insert_shdrpgm(std::string, std::string, std::string);
-	// function to parse scene file ...
-	static void init_scene(std::string);
 
-	//static std::vector<GLApp::GLModel> models; // removed
-	// added for tutorial 4: repository of models
-	//static std::map<std::string, Graphics::Model> models; // singleton
-
-
-	//static std::list<GLApp::GLObject> objects; // from tutorial 3
-	// added for tutorial 4: repository of objects
 	static std::map<std::string, GLObject> objects; // singleton
 
-	//static void init_shdrpgms_cont(GLApp::VPSS const&); // removed
-	// added for tutorial 4: repository of shader programs
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 
 	static bool modulate;
