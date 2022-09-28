@@ -1,3 +1,13 @@
+/*!
+@file    ECS.h
+@author  p.jiankai@digipen.edu, ruoyan.go@digipen.edu
+@date    10/9/2022
+
+This file includes the entity component system classes and functions 
+declaration.
+
+*//*__________________________________________________________________________*/
+
 #pragma once
 #ifndef __ECS__
 #define __ECS__
@@ -58,7 +68,6 @@ struct Archetype
     std::vector<EntityID> entityIds;
     std::vector<std::size_t> componentDataSize;
 };
-
 
 
 //base class helps us by allowing child class to store any type of component

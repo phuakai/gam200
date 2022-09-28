@@ -1,3 +1,12 @@
+/*!
+@file    serialization.cpp
+@author  p.jiankai@digipen.edu, ruoyan.go@digipen.edu
+@date    10/9/2022
+
+This file includes the serialisation function definitions.
+
+*//*__________________________________________________________________________*/
+
 #include <cstdio>
 #include <string>
 #include <vector>

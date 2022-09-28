@@ -1,14 +1,12 @@
-//template <typename T>
-//inline void TypeIdGenerator<T>::registerRTTR()
-//{
-//    static int count = 1;
-//
-//    rttr::registration::class_<TypeIdGenerator<T>>("TypeIdGenerator" + std::to_string(count))
-//        .constructor<TypeIdGenerator<T>>()
-//        .method("GetNewID", &TypeIdGenerator<T>::GetNewID);
-//
-//    ++count;
-//}
+/*!
+@file    ECS.hpp
+@author  p.jiankai@digipen.edu, ruoyan.go@digipen.edu
+@date    10/9/2022
+
+This file includes the entity component system classes and functions
+definitions.
+
+*//*__________________________________________________________________________*/
 
 template<typename T>
 template<typename U>

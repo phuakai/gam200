@@ -1,3 +1,12 @@
+/*!
+@file    pathfinding.cpp
+@author  ruoyan.go@digipen.edu
+@date    20/8/2022
+
+This file includes the function definitions for pathfinding functions.
+
+*//*__________________________________________________________________________*/
+
 #include "pathfinding.h"
 #include <input.h>
 #include <iostream>
@@ -15,7 +24,18 @@ int LOSgrid[MAX_GRID_Y][MAX_GRID_X];
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
 
 // MOVEMENT ==============================================================================
+/*  _________________________________________________________________________*/
+/*! movementFlocking
 
+@param id				Entity ID of the unit to calculate
+@param destination		Target of the unit
+@param allVelocity		The 3 vectors, separation, cohesion and alignment vectors
+@param maintree			reference to main branch in quadTree
+@return none
+
+This function calculates the 3 vectors that allows the units to have a
+flocking behaviour with the surrounding units.
+*/
 void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
 {
 	Movement* movement = ecs.GetComponent<Movement>(id);
@@ -124,7 +144,16 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 }
 
 // PATHFINDING ===========================================================================
+/*  _________________________________________________________________________*/
+/*! generateDijkstraCost
 
+@param endingPosition	Target position
+@param walls			Vector of entities for the walls
+@return none
+
+This function calculates the 2D array of the dijkstra grid, calculating the
+shortest part of all the nodes to the target position.
+*/
 void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& walls)
 {
 	//while (directionToCheck != NULL)
@@ -185,6 +214,16 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 	}
 }
 
+/*  _________________________________________________________________________*/
+/*! calculateLOS
+
+@param startingNode		Node position
+@param endingPosition	Target position
+@return none
+
+This function calculates whether the stating position has line of sight to
+the target position.
+*/
 void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition)
 {
 	vector2D::vec2D startingPosition = startingNode * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500);
@@ -232,6 +271,15 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 	LOSgrid[(int)(startingNode.y)][(int)(startingNode.x)] = haveLos;
 }
 
+/*  _________________________________________________________________________*/
+/*! generateFlowField
+
+@param endingPosition	Target position
+@return none
+
+This function calculates the flow field array based on the dijkstra array
+and the line of sight array.
+*/
 void generateFlowField(vector2D::vec2D& endingPosition)
 {
 	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);

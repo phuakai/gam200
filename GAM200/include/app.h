@@ -1,6 +1,6 @@
 /* !
 @file    app.h
-@author  a.weiren@digipen.edu
+@author  a.weiren@digipen.edu, p.jiankai@digipen.edu, ruoyan.go@digipen.edu
 @date    10/06/2022
 
 This file contains the declaration of namespace GLApp that encapsulates the
