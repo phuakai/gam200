@@ -88,7 +88,7 @@ ECS ecs;
 Entity player1;
 std::vector<Entity> walls(30);
 std::vector<Entity> enemyUnits(2500);
-std::vector<Entity> createdUnits(100); // precreated empty entities
+//std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
 System<Movement, Render> system1(ecs, 2);
@@ -567,15 +567,15 @@ void GLApp::init()
 
 		});
 
-	std::string json_string;
+	//std::string json_string;
 
 	//ecsWriteToFile();
 
-	std::string fileLocation = "data/data" + ecs.getEntityName(player1.GetID()) + ".json";
-	to_json(*ecs.GetComponent<Render>(player1.GetID()), fileLocation);
+	//std::string fileLocation = "data/data" + ecs.getEntityName(player1.GetID()) + ".json";
+	//to_json(*ecs.GetComponent<Render>(player1.GetID()), fileLocation);
 
-	fileLocation = "data/data" + ecs.getEntityName(enemyUnits[0].GetID()) + ".json";
-	to_json(*ecs.GetComponent<Render>(enemyUnits[0].GetID()), fileLocation);
+	//fileLocation = "data/data" + ecs.getEntityName(enemyUnits[0].GetID()) + ".json";
+	//to_json(*ecs.GetComponent<Render>(enemyUnits[0].GetID()), fileLocation);
 }
 
 
@@ -684,6 +684,7 @@ void GLApp::GLObject::draw() const
 	}
 	if (textureid == 7 || textureid == 8)
 	{
+		//std::cout << "Does it enter here\n";
 		totalframes = totalsprites;
 		curframe = 1;
 	}
@@ -918,10 +919,10 @@ void GLApp::update()
 			}
 			GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, (int)randindex);
 			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
-			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
-			createdUnits[objectcounter].Add<Stats>(100);
-			ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
+			//createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
+			//createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
+			//createdUnits[objectcounter].Add<Stats>(100);
+			//ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
 
 			Graphics::Input::keystateQ = false;
 			Graphics::Input::keystateE = false;

@@ -108,14 +108,14 @@ abstracted away in GLApp::init
 */
 static void init() {
 
-    std::fstream myfile;
-    myfile.open("config.xml");
-    int width{};
-    int height{};
-    myfile >> width;
-    myfile >> height;
+    //std::fstream myfile;
+    //myfile.open("config.xml");
+    //int width{};
+    //int height{};
+    //myfile >> width;
+    //myfile >> height;
 
-  if (!Graphics::Input::init(width, height, "Test"))
+  if (!Graphics::Input::init(1600, 900, "Test"))
   { 
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
