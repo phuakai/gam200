@@ -19,6 +19,7 @@ Technology is prohibited.
 
 #include "vector"
 
+
 namespace vector2D
 {
 #ifdef _MSC_VER

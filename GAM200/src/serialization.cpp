@@ -13,6 +13,7 @@
 #include <rapidjson/writer.h>
 #include <rttr/type>
 #include "serialization.h"
+#include <pathfinding.h>
 
 using namespace rapidjson;
 using namespace rttr;
@@ -180,6 +181,10 @@ bool write_basic_type(const type& t, const variant& var, PrettyWriter<StringBuff
         else
             localObj = obj;
             */
+        std::string header = "component";
+        writer.String("component", static_cast<rapidjson::SizeType>(header.length()), false);
+        writer.String(obj.get_type().get_name().data(), static_cast<rapidjson::SizeType>(obj.get_type().get_name().length()), false);
+
         instance obj2 = obj.get_type().get_raw_type().is_wrapper() ? obj.get_wrapped_instance() : obj;
         auto prop_list = obj2.get_derived_type().get_properties();
         for (auto prop : prop_list)
@@ -204,31 +209,21 @@ bool write_basic_type(const type& t, const variant& var, PrettyWriter<StringBuff
         writer.EndObject();
     }
 
-    std::string to_json(rttr::instance obj) {
+    std::string to_json(rttr::instance obj, std::string fileName) {
         if (!obj.is_valid()) {
             return std::string();
         }
         StringBuffer sb;
         PrettyWriter<StringBuffer> writer(sb);
-        //-----------------------------------------------
-        
+
         ToJsonRecur(obj, writer);
-      //  std::string temp = sb.GetString();
-       
 
         Document d;
-       // d.Parse(sb.GetString());
         d.Parse(sb.GetString());
-        FILE* fp = fopen("output3.json", "wb");
-       //FileWriteStream theStream(fp, sb.GetString(), sb.GetSize());
-       // FileWriteStream theStream(fp, writeBuffer, sizeof(writeBuffer));
-        //PrettyWriter<FileWriteStream> theWriter(theStream);
+        FILE* fp = fopen(fileName.c_str(), "wb");
 
-        
-       // FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
         char writeBuffer[1000];
         FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
-       // PrettyWriter<FileWriteStream> writer(os);
         PrettyWriter<FileWriteStream> fileWriter(os);
         d.Accept(fileWriter);
 
@@ -453,15 +448,42 @@ bool write_basic_type(const type& t, const variant& var, PrettyWriter<StringBuff
     //    return true;
     //}
 
-    bool from_json(FILE* fp, rttr::instance obj) {
-
-        Document theDoc;
-        //LOL i just realised we need to open the files with this function, and maybe have to read and write into multiple objects
+    bool from_json(FILE* fp) 
+    {
         char readBuffer[10000];
         FileReadStream is(fp, readBuffer, sizeof(readBuffer));
 
         Document d;
         d.ParseStream(is);
-        fromJsonRecur(obj, d);
+
+        std::cout << "here" << std::endl;
+
+        EntityID newEntity = ecs.GetNewID();
+        ecs.RegisterEntity(newEntity, "test");
+        ecs.AddComponent<Render>(newEntity);
+        rttr::instance helloWork = *ecs.GetComponent<Render>(newEntity);
+        fromJsonRecur(helloWork, d.GetObject());
+        std::cout << ecs.GetComponent<Render>(newEntity)->color.r << std::endl;
+
+        //Document d;
+        //d.ParseStream(is);
+        //fromJsonRecur(obj, d);
+
+
         return true;
+    }
+    
+    void ecsWriteToFile()
+    {
+        for (int i = 0; i < ecs.getEntities().size(); ++i)
+        {
+            //if (ecs.GetComponent<Render>(i))
+            //    to_json(*ecs.GetComponent<Render>(i));
+            //if (ecs.GetComponent<Texture>(i))
+            //    to_json(*ecs.GetComponent<Texture>(i));
+            //if (ecs.GetComponent<Movement>(i))
+            //    to_json(*ecs.GetComponent<Movement>(i));
+            //if (ecs.GetComponent<Stats>(i))
+            //    to_json(*ecs.GetComponent<Stats>(i));
+        }
     }

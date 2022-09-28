@@ -224,6 +224,17 @@ RTTR_REGISTRATION{
 		.property("x", &vector2D::vec2D::x)
 		.property("y", &vector2D::vec2D::y);
 
+	rttr::registration::class_<vector3D::vec3D>("vector3D::vec3D")
+		.constructor<vector3D::vec3D>()
+		.property("m", &vector3D::vec3D::m)
+		.property("x", &vector3D::vec3D::x)
+		.property("y", &vector3D::vec3D::y)
+		.property("z", &vector3D::vec3D::z)
+		.property("r", &vector3D::vec3D::r)
+		.property("g", &vector3D::vec3D::g)
+		.property("b", &vector3D::vec3D::b);
+
+
 	rttr::registration::class_<Render>("Render")
 		.property("name", &Render::name)
 		.property("type", &Render::type)
@@ -250,8 +261,8 @@ RTTR_REGISTRATION{
 
 	//rttr::registration::class_<Sprite>("Sprite")
 
-	//rttr::registration::class_<Stats>("Stats")
-	//	.property("health", &Stats::health);
+	rttr::registration::class_<Stats>("Stats")
+		.property("health", &Stats::health);
 
 	//rttr::registration::class_<test_class>("test_class")
 	//.constructor<int>()
@@ -389,8 +400,6 @@ void GLApp::init()
 	EntityID playerID = player1.GetID();
 	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
 	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
-
-
 
 	wallGeneration(10, 10);
 	wallGeneration(11, 10);
@@ -615,33 +624,14 @@ void GLApp::init()
 		});
 
 	std::string json_string;
-	
-	{
-		circle c_1("Circle #1");
-		shape& my_shape = c_1;
 
-		c_1.set_visible(true);
-		c_1.points = std::vector<point2d>(2, point2d(1, 1));
-		c_1.points[1].x = 23;
-		c_1.points[1].y = 42;
+	//ecsWriteToFile();
 
-		c_1.position.x = 12;
-		c_1.position.y = 66;
+	std::string fileLocation = "data/data" + ecs.getEntityName(player1.GetID()) + ".json";
+	to_json(*ecs.GetComponent<Render>(player1.GetID()), fileLocation);
 
-		c_1.radius = 5.123;
-		c_1.color_ = color::red;
-
-		// additional braces are needed for a VS 2013 bug
-		c_1.dictionary = { { {color::green, {1, 2} }, {color::blue, {3, 4} }, {color::red, {5, 6} } } };
-
-		c_1.no_serialize = 12345;
-
-		//json_string = to_json(my_shape); // serialize the circle to 'json_string'
-	}
-
-	json_string = to_json(*ecs.GetComponent<Render>(player1.GetID()));
-
-
+	fileLocation = "data/data" + ecs.getEntityName(enemyUnits[0].GetID()) + ".json";
+	to_json(*ecs.GetComponent<Render>(enemyUnits[0].GetID()), fileLocation);
 }
 
 
