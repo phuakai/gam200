@@ -21,7 +21,7 @@ and transformations (in later labs).
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
-#include <glhelper.h>
+#include <input.h>
 #include <glslshader.h>
 #include <list> // added in tutorial 3
 #include <random>
@@ -68,6 +68,7 @@ struct GLApp {
 		physicsRigidBody body;															// param for collision
 		int objId;																		// For collision debugger
 		int texId;
+		int totalsprites;
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -93,8 +94,6 @@ struct GLApp {
 		std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
 		std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
-		// member functions that must be defined in glapp.cpp
-		// function to initialize object's state
 		void init();
 		// function to render object's model (specified by index mdl_ref)
 		// uses model transformation matrix mdl_to_ndc_xform matrix
@@ -103,30 +102,18 @@ struct GLApp {
 		// function to update the object's model transformation matrix
 		void update(GLdouble delta_time);
 
-		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0); // Temp
+		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0, int totalsprite = 1); // Temp
 	};
 
 
 	static void entitydraw();
-	//static void init_models_cont(); // new in tutorial 3
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
 	// function to insert shader program into container GLApp::shdrpgms ...
 	static void insert_shdrpgm(std::string, std::string, std::string);
-	// function to parse scene file ...
-	static void init_scene(std::string);
 
-	//static std::vector<GLApp::GLModel> models; // removed
-	// added for tutorial 4: repository of models
-	//static std::map<std::string, Graphics::Model> models; // singleton
-
-
-	//static std::list<GLApp::GLObject> objects; // from tutorial 3
-	// added for tutorial 4: repository of objects
 	static std::map<std::string, GLObject> objects; // singleton
 
-	//static void init_shdrpgms_cont(GLApp::VPSS const&); // removed
-	// added for tutorial 4: repository of shader programs
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 
 	static bool modulate;

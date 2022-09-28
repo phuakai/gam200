@@ -103,7 +103,7 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			vertexData.emplace_back(tmpVtxData);
 		}
 
-		Graphics::VBO::store(vbo, sizeof(Graphics::vertexData) * vertexData.size(), vertexData);
+		Graphics::VBO::store(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
 	}
 	if (modelname == "line")
 	{
@@ -126,7 +126,7 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			tmpVtxData.txtVtx = tex_coord[i];
 			vertexData.emplace_back(tmpVtxData);
 		}
-		Graphics::VBO::store(vbo, sizeof(Graphics::vertexData) * vertexData.size(), vertexData);
+		Graphics::VBO::store(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
 	}
 	//Graphics::VBO::setdata(vbo, sizeof(float) * 2 * tempmodel.pos_vtx.size(), sizeof(float) * 2 * tempmodel.pos_vtx.size(), tex_coord);
 
@@ -152,17 +152,17 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 	{
 		std::cout << "IDS " << tempmodel.primitive[i] << std::endl;
 	}
-	Graphics::EBO::store(ebo, sizeof(GLushort) * tempmodel.primitive.size(), tempmodel.primitive);
+	Graphics::EBO::store(ebo, (int)sizeof(GLushort) * (int)tempmodel.primitive.size(), tempmodel.primitive);
 
 	Graphics::EBO::bind(vao, ebo);
 
 	Graphics::VAO::unbind();
 
 
-	tempmodel.primitive_cnt = tempmodel.primitive.size();
-	tempmodel.posvtx_cnt = tempmodel.pos_vtx.size();
+	tempmodel.primitive_cnt = (int)tempmodel.primitive.size();
+	tempmodel.posvtx_cnt = (int)tempmodel.pos_vtx.size();
 	//std::cout << "Model " << tempmodel.getPosvtxCnt() << std::endl;
-	tempmodel.draw_cnt = tempmodel.primitive.size();
+	tempmodel.draw_cnt = (int)tempmodel.primitive.size();
 
 	tempmodel.vaoid = vao;
 	tempmodel.vboid = vbo;

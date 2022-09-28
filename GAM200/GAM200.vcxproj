@@ -98,7 +98,6 @@
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\collisiondebug.h" />
     <ClInclude Include="include\ECS.h" />
-    <ClInclude Include="include\ECS.hpp" />
     <ClInclude Include="include\glhelper.h" />
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\graphics.h" />
