@@ -1,3 +1,11 @@
+/* !
+@file    graphics.h
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file handles the batch rendering of the game
+*//*__________________________________________________________________________*/
+
 #pragma once
 
 #include <GL/glew.h> // for access to OpenGL API declarations 
@@ -28,9 +36,32 @@ namespace Graphics {
 		GLuint vaoid{};
 		GLuint eboid{};
 
+		/******************************************************************************/
+		/*!
+			This function constructs the batch renderer
+		*/
+		/******************************************************************************/
 		BatchRenderer();
+
+		/******************************************************************************/
+		/*!
+			This function calls the batch renderer to render all data
+		*/
+		/******************************************************************************/
 		void BatchRender(std::vector<Texture>& texobjs); // batch renders all objects in render
+
+		/******************************************************************************/
+		/*!
+			This function clear the batch 
+		*/
+		/******************************************************************************/
 		void BatchClear(); // batch renders all objects in render
+
+		/******************************************************************************/
+		/*!
+			This function deletes the batch
+		*/
+		/******************************************************************************/
 		void BatchDelete();
 
 	};

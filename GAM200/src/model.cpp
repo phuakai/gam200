@@ -1,3 +1,11 @@
+/* !
+@file    model.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file initializes the model mesh
+*//*__________________________________________________________________________*/
+
 #include <model.h>
 #include <fstream>
 #include <iostream>

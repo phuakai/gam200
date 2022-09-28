@@ -1,3 +1,11 @@
+/* !
+@file    input.h
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file controls the window inputs
+*//*__________________________________________________________________________*/
+
 #pragma once
 
 #include <GL/glew.h> // for access to OpenGL API declarations 
@@ -52,7 +60,8 @@ namespace Graphics
 		// Get cursor position, returned via address in input parameters xpos and ypos
 		// Example usage : getCursorPos(&PositionX, &PositionY);
 		static bool getCursorPos(double* xpos, double* ypos); // Static allows function to be called without Input class object
-			
+		
+
 		static bool init(GLint w, GLint h, std::string t);
 		static void cleanup();
 
@@ -60,11 +69,38 @@ namespace Graphics
 		static void error_callback(int error, char const* description); // Error callback function
 		static void framebuffersize_callback(GLFWwindow* ptr_win, int width, int height);
 		// I/O callbacks ...
+		/******************************************************************************/
+		/*!
+			This function does the keyboard callback
+		*/
+		/******************************************************************************/
 		static void key_callback(GLFWwindow* pwin, int key, int scancode, int action, int mod);
+
+		/******************************************************************************/
+		/*!
+			This function does the mouse button callback
+		*/
+		/******************************************************************************/
 		static void mousebutton_callback(GLFWwindow* pwin, int button, int action, int mod);
+
+		/******************************************************************************/
+		/*!
+			This function does the mouse position callback
+		*/
+		/******************************************************************************/
 		static void mousepos_callback(GLFWwindow* pwin, double xpos, double ypos);
+		/******************************************************************************/
+		/*!
+			This function does the mouse scroll callback
+		*/
+		/******************************************************************************/
 		static void mousescroll_callback(GLFWwindow* pwin, double xoffset, double yoffset);
 
+		/******************************************************************************/
+		/*!
+			This function updates the fps
+		*/
+		/******************************************************************************/
 		static void update_time(double fps_calc_interval);
 	};
 

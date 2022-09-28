@@ -1,3 +1,11 @@
+/* !
+@file    input.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file controls the window inputs
+*//*__________________________________________________________________________*/
+
 #include <input.h>
 #include <camera.h>
 #include <GLFW/glfw3.h>

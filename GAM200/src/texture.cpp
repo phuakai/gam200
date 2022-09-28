@@ -1,3 +1,10 @@
+/* !
+@file    texture.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file loads, sets and deletes the textures in the game
+*//*__________________________________________________________________________*/
 #include <texture.h>
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION

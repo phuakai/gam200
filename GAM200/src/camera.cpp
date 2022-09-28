@@ -1,3 +1,11 @@
+/* !
+@file    camera.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file controls the camera of the game
+*//*__________________________________________________________________________*/
+
 #include <camera.h>
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>

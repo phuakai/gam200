@@ -1,3 +1,11 @@
+/* !
+@file    model.h
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file initializes the model mesh
+*//*__________________________________________________________________________*/
+
 #ifndef MODEL_H
 #define MODEL_H
 #include <input.h>
@@ -20,20 +28,32 @@ namespace Graphics
 	class Model
 	{
 	public:
-		// you could add member functions for convenience if you so wish ...
+		/******************************************************************************/
+		/*!
+			This function initializes the models
+		*/
+		/******************************************************************************/
 		Model init(std::string modelname); // read mesh data from file ...
+		// Gets the primitive type of model
 		GLenum getPrimitiveType();
+		// Gets the primitive count of the model
 		GLuint getPrimitiveCnt();
+		// Gets the position vertex count of the model
 		GLuint getPosvtxCnt();
+		// Gets the total draw count of the model
 		GLuint getDrawCnt();
+		// Gets the vector of all position vertices of the model
 		std::vector <vector2D::vec2D> getPosVtx();
+		// Gets the vector of all model coords of the model
 		std::vector <vector2D::vec2D> getModelCoords();
+		// Gets the vector of the indices in order for the EBO
 		std::vector <GLushort> getPrimitive();
+		// Gets the VAOid
 		GLuint getVAOid();
+		// Gets the VBOid
 		GLuint getVBOid();
+		// Gets the EBOid
 		GLuint getEBOid();
-
-		//void release(); // return buffers back to GPU ...
 
 	public:
 		GLenum primitive_type = GL_TRIANGLES; // which OpenGL primitive to be rendered?
@@ -49,8 +69,6 @@ namespace Graphics
 		GLuint vboid = 0;
 		GLuint eboid = 0;
 	};
-
-	//std::map<std::string, Model> models;
 }
 
 #endif
