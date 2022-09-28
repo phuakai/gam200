@@ -501,7 +501,7 @@ inline C* ECS::GetComponent(const EntityID& entityId)
         return nullptr;
     }
 
-    int foundComponent = std::distance(record.archetype->type.begin(), found);
+    int foundComponent = (int)std::distance(record.archetype->type.begin(), found);
 
     return reinterpret_cast<C*>(record.archetype->componentData[foundComponent] + record.index * sizeof(C));
 }

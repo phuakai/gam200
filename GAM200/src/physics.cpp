@@ -22,7 +22,7 @@ Technology is prohibited.
 
 vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed)
 {
-	float dt = Graphics::Input::delta_time;
+	float dt = static_cast<float>(Graphics::Input::delta_time);
 	dt = dt > (1 / 60.f) ? (1 / 60.f) : dt;
 
 	static vector2D::vec2D destination{ 0.f, 0.f };

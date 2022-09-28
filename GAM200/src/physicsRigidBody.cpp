@@ -82,11 +82,11 @@ physicsRigidBody::~physicsRigidBody()
 ******************************/
 bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body)
 {
-	float area = rad * rad * M_PI;
+	float area = (float)(rad * rad * M_PI);
 
 	// Check area
-	assert(area >= world.minBodySize, "Circle radius is too small." + std::to_string(world.minBodySiz));
-	assert(area <= world.maxBodySize, "Circle radius is too large." + std::to_string(world.maxBodySize));
+	assert(area >= world.minBodySize);
+	assert(area <= world.maxBodySize);
 
 	body->pos = pos;
 	body->mass = area * 1.f * density;
@@ -96,6 +96,7 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	body->radius = rad;
 	body->shapeType = ShapeType::circle;
 	body->plsUpdateTfm = false;
+	return true;
 }
 
 
@@ -104,8 +105,8 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	float area = width * height;
 
 	// Check area
-	assert(area >= world.minBodySize, "Area is too small. Min area is " + std::to_string(world.minBodySiz));
-	assert(area <= world.maxBodySize, "Area is too large. Max area is " + std::to_string(world.maxBodySize));
+	assert(area >= world.minBodySize);
+	assert(area <= world.maxBodySize);
 
 	body->pos = pos;
 	body->mass = area * 1.f * density;
@@ -135,6 +136,7 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->tri.emplace_back(0);
 	body->tri.emplace_back(2);
 	body->tri.emplace_back(3);
+	return true;
 }
 
 /******************************

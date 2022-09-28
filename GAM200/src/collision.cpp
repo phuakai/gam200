@@ -309,7 +309,7 @@ namespace physics
 
 			for (size_t j = 0; j < shape1->worldVertices.size(); ++j)
 			{
-				int k = (j + 1) % shape1->worldVertices.size();
+				size_t k = (j + 1) % shape1->worldVertices.size();
 
 				//create normal on the left of the edge (ccw rot by 90 deg)
 				vector2D::vec2D normalToEdge = { -(shape1->worldVertices[k].y - shape1->worldVertices[j].y),
