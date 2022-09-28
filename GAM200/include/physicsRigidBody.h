@@ -43,65 +43,155 @@ public:
 	/******************************
 	* Constructors
 	******************************/
+	/******************************************************************************/
+	/*!
+		This is the default constructor for the rigid body struct
+	*/
+	/******************************************************************************/
 	physicsRigidBody();
+
+	/******************************************************************************/
+	/*!
+		This is a constructor for the rigid body struct
+	*/
+	/******************************************************************************/
 	physicsRigidBody(vector2D::vec2D Pos, vector2D::vec2D LinearVel, float Rot, float RotVel, float Density, float Mass,
 	float Restituition, float Area, bool IsStatic, float Radius, float Width, float Height);
-	//physicsRigidBody() :pos{ 0.f, 0.f }, linearVel{ 0.f, 0.f }, rot{ 0.f }, rotVel{ 0.f }, density{ 0.f },
-	//	mass{ 0.f }, restitution{ 0.f }, area{ 0.f }, isStatic{ false }, radius{ 0.f }, width{ 0.f }, height{ 0.f }, shapeType{ shapeType::box }{}
 	
 	/******************************
 	* Deconstructors
 	******************************/
+	/******************************************************************************/
+	/*!
+		This is the default deconstructor for the rigid body struct
+	*/
+	/******************************************************************************/
 	~physicsRigidBody();
 
 	/******************************
 	* Creator
 	******************************/
-	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
-	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
+	/******************************************************************************/
+	/*!
+		This is a creater function for a circle body
+	*/
+	/******************************************************************************/
+	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body);
+	/******************************************************************************/
+	/*!
+		This is a creater function for a box body
+	*/
+	/******************************************************************************/
+	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body);
 
 	/******************************
 	* Getters
 	******************************/
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's center position
+	*/
+	/******************************************************************************/
 	vector2D::vec2D getPos();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's radius, if applicable
+	*/
+	/******************************************************************************/
 	float getRad();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's width, if applicable
+	*/
+	/******************************************************************************/
 	float getWidth();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's height, if applicable
+	*/
+	/******************************************************************************/
 	float getHeight();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's half width, if applicable
+	*/
+	/******************************************************************************/
 	float getHalfWidth();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's half height, if applicable
+	*/
+	/******************************************************************************/
 	float getHalfHeight();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's shape type
+	*/
+	/******************************************************************************/
 	ShapeType getShape();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's transformed vertices
+	*/
+	/******************************************************************************/
 	std::vector<vector2D::vec2D> getTfmVtx();
+
+	/******************************************************************************/
+	/*!
+		This is getter for the rigid body's transform status
+	*/
+	/******************************************************************************/
 	bool getPlsUpdateTfm();
 
 	/******************************
 	* Setters
 	******************************/
+	/******************************************************************************/
+	/*!
+		This is setter for the rigid body's center position
+	*/
+	/******************************************************************************/
 	void setPos(vector2D::Point2D position);
+
+	/******************************************************************************/
+	/*!
+		This is setter for the rigid body's radius
+	*/
+	/******************************************************************************/
 	void setRad(float rad);
 
 	/******************************
 	* Transformations
 	******************************/
+	/******************************************************************************/
+	/*!
+		This function transforms the vertices of a polygon
+	*/
+	/******************************************************************************/
 	void transformVertices();									// Transform
+
+	/******************************************************************************/
+	/*!
+		This function applies velocity to the center position of the rigid body
+	*/
+	/******************************************************************************/
 	void move(vector2D::vec2D& vel);							// Translate
+
+	/******************************************************************************/
+	/*!
+		This function rotates the rigid body
+	*/
+	/******************************************************************************/
 	void rotate(float angle);									// Rotate
 	//void setTransformRequired(bool transform);				
-
-
-	//{
-	//	pos = Pos;
-	//	linearVel = LinearVel;
-	//	rot = Rot;
-	//	rotVel = RotVel;
-	//	density = Density;
-	//	mass = Mass;
-	//	restitution = Restituition;
-	//	area = Area;
-	//	isStatic = IsStatic;
-	//	radius = Radius;
-	//	width = Width;
-	//	height = Height;
-	//}
 
 };
 //#endif

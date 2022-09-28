@@ -53,7 +53,7 @@ struct quadObj
 {
 private:
 public:
-	int key;														// Object's id
+	int key;																// Object's id
 	vector2D::vec2D position;												// Object's center pos
 
 	/******************************************************************************/

@@ -38,6 +38,7 @@ vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest,
 	return mouseVel;
 }
 
+#if false
 vector2D::vec2D keyboardMovement (vector2D::vec2D &pos, float &speed)
 {
 	float dt = Graphics::Input::delta_time;
@@ -62,7 +63,7 @@ vector2D::vec2D keyboardMovement (vector2D::vec2D &pos, float &speed)
 	}
 	return keyboardVel;
 }
-
+#endif
 //void move(vector2D::vec2D &vel, vector2D::Point2D &pos)
 //{
 //	//std::cout << "this is vel: " << vel.x << " " << vel.y << std::endl;

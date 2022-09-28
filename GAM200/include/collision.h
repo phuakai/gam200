@@ -49,46 +49,137 @@ namespace physics
 		float	m_radius;
 	};
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic circle objects. 
+		If the objects are in collision, the static object will be pushed by the dynamic
+		object
+	*/
+	/******************************************************************************/
 	bool CollisionPushResponseCircleCircle(
 		vector2D::vec2D& staticCenter, float& staticRad,
 		vector2D::vec2D& kineticCenter, float& kineticRad,
 		vector2D::vec2D& dirNorm, float& depth);
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic circle objects.
+		If the objects are in collision, the dynamic object will be pushed back by the
+		penetration amount
+	*/
+	/******************************************************************************/
 	bool CollisionBlockResponseCircleCircle(
 		vector2D::vec2D& staticCenter, float& staticRad,
 		vector2D::vec2D& kineticCenter, float& kineticRad,
 		vector2D::vec2D& dirNorm, float& depth);
 		
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic circle objects
+	*/
+	/******************************************************************************/
 	bool CollisionDetectionCircleCircle(
 		vector2D::vec2D& staticCenter, float& staticRad,
 		vector2D::vec2D& kineticCenter, float& kineticRad,
 		float& distanceBtnCenters, float& sumOfRad);
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic circle objects
+	*/
+	/******************************************************************************/
 	bool CollisionDetectionCircleCircle(
 		vector2D::vec2D& staticCenter, float& staticRad,
 		vector2D::vec2D& kineticCenter, float& kineticRad);
 
-	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
+
+	//bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
 
 	//void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
 
-	bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
-						 GLApp::GLObject const& polygon2);
+	//bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
+	//					 GLApp::GLObject const& polygon2);
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic convex polygon
+		objects
+	*/
+	/******************************************************************************/
 	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx);
+	
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic convex polygon
+		objects. If the objects are in collision, the static object will be pushed 
+		by the dynamic object
+	*/
+	/******************************************************************************/
 	bool CollisionPushPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D &norm, float& depth);
+	
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic convex polygon
+		objects. If the objects are in collision, the dynamic object will be pushed 
+		back by the penetration amount
+	*/
+	/******************************************************************************/
 	bool CollisionBlockPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx, vector2D::vec2D& norm, float& depth);
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic convex polygon
+		and circle objects
+	*/
+	/******************************************************************************/
 	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx);
 
+	/******************************************************************************/
+	/*!
+		This function checks for collision between static and dynamic convex polygon
+		and circle objects. If the objects are in collision, the dynamic object will be pushed
+		back by the penetration amount
+	*/
+	/******************************************************************************/
 	bool CollisionBlockCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx,
 		vector2D::vec2D& norm, float& depth);
 
+	/******************************************************************************/
+	/*!
+		This helper function projects the vertices of a polygon on an axis for SAT
+		collision
+	*/
+	/******************************************************************************/
 	vector2D::vec2D projectVtx(std::vector<vector2D::vec2D> const& vtx, vector2D::vec2D const& axis);
+
+	/******************************************************************************/
+	/*!
+		This helper function projects the ends of the circle on an axis for circle
+		and polygon collision
+	*/
+	/******************************************************************************/
 	vector2D::vec2D projectCircle(vector2D::vec2D circleCenter, float rad, vector2D::vec2D projAxis);
+
+	/******************************************************************************/
+	/*!
+		This helper function checks for the closet point between the circle and
+		polygon
+	*/
+	/******************************************************************************/
 	int closestPointOfCircleToPolygon(vector2D::vec2D circleCenter, std::vector<vector2D::vec2D> boxVtx);
+
+	/******************************************************************************/
+	/*!
+		This helper function gets the mean of the polygon's vertices
+	*/
+	/******************************************************************************/
 	vector2D::vec2D meanOfVertices(std::vector<vector2D::vec2D> vtx);
 
+	/******************************************************************************/
+	/*!
+		This helper function computes the bounding box of a convex polygon
+	*/
+	/******************************************************************************/
 	void computeBoundingBox(GLApp::GLObject& polygon);
 
 }
