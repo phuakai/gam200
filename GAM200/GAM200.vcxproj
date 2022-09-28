@@ -19,11 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\collisiondebug.cpp" />
-    <ClCompile Include="src\glapp.cpp" />
-    <ClCompile Include="src\glhelper.cpp" />
     <ClCompile Include="src\glslshader.cpp" />
     <ClCompile Include="src\graphics.cpp" />
     <ClCompile Include="src\imgui.cpp" />
@@ -98,8 +97,7 @@
     <ClInclude Include="include\collisiondebug.h" />
     <ClInclude Include="include\ECS.h" />
     <ClInclude Include="include\ECS.hpp" />
-    <ClInclude Include="include\glapp.h" />
-    <ClInclude Include="include\glhelper.h" />
+    <ClInclude Include="include\app.h" />
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\graphics.h" />
     <ClInclude Include="include\imconfig.h" />

@@ -24,7 +24,6 @@ This function is called once at the initialization of the camera to compute and 
 */
 void Graphics::Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
 {
-	std::cout << "Function\n";
 	// assign address of object of type GLApp::GLObject with
 	// name "Camera" in std::map container GLApp::objects ...
 	pgo = ptr;
@@ -87,20 +86,19 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 		0, 2.f / (float)height, 0,
 		0, 0, 1);
 
-	if (GLHelper::keystateW == GL_TRUE)
+	if (Graphics::Input::keystateW == GL_TRUE)
 	{
 		//pgo->modelCenterPos = pgo->modelCenterPos + linear_speed * up;
 		pgo->modelCenterPos.y = pgo->modelCenterPos.y + linear_speed;
 	}
 
-	if (GLHelper::keystateS == GL_TRUE)
+	if (Graphics::Input::keystateS == GL_TRUE)
 	{
 		//pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
 		pgo->modelCenterPos.y = pgo->modelCenterPos.y - linear_speed;
 	}
-
-	//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl; 
-	if (GLHelper::keystateA == GL_TRUE)
+	//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
+	if (Graphics::Input::keystateA == GL_TRUE)
 	{
 		pgo->modelCenterPos.x = pgo->modelCenterPos.x - linear_speed;
 		//if (pgo->orientation.x / M_PI * 180 >= 360)
@@ -110,7 +108,7 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 		//pgo->orientation.x += pgo->orientation.y;
 	}
 
-	if (GLHelper::keystateD == GL_TRUE)
+	if (Graphics::Input::keystateD == GL_TRUE)
 	{
 		pgo->modelCenterPos.x = pgo->modelCenterPos.x + linear_speed;
 		//if (pgo->orientation.x / M_PI * 180 <= -360)
@@ -120,20 +118,21 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 		//pgo->orientation.x -= pgo->orientation.y;
 	}
 
-	if (GLHelper::keystateV == GL_TRUE)
-	{
-		if (camtype_flag == GL_TRUE)
-		{
-			camtype_flag = GL_FALSE;
-		}
-		else
-		{
-			camtype_flag = GL_TRUE;
-		}
-		GLHelper::keystateV = GL_FALSE;
-	}
+	// Not needed to show
+	//if (Graphics::Input::keystateV == GL_TRUE)
+	//{
+	//	if (camtype_flag == GL_TRUE)
+	//	{
+	//		camtype_flag = GL_FALSE;
+	//	}
+	//	else
+	//	{
+	//		camtype_flag = GL_TRUE;
+	//	}
+	//	Graphics::Input::keystateV = GL_FALSE;
+	//}
 
-	if (GLHelper::keystateZ == GL_TRUE)
+	if (Graphics::Input::keystateZ == GL_TRUE)
 	{
 		if (height >= max_height)
 		{
@@ -223,10 +222,10 @@ GLint Graphics::Camera2D::getHeight()
 // Get Window Height
 GLint Graphics::Camera2D::getWinHeight()
 {
-	return (int)GLHelper::height;
+	return (int)Graphics::Input::screenheight;
 }
 // Get Window Width
 GLint Graphics::Camera2D::getWinWidth()
 {
-	return (int)GLHelper::width;
+	return (int)Graphics::Input::screenwidth;
 }

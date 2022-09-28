@@ -7,13 +7,13 @@
 
 vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed)
 {
-	float dt = GLHelper::delta_time;
+	float dt = Graphics::Input::delta_time;
 	dt = dt > (1 / 60.f) ? (1 / 60.f) : dt;
 
 	static vector2D::vec2D destination{ 0.f, 0.f };
 	static vector2D::vec2D mouseVel{ 0.f, 0.f };
 
-	if (GLHelper::mousestateLeft)
+	if (Graphics::Input::mousestateLeft)
 	{
 		vector2D::Vector2DNormalize(mouseVel, dest - src);
 		destination = dest;
@@ -40,20 +40,20 @@ vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest,
 
 vector2D::vec2D keyboardMovement (vector2D::vec2D &pos, float &speed)
 {
-	float dt = GLHelper::delta_time;
+	float dt = Graphics::Input::delta_time;
 
 	vector2D::vec2D keyboardVel{0.f, 0.f};
-	if (GLHelper::keystateI == true) //up
-		keyboardVel.y += speed;
-	
-	if (GLHelper::keystateK == true) //down
-		keyboardVel.y -= speed;
+	//if (Graphics::Input::keystateI == true) //up
+	//	keyboardVel.y += speed;
+	//
+	//if (Graphics::Input::keystateK == true) //down
+	//	keyboardVel.y -= speed;
 
-	if (GLHelper::keystateJ == true) //left
-		keyboardVel.x -= speed;
+	//if (Graphics::Input::keystateJ == true) //left
+	//	keyboardVel.x -= speed;
 
-	if (GLHelper::keystateL == true) //right
-		keyboardVel.x += speed;
+	//if (Graphics::Input::keystateL == true) //right
+	//	keyboardVel.x += speed;
 
 	if (keyboardVel.x != 0.f || keyboardVel.y != 0.f)
 	{

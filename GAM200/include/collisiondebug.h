@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glapp.h>
+#include <app.h>
 
 namespace Graphics
 {

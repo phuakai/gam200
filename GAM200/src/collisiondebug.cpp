@@ -1,4 +1,4 @@
-#include <glapp.h>
+#include <app.h>
 #include <collisiondebug.h>
 #include <transform.h>
 #include <mat3x3.h>
@@ -32,7 +32,7 @@ void Graphics::collisionDebugInit(GLApp::GLObject& object)
 
 void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 {
-	std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
+	//std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
 
 	matrix3x3::mat3x3 worldtondc = transform.createWorldtoNDC();

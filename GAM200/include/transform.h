@@ -3,7 +3,7 @@
 #include <vec2D.h>
 #include <mat3x3.h>
 #include <camera.h>
-#include <glhelper.h>
+#include <input.h>
 
 class Transform // Input class
 {
@@ -100,8 +100,8 @@ private:
 //
 //inline matrix3x3::mat3x3 Transform::createWorldtoNDC(vector2D::vec2D position)
 //{
-//	int height = GLHelper::height;
-//	int width = GLHelper::width;
+//	int height = Graphics::Input::height;
+//	int width = Graphics::Input::width;
 //
 //
 //	// at startup, the camera must be initialized to free camera ...

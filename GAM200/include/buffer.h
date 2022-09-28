@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glhelper.h>
 #include <model.h>
 #include <vec2D.h>
 
