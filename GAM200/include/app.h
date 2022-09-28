@@ -42,25 +42,25 @@ struct GLApp {
 	static void cleanup();
 
 
-	//added for physics testing
-	enum class collisionType
-	{
-		NIL = 0,					//0
-		CircleDetection,			//1
-		CirclePushResolution,		//2
-		CircleBlockResolution,		//3
-		PolygonDetection,			//4
-		PolygonPushResolution,		//5
-		PolygonBlockResolution,		//6
-		PolygonCircleDetection,		//7
-		PolygonCircleResolution		//8
-	};
+  //added for physics testing
+  enum class collisionType
+  {
+	NIL = 0,					//0
+	CircleDetection,			//1
+	CirclePushResolution,		//2
+	CircleBlockResolution,		//3
+	PolygonDetection,			//4
+	PolygonPushResolution,		//5
+	PolygonBlockResolution,		//6
+	PolygonCircleDetection,		//7
+	PolygonCircleResolution		//8
+  };
 
-	static collisionType currentCollision;
-	static bool movableShape;
-	static std::unordered_map<collisionType, std::string> collisionInfo;
+  static collisionType currentCollision;
+  static bool movableShape;
+  static std::unordered_map<collisionType, std::string> collisionInfo;
 
-	struct GLObject {
+  struct GLObject {
 		vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
 		vector2D::vec2D scaling{};														// scaling parameters
 		vector2D::vec2D modelCenterPos{};													// center of shape coordinates
@@ -68,6 +68,7 @@ struct GLApp {
 		physicsRigidBody body;															// param for collision
 		int objId;																		// For collision debugger
 		int texId;
+		int totalsprites;
 
 		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
 		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
@@ -93,8 +94,6 @@ struct GLApp {
 		std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
 		std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
-		// member functions that must be defined in glapp.cpp
-		// function to initialize object's state
 		void init();
 		// function to render object's model (specified by index mdl_ref)
 		// uses model transformation matrix mdl_to_ndc_xform matrix
@@ -103,7 +102,7 @@ struct GLApp {
 		// function to update the object's model transformation matrix
 		void update(GLdouble delta_time);
 
-		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0); // Temp
+		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0, int totalsprite = 1); // Temp
 	};
 
 

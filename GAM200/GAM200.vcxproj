@@ -91,12 +91,13 @@
     <None Include="src\rttr\rttr.cmake" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\app.h" />
     <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\collision.h" />
     <ClInclude Include="include\collisiondebug.h" />
     <ClInclude Include="include\ECS.h" />
+    <ClInclude Include="include\ECS.hpp" />
+    <ClInclude Include="include\app.h" />
     <ClInclude Include="include\glslshader.h" />
     <ClInclude Include="include\graphics.h" />
     <ClInclude Include="include\imconfig.h" />

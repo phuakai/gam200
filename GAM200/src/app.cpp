@@ -304,32 +304,24 @@ void GLApp::init()
 
 	GLApp::objectcounter = 0;
 	GLApp::modulate = false;
-	GLApp::alphablend = false;
+	GLApp::alphablend = true;
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	Graphics::createTextureVector(Graphics::textureobjects, 6);
-	//std::cout << "Texture units " << Graphics::textureobjects.size() << std::endl;
-	//Graphics::textureobjects.resize(2);
-	// Part 1: initialize OpenGL state ...
+	Graphics::createTextureVector(Graphics::textureobjects, 9);
+
 	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
-
-	// Part 2: use the entire window as viewport ...
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
-
-	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
-	// and store repositories of models of type GLModel in container
-	// GLApp::models, store shader programs of type GLSLShader in
-	// container GLApp::shdrpgms, and store repositories of objects of
-	// type GLObject in container GLApp::objects
-	//GLApp::init_scene("../scenes/gam200.scn");
 
 	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
 	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]); // 
 	Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects[2]); // Grass map
 	Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
 	Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
-	Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Yellow Circle
+	Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Drag Box
+	Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
+	Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
+	Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
@@ -377,9 +369,8 @@ void GLApp::init()
 	ecs.RegisterComponent<Stats>("Stats");
 
 	// ECS: Adding components into Entities
-
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("player1", "square", vector2D::vec2D(-200, 0), vector3D::vec3D(0.3, 0.3, 0.7), vector2D::vec2D(20, 20), 0, 0, 0, "gam200-shdrpgm");
+	player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm");
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	//player1.Add<Texture>(0, 1, 1, "none");
@@ -387,7 +378,7 @@ void GLApp::init()
 	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
 	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3, 0.3, 0.7));
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
 	//GLApp::GLObject::gimmeObject("square", playerList[i].unitName, playerList[i].size, vector2D::vec2D(playerList[i].position.x, playerList[i].position.y), vector3D::vec3D(0.3, 0.3, 0.7));
 
 
@@ -438,6 +429,7 @@ void GLApp::init()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
+		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		// velocity, target, force, speed
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(player1.GetID())->position, 1, 2, 0, vector2D::vec2D(0, 0));
 		//enemyUnits[i].Add<Sprite>();
@@ -468,18 +460,14 @@ void GLApp::init()
 	{
 		for (int j = 0; j < MAX_GRID_X; ++j)
 		{
-			GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
-
+			//GLApp::GLObject::gimmeObject("square", std::to_string(counter), vector2D::vec2D(1000 / MAX_GRID_X - 5, 1000 / MAX_GRID_Y - 5), vector2D::vec2D(startingPoint.x + (j * 1000 / MAX_GRID_X), startingPoint.y + (i * 1000 / MAX_GRID_X)), vector3D::vec3D(1, 1, 1));
 			++counter;
 		}
 	}
-	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
-	GLApp::GLObject::gimmeObject("square", "0Background", vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenwidth), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 2);
+	//GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
+	GLApp::GLObject::gimmeObject("square", "0Background", vector2D::vec2D((float)Graphics::Input::screenheight, (float)Graphics::Input::screenheight), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 7, 3);
+	GLApp::GLObject::gimmeObject("square", "0Background2", vector2D::vec2D((float)Graphics::Input::screenheight, (float)Graphics::Input::screenheight), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 8, 3);
 	//GLApp::GLObject::gimmeObject("square", "zDragBox", vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenwidth), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -2, 5);
-
-	// Part 5: Print OpenGL context and GPU specs
-	//Graphics::Input::print_specs();
-
 
 	textureSystem.Action([](const float elapsedMilliseconds,
 		const std::vector<EntityID>& entities,
@@ -552,20 +540,21 @@ void GLApp::init()
 					vector2D::vec2D enemyDims = ecs.GetComponent<Render>((*enemyUnit)->key)->dimension;
 					enemyDims /= 2.f;
 
-					// Create vertices for enemy
-					std::vector<vector2D::vec2D> enemyVtx;
-					for (int j = -1; j < 2; j += 2)
-					{
-						for (int k = -1; k < 2; k += 2)
+						// Create vertices for enemy
+						std::vector<vector2D::vec2D> enemyVtx;
+						for (int j = -1; j < 2; j += 2)
 						{
-							enemyVtx.emplace_back(vector2D::vec2D(enemyPos.x + k * enemyDims.x, enemyPos.y + j * enemyDims.y));
+							for (int k = -1; k < 2; k += 2)
+							{
+								enemyVtx.emplace_back(vector2D::vec2D(enemyPos.x + k * enemyDims.x, enemyPos.y + j * enemyDims.y));
+							}
 						}
-					}
-					if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
-					{
+						if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
+						{
 						Movement* collided = ecs.GetComponent<Movement>((*enemyUnit)->key);
 						collided->collisionFlag = true;
 						collided->collisionResponse = pointer->position;
+						}
 					}
 				}
 			}
@@ -615,7 +604,7 @@ void GLApp::init()
 		});
 
 	std::string json_string;
-
+	
 	{
 		circle c_1("Circle #1");
 		shape& my_shape = c_1;
@@ -665,14 +654,14 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	if (mdl_ref->first != "triangle")	// check if is black triangle
 	{
 		orientation.x += orientation.y * float(delta_time);
+	}
 
-
-		//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-
-		matrix3x3::mat3x3 rotation
-		(cos(orientation.x), -sin(orientation.x), 0,
-			sin(orientation.x), cos(orientation.x), 0,
-			0, 0, 1);
+	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
+	
+	matrix3x3::mat3x3 rotation
+	(cos(orientation.x), -sin(orientation.x), 0,
+	sin(orientation.x), cos(orientation.x), 0,
+	0, 0, 1);
 
 		matrix3x3::mat3x3 translation
 		(1, 0, modelCenterPos.x,
@@ -703,7 +692,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 			worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
 			ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
 		}
-	}
+	
 }
 
 
@@ -718,138 +707,8 @@ set the transformation matrix for the model and render using glDrawElements
 */
 void GLApp::GLObject::draw() const
 {
-	//if (mdl_ref->first == "circle")
-	//{																														  // load shader program in use by this object
-	//	shd_ref->second.Use();
-	//	// bind VAO of this object's model
-	//	glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-	//	std::vector<vector2D::Vec2> tex_coord
-	//	{
-	//		vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
-	//		vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
-	//	};
-	//	std::vector<vector3D::Vec3> clr_vtx
-	//	{
-	//		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-	//		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-	//	};
-
-
-	//	std::vector<Graphics::vertexData> vertexData;
-	//	for (int i = 0; i < ndc_coords.size(); ++i)
-	//	{
-	//		Graphics::vertexData tmpVtxData;
-	//		tmpVtxData.posVtx = ndc_coords[i];
-	//		if (mdl_ref->first == "circle")
-	//		{
-	//			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-	//			tmpVtxData.txtVtx = vector2D::Vec2(1.f, 1.f);
-	//		}
-	//		else
-	//		{
-	//			tmpVtxData.clrVtx = clr_vtx[i];
-	//			tmpVtxData.txtVtx = tex_coord[i];
-	//		}
-	//		//tmpVtxData.txtVtx = tex_coord[i];
-	//		vertexData.emplace_back(tmpVtxData);
-	//	}
-	//	glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData.size(), vertexData.data()); // Set new buffer index with subdata
-
-
-	//	// copy object's model-to-NDC matrix to vertex shader's
-	//	// uniform variable uModelToNDC
-	//	glm::mat3 glm_mdl_to_ndc_xform
-	//	{
-	//		mdl_to_ndc_xform.m[0], mdl_to_ndc_xform.m[1], mdl_to_ndc_xform.m[2],
-	//		mdl_to_ndc_xform.m[3], mdl_to_ndc_xform.m[4], mdl_to_ndc_xform.m[5],
-	//		mdl_to_ndc_xform.m[6], mdl_to_ndc_xform.m[7], mdl_to_ndc_xform.m[8]
-	//	};
-	//	//shd_ref->second.SetUniform("uModel_to_NDC", glm_mdl_to_ndc_xform);
-	//	//shd_ref->second.SetUniform("ourTexture", mdl_to_ndc_xform);
-	//	//std::cout << "Shdr handle " << shd_ref->second.GetHandle() << std::endl;
-	//	GLuint tex_loc = glGetUniformLocation(shd_ref->second.GetHandle(), "ourTexture");
-	//	glUniform1i(tex_loc, 0);
-
-	//	GLboolean UniformModulate = glGetUniformLocation(shd_ref->second.GetHandle(), "modulatebool");
-	//	glUniform1i(UniformModulate, modulate);
-
-	//	GLboolean UniformTextures = glGetUniformLocation(shd_ref->second.GetHandle(), "texturebool");
-	//	glUniform1i(UniformTextures, textures);
-
-	//	// call glDrawElements with appropriate arguments
-	//	glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-
-	//	// unbind VAO and unload shader program
-	//	glBindVertexArray(0);
-
-	//	if (coldebug == true)
-	//	{
-
-
-	//		glBindVertexArray(mdl_ref->second.getVAOid()); // Rebind VAO
-	//		//glGetVertexArrayIndexediv(mdl_ref->second.getVAOid(), 0, GL_VERTEX_BINDING_BUFFER, reinterpret_cast<GLint*>(&buffer));
-
-	//		std::vector<vector2D::Vec2> tex_coord2
-	//		{
-	//			vector2D::Vec2(1.f, 1.f), vector2D::Vec2(0.f, 1.f),
-	//			vector2D::Vec2(0.f, 0.f), vector2D::Vec2(1.f, 0.f)
-	//		};
-
-
-	//		std::vector<vector3D::Vec3> clr_vtx2
-	//		{
-	//			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f),
-	//			vector3D::Vec3(1.f, 1.f, 0.f), vector3D::Vec3(1.f, 1.f, 0.f)
-	//		};
-	//		if (overlap == true)
-	//		{
-	//			//std::cout << "Overlapping" << std::endl;
-	//			for (int i = 0; i < 4; i++)
-	//			{
-	//				clr_vtx2[i] = vector3D::Vec3(1.f, 0.f, 0.f);
-	//			}
-	//		}
-
-	//		std::vector<Graphics::vertexData> vertexData2;
-	//		for (int i = 0; i < ndc_coords.size(); ++i)
-	//		{
-	//			Graphics::vertexData tmpVtxData;
-	//			tmpVtxData.posVtx = ndc_coords[i];
-	//			if (mdl_ref->first == "circle")
-	//			{
-	//				if (overlap == true)
-	//				{
-	//					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 0.f, 0.f);
-	//					tmpVtxData.txtVtx = vector2D::Vec2(1.f, 1.f);
-	//				}
-	//				else
-	//				{
-	//					tmpVtxData.clrVtx = vector3D::Vec3(1.f, 1.f, 0.f);
-	//					tmpVtxData.txtVtx = vector2D::Vec2(1.f, 1.f);
-	//				}
-	//			}
-	//			else
-	//			{
-	//				tmpVtxData.clrVtx = clr_vtx2[i];
-	//				tmpVtxData.txtVtx = tex_coord2[i];
-	//			}
-	//			vertexData2.emplace_back(tmpVtxData);
-	//		}
-	//		glNamedBufferSubData(mdl_ref->second.getVBOid(), 0, sizeof(Graphics::vertexData) * vertexData2.size(), vertexData2.data()); // Set new buffer index with subdata
-
-	//		std::cout << "Buffer size " << vertexData2.size() << " Draw count " << mdl_ref->second.getDrawCnt() << std::endl;
-	//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//		glDrawElements(mdl_ref->second.getPrimitiveType(), mdl_ref->second.getDrawCnt(), GL_UNSIGNED_SHORT, NULL);
-	//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//		glBindVertexArray(0);
-	//	}
-	//	//glDisable(GL_BLEND);
-	//	shd_ref->second.UnUse();
-	//}
-
 	basicbatch.batchmodel = mdl_ref->second;
 	basicbatch.batchshader = shd_ref->second;
-
 
 	std::vector<vector3D::Vec3> clr_vtx
 	{
@@ -878,17 +737,16 @@ void GLApp::GLObject::draw() const
 			}
 		}
 	}
-
+	if (textureid == 7 || textureid == 8)
+	{
+		totalframes = totalsprites;
+		curframe = 1;
+	}
 	std::vector<vector2D::Vec2> texcoord;
 	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f)); // Bottom left
 	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f)); // Bottom right
 	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 1.f)); // Top right
 	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 1.f)); // Top left
-	//std::cout << "Texture coords " << std::endl
-	//	<< texcoord[0].x << ", " << texcoord[0].y << std::endl
-	//	<< texcoord[1].x << ", " << texcoord[1].y << std::endl
-	//	<< texcoord[2].x << ", " << texcoord[2].y << std::endl
-	//	<< texcoord[3].x << ", " << texcoord[3].y << std::endl;
 
 	std::vector<Graphics::vertexData> vertexData;
 	for (int i = 0; i < ndc_coords.size(); ++i)
@@ -904,7 +762,7 @@ void GLApp::GLObject::draw() const
 			tmpVtxData.clrVtx = clr_vtx[i];
 		}
 		tmpVtxData.txtVtx = texcoord[i];
-		tmpVtxData.txtIndex = textureid;
+		tmpVtxData.txtIndex = (float)textureid;
 		vertexData.emplace_back(tmpVtxData);
 	}
 	basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
@@ -913,14 +771,12 @@ void GLApp::GLObject::draw() const
 	basicbatch.vaoid = mdl_ref->second.getVAOid();
 	basicbatch.vboid = mdl_ref->second.getVBOid();
 	basicbatch.eboid = mdl_ref->second.getEBOid();
-	basicbatch.totalsize += vertexData.size();
+	basicbatch.totalsize += (int)vertexData.size();
 	basicbatch.primtype = mdl_ref->second.getPrimitiveType();
 	basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 
-
 	if (coldebug == true)
 	{
-
 		debugbatch.batchmodel = mdl_ref->second;
 		debugbatch.batchshader = shd_ref->second;
 		std::vector<vector3D::vec3D> clr_vtxcoldebug;
@@ -935,7 +791,6 @@ void GLApp::GLObject::draw() const
 				clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.f, 0.2f, 0.7f)); // blue if not overlapping
 			}
 		}
-
 		std::vector<Graphics::vertexData> colDebugData;
 		for (int i = 0; i < ndc_coords.size(); ++i)
 		{
@@ -947,11 +802,10 @@ void GLApp::GLObject::draw() const
 			}
 			else
 			{
-				//std::cout << "Colour " << clr_vtxcoldebug[i].x << ", " << clr_vtxcoldebug[i].y << ", " << clr_vtxcoldebug[i].z << std::endl;
 				tmpVtxData.clrVtx = clr_vtxcoldebug[i];
 			}
 			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = texId; // notexture for coldebug
+			tmpVtxData.txtIndex = (float)texId; // notexture for coldebug
 			colDebugData.emplace_back(tmpVtxData);
 		}
 
@@ -961,13 +815,11 @@ void GLApp::GLObject::draw() const
 		debugbatch.vaoid = mdl_ref->second.getVAOid();
 		debugbatch.vboid = mdl_ref->second.getVBOid();
 		debugbatch.eboid = mdl_ref->second.getEBOid();
-		debugbatch.totalsize += colDebugData.size();
+		debugbatch.totalsize += (int)colDebugData.size();
 		debugbatch.primtype = mdl_ref->second.getPrimitiveType();
 		debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 	}
 	texcoord.clear();
-
-
 }
 
 
@@ -994,14 +846,8 @@ void GLApp::update()
 	if (Graphics::Input::mousestateLeft)
 	{
 		Graphics::Input::mousestateLeft = false;
-
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		mouseClick = true;
-
-		std::cout << "this is my mouse pos: " << mousePosX << " " << mousePosY << std::endl;
-
-		//obj->second.modelCenterPos.x = (float)mousePosx;
-		//obj->second.modelCenterPos.y = (float)mousePosy;
 	}
 
 	if (Graphics::Input::keystateP)
@@ -1125,35 +971,13 @@ void GLApp::update()
 				randwidth = 100;
 				randheight = 100;
 			}
-			//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
-
-
-			//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
-			//
-
-		//EntityID entid = ecs.GetNewID();
-		//ecs.RegisterEntity(entid, finalobjname);
-		//ecs.AddComponent<Texture>(entid);
-		//createdUnits.resize(objectcounter);
-
-
-		// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
+			GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, (int)randindex);
+			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
 			createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 			createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
-			//createdUnits[objectcounter].Add<Sprite>("square", vector2D::vec2D(randwidth, randheight));
 			createdUnits[objectcounter].Add<Stats>(100);
-			//createdUnits[objectcounter].Add<Texture>(1, "tree");
 			ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
-			//EntityID testid = createdUnits[objectcounter].GetID();
-			//std::cout << "Position " << ecs.GetComponent<Object>(testid)->position.x << "," << ecs.GetComponent<Object>(testid)->position.y << std::endl;
 
-			//createdUnits[objectcounter].Add<Object>(vector2D::vec2D(-200, 0), vector3D::vec3D(0.f, 0.2f, 0.8f), 1, vector2D::vec2D(100, 100), 1, 4, 0, 0, 0, "test");
-			//createdUnits[objectcounter].Add<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			//createdUnits[objectcounter].Add<Texture>(entid, 1, "tree");
-			// Position, Colour, Texture id, Dimension, Current frame, Number of frames, vao, vbo, ebo, shadername
-			//std::cout << "Shader program " << tmpObj.shd_ref->second << std::endl;
-			// ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			//ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 			Graphics::Input::keystateQ = false;
 			Graphics::Input::keystateE = false;
 		}
@@ -1196,7 +1020,7 @@ void GLApp::update()
 	Render* player = ecs.GetComponent<Render>(player1.GetID());
 
 	if (timer > 0)
-		timer -= Graphics::Input::delta_time;
+		timer -= (float)Graphics::Input::delta_time;
 
 	else
 		ecs.RunSystems(2, 100);
@@ -1209,11 +1033,6 @@ void GLApp::update()
 		animationTimer = 4;
 	}
 
-	// next, iterate through each element of container objects
-	// for each object of type GLObject in container objects
-	// call update function GLObject::update(delta_time) except on
-	// object which has camera embedded in it - this is because
-	// the camera has already updated the object's orientation
 	bool test{ true };
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
@@ -1258,7 +1077,7 @@ void GLApp::update()
 									float radius = obj1->second.body.getRad();
 									float radius2 = obj2->second.body.getRad();
 									if (physics::CollisionDetectionCircleCircle(obj1->second.modelCenterPos, radius,
-										obj2->second.modelCenterPos, radius2))
+																				obj2->second.modelCenterPos, radius2))
 									{
 										//std::cout << "IM COLLIDING\n";
 										obj1->second.overlap = true;
@@ -1532,7 +1351,7 @@ void GLApp::update()
 	static bool inputs_step = true;
 	static float  f32_v = 0.123f;
 	const float f32_one = 1.f;
-
+	
 	//for (auto i : ecs.getEntities()) {
 
 	if (ImGui::TreeNode("Entities")) {
@@ -1622,13 +1441,13 @@ void GLApp::update()
 			ImGui::Text("Please Input Entity Name");
 
 		ImGui::InputText("Entity Name", name, 100);
-
+		
 		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
 		{
 			std::string componentName = ecs.getAllRegisteredComponents()[i];
 			//rttr::instance instance = rttr::instance::instance(componentList[i]);
 			rttr::type component = rttr::type::get_by_name(componentName);
-
+			
 			// odd numbers, to join the 2nd checkbox in the same line
 			//if (i & 1)
 			//	ImGui::SameLine();
@@ -1672,7 +1491,7 @@ void GLApp::update()
 					//static int typeCurrent = 0;
 					//ImGui::Combo("Type", &typeCurrent, types, IM_ARRAYSIZE(types));
 					//render->type = types[typeCurrent];
-
+					
 /*					static std::vector<std::string> entities = ecs.getEntityNames();
 					static int currentItem = 0;*/ // Here we store our selection data as an index.
 					//	ImGui::ListBox("Target", &currentItem, 1, entities.data(), entities.size());
@@ -1701,12 +1520,12 @@ void GLApp::update()
 
 				//std::string comp = ecs.getAllRegisteredComponents()[i];
 				//rttr::type theComp = rttr::type::get_by_name(ecs.getAllRegisteredComponents()[i]);
-
+			
 				//rttr::instance IR = r.create();
-
+				
 				//auto e =r.get_properties();
 				//auto q = *e.begin();
-
+			
 				//std::cout << prop.get_name();
 				//std::cout << VR.get_type().get_name().to_string();
 				//rttr::instance instance = .get_type().get_raw_type().is_wrapper() ? componentList[i].get_wrapped_instance() : componentList[i];
@@ -1720,12 +1539,12 @@ void GLApp::update()
 					//{
 						//static vector2D::vec2D temp;
 						//ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-
+						
 						//instance.get_type().get_by_name(property.get_name()).set_property_value(property.get_name(), temp);
-
+						
 						//std::cout << instance.get_type().get_property_value("position").to_string() << "test";
 						//std::cout << instance.get_type().get_name().to_string() << std::endl;
-
+						
 					//}
 					//ImGui::InputText(property.get_name().data(), name, 100);
 				//}
@@ -1754,13 +1573,13 @@ void GLApp::update()
 			counter++;
 		}
 	}
-
+	
 	//ImGui::TreeNode("THE REST");
 	/*
 	for (auto i : ecs.getEntities()) {
 		std::string str = ecs.getEntityName(i);
 		const char* c = str.c_str();
-		ImGui::Text(c);
+		ImGui::Text(c);	
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end(); ++obj1)
 	{
 		if (obj1->first != "Camera")
@@ -1768,7 +1587,7 @@ void GLApp::update()
 			obj1->second.update(Graphics::Input::delta_time);
 		}
 	}
-
+	
 	for (std::map <std::string, GLObject>::iterator obj1 = objects.begin(); obj1 != objects.end() ; ++obj1)
 	{
 		for (GLuint i = 0; i < obj1->second.mdl_ref->second.posvtx_cnt; i++)
@@ -1818,16 +1637,12 @@ glClear to set the color buffer bit, glfwSetWindowTitle to set the window title
 */
 void GLApp::draw()
 {
-	// write window title with appropriate information using
-	// glfwSetWindowTitle() ...
-
 	std::stringstream title;
 	title << std::fixed;
 	title << std::setprecision(2);
 	title << "GAM200";
 	title << std::setprecision(2) << " | FPS " << int(Graphics::Input::fps * 100) / 100.0;
 	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
-	title << " | Orientation: " << std::setprecision(0) << (Graphics::camera2d.getCameraObject().orientation.x / M_PI * 180) << " degrees";
 	title << " | Window height: " << Graphics::camera2d.getHeight();
 	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
 
@@ -1842,7 +1657,6 @@ void GLApp::draw()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	// Part 4: Render each object in container GLApp::objects
 	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
 		if (obj->first != "Camera")
@@ -1876,8 +1690,8 @@ void GLApp::draw()
 
 This function is empty for now
 */
-void GLApp::cleanup() {
-	//std::cout << "Cleaning" << std::endl;
+void GLApp::cleanup() 
+{
 	basicbatch.BatchDelete();
 	debuglinebatch.BatchDelete();
 	debugbatch.BatchDelete();
@@ -1916,18 +1730,18 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 		std::cout << shdr_pgm.GetLog() << "\n";
 		std::exit(EXIT_FAILURE);
 	}
-	// add compiled, linked, and validated shader program to
-	// std::map container GLApp::shdrpgms
+
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
 }
 
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, int texid)
+void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, int texid, int totalsprite)
 {
 	GLObject tmpObj;
 	std::string hi;
 
 	tmpObj.objId = id;
 	tmpObj.texId = texid;
+	tmpObj.totalsprites = totalsprite;
 	if (modelname == "circle")
 	{
 		//std::cout << "Tex id set\n";
@@ -1935,8 +1749,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	if (modelname == "circle")
 	{
-		tmpObj.body.createCircleBody(scale.x / 2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
-		std::cout << "Radius " << tmpObj.body.getRad() << std::endl;
+		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
 	}
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
@@ -1951,7 +1764,6 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	tmpObj.scaling = scale;
 	tmpObj.orientation = vector2D::vec2D(0, 0);
 	tmpObj.modelCenterPos = pos;
-	//std::cout << "Position " << pos.x << ", " << pos.y << std::endl;
 	tmpObj.speed = 200.f;
 
 	if (shdrpgms.find("gam200-shdrpgm") != shdrpgms.end())
@@ -1978,127 +1790,6 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	objects[objname] = tmpObj;
 
 }
-/*  _________________________________________________________________________*/
-/*! GLApp::init_scene
-
-@param std::string scene_filename
-Name of scene to be used
-
-@return none
-
-This function is called once at the initialization of the scene to compute and initialize the objects
-*/
-void GLApp::init_scene(std::string scene_filename)
-{
-	std::ifstream ifs{ scene_filename, std::ios::in };
-	if (!ifs)
-	{
-		std::cout << "ERROR: Unable to open scene file: "
-			<< scene_filename << "\n";
-		exit(EXIT_FAILURE);
-	}
-	ifs.seekg(0, std::ios::beg);
-	std::string line;
-	getline(ifs, line); // first line is count of objects in scene
-	std::istringstream line_sstm{ line };
-	int obj_cnt;
-	line_sstm >> obj_cnt; // read count of objects in scene
-	while (obj_cnt--)
-	{
-		/*
-		add code to do this:
-		read remaining parameters of object from file:
-		object's name
-		RGB parameters for rendering object's model geometry
-		scaling factors to be applied on object's model
-		orientation factors: initial angular orientation and angular speed
-		object's position in game world
-		set data member GLApp::GLObject::mdl_ref to iterator that points to
-		model instantiated by this object
-		set data member GLApp::GLObject::shd_ref to iterator that points to
-		shader program used by this object
-		insert this object to std::map container objects
-		*/
-		GLObject Object;
-		// read each object's parameters
-		getline(ifs, line); // 1st parameter: model's name
-		std::istringstream line_modelname{ line };
-		std::string model_name;
-		line_modelname >> model_name;
-
-		getline(ifs, line); // 2nd parameter: object's name
-		std::istringstream line_model_obj_name{ line };
-		std::string model_object;
-		line_model_obj_name >> model_object;
-
-		getline(ifs, line); // 3rd parameter: shader's name
-		std::istringstream line_model_shader{ line };
-		std::string model_shader_pgm, model_vert_shader, model_frag_shader;
-		line_model_shader >> model_shader_pgm >> model_vert_shader >> model_frag_shader;
-
-		getline(ifs, line); // 4th parameter: color 
-		std::istringstream line_model_color{ line };
-		line_model_color >> Object.color.r >> Object.color.g >> Object.color.b;
-
-		getline(ifs, line); // 5th parameter: scale 
-		std::istringstream line_model_scale{ line };
-		line_model_scale >> Object.scaling.x >> Object.scaling.y;
-
-		getline(ifs, line); // 6th parameter: orientation 
-		std::istringstream line_model_orientation{ line };
-		line_model_orientation >> Object.orientation.x >> Object.orientation.y;
-		Object.orientation.x *= float(M_PI / 180);
-		Object.orientation.y *= float(M_PI / 180);
-
-		getline(ifs, line); // 7th parameter: position 
-		std::istringstream line_model_position{ line };
-		line_model_position >> Object.modelCenterPos.x >> Object.modelCenterPos.y;
-
-		//for physics
-		getline(ifs, line); // 8th parameter: velocity
-		std::istringstream velocity{ line };
-		velocity >> Object.speed;
-		Object.overlap = false;
-
-		/*
-		add code to do this:
-		if model with name model_name is not present in std::map container
-		called models, then add this model to the container
-		*/
-		if (models.find(model_name) != models.end())
-		{
-			Object.mdl_ref = models.find(model_name);
-		}
-		else
-		{
-			Graphics::Model Model;
-			Model = Model.init(model_name);
-			models[model_name] = Model;
-			Object.mdl_ref = models.find(model_name);
-
-		}
-		/*
-		add code to do this:
-		if shader program listed in the scene file is not present in
-		std::map container called shdrpgms, then add this model to the
-		container
-		*/
-		if (shdrpgms.find(model_shader_pgm) != shdrpgms.end())
-		{
-			Object.shd_ref = shdrpgms.find(model_shader_pgm);
-
-			std::cout << "Shaderprog " << model_shader_pgm << std::endl;
-		}
-		else
-		{
-			insert_shdrpgm(model_shader_pgm, model_vert_shader, model_frag_shader);
-			Object.shd_ref = shdrpgms.find(model_shader_pgm);
-			std::cout << "Shaderprog " << model_shader_pgm << std::endl;
-		}
-		objects[model_object] = Object;
-	}
-}
-
 
 /*  _________________________________________________________________________*/
 /*! GLObject::init
@@ -2124,7 +1815,6 @@ void GLApp::entitydraw()
 			continue;
 		}
 
-		//std::cout << "Integers " << i << ", " << entities[i] << std::endl;
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 		int texid = 0;
 		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
@@ -2132,13 +1822,6 @@ void GLApp::entitydraw()
 		{
 			texid = curobjTexture->textureID;
 		}
-		//Stats* overlapobj = ecs.GetComponent<Stats>(entities[i]);
-		//if (i > 100)
-		//{
-		//	std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
-		//	std::cout << "Colour " << curobj->color.r << ", " << curobj->color.g << ", " << curobj->color.b << std::endl;
-		//	std::cout << "Shader prog " << curobj->shaderName << std::endl;
-		//}
 		basicbatch.batchmodel = models["square"];
 		GLSLShader shaderid;
 		if (shdrpgms.find(curobj->shaderName) != shdrpgms.end())
@@ -2152,32 +1835,20 @@ void GLApp::entitydraw()
 		}
 		basicbatch.batchshader = shaderid;
 
-
 		std::vector<vector3D::vec3D> clr_vtx
 		{
 			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b),
 			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
 
-		//std::vector<vector3D::Vec3> clr_vtx
-		//{
-		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-		//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-		//};
-		//std::cout << "Texture id " << curobj->textureID << std::endl;
 		int numofsprites = 0;
 		int spritestep = 0;
 		if (texid)
 		{
-			//curobjTexture->numberOfSprites = 4;
-			//curobjTexture->spriteStep = 1;
 			numofsprites = curobjTexture->numberOfSprites;
 			spritestep = curobjTexture->spriteStep;
-			//std::cout << "This current sprite " << spritestep << std::endl;
 			if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
 			{
-				//std::cout << "Circle\n";
-				//std::cout << overlapobj->overlap << std::endl;
 				//if (overlapobj->overlap)
 				//{
 				//	if (curobj->textureID == 3)
@@ -2199,15 +1870,6 @@ void GLApp::entitydraw()
 		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 0.f));
 		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 1.f));
 		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 1.f));
-
-		//if (curobj->textureID == 3 || curobj->textureID == 4)
-		//{
-		//	for (int i = 0; i < 4; i++)
-		//	{
-		//		std::cout << "Tex coord " << texcoord[i].x << ", " << texcoord[i].y << std::endl;
-		//	}
-		// }
-		//	std::cout << std::endl;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobj->dimension.x / 2.f;
@@ -2238,27 +1900,8 @@ void GLApp::entitydraw()
 			tmpVtxData.clrVtx = curobj->color;
 
 			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = texid;
 			vertexData.emplace_back(tmpVtxData);
 		}
-
-		//	std::vector<Graphics::vertexData> vertexData;
-		//for (int i = 0; i < ndc_coords.size(); ++i)
-		//{
-		//	Graphics::vertexData tmpVtxData;
-		//	tmpVtxData.posVtx = ndc_coords[i];
-		//	if (mdl_ref->first == "circle")
-		//	{
-		//		tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-		//	}
-		//	else
-		//	{
-		//		tmpVtxData.clrVtx = clr_vtx[i];
-		//	}
-		//	tmpVtxData.txtVtx = texcoord[i];
-		//	tmpVtxData.txtIndex = texId;
-		//	vertexData.emplace_back(tmpVtxData);
-		//}
 
 		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
 		basicbatch.ebodata.insert(basicbatch.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
@@ -2266,7 +1909,7 @@ void GLApp::entitydraw()
 		basicbatch.vaoid = models["square"].getVAOid();
 		basicbatch.vboid = models["square"].getVBOid();
 		basicbatch.eboid = models["square"].getEBOid();
-		basicbatch.totalsize += vertexData.size();
+		basicbatch.totalsize += (int)vertexData.size();
 		basicbatch.primtype = models["square"].getPrimitiveType();
 		basicbatch.totaldrawcnt += models["square"].getDrawCnt();
 
@@ -2308,12 +1951,6 @@ void GLApp::entitydraw()
 				vector2D::vec2D(curobj->position.x, curobj->position.y),
 				vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
 			}; // CALCULATE POSITION FROM CENTER
-			//std::cout << "Lines " << i << std::endl;
-			//std::cout << "Position " << curobj->position.x << ", " << curobj->position.y << std::endl;
-			//std::cout << "Velocity " << objmovement->velocity.x << ", " << objmovement->velocity.y << std::endl;
-			//std::cout << "Stored positions " << debugline_poscoord[0].x << ", " << debugline_poscoord[0].y << " "
-			//			 << debugline_poscoord[1].x << ", " << debugline_poscoord[1].y << std::endl;
-			//std::cout << "Target " << objmovement->target.x << ", " << objmovement->target.y << std::endl;
 
 			std::vector <vector2D::vec2D> debugline_ndccoord;
 			for (int i = 0; i < poscoord.size(); i++)
@@ -2339,7 +1976,7 @@ void GLApp::entitydraw()
 			debuglinebatch.vaoid = models["line"].getVAOid();
 			debuglinebatch.vboid = models["line"].getVBOid();
 			debuglinebatch.eboid = models["line"].getEBOid();
-			debuglinebatch.totalsize += debugline_vertexData.size();
+			debuglinebatch.totalsize += (int)debugline_vertexData.size();
 			debuglinebatch.primtype = GL_LINES;
 			debuglinebatch.totaldrawcnt += models["line"].getDrawCnt();
 
