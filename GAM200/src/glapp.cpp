@@ -127,7 +127,7 @@ ECS ecs;
 
 Entity player1;
 std::vector<Entity> walls(30);
-std::vector<Entity> enemyUnits(100);
+std::vector<Entity> enemyUnits(2500);
 std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
