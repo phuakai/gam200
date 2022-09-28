@@ -21,7 +21,7 @@ and transformations (in later labs).
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
-#include <glhelper.h>
+#include <input.h>
 #include <glslshader.h>
 #include <list> // added in tutorial 3
 #include <random>

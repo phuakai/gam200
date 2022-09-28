@@ -1,6 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include <glhelper.h>
+#include <input.h>
 #include <vector>
 #include <vec2D.h>
 #include <vec3D.h>

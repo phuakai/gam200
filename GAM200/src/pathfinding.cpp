@@ -1,5 +1,5 @@
 #include "pathfinding.h"
-#include <glhelper.h>
+#include <input.h>
 #include <iostream>
 #include <iomanip>
 

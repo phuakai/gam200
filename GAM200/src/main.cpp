@@ -63,7 +63,7 @@ int main() {
 @param none
 @return none
 
-Uses GLHelper::GLFWWindow* to get handle to OpenGL context.
+Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 For now, there are no objects to animate nor keyboard, mouse button click,
 mouse movement, and mouse scroller events to be processed.
 */
@@ -86,7 +86,7 @@ static void update() {
 @return none
 
 Call application to draw and then swap front and back frame buffers ...
-Uses GLHelper::GLFWWindow* to get handle to OpenGL context.
+Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 */
 static void draw() {
   // Part 1
@@ -101,7 +101,7 @@ static void draw() {
 @param none
 @return none
 
-The OpenGL context initialization stuff is abstracted away in GLHelper::init.
+The OpenGL context initialization stuff is abstracted away in Graphics::Input::init.
 The specific initialization of OpenGL state and geometry data is
 abstracted away in GLApp::init
 */
@@ -113,7 +113,7 @@ static void init() {
     }
 
     // Part 2
-    //GLHelper::print_specs();
+    //Graphics::Input::print_specs();
 
     // Part 3
     GLApp::init();

@@ -1,5 +1,4 @@
 #include <input.h>
-#include <glhelper.h>
 #include <camera.h>
 #include <GLFW/glfw3.h>
 #include <transform.h>

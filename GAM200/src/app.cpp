@@ -315,7 +315,7 @@ void GLApp::init()
 	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 
 	// Part 2: use the entire window as viewport ...
-	glViewport(0, 0, GLHelper::width, GLHelper::height);
+	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
 	// Part 3: parse scene file $(SolutionDir)scenes/tutorial-4.scn
 	// and store repositories of models of type GLModel in container
@@ -334,7 +334,7 @@ void GLApp::init()
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
-	Graphics::camera2d.init(GLHelper::ptr_window, &GLApp::objects.at("Camera"));
+	Graphics::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
 
 	// ======================================================================================================================================
 	// Store physics related info to be printed in title bar
@@ -358,7 +358,7 @@ void GLApp::init()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(GLHelper::ptr_window, true);
+	ImGui_ImplGlfw_InitForOpenGL(Graphics::Input::ptr_to_window, true);
 	ImGui_ImplOpenGL3_Init(NULL);
 
 	show_demo_window = true;
@@ -474,11 +474,11 @@ void GLApp::init()
 		}
 	}
 	GLApp::GLObject::gimmeObject("square", "0gridBackground", vector2D::vec2D(1010, 1010), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0));
-	GLApp::GLObject::gimmeObject("square", "0Background", vector2D::vec2D(GLHelper::width, GLHelper::width), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 2);
-	//GLApp::GLObject::gimmeObject("square", "zDragBox", vector2D::vec2D(GLHelper::width, GLHelper::width), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -2, 5);
+	GLApp::GLObject::gimmeObject("square", "0Background", vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenwidth), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -1, 2);
+	//GLApp::GLObject::gimmeObject("square", "zDragBox", vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenwidth), vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), -2, 5);
 
 	// Part 5: Print OpenGL context and GPU specs
-	//GLHelper::print_specs();
+	//Graphics::Input::print_specs();
 
 
 	textureSystem.Action([](const float elapsedMilliseconds,
@@ -501,7 +501,7 @@ void GLApp::init()
 			//renderTimer = 4;
 		//}
 		//else
-			//renderTimer -= GLHelper::delta_time;
+			//renderTimer -= Graphics::Input::delta_time;
 		});
 
 	system1.Action([](const float elapsedMilliseconds,
@@ -606,7 +606,7 @@ void GLApp::init()
 				//}
 				changedVelocity *= m[i].speed;
 
-				p[i].position += changedVelocity * (GLHelper::delta_time > 1 / 60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
+				p[i].position += changedVelocity * (Graphics::Input::delta_time > 1 / 60.f ? 1 / 60.f : Graphics::Input::delta_time) * 100;
 
 				m[i].velocity = changedVelocity;
 				mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
@@ -984,16 +984,16 @@ despawn the oldest objects, and respawn objects again once no objects are left.
 void GLApp::update()
 {
 	// first, update camera
-	Graphics::camera2d.update(GLHelper::ptr_window);
-	objects["Camera"].update(GLHelper::delta_time);
+	Graphics::camera2d.update(Graphics::Input::ptr_to_window);
+	objects["Camera"].update(Graphics::Input::delta_time);
 
 	// update other inputs for physics
 
 	double mousePosX, mousePosY;
 	bool mouseClick = false;
-	if (GLHelper::mousestateLeft)
+	if (Graphics::Input::mousestateLeft)
 	{
-		GLHelper::mousestateLeft = false;
+		Graphics::Input::mousestateLeft = false;
 
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		mouseClick = true;
@@ -1004,72 +1004,72 @@ void GLApp::update()
 		//obj->second.modelCenterPos.y = (float)mousePosy;
 	}
 
-	if (GLHelper::keystateP)
+	if (Graphics::Input::keystateP)
 	{
 		movableShape = !movableShape;
-		GLHelper::keystateP = false;
+		Graphics::Input::keystateP = false;
 	}
 
-	if (GLHelper::keystateC)
+	if (Graphics::Input::keystateC)
 	{
 		int tmp = (int)(currentCollision);
 		currentCollision = (collisionType)(++tmp % 9);
-		GLHelper::keystateC = false;
+		Graphics::Input::keystateC = false;
 	}
-	if (GLHelper::keystateM)
+	if (Graphics::Input::keystateM)
 	{
 		modulate = !modulate;
 		std::cout << "M pressed\n";
-		GLHelper::keystateM = GL_FALSE;
+		Graphics::Input::keystateM = GL_FALSE;
 	}
-	if (GLHelper::keystateB)
+	if (Graphics::Input::keystateB)
 	{
 		alphablend = !alphablend;
-		GLHelper::keystateB = GL_FALSE;
+		Graphics::Input::keystateB = GL_FALSE;
 	}
-	if (GLHelper::keystateT)
+	if (Graphics::Input::keystateT)
 	{
 		textures = !textures;
 		std::cout << "T pressed\n";
-		GLHelper::keystateT = GL_FALSE;
+		Graphics::Input::keystateT = GL_FALSE;
 	}
 
-	if (GLHelper::keystateG)
+	if (Graphics::Input::keystateG)
 	{
 		graphicsmode = !graphicsmode;
-		GLHelper::keystateG = GL_FALSE;
+		Graphics::Input::keystateG = GL_FALSE;
 	}
 	if (graphicsmode)
 	{
-		if (GLHelper::keystateX)
+		if (Graphics::Input::keystateX)
 		{
 			coldebug = !coldebug;
-			GLHelper::keystateX = GL_FALSE;
+			Graphics::Input::keystateX = GL_FALSE;
 		}
-		if (GLHelper::keystateO)
+		if (Graphics::Input::keystateO)
 		{
 			velocitydirectiondebug = !velocitydirectiondebug;
-			GLHelper::keystateX = GL_FALSE;
+			Graphics::Input::keystateX = GL_FALSE;
 		}
-		if (GLHelper::keystatePlus)
+		if (Graphics::Input::keystatePlus)
 		{
 			std::cout << "INCREASING" << std::endl;
 			objects["Banana1"].scaling *= 1.1f;
 
 		}
-		if (GLHelper::keystateMinus)
+		if (Graphics::Input::keystateMinus)
 		{
 			std::cout << "DECREASING" << std::endl;
 			objects["Banana1"].scaling /= 1.1f;
 		}
-		if (GLHelper::keystateSquareBracketLeft)
+		if (Graphics::Input::keystateSquareBracketLeft)
 		{
 			std::cout << "ROT LEFT" << std::endl;
 			//objects["Banana1"].orientation.x += -1.5f;
 			objects["Banana1"].orientation.x += (-1.5f * float(M_PI / 180));
 			std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
 		}
-		if (GLHelper::keystateSquareBracketRight)
+		if (Graphics::Input::keystateSquareBracketRight)
 		{
 			std::cout << "ROT RIGHT" << std::endl;
 			//objects["Banana1"].orientation.x += 1.5f;
@@ -1078,10 +1078,10 @@ void GLApp::update()
 		}
 	}
 
-	if (GLHelper::keystateQ || GLHelper::keystateE)
+	if (Graphics::Input::keystateQ || Graphics::Input::keystateE)
 	{
 		std::string modelname;
-		if (GLHelper::keystateQ)
+		if (Graphics::Input::keystateQ)
 		{
 			modelname = "circle";
 		}
@@ -1154,8 +1154,8 @@ void GLApp::update()
 			//std::cout << "Shader program " << tmpObj.shd_ref->second << std::endl;
 			// ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
 			//ecs.AddComponent<Object>(entid, vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, randindex, vector2D::vec2D(randwidth, randheight), 1, 4, models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			GLHelper::keystateQ = false;
-			GLHelper::keystateE = false;
+			Graphics::Input::keystateQ = false;
+			Graphics::Input::keystateE = false;
 		}
 	}
 	//check for movement
@@ -1196,13 +1196,13 @@ void GLApp::update()
 	Render* player = ecs.GetComponent<Render>(player1.GetID());
 
 	if (timer > 0)
-		timer -= GLHelper::delta_time;
+		timer -= Graphics::Input::delta_time;
 
 	else
 		ecs.RunSystems(2, 100);
 
 	if (animationTimer > 0)
-		animationTimer -= GLHelper::delta_time;
+		animationTimer -= Graphics::Input::delta_time;
 	else
 	{
 		ecs.RunSystems(1, 100);
@@ -1237,7 +1237,7 @@ void GLApp::update()
 
 		if (obj->first != "Camera")
 		{
-			obj->second.update(GLHelper::delta_time);
+			obj->second.update(Graphics::Input::delta_time);
 
 
 			switch (currentCollision)
@@ -1765,7 +1765,7 @@ void GLApp::update()
 	{
 		if (obj1->first != "Camera")
 		{
-			obj1->second.update(GLHelper::delta_time);
+			obj1->second.update(Graphics::Input::delta_time);
 		}
 	}
 
@@ -1825,13 +1825,13 @@ void GLApp::draw()
 	title << std::fixed;
 	title << std::setprecision(2);
 	title << "GAM200";
-	title << std::setprecision(2) << " | FPS " << int(GLHelper::fps * 100) / 100.0;
+	title << std::setprecision(2) << " | FPS " << int(Graphics::Input::fps * 100) / 100.0;
 	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
 	title << " | Orientation: " << std::setprecision(0) << (Graphics::camera2d.getCameraObject().orientation.x / M_PI * 180) << " degrees";
 	title << " | Window height: " << Graphics::camera2d.getHeight();
 	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
 
-	glfwSetWindowTitle(GLHelper::ptr_window, title.str().c_str());
+	glfwSetWindowTitle(Graphics::Input::ptr_to_window, title.str().c_str());
 
 	// clear color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
