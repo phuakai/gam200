@@ -89,30 +89,35 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 
 	if (GLHelper::keystateW == GL_TRUE)
 	{
-		pgo->modelCenterPos = pgo->modelCenterPos + linear_speed * up;
+		//pgo->modelCenterPos = pgo->modelCenterPos + linear_speed * up;
+		pgo->modelCenterPos.y = pgo->modelCenterPos.y + linear_speed;
 	}
 
 	if (GLHelper::keystateS == GL_TRUE)
 	{
-		pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
+		//pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
+		pgo->modelCenterPos.y = pgo->modelCenterPos.y - linear_speed;
 	}
-	//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
+
+	//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl; 
 	if (GLHelper::keystateA == GL_TRUE)
 	{
-		if (pgo->orientation.x / M_PI * 180 >= 360)
-		{
-			pgo->orientation.x = 0;
-		}
-		pgo->orientation.x += pgo->orientation.y;
+		pgo->modelCenterPos.x = pgo->modelCenterPos.x - linear_speed;
+		//if (pgo->orientation.x / M_PI * 180 >= 360)
+		//{
+		//	pgo->orientation.x = 0;
+		//}
+		//pgo->orientation.x += pgo->orientation.y;
 	}
 
 	if (GLHelper::keystateD == GL_TRUE)
 	{
-		if (pgo->orientation.x / M_PI * 180 <= -360)
-		{
-			pgo->orientation.x = 0;
-		}
-		pgo->orientation.x -= pgo->orientation.y;
+		pgo->modelCenterPos.x = pgo->modelCenterPos.x + linear_speed;
+		//if (pgo->orientation.x / M_PI * 180 <= -360)
+		//{
+		//	pgo->orientation.x = 0;
+		//}
+		//pgo->orientation.x -= pgo->orientation.y;
 	}
 
 	if (GLHelper::keystateV == GL_TRUE)

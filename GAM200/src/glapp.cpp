@@ -126,7 +126,7 @@ ECS ecs;
 
 Entity player1;
 std::vector<Entity> walls(30);
-std::vector<Entity> enemyUnits(100);
+std::vector<Entity> enemyUnits(2500);
 std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
@@ -134,6 +134,7 @@ System<Movement, Render> system1(ecs, 2);
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 float timer;
+float animationTimer;
 
 bool show_demo_window;
 bool show_another_window;
@@ -396,6 +397,7 @@ void GLApp::init()
 	}
 
 	timer = 4;
+	animationTimer = 4;
 
 	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
 	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
@@ -437,7 +439,6 @@ void GLApp::init()
 				}
 				else
 					++t[i].spriteStep;
-				std::cout << "OI I SET THIS " << t[i].spriteStep << std::endl;
 			}
 			//renderTimer = 4;
 		//}
@@ -541,10 +542,11 @@ void GLApp::init()
 				vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
 
 				// capping speed
-				if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
-				{
-					changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
-				}
+				//if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
+				//{
+				//	changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
+				//}
+				changedVelocity *= m[i].speed;
 
 				p[i].position += changedVelocity * (GLHelper::delta_time > 1 / 60.f ? 1 / 60.f : GLHelper::delta_time) * 100;
 
@@ -1036,7 +1038,7 @@ void GLApp::update()
 				randwidth = 100;
 				randheight = 100;
 			}
-			GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
+			//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
 
 
 			//GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randheight), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, randindex);
@@ -1110,9 +1112,14 @@ void GLApp::update()
 		timer -= GLHelper::delta_time;
 
 	else
-	{
 		ecs.RunSystems(2, 100);
-		//timer = 0.1;
+
+	if (animationTimer > 0)
+		animationTimer -= GLHelper::delta_time;
+	else
+	{
+		ecs.RunSystems(1, 100);
+		animationTimer = 4;
 	}
 
 	// next, iterate through each element of container objects
