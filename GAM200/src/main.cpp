@@ -109,7 +109,7 @@ abstracted away in GLApp::init
 static void init() {
 
     std::fstream myfile;
-    myfile.open("config.txt");
+    myfile.open("config.xml");
     int width{};
     int height{};
     myfile >> width;
