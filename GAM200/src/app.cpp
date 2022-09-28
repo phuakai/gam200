@@ -1,7 +1,7 @@
 /*!
-@file    glapp.cpp
+@file    app.cpp
 @author  a.weiren@digipen.edu, ruoyan.go@digipen.edu, p.jiankai@digipen.edu
-@date    10/06/2022
+@date    10/08/2022
 
 This file implements functionality useful and necessary to build OpenGL
 applications including use of external APIs such as GLFW to create a

@@ -1,7 +1,7 @@
 /* !
 @file    app.h
-@author  a.weiren@digipen.edu, p.jiankai@digipen.edu, ruoyan.go@digipen.edu
-@date    10/06/2022
+@author  a.weiren@digipen.edu, ruoyan.go@digipen.edu, p.jiankai@digipen.edu
+@date    10/08/2022
 
 This file contains the declaration of namespace GLApp that encapsulates the
 functionality required to implement an OpenGL application including
@@ -14,16 +14,14 @@ configuring cameras (in later labs),
 and transformations (in later labs).
 *//*__________________________________________________________________________*/
 
-/*                                                                      guard
------------------------------------------------------------------------------ */
 #ifndef APP_H
 #define APP_H
 
-/*                                                                   includes
+/*                                                             
 ----------------------------------------------------------------------------- */
 #include <input.h>
 #include <glslshader.h>
-#include <list> // added in tutorial 3
+#include <list> 
 #include <random>
 #include <map>
 #include <unordered_map>
@@ -107,7 +105,7 @@ struct GLApp {
 
 
 	static void entitydraw();
-	//static void init_models_cont(); // new in tutorial 3
+	//static void init_models_cont();
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
 	// function to insert shader program into container GLApp::shdrpgms ...
@@ -115,17 +113,8 @@ struct GLApp {
 	// function to parse scene file ...
 	static void init_scene(std::string);
 
-	//static std::vector<GLApp::GLModel> models; // removed
-	// added for tutorial 4: repository of models
-	//static std::map<std::string, Graphics::Model> models; // singleton
-
-
-	//static std::list<GLApp::GLObject> objects; // from tutorial 3
-	// added for tutorial 4: repository of objects
 	static std::map<std::string, GLObject> objects; // singleton
 
-	//static void init_shdrpgms_cont(GLApp::VPSS const&); // removed
-	// added for tutorial 4: repository of shader programs
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 
 	static bool modulate;

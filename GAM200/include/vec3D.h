@@ -3,9 +3,9 @@
 \file		Vector3D.h
 \author		Grace Lee, lee.g, 390002621
 \par		lee.g\@digipen.edu
-\date		Mar 21, 2022
+\date		Sep 23, 2022
 \brief		This file contains the function declarations and structs
-			used by Vector2D.cpp
+			used by Vector3D.cpp
 
 Copyright (C) 2022 DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents

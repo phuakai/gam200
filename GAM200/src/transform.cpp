@@ -1,3 +1,10 @@
+/* !
+@file    transform.h
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file creates the transformation matrices and converts NDC to World / World to NDC
+*//*__________________________________________________________________________*/
 #include <transform.h>
 #include <graphics.h>
 #include <camera.h>

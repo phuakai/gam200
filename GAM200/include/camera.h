@@ -1,3 +1,11 @@
+/* !
+@file    camera.h
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file controls the camera of the game
+*//*__________________________________________________________________________*/
+
 #pragma once
 
 #include <vector>

@@ -1,3 +1,19 @@
+/* Start Header ************************************************************************/
+/*!
+\file		collision.cpp
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Sep 23, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
 #include <iostream>
 #include <array>
 #include <algorithm>

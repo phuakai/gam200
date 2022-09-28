@@ -1,3 +1,10 @@
+/* !
+@file    graphics.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file handles the batch rendering of the game
+*//*__________________________________________________________________________*/
 #include <graphics.h>
 #include <buffer.h>
 #include <texture.h>

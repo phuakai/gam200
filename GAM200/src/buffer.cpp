@@ -1,3 +1,11 @@
+/* !
+@file    buffer.cpp
+@author  a.weiren@digipen.edu
+@date    23/8/2022
+
+This file handles the VAO, VBO and EBO of the game
+*//*__________________________________________________________________________*/
+
 #include <buffer.h>
 
 GLuint Graphics::VAO::init()
