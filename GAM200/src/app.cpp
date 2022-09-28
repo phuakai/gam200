@@ -1,6 +1,6 @@
 /*!
 @file    glapp.cpp
-@author  a.weiren@digipen.edu
+@author  a.weiren@digipen.edu, ruoyan.go@digipen.edu, p.jiankai@digipen.edu
 @date    10/06/2022
 
 This file implements functionality useful and necessary to build OpenGL
@@ -8,11 +8,11 @@ applications including use of external APIs such as GLFW to create a
 window and start up an OpenGL context and to extract function pointers
 to OpenGL implementations.
 
-
 *//*__________________________________________________________________________*/
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
+
 
 #include <app.h>
 #include <iostream>
@@ -43,51 +43,11 @@ to OpenGL implementations.
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdint.h>
-#include "pathfinding.h"
 #include <camera.h>
 #include <iomanip>
 #include "physicsPartition.h"
 #include "serialization.h"
-
-
-//-----------------------------------RANDOM IMGUI FUNCTION LOL
-//if (ImGui::TreeNode("Entities")) {
-//	for (int i = 1; i < ecs.getEntities().size() + 1; ++i) {
-//		std::string str = ecs.getEntityName(i);
-//		const char* c = str.c_str();
-//		if (ImGui::TreeNode((void*)(intptr_t)i, c)) {
-//			std::vector<std::string> names = ecs.getEntityComponents(i);
-//			//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
-//			for (int j = 0; j < names.size(); ++j) {
-//				std::string str2 = names[j];
-//				const char* c2 = str2.c_str();
-//				ImGui::Text(c2);
-//
-//				if (str2 == "Object") {
-//					//ecs.GetComponent<Object>(i)->x;
-//					//ImGui::SameLine();
-//					ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->x, inputs_step ? &f32_one : NULL);
-//					//ImGui::SameLine(); 
-//					ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Object>(i)->y, inputs_step ? &f32_one : NULL);
-//				}
-//			}
-//			ImGui::TreePop();
-//		}
-//	}
-//	ImGui::TreePop();
-//}
-
-//void imguiComponent(EntityID& id)
-//{
-//	std::vector<std::string> componentNames = ecs.getEntityComponents(id);
-//
-//
-//}
-
-//Entity createEntity()
-//{
-//
-//}
+#include "pathfinding.h"
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -210,14 +170,6 @@ RTTR_REGISTRATION{
 		.property("y", &point2d::y)
 		;
 
-	//rttr::registration::class_<Entity>("Entity")
-	//	.constructor<Entity>()
-	//	.method("Add", &Entity::Add);
-
-	//rttr::registration::class_<ECS>("ECS")
-	//	.constructor<ECS>()
-	//	.method("AddComponent", &ECS::AddComponent);
-
 	rttr::registration::class_<vector2D::vec2D>("vector2D::vec2D")
 		.constructor<vector2D::vec2D>()
 		.property("m", &vector2D::vec2D::m)
@@ -263,15 +215,18 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::health);
-
-	//rttr::registration::class_<test_class>("test_class")
-	//.constructor<int>()
-	//.method("print_value", &test_class::print_value);
-
-	//i think we cant register private vars anymore, just use setters /getters and register the method
-	//.property("value", &test_class::m_value)
 }
 
+/*  _________________________________________________________________________*/
+/*! wallGeneration
+
+@param positionX Node x position of the wall in the grid
+@param positionY Node y position of the wall in the grid
+@return none
+
+This function is a helper function to generate walls in the game for 
+collision and pathfinding checks.
+*/
 void wallGeneration(int positionX, int positionY)
 {
 	quadObj entity;
@@ -560,8 +515,8 @@ void GLApp::init()
 						}
 						if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
 						{
-						Movement* collided = ecs.GetComponent<Movement>((*enemyUnit)->key);
-						collided->collisionFlag = true;
+							Movement* collided = ecs.GetComponent<Movement>((*enemyUnit)->key);
+							collided->collisionFlag = true;
 						collided->collisionResponse = pointer->position;
 						}
 					

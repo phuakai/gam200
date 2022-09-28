@@ -786,6 +786,9 @@
     <ClInclude Include="include\app.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="include\mainHeader.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />

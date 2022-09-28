@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 #include<iterator>
+#include "mainHeader.h"
 
 #define quadTreeCap 4
 enum class dir
