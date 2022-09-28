@@ -10,9 +10,6 @@
     <ClCompile Include="src\glslshader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\glapp.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="src\graphics.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -184,15 +181,15 @@
     <ClCompile Include="src\serialization.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\app.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\ECS.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\glapp.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glhelper.h">
@@ -788,6 +785,9 @@
     </ClInclude>
     <ClInclude Include="include\rapidjson\allocators.h">
       <Filter>Include\rapidJSON</Filter>
+    </ClInclude>
+    <ClInclude Include="include\app.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 #include <vector>
 #include <vec2D.h>
 #include <mat3x3.h>
-#include <glapp.h>
+#include <app.h>
 
 namespace Graphics
 {

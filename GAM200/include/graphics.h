@@ -2,7 +2,7 @@
 
 #include <GL/glew.h> // for access to OpenGL API declarations 
 #include <glm/glm.hpp>
-#include <glapp.h>
+#include <app.h>
 #include <vec2D.h>
 #include <vec3D.h>
 #include <mat3x3.h>
