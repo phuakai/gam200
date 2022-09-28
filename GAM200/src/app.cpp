@@ -1365,10 +1365,10 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	if (modelname == "circle")
 	{
-		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body, hi);
+		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body);
 	}
 	else if (modelname == "square")
-		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body, hi);
+		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body);
 
 	tmpObj.color = colour;
 

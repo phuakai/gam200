@@ -96,6 +96,7 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 	body->radius = rad;
 	body->shapeType = ShapeType::circle;
 	body->plsUpdateTfm = false;
+	return true;
 }
 
 
@@ -135,6 +136,8 @@ bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D 
 	body->tri.emplace_back(0);
 	body->tri.emplace_back(2);
 	body->tri.emplace_back(3);
+	return true;
+
 }
 
 /******************************
