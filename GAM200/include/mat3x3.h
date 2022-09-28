@@ -3,7 +3,7 @@
 \file		Matrix3x3.h
 \author		Grace Lee, lee.g, 390002621
 \par		lee.g\@digipen.edu
-\date		Mar 21, 2022
+\date		Sep 23, 2022
 \brief		This file contains the function declarations and structs
 			used by Matrix3x3.cpp
 

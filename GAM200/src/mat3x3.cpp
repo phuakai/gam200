@@ -3,7 +3,7 @@
 \file		Matrix3x3.cpp
 \author		Grace Lee, lee.g, 390002621
 \par		lee.g\@digipen.edu
-\date		Mar 21, 2022
+\date		Sep 23, 2022
 \brief		This file contains code that manipulates 3x3 matrices
 
 Copyright (C) 2022 DigiPen Institute of Technology.

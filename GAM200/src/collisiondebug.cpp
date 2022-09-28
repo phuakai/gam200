@@ -1,3 +1,17 @@
+/******************************************************************************/
+/*!
+\file		collisiondebug.cpp
+\author		Ang Wei Ren, a.weiren
+\par		a.weiren\@digipen.edu
+\date		Sep 23, 2022
+\brief		This file contains the function definitions used to create and initialize the collision debug objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the
+prior written consent of DigiPen Institute of Technology is prohibited.
+ */
+/******************************************************************************/
+
 #include <app.h>
 #include <collisiondebug.h>
 #include <transform.h>
