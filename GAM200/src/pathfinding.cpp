@@ -116,13 +116,13 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 			{
 			case 0:
 				//SEPARATION
-				totalForce /= neighbourCount[i];
+				totalForce /= (float)neighbourCount[i];
 				allVelocity[i] = totalForce * movement->force;
 				break;
 
 			case 1:
 				// COHESION
-				centerForCohesion /= neighbourCount[i];
+				centerForCohesion /= (float)neighbourCount[i];
 
 				allVelocity[i] = centerForCohesion - entity->position;
 				vector2D::Vector2DNormalize(allVelocity[i], allVelocity[i] * movement->speed);
@@ -132,7 +132,7 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 
 			case 2:
 				// ALIGNMENT
-				averageDirection /= neighbourCount[i];
+				averageDirection /= (float)neighbourCount[i];
 
 				allVelocity[i] = averageDirection * movement->speed;
 				force = allVelocity[i] - movement->velocity;
@@ -195,11 +195,11 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 
 		// for each neighbour
 		for (int e = 0; e < sizeof(directionToCheck) / sizeof(vector2D::vec2D); ++e) {
-			int j = directionToCheck[e].y;
-			int k = directionToCheck[e].x;
+			int j = (int)directionToCheck[e].y;
+			int k = (int)directionToCheck[e].x;
 
 			// position of the neighbour
-			vector2D::vec2D neighbour = toCalculate[i] + vector2D::vec2D(k, j);
+			vector2D::vec2D neighbour = toCalculate[i] + vector2D::vec2D((float)k, (float)j);
 
 			if ((neighbour.x >= 0 && neighbour.x < MAX_GRID_X &&					// checking if neighbour is in the grid
 				neighbour.y >= 0 && neighbour.y < MAX_GRID_Y) &&
@@ -233,8 +233,8 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 	float differenceAbsX = difference.x < 0 ? -difference.x : difference.x;
 	float differenceAbsY = difference.y < 0 ? -difference.y : difference.y;
 
-	int differenceSignX = differenceAbsX ? difference.x / differenceAbsX : 0;
-	int differenceSignY = differenceAbsY ? difference.y / differenceAbsY : 0;
+	int differenceSignX = (int)differenceAbsX ? (int)(difference.x / differenceAbsX): 0;
+	int differenceSignY = (int)differenceAbsY ? (int)(difference.y / differenceAbsY) : 0;
 
 	bool haveLos = false;
 
@@ -308,7 +308,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			if (LOSgrid[i][j])
 			{
 				// line of sight = true
-				Vector2DNormalize(flowField[i][j], endingPosition - vector2D::vec2D(j * (1000 / MAX_GRID_Y) - 500 + (1000 / MAX_GRID_Y / 2), i * (1000 / MAX_GRID_X) - 500 + (1000 / MAX_GRID_X / 2)));
+				Vector2DNormalize(flowField[i][j], endingPosition - vector2D::vec2D(j * (1000.f / MAX_GRID_Y) - 500 + (1000.f / MAX_GRID_Y / 2), i * (1000.f / MAX_GRID_X) - 500 + (1000.f / MAX_GRID_X / 2)));
 				
 				if (i == (int)endingNode.y && j == (int)endingNode.x)
 					std::cout << flowField[i][j].x << "\t" << flowField[i][j].y << std::endl;
@@ -325,7 +325,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 				for (int l = -1; l <= 1; ++l)
 				{
 					// position of the neighbour
-					vector2D::vec2D neighbour = vector2D::vec2D(j, i) + vector2D::vec2D(l, k);
+					vector2D::vec2D neighbour = vector2D::vec2D((float)j, (float)i) + vector2D::vec2D((float)l, (float)k);
 
 					// checking if neighbour is in the grid
 					if (neighbour.x >= 0 && neighbour.x < MAX_GRID_X &&
@@ -357,7 +357,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			if (targetPosition.x != MAX_GRID_X || targetPosition.y != MAX_GRID_Y)
 			{
 				// direction vector of the node
-				Vector2DNormalize(flowField[i][j], targetPosition - vector2D::vec2D(j, i));
+				Vector2DNormalize(flowField[i][j], targetPosition - vector2D::vec2D((float)j, (float)i));
 			}
 		}
 	}

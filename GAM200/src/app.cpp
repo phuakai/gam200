@@ -163,7 +163,7 @@ void wallGeneration(int positionX, int positionY)
 {
 	quadObj entity;
 	static int count = 0;
-	vector2D::vec2D position = vector2D::vec2D(positionX, positionY) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
+	vector2D::vec2D position = vector2D::vec2D((float)(positionX), (float)(positionY)) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
 	walls[count].Add<Render>("wall" + std::to_string(count), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D((1000 / MAX_GRID_X), (1000 / MAX_GRID_Y)), 0, 0, 0, "gam200-shdrpgm");
 	walls[count].Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 0, 0, 0, vector2D::vec2D(0, 0));
 	ecs.setEntityName(walls[count].GetID(), "wall" + std::to_string(count));
@@ -324,7 +324,7 @@ void GLApp::init()
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450 + (i % 45 * 20), 400 - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
+		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		// velocity, target, force, speed
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(player1.GetID())->position, 1, 2, 0, vector2D::vec2D(0, 0));
@@ -476,11 +476,11 @@ void GLApp::init()
 				else
 					changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
 
-				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0,0), vector2D::vec2D(0,0),vector2D::vec2D(0,0) };
+				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
 
 				movementFlocking(entities[i], m[i].target, allVelocity);
 
-				changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1) + allVelocity[2]); // *flockingModifier;
+				changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
 
 				vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
 
@@ -491,7 +491,7 @@ void GLApp::init()
 				//}
 				changedVelocity *= m[i].speed;
 
-				p[i].position += changedVelocity * (Graphics::Input::delta_time > 1 / 60.f ? 1 / 60.f : Graphics::Input::delta_time) * 100;
+				p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
 
 				m[i].velocity = changedVelocity;
 				mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
@@ -904,7 +904,7 @@ void GLApp::update()
 		ecs.RunSystems(2, 100);
 
 	if (animationTimer > 0)
-		animationTimer -= Graphics::Input::delta_time;
+		animationTimer -= (float)Graphics::Input::delta_time;
 	else
 	{
 		ecs.RunSystems(1, 100);
@@ -916,7 +916,7 @@ void GLApp::update()
 	{
 		if (player->name == obj->first && mouseClick)
 		{
-			player->position = vector2D::vec2D(mousePosX, mousePosY);
+			player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 			obj->second.modelCenterPos = player->position;
 
 			generateDijkstraCost(player->position, walls);
