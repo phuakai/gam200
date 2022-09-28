@@ -115,7 +115,7 @@ static void init() {
     myfile >> width;
     myfile >> height;
 
-  if (!Graphics::Input::init(width, height, "Test"))
+  if (!Graphics::Input::init(width, height, "Bloom"))
   { 
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);

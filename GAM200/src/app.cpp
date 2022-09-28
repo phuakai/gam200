@@ -1324,7 +1324,7 @@ void GLApp::draw()
 	std::stringstream title;
 	title << std::fixed;
 	title << std::setprecision(2);
-	title << "GAM200";
+	title << "Bloom";
 	title << std::setprecision(2) << " | FPS " << int(Graphics::Input::fps * 100) / 100.0;
 	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
 	title << " | Window height: " << Graphics::camera2d.getHeight();
