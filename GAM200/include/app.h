@@ -16,8 +16,8 @@ and transformations (in later labs).
 
 /*                                                                      guard
 ----------------------------------------------------------------------------- */
-#ifndef GLAPP_H
-#define GLAPP_H
+#ifndef APP_H
+#define APP_H
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
@@ -126,4 +126,4 @@ struct GLApp {
 	static int objectcounter;
 };
 
-#endif /* GLAPP_H */
+#endif /* APP_H */

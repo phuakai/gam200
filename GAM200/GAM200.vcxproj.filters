@@ -7,7 +7,7 @@
     <ClCompile Include="src\glslshader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="src\glapp.cpp">
+    <ClCompile Include="src\app.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics.cpp">
@@ -186,7 +186,7 @@
     <ClInclude Include="include\ECS.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\glapp.h">
+    <ClInclude Include="include\app.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glslshader.h">

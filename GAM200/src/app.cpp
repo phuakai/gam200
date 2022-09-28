@@ -14,7 +14,7 @@ to OpenGL implementations.
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
 
-#include <glapp.h>
+#include <app.h>
 #include <iostream>
 #include <array>
 #include <chrono> // Time

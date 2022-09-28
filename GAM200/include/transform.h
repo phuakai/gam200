@@ -3,7 +3,7 @@
 #include <vec2D.h>
 #include <mat3x3.h>
 #include <camera.h>
-#include <glhelper.h>
+#include <input.h>
 
 class Transform // Input class
 {
