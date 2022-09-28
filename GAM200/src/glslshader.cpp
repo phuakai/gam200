@@ -1,7 +1,7 @@
 /* !
 @file    glslshader.h
-@author  pghali@digipen.edu, a.weiren@digipen.edu
-@date    06/11/2016
+@author  a.weiren@digipen.edu
+@date    20/8/2022
 
 Note: The contents of this file must not be updated by students. Otherwise,
 something that works for you will not work for me. If you want something to be

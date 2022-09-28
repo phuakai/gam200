@@ -1,7 +1,7 @@
 /*!
 @file    main.cpp
-@author  pghali@digipen.edu, a.weiren@digipen.edu
-@date    10/06/2022
+@author  a.weiren@digipen.edu
+@date    20/8/2022
 
 This file uses functionality defined in types GLHelper and GLApp to initialize 
 an OpenGL context and implement a game loop.
@@ -14,6 +14,7 @@ an OpenGL context and implement a game loop.
 #include <input.h>
 #include <app.h>
 #include <iostream>
+#include <fstream>
 
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
@@ -106,16 +107,20 @@ The specific initialization of OpenGL state and geometry data is
 abstracted away in GLApp::init
 */
 static void init() {
-  // Part 1
-  if (!Graphics::Input::init(1600, 900, "Test")) { //Original is 2400, 1350
+
+    std::fstream myfile;
+    myfile.open("config.txt");
+    int width{};
+    int height{};
+    myfile >> width;
+    myfile >> height;
+
+  if (!Graphics::Input::init(width, height, "Test"))
+  { 
     std::cout << "Unable to create OpenGL context" << std::endl;
     std::exit(EXIT_FAILURE);
-    }
+  }
 
-    // Part 2
-    //Graphics::Input::print_specs();
-
-    // Part 3
     GLApp::init();
 }
 
