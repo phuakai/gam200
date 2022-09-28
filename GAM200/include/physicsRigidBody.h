@@ -76,13 +76,13 @@ public:
 		This is a creater function for a circle body
 	*/
 	/******************************************************************************/
-	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
+	static bool createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body);
 	/******************************************************************************/
 	/*!
 		This is a creater function for a box body
 	*/
 	/******************************************************************************/
-	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body, std::string errMsg);
+	static bool createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody *body);
 
 	/******************************
 	* Getters

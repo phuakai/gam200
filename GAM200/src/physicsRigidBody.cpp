@@ -5,6 +5,7 @@
 #include <math.h>
 #include <sstream>
 #include <iostream>
+#include <assert.h>
 
 //#if false
 
@@ -63,37 +64,14 @@ physicsRigidBody::~physicsRigidBody()
 /******************************
 * Creator
 ******************************/
-bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body, std::string errMsg)
+bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body)
 {
-	//body = NULL;
-	errMsg.clear();
 	float area = rad * rad * M_PI;
 
 	// Check area
-	if (area < world.minBodySize)
-	{
-		std::stringstream msg{ "Circle radius is too small. Min Circle area is " };
-		msg << world.minBodySize;
-		errMsg = msg.str();
-		std::cout << errMsg << std::endl;
-		return false;
-	}
-	if (area > world.maxBodySize)
-	{
-		std::stringstream msg{ "Circle radius is too large. Max Circle area is " };
-		msg << world.maxBodySize;
-		errMsg = msg.str();
-		std::cout << errMsg << std::endl;
-		return false;
-	}
+	assert(area >= world.minBodySize, "Circle radius is too small." + std::to_string(world.minBodySiz));
+	assert(area <= world.maxBodySize, "Circle radius is too large." + std::to_string(world.maxBodySize));
 
-	// Check density
-	// Check restituition
-
-	//body->linearVel = LinearVel;
-	//body->rot = Rot;
-	//body->rotVel = RotVel;
-	//body->density = Density;
 	body->pos = pos;
 	body->mass = area * 1.f * density;
 	body->restitution = restituition;
@@ -105,37 +83,15 @@ bool physicsRigidBody::createCircleBody(float rad, vector2D::vec2D pos, float de
 }
 
 
-bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body, std::string errMsg)
+bool physicsRigidBody::createBoxBody(float width, float height, vector2D::vec2D pos, float density, bool isStatic, float restituition, physicsRigidBody * body)
 {
-	errMsg.clear();
 	float area = width * height;
 
 	// Check area
-	if (area < world.minBodySize)
-	{
-		std::stringstream msg{ "Area is too small. Min area is " };
-		msg << world.minBodySize;
-		errMsg = msg.str();
-		std::cout << errMsg << std::endl;
-		return false;
-	}
-	if (area > world.maxBodySize)
-	{
-		std::stringstream msg{ "Area is too large. Max area is " };
-		msg << world.maxBodySize;
-		errMsg = msg.str();
-		std::cout << errMsg << std::endl;
-		return false;
-	}
-
-	// Check density
-	// Check restituition
+	assert(area >= world.minBodySize, "Area is too small. Min area is " + std::to_string(world.minBodySiz));
+	assert(area <= world.maxBodySize, "Area is too large. Max area is " + std::to_string(world.maxBodySize));
 
 	body->pos = pos;
-	//body->linearVel = LinearVel;
-	//body->rot = Rot;
-	//body->rotVel = RotVel;
-	//body->density = Density;
 	body->mass = area * 1.f * density;
 	body->restitution = restituition;
 	body->area = area;
