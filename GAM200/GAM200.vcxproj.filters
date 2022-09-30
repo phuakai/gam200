@@ -181,6 +181,9 @@
     <ClCompile Include="src\serialization.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="src\glad.c">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h">

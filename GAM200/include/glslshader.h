@@ -19,7 +19,8 @@ program object.
 
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
-#include <GL/glew.h> // for access to OpenGL API declarations 
+//#include <GL/glew.h> // for access to OpenGL API declarations 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>

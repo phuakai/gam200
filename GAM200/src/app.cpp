@@ -13,7 +13,6 @@ to OpenGL implementations.
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
 
-
 #include <app.h>
 #include <iostream>
 #include <array>

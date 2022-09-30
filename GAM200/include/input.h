@@ -8,7 +8,8 @@ This file controls the window inputs
 
 #pragma once
 
-#include <GL/glew.h> // for access to OpenGL API declarations 
+/*#include <GL/glew.h>*/ // for access to OpenGL API declarations 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
 

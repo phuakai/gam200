@@ -8,7 +8,8 @@ This file handles the batch rendering of the game
 
 #pragma once
 
-#include <GL/glew.h> // for access to OpenGL API declarations 
+//#include <GL/glew.h> // for access to OpenGL API declarations 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <app.h>
 #include <vec2D.h>

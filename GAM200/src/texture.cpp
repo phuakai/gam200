@@ -9,7 +9,8 @@ This file loads, sets and deletes the textures in the game
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include <GL/glew.h>
+//#include <GL/glew.h>
+#include <glad/glad.h>
 #include <fstream>
 
 

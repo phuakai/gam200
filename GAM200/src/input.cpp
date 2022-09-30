@@ -8,6 +8,8 @@ This file controls the window inputs
 
 #include <input.h>
 #include <camera.h>
+//#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <transform.h>
 #include <iostream>
@@ -127,25 +129,15 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 
 	glfwSetInputMode(Graphics::Input::ptr_to_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // Normal cursor mode (Hidden makes cursor hidden instead)
 
-	GLenum err = glewInit();
-	if (GLEW_OK != err) 
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cerr << "Unable to initialize GLEW - error: "
-			<< glewGetErrorString(err) << " Aborting program" << std::endl;
+		std::cout << "Failed to initialize GLAD" << std::endl;
 		return false;
 	}
-	if (GLEW_VERSION_4_5)  // CHeck glew version
-	{
-		std::cout << "Using glew version: "
-			<< glewGetString(GLEW_VERSION) << std::endl;
-		std::cout << "Driver supports OpenGL 4.5\n" << std::endl;
-	}
-	else 
-	{
-		std::cerr << "Driver doesn't support OpenGL 4.5 - Aborting program"
-			<< std::endl;
-		return false;
-	}
+
+	// OpenGL loaded successfully
+	std::cout << "OpenGL version loaded: " << GLVersion.major << "." << GLVersion.minor << std::endl;
+
 	glfwSwapInterval(0);
 	return true;
 }
