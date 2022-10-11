@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{1c4ade08-c56d-4f42-a079-06e538278f64}</ProjectGuid>
+    <RootNamespace>Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\AI\pathfinding.cpp" />
+    <ClCompile Include="Source\Graphics\buffer.cpp" />
+    <ClCompile Include="Source\Graphics\camera.cpp" />
+    <ClCompile Include="Source\Graphics\collisiondebug.cpp" />
+    <ClCompile Include="Source\Graphics\glad.c" />
+    <ClCompile Include="Source\Graphics\glslshader.cpp" />
+    <ClCompile Include="Source\Graphics\graphics.cpp" />
+    <ClCompile Include="Source\Graphics\input.cpp" />
+    <ClCompile Include="Source\Graphics\model.cpp" />
+    <ClCompile Include="Source\Graphics\texture.cpp" />
+    <ClCompile Include="Source\Graphics\transform.cpp" />
+    <ClCompile Include="Source\Math\mat3x3.cpp" />
+    <ClCompile Include="Source\Math\vec2D.cpp" />
+    <ClCompile Include="Source\Math\vec3D.cpp" />
+    <ClCompile Include="Source\Physics\collision.cpp" />
+    <ClCompile Include="Source\Physics\physics.cpp" />
+    <ClCompile Include="Source\Physics\physicsPartition.cpp" />
+    <ClCompile Include="Source\Physics\physicsRigidBody.cpp" />
+    <ClCompile Include="Source\Physics\physicsTransform.cpp" />
+    <ClCompile Include="Source\Physics\physicsWorld.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\constructor.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\destructor.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_equal.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_less.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\constructor\constructor_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\conversion\std_conversion_functions.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\destructor\destructor_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_helper.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\library\library_unix.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\library\library_win.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\method\method_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\misc\standard_types.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\property\property_wrapper_base.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_executer.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_state_saver.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\type\type_data.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\type\type_register.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\detail\variant\variant_compare.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\enumeration.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\library.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\method.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\parameter_info.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\policy.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\property.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\registration.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\type.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\variant.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\variant_associative_view.cpp" />
+    <ClCompile Include="Source\Serialization\rttr\variant_sequential_view.cpp" />
+    <ClCompile Include="Source\Serialization\serialization.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\AI\pathfinding.h" />
+    <ClInclude Include="Include\ECS\ECS.h" />
+    <ClInclude Include="Include\ECS\ECS.hpp" />
+    <ClInclude Include="Include\Graphics\app.h" />
+    <ClInclude Include="Include\Graphics\buffer.h" />
+    <ClInclude Include="Include\Graphics\camera.h" />
+    <ClInclude Include="Include\Graphics\collisiondebug.h" />
+    <ClInclude Include="Include\Graphics\glslshader.h" />
+    <ClInclude Include="Include\Graphics\graphics.h" />
+    <ClInclude Include="Include\Graphics\input.h" />
+    <ClInclude Include="Include\Graphics\model.h" />
+    <ClInclude Include="Include\Graphics\texture.h" />
+    <ClInclude Include="Include\Graphics\transform.h" />
+    <ClInclude Include="Include\mainHeader.h" />
+    <ClInclude Include="Include\Math\mat3x3.h" />
+    <ClInclude Include="Include\Math\vec2D.h" />
+    <ClInclude Include="Include\Math\vec3D.h" />
+    <ClInclude Include="Include\Physics\collision.h" />
+    <ClInclude Include="Include\Physics\physics.h" />
+    <ClInclude Include="Include\Physics\physicsPartition.h" />
+    <ClInclude Include="Include\Physics\physicsRigidBody.h" />
+    <ClInclude Include="Include\Physics\physicsTransform.h" />
+    <ClInclude Include="Include\Physics\physicsWorld.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\allocators.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\cursorstreamwrapper.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\document.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\encodedstream.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\encodings.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\error\en.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\error\error.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\filereadstream.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\filewritestream.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\fwd.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\biginteger.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\clzll.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\diyfp.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\ieee754.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\itoa.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\meta.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\pow10.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\regex.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\stack.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\strtod.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\internal\swap.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\memorybuffer.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\memorystream.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\pointer.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\prettywriter.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\rapidjson.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\reader.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\schema.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\stream.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\stringbuffer.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\uri.h" />
+    <ClInclude Include="Include\Serialization\rapidjson\writer.h" />
+    <ClInclude Include="Include\Serialization\rttr\access_levels.h" />
+    <ClInclude Include="Include\Serialization\rttr\argument.h" />
+    <ClInclude Include="Include\Serialization\rttr\array_range.h" />
+    <ClInclude Include="Include\Serialization\rttr\associative_mapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\constructor.h" />
+    <ClInclude Include="Include\Serialization\rttr\destructor.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\base\core_prerequisites.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\base\pch.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\base\version.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\comparable_types.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_invoker.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_defaults.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\conversion\number_conversion.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\conversion\std_conversion_functions.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\default_arguments.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\invoke_with_defaults.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_helper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enum_data.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\filter\filter_item_funcs.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\argument_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\array_range_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\associative_mapper_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\enum_flags_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\instance_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\rttr_cast_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\sequential_mapper_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\string_view_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\wrapper_mapper_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\library\library_p.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata_handler.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_accessor.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_invoker.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_extractor.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\class_item_mapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\data_address_container.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_map.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_multimap.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\function_traits.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\iterator_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\misc_type_traits.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\register_wrapper_mapper_conversion.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\sequential_container_type_traits.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\std_type_traits.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\utility.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos_compare.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_names.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\ctor_policies.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\meth_policies.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\prop_policies.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_accessor.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_base.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_func.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_func.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_object.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_object.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_types.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\register_base_class_from_accessor.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_executer.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_manager.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_state_saver.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\accessor_type.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\base_classes.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\get_create_variant_func.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\get_derived_info_func.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_comparator.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_converter.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_data.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_name.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register_p.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_string_utils.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_compare.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_converter.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_policy.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_private.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h" />
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_private.h" />
+    <ClInclude Include="Include\Serialization\rttr\enumeration.h" />
+    <ClInclude Include="Include\Serialization\rttr\enum_flags.h" />
+    <ClInclude Include="Include\Serialization\rttr\filter_item.h" />
+    <ClInclude Include="Include\Serialization\rttr\instance.h" />
+    <ClInclude Include="Include\Serialization\rttr\library.h" />
+    <ClInclude Include="Include\Serialization\rttr\method.h" />
+    <ClInclude Include="Include\Serialization\rttr\parameter_info.h" />
+    <ClInclude Include="Include\Serialization\rttr\policy.h" />
+    <ClInclude Include="Include\Serialization\rttr\property.h" />
+    <ClInclude Include="Include\Serialization\rttr\registration.h" />
+    <ClInclude Include="Include\Serialization\rttr\registration_friend.h" />
+    <ClInclude Include="Include\Serialization\rttr\rttr_cast.h" />
+    <ClInclude Include="Include\Serialization\rttr\rttr_enable.h" />
+    <ClInclude Include="Include\Serialization\rttr\sequential_mapper.h" />
+    <ClInclude Include="Include\Serialization\rttr\string_view.h" />
+    <ClInclude Include="Include\Serialization\rttr\type.h" />
+    <ClInclude Include="Include\Serialization\rttr\variant.h" />
+    <ClInclude Include="Include\Serialization\rttr\variant_associative_view.h" />
+    <ClInclude Include="Include\Serialization\rttr\variant_sequential_view.h" />
+    <ClInclude Include="Include\Serialization\rttr\wrapper_mapper.h" />
+    <ClInclude Include="Include\Serialization\serialization.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Include\Serialization\rttr\registration" />
+    <None Include="Include\Serialization\rttr\registration_friend" />
+    <None Include="Include\Serialization\rttr\type" />
+    <None Include="Source\Serialization\rttr\detail\base\version.h.in" />
+    <None Include="Source\Serialization\rttr\detail\base\version.rc.in" />
+    <None Include="Source\Serialization\rttr\rttr.cmake" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -229,14 +229,14 @@ bool write_basic_type(const type& t, const variant& var, PrettyWriter<StringBuff
 
         Document d;
         d.Parse(sb.GetString());
-        FILE* fp = fopen(fileName.c_str(), "wb");
+        //FILE* fp = fopen(fileName.c_str(), "wb");
 
-        char writeBuffer[1000];
-        FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
-        PrettyWriter<FileWriteStream> fileWriter(os);
-        d.Accept(fileWriter);
+        //char writeBuffer[1000];
+        //FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+        //PrettyWriter<FileWriteStream> fileWriter(os);
+        //d.Accept(fileWriter);
 
-        fclose(fp);
+        //fclose(fp);
         return sb.GetString();
     }
     

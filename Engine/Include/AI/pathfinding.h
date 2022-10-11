@@ -7,7 +7,7 @@ This file includes the function declarations for pathfinding functions.
 
 *//*__________________________________________________________________________*/
 
-#include "mainHeader.h"
+#include "../mainHeader.h"
 
 #define MAX_GRID_X 25
 #define MAX_GRID_Y 25

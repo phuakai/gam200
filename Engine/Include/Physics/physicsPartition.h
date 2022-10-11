@@ -21,8 +21,8 @@ Technology is prohibited.
 #include <memory>
 #include <array>
 #include <string>
-#include<iterator>
-#include "mainHeader.h"
+#include <iterator>
+#include "../mainHeader.h"
 
 #define quadTreeCap 4
 enum class dir

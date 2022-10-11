@@ -13,7 +13,6 @@ to OpenGL implementations.
 /*                                                                   includes
 ----------------------------------------------------------------------------- */
 
-#include <app.h>
 #include <iostream>
 #include <array>
 #include <chrono> // Time
@@ -25,6 +24,8 @@ to OpenGL implementations.
 #include <iomanip>
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>
+
+#include <app.h>
 #include <collision.h>
 #include <physics.h>
 #include <graphics.h>

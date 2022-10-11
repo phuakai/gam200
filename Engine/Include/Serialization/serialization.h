@@ -9,7 +9,7 @@ This file includes the serialisation function declarations.
 
 #include <string>
 #include <rttr/type>
-#include "mainHeader.h"
+#include "../mainHeader.h"
 
 
 /*!

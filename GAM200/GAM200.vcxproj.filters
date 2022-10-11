@@ -1,189 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\buffer.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glslshader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\app.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\input.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\model.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\pathfinding.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\transform.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\constructor.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\destructor.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\enumeration.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\library.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\method.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\parameter_info.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\policy.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\property.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\registration.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\type.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\variant.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\variant_associative_view.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\variant_sequential_view.cpp">
-      <Filter>Source\rttr</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\comparison\compare_less.cpp">
-      <Filter>Source\rttr\detail\comparison</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\comparison\compare_equal.cpp">
-      <Filter>Source\rttr\detail\comparison</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\constructor\constructor_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\constructor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\conversion\std_conversion_functions.cpp">
-      <Filter>Source\rttr\detail\conversion</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\destructor\destructor_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\destructor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\enumeration\enumeration_helper.cpp">
-      <Filter>Source\rttr\detail\enumeration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\enumeration\enumeration_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\enumeration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\library\library_unix.cpp">
-      <Filter>Source\rttr\detail\library</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\library\library_win.cpp">
-      <Filter>Source\rttr\detail\library</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\method\method_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\method</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\misc\standard_types.cpp">
-      <Filter>Source\rttr\detail\misc</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\parameter_info</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\property\property_wrapper_base.cpp">
-      <Filter>Source\rttr\detail\property</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\registration\registration_executer.cpp">
-      <Filter>Source\rttr\detail\registration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\registration\registration_state_saver.cpp">
-      <Filter>Source\rttr\detail\registration</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\type\type_data.cpp">
-      <Filter>Source\rttr\detail\type</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\type\type_register.cpp">
-      <Filter>Source\rttr\detail\type</Filter>
-    </ClCompile>
-    <ClCompile Include="src\rttr\detail\variant\variant_compare.cpp">
-      <Filter>Source\rttr\detail\variant</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_demo.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_draw.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_impl_glfw.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_impl_opengl3.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_tables.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui_widgets.cpp">
-      <Filter>Source\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\texture.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\collision.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\collisiondebug.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsWorld.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsTransform.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsRigidBody.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physicsPartition.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\physics.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vec3D.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vec2D.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mat3x3.cpp">
-      <Filter>Source\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\camera.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\serialization.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glad.c">
-      <Filter>Source</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\app.cpp" />
+    <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h">
@@ -204,7 +23,7 @@
     <ClInclude Include="include\input.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\main.h">
+    <ClInclude Include="Include\main.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\model.h">
@@ -216,313 +35,313 @@
     <ClInclude Include="include\transform.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\base\core_prerequisites.h">
+    <ClInclude Include="Include\rttr\detail\base\core_prerequisites.h">
       <Filter>Include\rttr\detail\base</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\base\pch.h">
+    <ClInclude Include="Include\rttr\detail\base\pch.h">
       <Filter>Include\rttr\detail\base</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\base\version.h">
+    <ClInclude Include="Include\rttr\detail\base\version.h">
       <Filter>Include\rttr\detail\base</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\comparable_types.h">
+    <ClInclude Include="Include\rttr\detail\comparison\comparable_types.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_equal.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal_impl.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_equal_impl.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_less.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_less.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_less_impl.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_less_impl.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_equal.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_equal.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_equal_impl.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_equal_impl.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_less.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_less.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\comparison\compare_less_impl.h">
+    <ClInclude Include="Include\rttr\detail\comparison\compare_less_impl.h">
       <Filter>Include\rttr\detail\comparsion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\constructor\constructor_invoker.h">
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_invoker.h">
       <Filter>Include\rttr\detail\constructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper.h">
       <Filter>Include\rttr\detail\constructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper_base.h">
       <Filter>Include\rttr\detail\constructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_defaults.h">
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper_defaults.h">
       <Filter>Include\rttr\detail\constructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\conversion\std_conversion_functions.h">
+    <ClInclude Include="Include\rttr\detail\conversion\std_conversion_functions.h">
       <Filter>Include\rttr\detail\conversion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\conversion\number_conversion.h">
+    <ClInclude Include="Include\rttr\detail\conversion\number_conversion.h">
       <Filter>Include\rttr\detail\conversion</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\default_arguments\default_arguments.h">
+    <ClInclude Include="Include\rttr\detail\default_arguments\default_arguments.h">
       <Filter>Include\rttr\detail\default_arguments</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\default_arguments\invoke_with_defaults.h">
+    <ClInclude Include="Include\rttr\detail\default_arguments\invoke_with_defaults.h">
       <Filter>Include\rttr\detail\default_arguments</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\destructor\destructor_wrapper.h">
       <Filter>Include\rttr\detail\destructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\destructor\destructor_wrapper_base.h">
       <Filter>Include\rttr\detail\destructor</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_wrapper_base.h">
       <Filter>Include\rttr\detail\enumeration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_wrapper.h">
       <Filter>Include\rttr\detail\enumeration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_helper.h">
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_helper.h">
       <Filter>Include\rttr\detail\enumeration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\enumeration\enum_data.h">
+    <ClInclude Include="Include\rttr\detail\enumeration\enum_data.h">
       <Filter>Include\rttr\detail\enumeration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\filter\filter_item_funcs.h">
+    <ClInclude Include="Include\rttr\detail\filter\filter_item_funcs.h">
       <Filter>Include\rttr\detail\filter</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\argument_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\argument_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\array_range_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\array_range_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\associative_mapper_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\associative_mapper_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\enum_flags_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\enum_flags_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\instance_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\instance_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\rttr_cast_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\rttr_cast_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\sequential_mapper_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\sequential_mapper_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\string_view_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\string_view_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\impl\wrapper_mapper_impl.h">
+    <ClInclude Include="Include\rttr\detail\impl\wrapper_mapper_impl.h">
       <Filter>Include\rttr\detail\impl</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\library\library_p.h">
+    <ClInclude Include="Include\rttr\detail\library\library_p.h">
       <Filter>Include\rttr\detail\library</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\metadata\metadata.h">
+    <ClInclude Include="Include\rttr\detail\metadata\metadata.h">
       <Filter>Include\rttr\detail\metadata</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\metadata\metadata_handler.h">
+    <ClInclude Include="Include\rttr\detail\metadata\metadata_handler.h">
       <Filter>Include\rttr\detail\metadata</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\method\method_accessor.h">
+    <ClInclude Include="Include\rttr\detail\method\method_accessor.h">
       <Filter>Include\rttr\detail\method</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\method\method_invoker.h">
+    <ClInclude Include="Include\rttr\detail\method\method_invoker.h">
       <Filter>Include\rttr\detail\method</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\method\method_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\method\method_wrapper.h">
       <Filter>Include\rttr\detail\method</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\method\method_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\method\method_wrapper_base.h">
       <Filter>Include\rttr\detail\method</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_info_wrapper.h">
       <Filter>Include\rttr\detail\parameter_info</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_info_wrapper_base.h">
       <Filter>Include\rttr\detail\parameter_info</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos.h">
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_infos.h">
       <Filter>Include\rttr\detail\parameter_info</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos_compare.h">
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_infos_compare.h">
       <Filter>Include\rttr\detail\parameter_info</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_names.h">
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_names.h">
       <Filter>Include\rttr\detail\parameter_info</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\policies\ctor_policies.h">
+    <ClInclude Include="Include\rttr\detail\policies\ctor_policies.h">
       <Filter>Include\rttr\detail\policies</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\policies\meth_policies.h">
+    <ClInclude Include="Include\rttr\detail\policies\meth_policies.h">
       <Filter>Include\rttr\detail\policies</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\policies\prop_policies.h">
+    <ClInclude Include="Include\rttr\detail\policies\prop_policies.h">
       <Filter>Include\rttr\detail\policies</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_accessor.h">
+    <ClInclude Include="Include\rttr\detail\property\property_accessor.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_base.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_base.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_func.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_func.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_func.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_member_func.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_object.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_member_object.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_object.h">
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_object.h">
       <Filter>Include\rttr\detail\property</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\bind_types.h">
+    <ClInclude Include="Include\rttr\detail\registration\bind_types.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\bind_impl.h">
+    <ClInclude Include="Include\rttr\detail\registration\bind_impl.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\register_base_class_from_accessor.h">
+    <ClInclude Include="Include\rttr\detail\registration\register_base_class_from_accessor.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\registration_executer.h">
+    <ClInclude Include="Include\rttr\detail\registration\registration_executer.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\registration_impl.h">
+    <ClInclude Include="Include\rttr\detail\registration\registration_impl.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\registration_manager.h">
+    <ClInclude Include="Include\rttr\detail\registration\registration_manager.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\registration\registration_state_saver.h">
+    <ClInclude Include="Include\rttr\detail\registration\registration_state_saver.h">
       <Filter>Include\rttr\detail\registration</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\accessor_type.h">
+    <ClInclude Include="Include\rttr\detail\type\accessor_type.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\base_classes.h">
+    <ClInclude Include="Include\rttr\detail\type\base_classes.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\get_create_variant_func.h">
+    <ClInclude Include="Include\rttr\detail\type\get_create_variant_func.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\get_derived_info_func.h">
+    <ClInclude Include="Include\rttr\detail\type\get_derived_info_func.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_comparator.h">
+    <ClInclude Include="Include\rttr\detail\type\type_comparator.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_converter.h">
+    <ClInclude Include="Include\rttr\detail\type\type_converter.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_data.h">
+    <ClInclude Include="Include\rttr\detail\type\type_data.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_impl.h">
+    <ClInclude Include="Include\rttr\detail\type\type_impl.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_name.h">
+    <ClInclude Include="Include\rttr\detail\type\type_name.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_register.h">
+    <ClInclude Include="Include\rttr\detail\type\type_register.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_register_p.h">
+    <ClInclude Include="Include\rttr\detail\type\type_register_p.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\type\type_string_utils.h">
+    <ClInclude Include="Include\rttr\detail\type\type_string_utils.h">
       <Filter>Include\rttr\detail\type</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant\variant_impl.h">
+    <ClInclude Include="Include\rttr\detail\variant\variant_impl.h">
       <Filter>Include\rttr\detail\variant</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant\variant_data_policy.h">
+    <ClInclude Include="Include\rttr\detail\variant\variant_data_policy.h">
       <Filter>Include\rttr\detail\variant</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant\variant_data.h">
+    <ClInclude Include="Include\rttr\detail\variant\variant_data.h">
       <Filter>Include\rttr\detail\variant</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant\variant_compare.h">
+    <ClInclude Include="Include\rttr\detail\variant\variant_compare.h">
       <Filter>Include\rttr\detail\variant</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant\variant_data_converter.h">
+    <ClInclude Include="Include\rttr\detail\variant\variant_data_converter.h">
       <Filter>Include\rttr\detail\variant</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator.h">
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_creator.h">
       <Filter>Include\rttr\detail\variant_associative_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h">
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h">
       <Filter>Include\rttr\detail\variant_associative_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_private.h">
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_private.h">
       <Filter>Include\rttr\detail\variant_associative_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h">
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h">
       <Filter>Include\rttr\detail\variant_sequential_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h">
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h">
       <Filter>Include\rttr\detail\variant_sequential_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h">
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h">
       <Filter>Include\rttr\detail\variant_sequential_view</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\argument_extractor.h">
+    <ClInclude Include="Include\rttr\detail\misc\argument_extractor.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\argument_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\misc\argument_wrapper.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\class_item_mapper.h">
+    <ClInclude Include="Include\rttr\detail\misc\class_item_mapper.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\data_address_container.h">
+    <ClInclude Include="Include\rttr\detail\misc\data_address_container.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\flat_map.h">
+    <ClInclude Include="Include\rttr\detail\misc\flat_map.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\flat_multimap.h">
+    <ClInclude Include="Include\rttr\detail\misc\flat_multimap.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\function_traits.h">
+    <ClInclude Include="Include\rttr\detail\misc\function_traits.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\iterator_wrapper.h">
+    <ClInclude Include="Include\rttr\detail\misc\iterator_wrapper.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\misc_type_traits.h">
+    <ClInclude Include="Include\rttr\detail\misc\misc_type_traits.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\register_wrapper_mapper_conversion.h">
+    <ClInclude Include="Include\rttr\detail\misc\register_wrapper_mapper_conversion.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\sequential_container_type_traits.h">
+    <ClInclude Include="Include\rttr\detail\misc\sequential_container_type_traits.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\std_type_traits.h">
+    <ClInclude Include="Include\rttr\detail\misc\std_type_traits.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\template_type_trait.h">
+    <ClInclude Include="Include\rttr\detail\misc\template_type_trait.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\template_type_trait_impl.h">
+    <ClInclude Include="Include\rttr\detail\misc\template_type_trait_impl.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\detail\misc\utility.h">
+    <ClInclude Include="Include\rttr\detail\misc\utility.h">
       <Filter>Include\rttr\detail\misc</Filter>
     </ClInclude>
     <ClInclude Include="include\imstb_truetype.h">
@@ -558,82 +377,82 @@
     <ClInclude Include="include\texture.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\type.h">
+    <ClInclude Include="Include\rttr\type.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\variant.h">
+    <ClInclude Include="Include\rttr\variant.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\variant_associative_view.h">
+    <ClInclude Include="Include\rttr\variant_associative_view.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\variant_sequential_view.h">
+    <ClInclude Include="Include\rttr\variant_sequential_view.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\wrapper_mapper.h">
+    <ClInclude Include="Include\rttr\wrapper_mapper.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\access_levels.h">
+    <ClInclude Include="Include\rttr\access_levels.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\argument.h">
+    <ClInclude Include="Include\rttr\argument.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\array_range.h">
+    <ClInclude Include="Include\rttr\array_range.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\associative_mapper.h">
+    <ClInclude Include="Include\rttr\associative_mapper.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\constructor.h">
+    <ClInclude Include="Include\rttr\constructor.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\destructor.h">
+    <ClInclude Include="Include\rttr\destructor.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\enum_flags.h">
+    <ClInclude Include="Include\rttr\enum_flags.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\enumeration.h">
+    <ClInclude Include="Include\rttr\enumeration.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\filter_item.h">
+    <ClInclude Include="Include\rttr\filter_item.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\instance.h">
+    <ClInclude Include="Include\rttr\instance.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\library.h">
+    <ClInclude Include="Include\rttr\library.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\method.h">
+    <ClInclude Include="Include\rttr\method.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\parameter_info.h">
+    <ClInclude Include="Include\rttr\parameter_info.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\policy.h">
+    <ClInclude Include="Include\rttr\policy.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\property.h">
+    <ClInclude Include="Include\rttr\property.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\registration.h">
+    <ClInclude Include="Include\rttr\registration.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\registration_friend.h">
+    <ClInclude Include="Include\rttr\registration_friend.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\rttr_cast.h">
+    <ClInclude Include="Include\rttr\rttr_cast.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\rttr_enable.h">
+    <ClInclude Include="Include\rttr\rttr_enable.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\sequential_mapper.h">
+    <ClInclude Include="Include\rttr\sequential_mapper.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="include\rttr\string_view.h">
+    <ClInclude Include="Include\rttr\string_view.h">
       <Filter>Include\rttr</Filter>
     </ClInclude>
     <ClInclude Include="include\collision.h">
@@ -669,149 +488,143 @@
     <ClInclude Include="include\camera.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\serialization.h">
+    <ClInclude Include="Include\serialization.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\cursorstreamwrapper.h">
+    <ClInclude Include="Include\rapidjson\cursorstreamwrapper.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\document.h">
+    <ClInclude Include="Include\rapidjson\document.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\encodedstream.h">
+    <ClInclude Include="Include\rapidjson\encodedstream.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\encodings.h">
+    <ClInclude Include="Include\rapidjson\encodings.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\filereadstream.h">
+    <ClInclude Include="Include\rapidjson\filereadstream.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\filewritestream.h">
+    <ClInclude Include="Include\rapidjson\filewritestream.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\fwd.h">
+    <ClInclude Include="Include\rapidjson\fwd.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\istreamwrapper.h">
+    <ClInclude Include="Include\rapidjson\istreamwrapper.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\memorybuffer.h">
+    <ClInclude Include="Include\rapidjson\memorybuffer.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\memorystream.h">
+    <ClInclude Include="Include\rapidjson\memorystream.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\ostreamwrapper.h">
+    <ClInclude Include="Include\rapidjson\ostreamwrapper.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\pointer.h">
+    <ClInclude Include="Include\rapidjson\pointer.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\prettywriter.h">
+    <ClInclude Include="Include\rapidjson\prettywriter.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\rapidjson.h">
+    <ClInclude Include="Include\rapidjson\rapidjson.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\reader.h">
+    <ClInclude Include="Include\rapidjson\reader.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\schema.h">
+    <ClInclude Include="Include\rapidjson\schema.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\stream.h">
+    <ClInclude Include="Include\rapidjson\stream.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\stringbuffer.h">
+    <ClInclude Include="Include\rapidjson\stringbuffer.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\uri.h">
+    <ClInclude Include="Include\rapidjson\uri.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\writer.h">
+    <ClInclude Include="Include\rapidjson\writer.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\error\en.h">
+    <ClInclude Include="Include\rapidjson\error\en.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\error\error.h">
+    <ClInclude Include="Include\rapidjson\error\error.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\biginteger.h">
+    <ClInclude Include="Include\rapidjson\internal\biginteger.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\clzll.h">
+    <ClInclude Include="Include\rapidjson\internal\clzll.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\diyfp.h">
+    <ClInclude Include="Include\rapidjson\internal\diyfp.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\dtoa.h">
+    <ClInclude Include="Include\rapidjson\internal\dtoa.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\ieee754.h">
+    <ClInclude Include="Include\rapidjson\internal\ieee754.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\itoa.h">
+    <ClInclude Include="Include\rapidjson\internal\itoa.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\meta.h">
+    <ClInclude Include="Include\rapidjson\internal\meta.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\pow10.h">
+    <ClInclude Include="Include\rapidjson\internal\pow10.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\regex.h">
+    <ClInclude Include="Include\rapidjson\internal\regex.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\stack.h">
+    <ClInclude Include="Include\rapidjson\internal\stack.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\strfunc.h">
+    <ClInclude Include="Include\rapidjson\internal\strfunc.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\strtod.h">
+    <ClInclude Include="Include\rapidjson\internal\strtod.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\internal\swap.h">
+    <ClInclude Include="Include\rapidjson\internal\swap.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\msinttypes\inttypes.h">
+    <ClInclude Include="Include\rapidjson\msinttypes\inttypes.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\msinttypes\stdint.h">
+    <ClInclude Include="Include\rapidjson\msinttypes\stdint.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
-    <ClInclude Include="include\rapidjson\allocators.h">
+    <ClInclude Include="Include\rapidjson\allocators.h">
       <Filter>Include\rapidJSON</Filter>
     </ClInclude>
     <ClInclude Include="include\app.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\mainHeader.h">
+    <ClInclude Include="Include\mainHeader.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />
     <None Include="..\shaders\gam200.vert" />
-    <None Include="src\rttr\rttr.cmake" />
-    <None Include="src\rttr\detail\base\version.h.in">
-      <Filter>Source\rttr\detail\base</Filter>
-    </None>
-    <None Include="src\rttr\detail\base\version.rc.in">
-      <Filter>Source\rttr\detail\base</Filter>
-    </None>
-    <None Include="include\rttr\registration">
+    <None Include="Include\rttr\registration">
       <Filter>Include\rttr</Filter>
     </None>
-    <None Include="include\rttr\registration_friend">
+    <None Include="Include\rttr\registration_friend">
       <Filter>Include\rttr</Filter>
     </None>
-    <None Include="include\rttr\type">
+    <None Include="Include\rttr\type">
       <Filter>Include\rttr</Filter>
     </None>
+    <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />
@@ -955,5 +768,8 @@
     <Filter Include="Include\rapidJSON">
       <UniqueIdentifier>{2e32f4f1-1efa-47dc-b16e-063fdeca6d4a}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="config.xml" />
   </ItemGroup>
 </Project>

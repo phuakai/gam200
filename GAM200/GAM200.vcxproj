@@ -19,77 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\app.cpp" />
-    <ClCompile Include="src\buffer.cpp" />
-    <ClCompile Include="src\camera.cpp" />
-    <ClCompile Include="src\collisiondebug.cpp" />
-    <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\glslshader.cpp" />
-    <ClCompile Include="src\graphics.cpp" />
-    <ClCompile Include="src\imgui.cpp" />
-    <ClCompile Include="src\imgui_demo.cpp" />
-    <ClCompile Include="src\imgui_draw.cpp" />
-    <ClCompile Include="src\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\imgui_tables.cpp" />
-    <ClCompile Include="src\imgui_widgets.cpp" />
-    <ClCompile Include="src\input.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\mat3x3.cpp" />
-    <ClCompile Include="src\collision.cpp" />
-    <ClCompile Include="src\model.cpp" />
-    <ClCompile Include="src\physicsPartition.cpp" />
-    <ClCompile Include="src\pathfinding.cpp" />
-    <ClCompile Include="src\physics.cpp" />
-    <ClCompile Include="src\physicsRigidBody.cpp" />
-    <ClCompile Include="src\physicsTransform.cpp" />
-    <ClCompile Include="src\serialization.cpp" />
-    <ClCompile Include="src\texture.cpp" />
-    <ClCompile Include="src\rttr\constructor.cpp" />
-    <ClCompile Include="src\rttr\destructor.cpp" />
-    <ClCompile Include="src\rttr\detail\comparison\compare_equal.cpp" />
-    <ClCompile Include="src\rttr\detail\comparison\compare_less.cpp" />
-    <ClCompile Include="src\rttr\detail\constructor\constructor_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\conversion\std_conversion_functions.cpp" />
-    <ClCompile Include="src\rttr\detail\destructor\destructor_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\enumeration\enumeration_helper.cpp" />
-    <ClCompile Include="src\rttr\detail\enumeration\enumeration_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\library\library_unix.cpp" />
-    <ClCompile Include="src\rttr\detail\library\library_win.cpp" />
-    <ClCompile Include="src\rttr\detail\method\method_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\misc\standard_types.cpp" />
-    <ClCompile Include="src\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\property\property_wrapper_base.cpp" />
-    <ClCompile Include="src\rttr\detail\registration\registration_executer.cpp" />
-    <ClCompile Include="src\rttr\detail\registration\registration_state_saver.cpp" />
-    <ClCompile Include="src\rttr\detail\type\type_data.cpp" />
-    <ClCompile Include="src\rttr\detail\type\type_register.cpp" />
-    <ClCompile Include="src\rttr\detail\variant\variant_compare.cpp" />
-    <ClCompile Include="src\rttr\enumeration.cpp" />
-    <ClCompile Include="src\rttr\library.cpp" />
-    <ClCompile Include="src\rttr\method.cpp" />
-    <ClCompile Include="src\rttr\parameter_info.cpp" />
-    <ClCompile Include="src\rttr\policy.cpp" />
-    <ClCompile Include="src\rttr\property.cpp" />
-    <ClCompile Include="src\rttr\registration.cpp" />
-    <ClCompile Include="src\rttr\type.cpp" />
-    <ClCompile Include="src\rttr\variant.cpp" />
-    <ClCompile Include="src\rttr\variant_associative_view.cpp" />
-    <ClCompile Include="src\rttr\variant_sequential_view.cpp" />
-    <ClCompile Include="src\transform.cpp" />
-    <ClCompile Include="src\vec2D.cpp" />
-    <ClCompile Include="src\vec3D.cpp" />
-    <ClCompile Include="src\physicsWorld.cpp" />
+    <ClCompile Include="Source\app.cpp" />
+    <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />
     <None Include="..\shaders\gam200.vert" />
-    <None Include="include\rttr\registration" />
-    <None Include="include\rttr\registration_friend" />
-    <None Include="include\rttr\type" />
-    <None Include="src\rttr\detail\base\version.h.in" />
-    <None Include="src\rttr\detail\base\version.rc.in" />
-    <None Include="src\rttr\rttr.cmake" />
+    <None Include="imgui.ini" />
+    <None Include="Include\rttr\registration" />
+    <None Include="Include\rttr\registration_friend" />
+    <None Include="Include\rttr\type" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\buffer.h" />
@@ -111,8 +50,8 @@
     <ClInclude Include="include\imstb_textedit.h" />
     <ClInclude Include="include\imstb_truetype.h" />
     <ClInclude Include="include\input.h" />
-    <ClInclude Include="include\main.h" />
-    <ClInclude Include="include\mainHeader.h" />
+    <ClInclude Include="Include\main.h" />
+    <ClInclude Include="Include\mainHeader.h" />
     <ClInclude Include="include\mat3x3.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\physicsPartition.h" />
@@ -120,175 +59,175 @@
     <ClInclude Include="include\physics.h" />
     <ClInclude Include="include\physicsRigidBody.h" />
     <ClInclude Include="include\physicsTransform.h" />
-    <ClInclude Include="include\rapidjson\allocators.h" />
-    <ClInclude Include="include\rapidjson\cursorstreamwrapper.h" />
-    <ClInclude Include="include\rapidjson\document.h" />
-    <ClInclude Include="include\rapidjson\encodedstream.h" />
-    <ClInclude Include="include\rapidjson\encodings.h" />
-    <ClInclude Include="include\rapidjson\error\en.h" />
-    <ClInclude Include="include\rapidjson\error\error.h" />
-    <ClInclude Include="include\rapidjson\filereadstream.h" />
-    <ClInclude Include="include\rapidjson\filewritestream.h" />
-    <ClInclude Include="include\rapidjson\fwd.h" />
-    <ClInclude Include="include\rapidjson\internal\biginteger.h" />
-    <ClInclude Include="include\rapidjson\internal\clzll.h" />
-    <ClInclude Include="include\rapidjson\internal\diyfp.h" />
-    <ClInclude Include="include\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="include\rapidjson\internal\ieee754.h" />
-    <ClInclude Include="include\rapidjson\internal\itoa.h" />
-    <ClInclude Include="include\rapidjson\internal\meta.h" />
-    <ClInclude Include="include\rapidjson\internal\pow10.h" />
-    <ClInclude Include="include\rapidjson\internal\regex.h" />
-    <ClInclude Include="include\rapidjson\internal\stack.h" />
-    <ClInclude Include="include\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="include\rapidjson\internal\strtod.h" />
-    <ClInclude Include="include\rapidjson\internal\swap.h" />
-    <ClInclude Include="include\rapidjson\istreamwrapper.h" />
-    <ClInclude Include="include\rapidjson\memorybuffer.h" />
-    <ClInclude Include="include\rapidjson\memorystream.h" />
-    <ClInclude Include="include\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="include\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="include\rapidjson\ostreamwrapper.h" />
-    <ClInclude Include="include\rapidjson\pointer.h" />
-    <ClInclude Include="include\rapidjson\prettywriter.h" />
-    <ClInclude Include="include\rapidjson\rapidjson.h" />
-    <ClInclude Include="include\rapidjson\reader.h" />
-    <ClInclude Include="include\rapidjson\schema.h" />
-    <ClInclude Include="include\rapidjson\stream.h" />
-    <ClInclude Include="include\rapidjson\stringbuffer.h" />
-    <ClInclude Include="include\rapidjson\uri.h" />
-    <ClInclude Include="include\rapidjson\writer.h" />
-    <ClInclude Include="include\rttr\access_levels.h" />
-    <ClInclude Include="include\rttr\argument.h" />
-    <ClInclude Include="include\rttr\array_range.h" />
-    <ClInclude Include="include\rttr\associative_mapper.h" />
-    <ClInclude Include="include\rttr\constructor.h" />
-    <ClInclude Include="include\rttr\destructor.h" />
-    <ClInclude Include="include\rttr\enumeration.h" />
-    <ClInclude Include="include\rttr\enum_flags.h" />
-    <ClInclude Include="include\rttr\filter_item.h" />
-    <ClInclude Include="include\rttr\instance.h" />
-    <ClInclude Include="include\rttr\library.h" />
-    <ClInclude Include="include\rttr\method.h" />
-    <ClInclude Include="include\rttr\parameter_info.h" />
-    <ClInclude Include="include\rttr\policy.h" />
-    <ClInclude Include="include\rttr\property.h" />
-    <ClInclude Include="include\rttr\registration.h" />
-    <ClInclude Include="include\rttr\registration_friend.h" />
-    <ClInclude Include="include\rttr\rttr_cast.h" />
-    <ClInclude Include="include\rttr\rttr_enable.h" />
-    <ClInclude Include="include\rttr\sequential_mapper.h" />
-    <ClInclude Include="include\rttr\string_view.h" />
-    <ClInclude Include="include\rttr\type.h" />
-    <ClInclude Include="include\rttr\variant.h" />
-    <ClInclude Include="include\rttr\variant_associative_view.h" />
-    <ClInclude Include="include\rttr\variant_sequential_view.h" />
-    <ClInclude Include="include\rttr\wrapper_mapper.h" />
-    <ClInclude Include="include\serialization.h" />
+    <ClInclude Include="Include\rapidjson\allocators.h" />
+    <ClInclude Include="Include\rapidjson\cursorstreamwrapper.h" />
+    <ClInclude Include="Include\rapidjson\document.h" />
+    <ClInclude Include="Include\rapidjson\encodedstream.h" />
+    <ClInclude Include="Include\rapidjson\encodings.h" />
+    <ClInclude Include="Include\rapidjson\error\en.h" />
+    <ClInclude Include="Include\rapidjson\error\error.h" />
+    <ClInclude Include="Include\rapidjson\filereadstream.h" />
+    <ClInclude Include="Include\rapidjson\filewritestream.h" />
+    <ClInclude Include="Include\rapidjson\fwd.h" />
+    <ClInclude Include="Include\rapidjson\internal\biginteger.h" />
+    <ClInclude Include="Include\rapidjson\internal\clzll.h" />
+    <ClInclude Include="Include\rapidjson\internal\diyfp.h" />
+    <ClInclude Include="Include\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="Include\rapidjson\internal\ieee754.h" />
+    <ClInclude Include="Include\rapidjson\internal\itoa.h" />
+    <ClInclude Include="Include\rapidjson\internal\meta.h" />
+    <ClInclude Include="Include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="Include\rapidjson\internal\regex.h" />
+    <ClInclude Include="Include\rapidjson\internal\stack.h" />
+    <ClInclude Include="Include\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="Include\rapidjson\internal\strtod.h" />
+    <ClInclude Include="Include\rapidjson\internal\swap.h" />
+    <ClInclude Include="Include\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="Include\rapidjson\memorybuffer.h" />
+    <ClInclude Include="Include\rapidjson\memorystream.h" />
+    <ClInclude Include="Include\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="Include\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="Include\rapidjson\ostreamwrapper.h" />
+    <ClInclude Include="Include\rapidjson\pointer.h" />
+    <ClInclude Include="Include\rapidjson\prettywriter.h" />
+    <ClInclude Include="Include\rapidjson\rapidjson.h" />
+    <ClInclude Include="Include\rapidjson\reader.h" />
+    <ClInclude Include="Include\rapidjson\schema.h" />
+    <ClInclude Include="Include\rapidjson\stream.h" />
+    <ClInclude Include="Include\rapidjson\stringbuffer.h" />
+    <ClInclude Include="Include\rapidjson\uri.h" />
+    <ClInclude Include="Include\rapidjson\writer.h" />
+    <ClInclude Include="Include\rttr\access_levels.h" />
+    <ClInclude Include="Include\rttr\argument.h" />
+    <ClInclude Include="Include\rttr\array_range.h" />
+    <ClInclude Include="Include\rttr\associative_mapper.h" />
+    <ClInclude Include="Include\rttr\constructor.h" />
+    <ClInclude Include="Include\rttr\destructor.h" />
+    <ClInclude Include="Include\rttr\enumeration.h" />
+    <ClInclude Include="Include\rttr\enum_flags.h" />
+    <ClInclude Include="Include\rttr\filter_item.h" />
+    <ClInclude Include="Include\rttr\instance.h" />
+    <ClInclude Include="Include\rttr\library.h" />
+    <ClInclude Include="Include\rttr\method.h" />
+    <ClInclude Include="Include\rttr\parameter_info.h" />
+    <ClInclude Include="Include\rttr\policy.h" />
+    <ClInclude Include="Include\rttr\property.h" />
+    <ClInclude Include="Include\rttr\registration.h" />
+    <ClInclude Include="Include\rttr\registration_friend.h" />
+    <ClInclude Include="Include\rttr\rttr_cast.h" />
+    <ClInclude Include="Include\rttr\rttr_enable.h" />
+    <ClInclude Include="Include\rttr\sequential_mapper.h" />
+    <ClInclude Include="Include\rttr\string_view.h" />
+    <ClInclude Include="Include\rttr\type.h" />
+    <ClInclude Include="Include\rttr\variant.h" />
+    <ClInclude Include="Include\rttr\variant_associative_view.h" />
+    <ClInclude Include="Include\rttr\variant_sequential_view.h" />
+    <ClInclude Include="Include\rttr\wrapper_mapper.h" />
+    <ClInclude Include="Include\serialization.h" />
     <ClInclude Include="include\texture.h" />
-    <ClInclude Include="include\rttr\detail\base\core_prerequisites.h" />
-    <ClInclude Include="include\rttr\detail\base\pch.h" />
-    <ClInclude Include="include\rttr\detail\base\version.h" />
-    <ClInclude Include="include\rttr\detail\comparison\comparable_types.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_equal_impl.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_less.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_array_less_impl.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_equal.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_equal_impl.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_less.h" />
-    <ClInclude Include="include\rttr\detail\comparison\compare_less_impl.h" />
-    <ClInclude Include="include\rttr\detail\constructor\constructor_invoker.h" />
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\constructor\constructor_wrapper_defaults.h" />
-    <ClInclude Include="include\rttr\detail\conversion\number_conversion.h" />
-    <ClInclude Include="include\rttr\detail\conversion\std_conversion_functions.h" />
-    <ClInclude Include="include\rttr\detail\default_arguments\default_arguments.h" />
-    <ClInclude Include="include\rttr\detail\default_arguments\invoke_with_defaults.h" />
-    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\destructor\destructor_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_helper.h" />
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\enumeration\enumeration_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\enumeration\enum_data.h" />
-    <ClInclude Include="include\rttr\detail\filter\filter_item_funcs.h" />
-    <ClInclude Include="include\rttr\detail\impl\argument_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\array_range_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\associative_mapper_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\enum_flags_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\instance_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\rttr_cast_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\sequential_mapper_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\string_view_impl.h" />
-    <ClInclude Include="include\rttr\detail\impl\wrapper_mapper_impl.h" />
-    <ClInclude Include="include\rttr\detail\library\library_p.h" />
-    <ClInclude Include="include\rttr\detail\metadata\metadata.h" />
-    <ClInclude Include="include\rttr\detail\metadata\metadata_handler.h" />
-    <ClInclude Include="include\rttr\detail\method\method_accessor.h" />
-    <ClInclude Include="include\rttr\detail\method\method_invoker.h" />
-    <ClInclude Include="include\rttr\detail\method\method_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\method\method_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\misc\argument_extractor.h" />
-    <ClInclude Include="include\rttr\detail\misc\argument_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\misc\class_item_mapper.h" />
-    <ClInclude Include="include\rttr\detail\misc\data_address_container.h" />
-    <ClInclude Include="include\rttr\detail\misc\flat_map.h" />
-    <ClInclude Include="include\rttr\detail\misc\flat_multimap.h" />
-    <ClInclude Include="include\rttr\detail\misc\function_traits.h" />
-    <ClInclude Include="include\rttr\detail\misc\iterator_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\misc\misc_type_traits.h" />
-    <ClInclude Include="include\rttr\detail\misc\register_wrapper_mapper_conversion.h" />
-    <ClInclude Include="include\rttr\detail\misc\sequential_container_type_traits.h" />
-    <ClInclude Include="include\rttr\detail\misc\std_type_traits.h" />
-    <ClInclude Include="include\rttr\detail\misc\template_type_trait.h" />
-    <ClInclude Include="include\rttr\detail\misc\template_type_trait_impl.h" />
-    <ClInclude Include="include\rttr\detail\misc\utility.h" />
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos.h" />
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_infos_compare.h" />
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_info_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\parameter_info\parameter_names.h" />
-    <ClInclude Include="include\rttr\detail\policies\ctor_policies.h" />
-    <ClInclude Include="include\rttr\detail\policies\meth_policies.h" />
-    <ClInclude Include="include\rttr\detail\policies\prop_policies.h" />
-    <ClInclude Include="include\rttr\detail\property\property_accessor.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_base.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_func.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_func.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_member_object.h" />
-    <ClInclude Include="include\rttr\detail\property\property_wrapper_object.h" />
-    <ClInclude Include="include\rttr\detail\registration\bind_impl.h" />
-    <ClInclude Include="include\rttr\detail\registration\bind_types.h" />
-    <ClInclude Include="include\rttr\detail\registration\register_base_class_from_accessor.h" />
-    <ClInclude Include="include\rttr\detail\registration\registration_executer.h" />
-    <ClInclude Include="include\rttr\detail\registration\registration_impl.h" />
-    <ClInclude Include="include\rttr\detail\registration\registration_manager.h" />
-    <ClInclude Include="include\rttr\detail\registration\registration_state_saver.h" />
-    <ClInclude Include="include\rttr\detail\type\accessor_type.h" />
-    <ClInclude Include="include\rttr\detail\type\base_classes.h" />
-    <ClInclude Include="include\rttr\detail\type\get_create_variant_func.h" />
-    <ClInclude Include="include\rttr\detail\type\get_derived_info_func.h" />
-    <ClInclude Include="include\rttr\detail\type\type_comparator.h" />
-    <ClInclude Include="include\rttr\detail\type\type_converter.h" />
-    <ClInclude Include="include\rttr\detail\type\type_data.h" />
-    <ClInclude Include="include\rttr\detail\type\type_impl.h" />
-    <ClInclude Include="include\rttr\detail\type\type_name.h" />
-    <ClInclude Include="include\rttr\detail\type\type_register.h" />
-    <ClInclude Include="include\rttr\detail\type\type_register_p.h" />
-    <ClInclude Include="include\rttr\detail\type\type_string_utils.h" />
-    <ClInclude Include="include\rttr\detail\variant\variant_compare.h" />
-    <ClInclude Include="include\rttr\detail\variant\variant_data.h" />
-    <ClInclude Include="include\rttr\detail\variant\variant_data_converter.h" />
-    <ClInclude Include="include\rttr\detail\variant\variant_data_policy.h" />
-    <ClInclude Include="include\rttr\detail\variant\variant_impl.h" />
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator.h" />
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h" />
-    <ClInclude Include="include\rttr\detail\variant_associative_view\variant_associative_view_private.h" />
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h" />
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h" />
-    <ClInclude Include="include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h" />
+    <ClInclude Include="Include\rttr\detail\base\core_prerequisites.h" />
+    <ClInclude Include="Include\rttr\detail\base\pch.h" />
+    <ClInclude Include="Include\rttr\detail\base\version.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\comparable_types.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_equal.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_equal_impl.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_less.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_array_less_impl.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_equal.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_equal_impl.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_less.h" />
+    <ClInclude Include="Include\rttr\detail\comparison\compare_less_impl.h" />
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_invoker.h" />
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\constructor\constructor_wrapper_defaults.h" />
+    <ClInclude Include="Include\rttr\detail\conversion\number_conversion.h" />
+    <ClInclude Include="Include\rttr\detail\conversion\std_conversion_functions.h" />
+    <ClInclude Include="Include\rttr\detail\default_arguments\default_arguments.h" />
+    <ClInclude Include="Include\rttr\detail\default_arguments\invoke_with_defaults.h" />
+    <ClInclude Include="Include\rttr\detail\destructor\destructor_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\destructor\destructor_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_helper.h" />
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\enumeration\enumeration_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\enumeration\enum_data.h" />
+    <ClInclude Include="Include\rttr\detail\filter\filter_item_funcs.h" />
+    <ClInclude Include="Include\rttr\detail\impl\argument_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\array_range_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\associative_mapper_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\enum_flags_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\instance_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\rttr_cast_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\sequential_mapper_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\string_view_impl.h" />
+    <ClInclude Include="Include\rttr\detail\impl\wrapper_mapper_impl.h" />
+    <ClInclude Include="Include\rttr\detail\library\library_p.h" />
+    <ClInclude Include="Include\rttr\detail\metadata\metadata.h" />
+    <ClInclude Include="Include\rttr\detail\metadata\metadata_handler.h" />
+    <ClInclude Include="Include\rttr\detail\method\method_accessor.h" />
+    <ClInclude Include="Include\rttr\detail\method\method_invoker.h" />
+    <ClInclude Include="Include\rttr\detail\method\method_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\method\method_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\misc\argument_extractor.h" />
+    <ClInclude Include="Include\rttr\detail\misc\argument_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\misc\class_item_mapper.h" />
+    <ClInclude Include="Include\rttr\detail\misc\data_address_container.h" />
+    <ClInclude Include="Include\rttr\detail\misc\flat_map.h" />
+    <ClInclude Include="Include\rttr\detail\misc\flat_multimap.h" />
+    <ClInclude Include="Include\rttr\detail\misc\function_traits.h" />
+    <ClInclude Include="Include\rttr\detail\misc\iterator_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\misc\misc_type_traits.h" />
+    <ClInclude Include="Include\rttr\detail\misc\register_wrapper_mapper_conversion.h" />
+    <ClInclude Include="Include\rttr\detail\misc\sequential_container_type_traits.h" />
+    <ClInclude Include="Include\rttr\detail\misc\std_type_traits.h" />
+    <ClInclude Include="Include\rttr\detail\misc\template_type_trait.h" />
+    <ClInclude Include="Include\rttr\detail\misc\template_type_trait_impl.h" />
+    <ClInclude Include="Include\rttr\detail\misc\utility.h" />
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_infos.h" />
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_infos_compare.h" />
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_info_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_info_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\parameter_info\parameter_names.h" />
+    <ClInclude Include="Include\rttr\detail\policies\ctor_policies.h" />
+    <ClInclude Include="Include\rttr\detail\policies\meth_policies.h" />
+    <ClInclude Include="Include\rttr\detail\policies\prop_policies.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_accessor.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_base.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_func.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_member_func.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_member_object.h" />
+    <ClInclude Include="Include\rttr\detail\property\property_wrapper_object.h" />
+    <ClInclude Include="Include\rttr\detail\registration\bind_impl.h" />
+    <ClInclude Include="Include\rttr\detail\registration\bind_types.h" />
+    <ClInclude Include="Include\rttr\detail\registration\register_base_class_from_accessor.h" />
+    <ClInclude Include="Include\rttr\detail\registration\registration_executer.h" />
+    <ClInclude Include="Include\rttr\detail\registration\registration_impl.h" />
+    <ClInclude Include="Include\rttr\detail\registration\registration_manager.h" />
+    <ClInclude Include="Include\rttr\detail\registration\registration_state_saver.h" />
+    <ClInclude Include="Include\rttr\detail\type\accessor_type.h" />
+    <ClInclude Include="Include\rttr\detail\type\base_classes.h" />
+    <ClInclude Include="Include\rttr\detail\type\get_create_variant_func.h" />
+    <ClInclude Include="Include\rttr\detail\type\get_derived_info_func.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_comparator.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_converter.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_data.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_impl.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_name.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_register.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_register_p.h" />
+    <ClInclude Include="Include\rttr\detail\type\type_string_utils.h" />
+    <ClInclude Include="Include\rttr\detail\variant\variant_compare.h" />
+    <ClInclude Include="Include\rttr\detail\variant\variant_data.h" />
+    <ClInclude Include="Include\rttr\detail\variant\variant_data_converter.h" />
+    <ClInclude Include="Include\rttr\detail\variant\variant_data_policy.h" />
+    <ClInclude Include="Include\rttr\detail\variant\variant_impl.h" />
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_creator.h" />
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h" />
+    <ClInclude Include="Include\rttr\detail\variant_associative_view\variant_associative_view_private.h" />
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h" />
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h" />
+    <ClInclude Include="Include\rttr\detail\variant_sequential_view\variant_sequential_view_private.h" />
     <ClInclude Include="include\transform.h" />
     <ClInclude Include="include\vec2D.h" />
     <ClInclude Include="include\vec3D.h" />
@@ -296,6 +235,17 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine\Engine.vcxproj">
+      <Project>{1c4ade08-c56d-4f42-a079-06e538278f64}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Level Editor\Level Editor.vcxproj">
+      <Project>{a4d0a4c8-d0e9-4260-9213-cccb88154791}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="config.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -353,18 +303,21 @@
     <Import Project="..\prop-pages\gam200x64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDIr)include\rttr;$(ProjectDIr)src\rttr;$(ProjectDIr)src\rttr\detail;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(ProjectDIr)src\rttr\detail;$(ProjectDIr)src\rttr;$(ProjectDIr)include\rttr;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(ProjectDIr)src\rttr\detail;$(ProjectDIr)src\rttr;$(ProjectDIr)include\rttr;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -372,6 +325,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -388,6 +342,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -403,6 +358,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -423,6 +379,7 @@ copy "$(SolutionDir)lib\glew-2.2.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

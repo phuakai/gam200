@@ -22,8 +22,8 @@ declaration.
 #include <unordered_map>
 #include <iostream>
 #include <chrono>
-#include <registration.h>
-#include <rttr/registration_friend>
+#include <registration>
+#include <registration_friend>
 //#include <instance.h>
 #include <type>
 
