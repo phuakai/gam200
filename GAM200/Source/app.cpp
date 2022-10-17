@@ -161,18 +161,18 @@ collision and pathfinding checks.
 */
 void wallGeneration(int positionX, int positionY)
 {
-	quadObj entity;
+	//quadObj entity;
 	static int count = 0;
 	vector2D::vec2D position = vector2D::vec2D((float)(positionX), (float)(positionY)) * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500) + vector2D::vec2D(1000 / MAX_GRID_X / 2, 1000 / MAX_GRID_Y / 2);
 	walls[count].Add<Render>("wall" + std::to_string(count), "square", position, vector3D::vec3D(0, 0, 0), vector2D::vec2D((1000 / MAX_GRID_X), (1000 / MAX_GRID_Y)), 0, 0, 0, "gam200-shdrpgm");
 	walls[count].Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 0, 0, 0, vector2D::vec2D(0, 0));
 	ecs.setEntityName(walls[count].GetID(), "wall" + std::to_string(count));
 
-	entity.key = walls[count].GetID();
-	entity.position = ecs.GetComponent<Render>(walls[count].GetID())->position;
-	mainTree.insertSuccessfully(entity);
+	//entity.key = walls[count].GetID();
+	//entity.position = ecs.GetComponent<Render>(walls[count].GetID())->position;
+	mainTree.insertSuccessfully(walls[count].GetID(), ecs.GetComponent<Render>(walls[count].GetID())->position);
 
-	count++;
+	++count;
 }
 
 /*  _________________________________________________________________________*/
@@ -335,11 +335,11 @@ void GLApp::init()
 		EntityID enemyID = enemyUnits[i].GetID();
 		//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
 
-		quadObj entity;
-		entity.key = enemyUnits[i].GetID();
-		entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
+		//quadObj entity;
+		//entity.key = enemyUnits[i].GetID();
+		//entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
 
-		mainTree.insertSuccessfully(entity);
+		mainTree.insertSuccessfully(enemyUnits[i].GetID(), ecs.GetComponent<Render>(enemyUnits[i].GetID())->position);
 	}
 
 	timer = 4;
@@ -397,7 +397,7 @@ void GLApp::init()
 			for (int i = 0; i < walls.size(); ++i)
 			{
 				Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
-				std::list<quadObj*> myList;
+				std::list<EntityID*> myList;
 				AABB range(pointer->position.x - pointer->dimension.x,
 					pointer->position.y - pointer->dimension.y,
 					pointer->position.x + pointer->dimension.x,
@@ -410,20 +410,17 @@ void GLApp::init()
 
 				// Create vertices for wall
 				std::vector<vector2D::vec2D> wallVtx;
-				for (int j = -1; j < 2; j += 2)
-				{
-					for (int k = -1; k < 2; k += 2)
-					{
-						wallVtx.emplace_back(vector2D::vec2D(wallPos.x + k * wallDims.x, wallPos.y + j * wallDims.y));
-					}
-				}
+				wallVtx.emplace_back(vector2D::vec2D(wallPos.x - 1.5 * wallDims.x, wallPos.y - 1.5 * wallDims.y));
+				wallVtx.emplace_back(vector2D::vec2D(wallPos.x - 1.5 * wallDims.x, wallPos.y + 1.5 * wallDims.y));
+				wallVtx.emplace_back(vector2D::vec2D(wallPos.x + 1.5 * wallDims.x, wallPos.y + 1.5 * wallDims.y));
+				wallVtx.emplace_back(vector2D::vec2D(wallPos.x + 1.5 * wallDims.x, wallPos.y - 1.5 * wallDims.y));
 
-				for (std::list <quadObj*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
+				for (std::list <EntityID*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
 				{
 					bool check = false;
 					for (int j = 0; j < walls.size(); ++j)
 					{
-						if ((*enemyUnit)->key == walls[j].GetID())
+						if ((**enemyUnit) == walls[j].GetID())
 						{
 							check = true;
 							break;
@@ -432,8 +429,8 @@ void GLApp::init()
 					if (check)
 						continue;
 
-					vector2D::vec2D enemyPos = ecs.GetComponent<Render>((*enemyUnit)->key)->position;
-					vector2D::vec2D enemyDims = ecs.GetComponent<Render>((*enemyUnit)->key)->dimension;
+					vector2D::vec2D enemyPos = ecs.GetComponent<Render>((**enemyUnit))->position;
+					vector2D::vec2D enemyDims = ecs.GetComponent<Render>((**enemyUnit))->dimension;
 					enemyDims /= 2.f;
 
 						// Create vertices for enemy
@@ -447,7 +444,7 @@ void GLApp::init()
 						}
 						if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
 						{
-							Movement* collided = ecs.GetComponent<Movement>((*enemyUnit)->key);
+							Movement* collided = ecs.GetComponent<Movement>((**enemyUnit));
 							collided->collisionFlag = true;
 						collided->collisionResponse = pointer->position;
 						}
@@ -494,7 +491,7 @@ void GLApp::init()
 				p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
 
 				m[i].velocity = changedVelocity;
-				mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
+				mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
 			}
 
 		});

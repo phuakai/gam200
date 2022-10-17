@@ -361,7 +361,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -382,7 +382,7 @@ copy "$(SolutionDir)lib\glew-2.2.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

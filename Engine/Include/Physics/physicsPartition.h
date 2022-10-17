@@ -149,7 +149,7 @@ public:
 	node box;																// Tree's node
 	AABB boundary;															// Tree's bounding box
 	size_t capacity;														// Maximum number of points
-	std::list<quadObj> points;												// List of points
+	std::list<EntityID> points;												// List of points
 	std::shared_ptr<quadTree> parent;										// Pointer to parent
 	std::shared_ptr<quadTree> nw;											// Pointer to north-west child
 	std::shared_ptr<quadTree> ne;											// Pointer to north-east child
@@ -206,7 +206,8 @@ public:
 		boundary, it returns false
 	*/
 	/******************************************************************************/
-	bool insertSuccessfully(quadObj const& obj);
+	//bool insertSuccessfully(quadObj const& obj);
+	bool insertSuccessfully(EntityID const& id, vector2D::vec2D pos);
 
 	/******************************************************************************/
 	/*!
@@ -237,7 +238,7 @@ public:
 		stores the into objList
 	*/
 	/******************************************************************************/
-	bool query(AABB & queryRange, std::list<quadObj*>& objList);
+	bool query(AABB & queryRange, std::list<EntityID*>& objList);
 
 	/******************************************************************************/
 	/*!
@@ -248,7 +249,7 @@ public:
 		re-inserted into the tree
 	*/
 	/******************************************************************************/
-	bool updatePoint(quadObj const& obj, vector2D::vec2D const& newPos, quadTree& maintree);
+	bool updatePoint(EntityID const& id, vector2D::vec2D const& prevPos, vector2D::vec2D const& currPos, quadTree& maintree);
 
 	/******************************************************************************/
 	/*!

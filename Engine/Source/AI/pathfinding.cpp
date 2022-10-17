@@ -53,22 +53,22 @@ void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vect
 	vector2D::vec2D centerForCohesion = entity->position;
 	vector2D::vec2D averageDirection{ 0,0 };
 
-	std::list<quadObj*> myList;
+	std::list<EntityID*> myList;
 	AABB range(entity->position.x - maximumCohesion,
 		entity->position.y - maximumCohesion,
 		entity->position.x + maximumCohesion,
 		entity->position.y + maximumCohesion);
 	maintree.query(range, myList);
 
-	for (std::list <quadObj*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
+	for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{
 		// skip if it is the input agent
-		if ((*obj2)->key == id)
+		if ((**obj2) == id)
 			continue;
 
 		
-		Render* agentPosition = ecs.GetComponent<Render>((*obj2)->key);
-		Movement* agentMovement = ecs.GetComponent<Movement>((*obj2)->key);
+		Render* agentPosition = ecs.GetComponent<Render>((**obj2));
+		Movement* agentMovement = ecs.GetComponent<Movement>((**obj2));
 			
 		float distance = Vector2DDistance(agentPosition->position, entity->position);
 
