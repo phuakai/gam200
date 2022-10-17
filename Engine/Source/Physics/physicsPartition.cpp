@@ -226,23 +226,23 @@ void quadTree::createQuadTree(vector2D::vec2D const& centerPos, float const& hal
 	boundary, it returns false
 */
 /******************************************************************************/
-bool quadTree::insertSuccessfully(quadObj const& obj)
+bool quadTree::insertSuccessfully(EntityID const& id, vector2D::vec2D pos)
 {
-	if (!withinBoundary(obj.position))
+	if (!withinBoundary(pos))
 		return false;	// Point is not in the quadTree boundary
 	if (points.size() < capacity)
 	{
 		// QaudTree has space
-		points.push_front(obj);
+		points.push_front(id);
 		return true;
 	}
 	else if (plsDivide)
 		divideQuad();	// QuadTree has no space, divide into children if it isnt divided
 
-	if (nw->withinBoundary(obj.position))
+	if (nw->withinBoundary(pos))
 	{
 		// Point is in north-west boundary, insert it into the tree
-		if (nw->insertSuccessfully(obj))
+		if (nw->insertSuccessfully(id, pos))
 		{
 			// Point has been successfully inserted into tree
 			return true;
@@ -250,10 +250,10 @@ bool quadTree::insertSuccessfully(quadObj const& obj)
 		//std::cout << "enter top left boundary: (" << nw->boundary.min.x << ", " << nw->boundary.min.y << ") (" << nw->boundary.max.x << ", " << nw->boundary.max.y << ")\n";
 		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
 	}
-	if (ne->withinBoundary(obj.position))
+	if (ne->withinBoundary(pos))
 	{
 		// Point is in north-east boundary, insert it into the tree
-		if (ne->insertSuccessfully(obj))
+		if (ne->insertSuccessfully(id, pos))
 		{
 			// Point has been successfully inserted into tree
 			return true;
@@ -261,10 +261,10 @@ bool quadTree::insertSuccessfully(quadObj const& obj)
 		//std::cout << "enter top right boundary: (" << ne->boundary.min.x << ", " << ne->boundary.min.y << ") (" << ne->boundary.max.x << ", " << ne->boundary.max.y << ")\n";
 		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
 	}
-	if (sw->withinBoundary(obj.position))
+	if (sw->withinBoundary(pos))
 	{
 		// Point is in south-west boundary, insert it into the tree
-		if (sw->insertSuccessfully(obj))
+		if (sw->insertSuccessfully(id, pos))
 		{
 			// Point has been successfully inserted into tree
 			return true;
@@ -272,10 +272,10 @@ bool quadTree::insertSuccessfully(quadObj const& obj)
 		//std::cout << "enter bottom left boundary: (" << sw->boundary.min.x << ", " << sw->boundary.min.y << ") (" << sw->boundary.max.x << ", " << sw->boundary.max.y << ")\n";
 		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
 	}
-	if (se->withinBoundary(obj.position))
+	if (se->withinBoundary(pos))
 	{
 		// Point is in south-east boundary, insert it into the tree
-		if (se->insertSuccessfully(obj))
+		if (se->insertSuccessfully(id, pos))
 		{
 			// Point has been successfully inserted into tree
 			return true;
@@ -285,6 +285,65 @@ bool quadTree::insertSuccessfully(quadObj const& obj)
 	}
 	return true;
 }
+//bool quadTree::insertSuccessfully(quadObj const& obj)
+//{
+//	if (!withinBoundary(obj.position))
+//		return false;	// Point is not in the quadTree boundary
+//	if (points.size() < capacity)
+//	{
+//		// QaudTree has space
+//		points.push_front(obj);
+//		return true;
+//	}
+//	else if (plsDivide)
+//		divideQuad();	// QuadTree has no space, divide into children if it isnt divided
+//
+//	if (nw->withinBoundary(obj.position))
+//	{
+//		// Point is in north-west boundary, insert it into the tree
+//		if (nw->insertSuccessfully(obj))
+//		{
+//			// Point has been successfully inserted into tree
+//			return true;
+//		}
+//		//std::cout << "enter top left boundary: (" << nw->boundary.min.x << ", " << nw->boundary.min.y << ") (" << nw->boundary.max.x << ", " << nw->boundary.max.y << ")\n";
+//		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
+//	}
+//	if (ne->withinBoundary(obj.position))
+//	{
+//		// Point is in north-east boundary, insert it into the tree
+//		if (ne->insertSuccessfully(obj))
+//		{
+//			// Point has been successfully inserted into tree
+//			return true;
+//		}
+//		//std::cout << "enter top right boundary: (" << ne->boundary.min.x << ", " << ne->boundary.min.y << ") (" << ne->boundary.max.x << ", " << ne->boundary.max.y << ")\n";
+//		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
+//	}
+//	if (sw->withinBoundary(obj.position))
+//	{
+//		// Point is in south-west boundary, insert it into the tree
+//		if (sw->insertSuccessfully(obj))
+//		{
+//			// Point has been successfully inserted into tree
+//			return true;
+//		}
+//		//std::cout << "enter bottom left boundary: (" << sw->boundary.min.x << ", " << sw->boundary.min.y << ") (" << sw->boundary.max.x << ", " << sw->boundary.max.y << ")\n";
+//		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
+//	}
+//	if (se->withinBoundary(obj.position))
+//	{
+//		// Point is in south-east boundary, insert it into the tree
+//		if (se->insertSuccessfully(obj))
+//		{
+//			// Point has been successfully inserted into tree
+//			return true;
+//		}
+//		//std::cout << "enter bottom right boundary: (" << se->boundary.min.x << ", " << se->boundary.min.y << ") (" << se->boundary.max.x << ", " << se->boundary.max.y << ")\n";
+//		//std::cout << "this is position of point: (" << obj.position.x << ", " << obj.position.y << ")\n";
+//	}
+//	return true;
+//}
 
 /******************************************************************************/
 /*!
@@ -375,14 +434,14 @@ bool quadTree::AABBIntersect(AABB const& queryRange)
 	stores the into objList
 */
 /******************************************************************************/
-bool quadTree::query(AABB & queryRange, std::list<quadObj*> & objList)
+bool quadTree::query(AABB & queryRange, std::list<EntityID*> & objList)
 {
 	if (AABBIntersect(queryRange))
 	{
 		// Query range and tree's boundary intersect
-		for (std::list<quadObj>::iterator it = points.begin(); it != points.end(); ++it)
+		for (std::list<EntityID>::iterator it = points.begin(); it != points.end(); ++it)
 		{
-			if (queryRange.withinBoundary(it->position))
+			if (queryRange.withinBoundary(ecs.GetComponent<Render>(*it)->position))
 			{
 				// Point in tree is within the query range, add to list of obj to be tested for pathfinding/collision
 				objList.push_front(&*it);
@@ -418,48 +477,49 @@ bool quadTree::query(AABB & queryRange, std::list<quadObj*> & objList)
 	re-inserted into the tree
 */
 /******************************************************************************/
-bool quadTree::updatePoint(quadObj const& obj, vector2D::vec2D const& newPos, quadTree & maintree)
+bool quadTree::updatePoint(EntityID const& id, vector2D::vec2D const& prevPos, vector2D::vec2D const& currPos, quadTree & maintree)
 {
-	if (withinBoundary(obj.position))
+	if (withinBoundary(prevPos))
 	{
-		for (std::list<quadObj>::iterator it = points.begin(); it != points.end(); ++it)
+		for (std::list<EntityID>::iterator it = points.begin(); it != points.end(); ++it)
 		{
-			if (it->key == obj.key)
+			if (*it == id)
 			{
 				//std::cout << "KEY FOUND!!! " << obj.key << std::endl;
 				// Obj found!!! Now, update the obj's pos
 				//std::cout << "old pos: " << it->position.x << " " << it->position.y << std::endl;
-				it->position = newPos;
+				//it->position = newPos;
 				//std::cout << "new pos: " << it->position.x << " " << it->position.y << std::endl;
 
-				if (withinBoundary(it->position))
+				if (withinBoundary(currPos))
 				{
 					//std::cout << "point is within boundary\n";
 					return true;	// Point's new pos is still within boundary, no update required
 				}
 
-				if (parent != nullptr && parent->withinBoundary(it->position))
+				if (parent != nullptr && parent->withinBoundary(currPos))
 				{
 					if (parent->points.size() < (quadTreeCap -1))
 					{
 						// Parent has empty slot in std::list<quadObj> points, slot into parent
-						if (!parent->insertSuccessfully(*it))
+						if (!parent->insertSuccessfully(*it, currPos))
 							std::cout << "failed\n";
 						// Erase prev instance of obj
 						std::cout << "bye\n";
 						points.erase(it);
 						return true;
 					}
+					
 					// Check if children has empty slot instead
 					for (size_t i{ 0 } ; i < parent->children.size() ; ++i)
 					{
 						if (parent->children[i] != nullptr && parent->children[i]->points.size() < (quadTreeCap-1))
 						{
 							// Child has space
-							if (parent->children[i]->withinBoundary(it->position))
+							if (parent->children[i]->withinBoundary(currPos))
 							{
 								// Point is within child's boundary
-								if (parent->children[i]->insertSuccessfully(*it))
+								if (parent->children[i]->insertSuccessfully(*it, currPos))
 									std::cout << "failed\n";
 
 								// Erase prev instance of obj
@@ -470,58 +530,7 @@ bool quadTree::updatePoint(quadObj const& obj, vector2D::vec2D const& newPos, qu
 						}
 					}
 				}
-				// Check new boundary location and swap if possible
-				//std::shared_ptr<quadTree> tmp = std::make_shared<quadTree>();
-				//tmp = parent;
-				//while (tmp->parent != nullptr)
-				//{
-				//	tmp = tmp->parent;
-				//	if (tmp->withinBoundary(it->position))
-				//	{
-				//		// Point is within boundary, search for possible swap with existing points in the tree
-				//		for (std::list<quadObj>::iterator it2 = tmp->points.begin(); it2 != tmp->points.end() ; ++it2)
-				//		{
-				//			if (withinBoundary(it2->position))
-				//			{
-				//				std::cout << "this is boundary of tmp: " << std::endl;
-				//				std::cout << "min " << tmp->boundary.min.x << " " << tmp->boundary.min.y << std::endl;
-				//				std::cout << "max " << tmp->boundary.max.x << " " << tmp->boundary.max.y << std::endl;
-				//				std::cout << "this is boundary of curr tree: " << std::endl;
-				//				std::cout << "min " << boundary.min.x << " " << boundary.min.y << std::endl;
-				//				std::cout << "max " << boundary.max.x << " " <<boundary.max.y << std::endl;
-
-				//				std::cout << "position of it2 " << (*it2).position.x << " " << (*it2).position.y << std::endl;
-				//				std::cout << "position of it " << (*it).position.x << " " << (*it).position.y << std::endl;
-				//				// Swap positions in tree
-				//				std::cout << "Swapped!!!\n";
-				//				quadObj tmpObj = *it2;
-				//				std::cout << "this is it2 " << (*it2).key << std::endl;
-				//				std::cout << "this is it " << (*it).key << std::endl;
-
-				//				*it2 = *it;
-				//				*it = tmpObj;
-				//				//std::cout << "this is it2 " << (*it2).key << std::endl;
-				//				//std::cout << "this is it " << (*it).key << std::endl;
-				//				return true;
-				//			}
-				//		}
-				//	}
-				//}
-				// If no swap is possible, re-insert point into tree and remove the previous instance of the point
-				//std::cout << "mainTree's boundary bef insert: " << tmp->boundary.min.x << " " << mainTree.boundary.min.y << std::endl;
-				if (maintree.insertSuccessfully(*it))
-				{
-					//std::cout << "Yay inserted into tree!\n";
-					//quadTree::printQuadTree(mainTree);
-					//std::cout << "size of maintree: " << mainTree.points.size() << std::endl;
-				}
-				//else
-					//std::cout << "i din get inserted :(\n";
-				// Erase prev instance of obj
-				//std::cout << "bye\n";
-				//for (std::list<quadObj>::iterator it2 = tmp->points.begin(); it2 != tmp->points.end(); ++it2)
-				//	std::cout << "this is in list in quadtree: " << (*it2).key << std::endl;
-				//std::cout << "point siz bef erase: " << points.size() << std::endl;
+				maintree.insertSuccessfully(*it, currPos);
 				points.erase(it);
 				//std::cout << "point siz after erase: " << points.size() << std::endl;
 				return true;
@@ -533,13 +542,13 @@ bool quadTree::updatePoint(quadObj const& obj, vector2D::vec2D const& newPos, qu
 
 	if (!plsDivide) //if true, it has children
 	{
-		if (nw->updatePoint(obj, newPos, maintree))
+		if (nw->updatePoint(id, prevPos, currPos, maintree))
 			return true;
-		if (ne->updatePoint(obj, newPos, maintree))
+		if (ne->updatePoint(id, prevPos, currPos, maintree))
 			return true;
-		if (sw->updatePoint(obj, newPos, maintree))
+		if (sw->updatePoint(id, prevPos, currPos, maintree))
 			return true;
-		if (se->updatePoint(obj, newPos, maintree))
+		if (se->updatePoint(id, prevPos, currPos, maintree))
 			return true;
 	}
 
