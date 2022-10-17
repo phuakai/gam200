@@ -66,7 +66,7 @@ extern std::vector<Entity> walls;
 
 Entity player1;
 std::vector<Entity> walls(0);
-std::vector<Entity> enemyUnits(2500);
+std::vector<Entity> enemyUnits(12500); // 57-58fps cap at 12.5k
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
