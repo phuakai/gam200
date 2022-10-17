@@ -23,6 +23,7 @@ Technology is prohibited.
 #include <string>
 #include <iterator>
 #include "../mainHeader.h"
+#include "ECS.h"
 
 #define quadTreeCap 4
 enum class dir

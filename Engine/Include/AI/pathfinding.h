@@ -15,6 +15,19 @@ This file includes the function declarations for pathfinding functions.
 #define MAX_GRID_Y 25
 #define WALL 255
 
+// FORMATION MANAGER CLASS =====================================================
+
+//class FormationManager
+//{
+//public:
+//
+//private:
+//	std::vector<EntityID> slotAssignment;
+//	vector2D::vec2D anchorPosition;
+//	matrix3x3::mat3x3 anchorOrientation;
+//};
+
+// =============================================================================
 
 // make these parameters instead of global (pointers)
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
@@ -29,7 +42,7 @@ extern std::vector<Entity> enemyUnits;
 @param id				Entity ID of the unit to calculate
 @param destination		Target of the unit
 @param allVelocity		The 3 vectors, separation, cohesion and alignment vectors
-@param maintree			reference to main branch in quadTree
+@param maintree			Reference to main branch in quadTree
 @return none
 
 This function calculates the 3 vectors that allows the units to have a 

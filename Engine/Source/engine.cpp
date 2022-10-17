@@ -120,11 +120,11 @@ void engineInit()
 		EntityID enemyID = enemyUnits[i].GetID();
 		//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
 
-		quadObj entity;
-		entity.key = enemyUnits[i].GetID();
-		entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
+		//quadObj entity;
+		//entity.key = enemyUnits[i].GetID();
+		//entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
 
-		mainTree.insertSuccessfully(entity);
+		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<Render>(enemyID)->position);
 	}
 
 	timer = 4;
@@ -138,7 +138,7 @@ void engineInit()
 		for (int i = 0; i < walls.size(); ++i)
 		{
 			Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
-			std::list<quadObj*> myList;
+			std::list<EntityID*> myList;
 			AABB range(pointer->position.x - pointer->dimension.x,
 				pointer->position.y - pointer->dimension.y,
 				pointer->position.x + pointer->dimension.x,
@@ -159,12 +159,12 @@ void engineInit()
 				}
 			}
 
-			for (std::list <quadObj*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
+			for (std::list <EntityID*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
 			{
 				bool check = false;
 				for (int j = 0; j < walls.size(); ++j)
 				{
-					if ((*enemyUnit)->key == walls[j].GetID())
+					if ((**enemyUnit) == walls[j].GetID())
 					{
 						check = true;
 						break;
@@ -173,8 +173,8 @@ void engineInit()
 				if (check)
 					continue;
 
-				vector2D::vec2D enemyPos = ecs.GetComponent<Render>((*enemyUnit)->key)->position;
-				vector2D::vec2D enemyDims = ecs.GetComponent<Render>((*enemyUnit)->key)->dimension;
+				vector2D::vec2D enemyPos = ecs.GetComponent<Render>(**enemyUnit)->position;
+				vector2D::vec2D enemyDims = ecs.GetComponent<Render>(**enemyUnit)->dimension;
 				enemyDims /= 2.f;
 
 				// Create vertices for enemy
@@ -188,7 +188,7 @@ void engineInit()
 				}
 				if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
 				{
-					Movement* collided = ecs.GetComponent<Movement>((*enemyUnit)->key);
+					Movement* collided = ecs.GetComponent<Movement>(**enemyUnit);
 					collided->collisionFlag = true;
 					collided->collisionResponse = pointer->position;
 				}
@@ -235,7 +235,7 @@ void engineInit()
 			p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
 
 			m[i].velocity = changedVelocity;
-			mainTree.updatePoint(quadObj((int)entities[i], oldPosition), p[i].position, mainTree);
+			mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
 		}
 
 	});

@@ -12,8 +12,6 @@ This file includes the function definitions for pathfinding functions.
 #include <iostream>
 #include <iomanip>
 
-
-
 // make these parameters instead of global (pointers)
 int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 // empty grid of vectors
@@ -362,3 +360,5 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 		}
 	}
 }
+
+
