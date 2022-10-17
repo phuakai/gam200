@@ -15,13 +15,14 @@ an OpenGL context and implement a game loop.
 #include <app.h>
 #include <iostream>
 #include <fstream>
+#include "mainHeader.h"
+#include "levelEditor.h"
 
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
 
 //template<class C>
 //extern class ECS ecs;
-
 
 /*                                                      function declarations
 ----------------------------------------------------------------------------- */
@@ -60,6 +61,22 @@ int main() {
 }
 
 /*  _________________________________________________________________________ */
+/*! init
+@param none
+@return none
+
+The OpenGL context initialization stuff is abstracted away in Graphics::Input::init.
+The specific initialization of OpenGL state and geometry data is
+abstracted away in GLApp::init
+*/
+static void init() 
+{
+   
+    engineInit();
+    imguiInit();
+}
+
+/*  _________________________________________________________________________ */
 /*! update
 @param none
 @return none
@@ -68,17 +85,11 @@ Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 For now, there are no objects to animate nor keyboard, mouse button click,
 mouse movement, and mouse scroller events to be processed.
 */
-static void update() {
-  // Part 1
-  glfwPollEvents();
+static void update() 
+{
 
-  // Part 2
-  Graphics::Input::update_time(1.0);
-  
-  // Part 3
-  GLApp::update();
-
-
+    engineUpdate();
+    imguiUpdate();
 }
 
 /*  _________________________________________________________________________ */
@@ -89,39 +100,11 @@ static void update() {
 Call application to draw and then swap front and back frame buffers ...
 Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 */
-static void draw() {
-  // Part 1
-  GLApp::draw();
-
-  // Part 2: swap buffers: front <-> back
-  glfwSwapBuffers(Graphics::Input::ptr_to_window);
-}
-
-/*  _________________________________________________________________________ */
-/*! init
-@param none
-@return none
-
-The OpenGL context initialization stuff is abstracted away in Graphics::Input::init.
-The specific initialization of OpenGL state and geometry data is
-abstracted away in GLApp::init
-*/
-static void init() {
-
-    std::fstream myfile;
-    myfile.open("config.xml");
-    int width{};
-    int height{};
-    myfile >> width;
-    myfile >> height;
-
-  if (!Graphics::Input::init(width, height, "Bloom"))
-  { 
-    std::cout << "Unable to create OpenGL context" << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
-
-    GLApp::init();
+static void draw() 
+{
+    engineDraw();
+    imguiDraw();
+    swapBuffer();
 }
 
 /*  _________________________________________________________________________ */
@@ -133,10 +116,7 @@ Return allocated resources for window and OpenGL context thro GLFW back
 to system.
 Return graphics memory claimed through 
 */
-void cleanup() {
-  // Part 1
-  GLApp::cleanup();
-
-  // Part 2
-  Graphics::Input::cleanup();
+void cleanup() 
+{
+    engineFree();
 }

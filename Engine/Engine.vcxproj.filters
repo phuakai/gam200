@@ -9,750 +9,926 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{ad50932d-ff43-4b24-aafb-68bdf4b86eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{49682fa9-ee6c-409d-b461-743c45cfaed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{8422078c-3f9f-4db4-b24f-f66adbb0b098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{4900991c-6342-48a1-9832-146ebb110f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization">
+      <UniqueIdentifier>{5731b5f9-5052-451a-9c25-7e839d7bb23b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization">
+      <UniqueIdentifier>{a70ab378-1504-40eb-9ef3-6e48c424f3d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr">
+      <UniqueIdentifier>{7b30fc41-d0c6-490e-858e-2db0bc42898f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{44e8cbd4-8a87-479d-8f54-f425988feac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{d908b03a-74dd-4d11-844a-f2de5f9374f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{33f6add1-4193-4bd1-b0d6-e2331ed74666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{a5a3cb2f-2a1a-4ebd-b987-4dc14fad8b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{acaf91f4-ee2f-4a63-9259-7b1cc573741e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr">
+      <UniqueIdentifier>{6e1ed404-3889-47f3-98f5-8791e8b7d0f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rapidjson">
+      <UniqueIdentifier>{2508bf6f-0a28-41d3-8be0-b4151bbde8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rapidjson\error">
+      <UniqueIdentifier>{51dcad4c-258e-42f5-8e51-d9b4ae331de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rapidjson\internal">
+      <UniqueIdentifier>{f34d69cc-6ce7-4b98-8dfc-bfb67840dce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rapidjson\msinttypes">
+      <UniqueIdentifier>{a90d485a-7171-4d2b-87a8-301561772d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail">
+      <UniqueIdentifier>{586f7ffb-6f7b-42f9-9be3-58bba0ef4b87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\comparison">
+      <UniqueIdentifier>{7b73bdb5-771f-482b-9432-52abaf6573f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\constructor">
+      <UniqueIdentifier>{aa341203-19c3-42b2-8655-a934d06990d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\base">
+      <UniqueIdentifier>{44f6f78c-561d-446d-b050-056e7930da02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\conversion">
+      <UniqueIdentifier>{6dc23940-84ca-45dc-a013-a18caa993630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\default_arguments">
+      <UniqueIdentifier>{e61a3a79-b4ca-4435-bd11-3e7f405ce111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\destructor">
+      <UniqueIdentifier>{bb7ada74-81b8-461c-93f2-21b02fa3472f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\enumeration">
+      <UniqueIdentifier>{2ad1b746-463a-4df2-bbd7-9d696602e70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\filter">
+      <UniqueIdentifier>{b9267dc9-a5db-43f8-b34a-4383e4629920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\impl">
+      <UniqueIdentifier>{a631ea65-a6a3-401a-9ee7-86d412dd5814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\library">
+      <UniqueIdentifier>{8e4ba013-7a0e-4d0b-9725-815a37f78873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\metadata">
+      <UniqueIdentifier>{c23179e1-4a9e-4761-8e3c-c8c33703e805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\method">
+      <UniqueIdentifier>{38170770-48ea-4859-a1d7-10882f74e621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\misc">
+      <UniqueIdentifier>{0c66096b-353b-462a-88c5-f488ea6a62a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\parameter_info">
+      <UniqueIdentifier>{3eaf0f9d-aecd-40d3-8006-4bcde31ab95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\policies">
+      <UniqueIdentifier>{a0e88001-6fc8-4127-b788-c435af140867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\property">
+      <UniqueIdentifier>{7d4fb684-36d5-4914-be98-823ef21c25c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\registration">
+      <UniqueIdentifier>{0f18fb21-0602-48e1-835b-3c55d08d3518}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\type">
+      <UniqueIdentifier>{ce564781-469e-41a1-afca-0216820ea622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\variant">
+      <UniqueIdentifier>{9b164374-7b2f-46be-89dd-123697f0d124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\variant_associative_view">
+      <UniqueIdentifier>{78171a85-354c-4e40-9923-d2fe67aa6fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Serialization\rttr\detail\variant_sequential_view">
+      <UniqueIdentifier>{35436a86-1159-4ab3-8033-fbb15ba7b58f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail">
+      <UniqueIdentifier>{61368379-a45d-46fd-afce-e86ed76ac6da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\base">
+      <UniqueIdentifier>{11fb2a36-134f-4cd7-a0a2-99cdba662817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\comparison">
+      <UniqueIdentifier>{f726899f-4c1d-4060-8a24-260cd7bcc1d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\constructor">
+      <UniqueIdentifier>{84528b74-be7f-4f73-bbd1-b586c086c278}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\conversion">
+      <UniqueIdentifier>{c278c3be-f55d-4e99-b856-ea4813694509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\destructor">
+      <UniqueIdentifier>{8a75627d-8cb2-4350-b0dc-f9580bf1ce1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\enumeration">
+      <UniqueIdentifier>{db3cb9d8-b15d-4053-9714-3122ce2557dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\library">
+      <UniqueIdentifier>{af78e374-97cb-453c-a629-8ad63cd24a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\method">
+      <UniqueIdentifier>{dd0110b9-a0de-4a85-9894-0edb4b77fb00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\misc">
+      <UniqueIdentifier>{4f9f082b-b6c3-4665-aba1-09d35b151202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\parameter_info">
+      <UniqueIdentifier>{8157010e-f4f3-47db-a443-87beb7d3e8bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\property">
+      <UniqueIdentifier>{044bb8b8-ae61-4eee-b684-ce234623bf42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\registration">
+      <UniqueIdentifier>{1bb8db2a-c760-4d85-a0c5-8c49bc9399ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\type">
+      <UniqueIdentifier>{9ddb96fa-1e88-4a34-a52c-9974bbcfcf1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Serialization\rttr\detail\variant">
+      <UniqueIdentifier>{676462eb-2d65-4106-9f0a-aca23d15e0ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Graphics\transform.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Graphics\camera.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\collisiondebug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\glslshader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\AI\pathfinding.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Math\mat3x3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Math\vec2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Math\vec3D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\collision.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\physics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\physicsPartition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\physicsTransform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\physicsWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Physics\physicsRigidBody.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Serialization\serialization.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\constructor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\destructor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\enumeration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\glad.c">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\glslshader.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\graphics.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\collisiondebug.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\library.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\method.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\parameter_info.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\policy.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\property.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\registration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\type.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\variant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\variant_associative_view.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Serialization\serialization.cpp">
+      <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\variant_sequential_view.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_equal.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Serialization\rttr\variant_associative_view.cpp">
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_less.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Serialization\rttr\variant.cpp">
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\constructor\constructor_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Serialization\rttr\type.cpp">
+      <Filter>Source Files\Serialization\rttr</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\conversion\std_conversion_functions.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Graphics\input.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\destructor\destructor_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Graphics\model.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_helper.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Math\mat3x3.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Math\vec3D.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\library\library_unix.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Math\vec2D.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\library\library_win.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Graphics\texture.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\method\method_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Graphics\transform.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\misc\standard_types.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\physics.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\physicsPartition.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\property\property_wrapper_base.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\physicsRigidBody.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_executer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\physicsWorld.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_state_saver.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\physicsTransform.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\type\type_data.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\AI\pathfinding.cpp">
+      <Filter>Source Files\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\rttr\detail\type\type_register.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Physics\collision.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\rttr\detail\variant\variant_compare.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\type\type_register.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\type</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_executer.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\registration\registration_state_saver.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\registration</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\property\property_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\property</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\misc\standard_types.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\method\method_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\method</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\library\library_unix.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\library\library_win.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_helper.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\destructor\destructor_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\destructor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\conversion\std_conversion_functions.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\conversion</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\constructor\constructor_wrapper_base.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\constructor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_less.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\comparison</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\comparison\compare_equal.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\comparison</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\rttr\detail\type\type_data.cpp">
+      <Filter>Source Files\Serialization\rttr\detail\type</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\engine.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\app.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Math\mat3x3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Math\vec2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Math\vec3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\collision.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\physicsPartition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\physicsRigidBody.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\physicsTransform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Physics\physicsWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Graphics\app.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\buffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\camera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\collisiondebug.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Graphics\glslshader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\transform.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\Physics\collision.h">
+      <Filter>Header Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Include\ECS\ECS.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="Include\ECS\ECS.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\glslshader.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\graphics.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\input.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\mat3x3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\vec3D.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\vec2D.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\AI\pathfinding.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\physicsPartition.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\physics.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\physicsRigidBody.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\physicsTransform.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Physics\physicsWorld.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\model.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\serialization.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\texture.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\transform.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\error\en.h">
+      <Filter>Header Files\Serialization\rapidjson\error</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\error\error.h">
+      <Filter>Header Files\Serialization\rapidjson\error</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\biginteger.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\clzll.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\diyfp.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\dtoa.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\ieee754.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\itoa.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\meta.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\pow10.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\regex.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\stack.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\strfunc.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\strtod.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\internal\swap.h">
+      <Filter>Header Files\Serialization\rapidjson\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\inttypes.h">
+      <Filter>Header Files\Serialization\rapidjson\msinttypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\stdint.h">
+      <Filter>Header Files\Serialization\rapidjson\msinttypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\allocators.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\cursorstreamwrapper.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\document.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\encodedstream.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\encodings.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\filereadstream.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\filewritestream.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\fwd.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\istreamwrapper.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\memorybuffer.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\memorystream.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\ostreamwrapper.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\pointer.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\prettywriter.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\rapidjson.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\reader.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\stream.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\schema.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\stringbuffer.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\writer.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rapidjson\uri.h">
+      <Filter>Header Files\Serialization\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\access_levels.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\argument.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\array_range.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\associative_mapper.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\constructor.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\destructor.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\enum_flags.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\enumeration.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\filter_item.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\instance.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\library.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\method.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\policy.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\registration.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\registration_friend.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\rttr_cast.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\rttr_enable.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\sequential_mapper.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\string_view.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\type.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\variant.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\variant_associative_view.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\variant_sequential_view.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\wrapper_mapper.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\base\core_prerequisites.h">
+      <Filter>Header Files\Serialization\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\base\pch.h">
+      <Filter>Header Files\Serialization\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\base\version.h">
+      <Filter>Header Files\Serialization\rttr\detail\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\comparable_types.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\comparison</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_invoker.h">
+      <Filter>Header Files\Serialization\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_defaults.h">
+      <Filter>Header Files\Serialization\rttr\detail\constructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\conversion\number_conversion.h">
+      <Filter>Header Files\Serialization\rttr\detail\conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\conversion\std_conversion_functions.h">
+      <Filter>Header Files\Serialization\rttr\detail\conversion</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\default_arguments.h">
+      <Filter>Header Files\Serialization\rttr\detail\default_arguments</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\invoke_with_defaults.h">
+      <Filter>Header Files\Serialization\rttr\detail\default_arguments</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\destructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\destructor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_helper.h">
+      <Filter>Header Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\filter\filter_item_funcs.h">
+      <Filter>Header Files\Serialization\rttr\detail\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\argument_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\array_range_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\associative_mapper_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\enum_flags_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enum_data.h">
+      <Filter>Header Files\Serialization\rttr\detail\enumeration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\instance_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\rttr_cast_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\sequential_mapper_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\string_view_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\impl\wrapper_mapper_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\library\library_p.h">
+      <Filter>Header Files\Serialization\rttr\detail\library</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata.h">
+      <Filter>Header Files\Serialization\rttr\detail\metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata_handler.h">
+      <Filter>Header Files\Serialization\rttr\detail\metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_accessor.h">
+      <Filter>Header Files\Serialization\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_invoker.h">
+      <Filter>Header Files\Serialization\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\method</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_extractor.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\class_item_mapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\data_address_container.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_map.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_multimap.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\function_traits.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\iterator_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\misc_type_traits.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\register_wrapper_mapper_conversion.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\sequential_container_type_traits.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\std_type_traits.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\misc\utility.h">
+      <Filter>Header Files\Serialization\rttr\detail\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos_compare.h">
+      <Filter>Header Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_names.h">
+      <Filter>Header Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos.h">
+      <Filter>Header Files\Serialization\rttr\detail\parameter_info</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\parameter_info.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\ctor_policies.h">
+      <Filter>Header Files\Serialization\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\meth_policies.h">
+      <Filter>Header Files\Serialization\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\policies\prop_policies.h">
+      <Filter>Header Files\Serialization\rttr\detail\policies</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_accessor.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_base.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_func.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_object.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_func.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_object.h">
+      <Filter>Header Files\Serialization\rttr\detail\property</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_types.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\register_base_class_from_accessor.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_executer.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_manager.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_state_saver.h">
+      <Filter>Header Files\Serialization\rttr\detail\registration</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\accessor_type.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\base_classes.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\get_create_variant_func.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\get_derived_info_func.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_comparator.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_converter.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_data.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_name.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register_p.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\type\type_string_utils.h">
+      <Filter>Header Files\Serialization\rttr\detail\type</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_compare.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_converter.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_policy.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_private.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_associative_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_private.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h">
+      <Filter>Header Files\Serialization\rttr\detail\variant_sequential_view</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Serialization\rttr\property.h">
+      <Filter>Header Files\Serialization\rttr</Filter>
     </ClInclude>
     <ClInclude Include="Include\mainHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Serialization\serialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\allocators.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\cursorstreamwrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\document.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\encodedstream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\encodings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\filereadstream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\filewritestream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\fwd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\istreamwrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\memorybuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\memorystream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\ostreamwrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\pointer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\prettywriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\rapidjson.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\reader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\schema.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\stream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\stringbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\uri.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\writer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\inttypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\msinttypes\stdint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\biginteger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\clzll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\diyfp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\dtoa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\ieee754.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\itoa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\meta.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\pow10.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\regex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\strfunc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\strtod.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\internal\swap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\error\en.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rapidjson\error\error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\access_levels.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\argument.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\array_range.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\associative_mapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\constructor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\destructor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\enum_flags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\enumeration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\filter_item.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\instance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\library.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\method.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\parameter_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\policy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\property.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\registration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\registration_friend.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\rttr_cast.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\rttr_enable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\sequential_mapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\string_view.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\type.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\variant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\variant_associative_view.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\variant_sequential_view.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\wrapper_mapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\comparable_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_equal_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_array_less_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_equal_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\comparison\compare_less_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\base\version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\base\pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\base\core_prerequisites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_invoker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\constructor\constructor_wrapper_defaults.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\conversion\number_conversion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\conversion\std_conversion_functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\argument_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\array_range_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\associative_mapper_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\enum_flags_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\instance_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\rttr_cast_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\sequential_mapper_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\string_view_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\impl\wrapper_mapper_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\filter\filter_item_funcs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enumeration_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\enumeration\enum_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\destructor\destructor_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\invoke_with_defaults.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\default_arguments\default_arguments.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_extractor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\argument_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\class_item_mapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\data_address_container.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\flat_multimap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\function_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\iterator_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\misc_type_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\register_wrapper_mapper_conversion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\sequential_container_type_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\std_type_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\template_type_trait_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\misc\utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\method\method_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\method\method_invoker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\method\method_accessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata_handler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\metadata\metadata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\library\library_p.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_private.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_info_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_infos_compare.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\parameter_info\parameter_names.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\policies\ctor_policies.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\policies\meth_policies.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\policies\prop_policies.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_accessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_func.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_func.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_member_object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\property\property_wrapper_object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\bind_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\register_base_class_from_accessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_executer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\registration\registration_state_saver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\accessor_type.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\base_classes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\get_create_variant_func.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\get_derived_info_func.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_comparator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_converter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_name.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_register_p.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\type\type_string_utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_compare.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_converter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_data_policy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant\variant_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_creator_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_associative_view\variant_associative_view_private.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Serialization\rttr\detail\variant_sequential_view\variant_sequential_view_creator_impl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Include\Serialization\rttr\registration" />
-    <None Include="Include\Serialization\rttr\registration_friend" />
-    <None Include="Include\Serialization\rttr\type" />
-    <None Include="Source\Serialization\rttr\rttr.cmake" />
-    <None Include="Source\Serialization\rttr\detail\base\version.h.in" />
-    <None Include="Source\Serialization\rttr\detail\base\version.rc.in" />
+    <None Include="Source\Serialization\rttr\rttr.cmake">
+      <Filter>Source Files\Serialization\rttr</Filter>
+    </None>
+    <None Include="Include\Serialization\rttr\registration">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </None>
+    <None Include="Include\Serialization\rttr\registration_friend">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </None>
+    <None Include="Include\Serialization\rttr\type">
+      <Filter>Header Files\Serialization\rttr</Filter>
+    </None>
+    <None Include="Source\Serialization\rttr\detail\base\version.rc.in">
+      <Filter>Source Files\Serialization\rttr\detail\base</Filter>
+    </None>
+    <None Include="Source\Serialization\rttr\detail\base\version.h.in">
+      <Filter>Source Files\Serialization\rttr\detail\base</Filter>
+    </None>
   </ItemGroup>
 </Project>

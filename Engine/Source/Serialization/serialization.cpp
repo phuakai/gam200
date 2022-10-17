@@ -11,10 +11,10 @@ This file includes the serialisation function definitions.
 #include <string>
 #include <vector>
 #include <array>
-
 #include <iostream>
 
 #define RAPIDJSON_HAS_STDSTRING 1
+#include "ECS.h"
 #include <rapidjson/prettywriter.h> // for stringify JSON
 #include <rapidjson/document.h>     // rapidjson's DOM-style API
 #include "rapidjson/filewritestream.h"

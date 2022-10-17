@@ -1,12 +1,10 @@
 
 #pragma once
 
-#include "ECS.h"
-#include "vec2D.h"
-#include "vec3D.h"
 #include <vector>
 #include <string>
-#include "physicsPartition.h"
+#include "vec2D.h"
+#include "vec3D.h"
 
 #define MAX_GRID_X 25
 #define MAX_GRID_Y 25
@@ -50,3 +48,9 @@ struct Movement
 struct Stats {
 	int health;
 };
+
+void engineInit();
+void engineUpdate();
+void engineDraw();
+void engineFree();
+void swapBuffer();
