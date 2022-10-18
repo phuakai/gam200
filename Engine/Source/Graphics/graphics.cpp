@@ -108,7 +108,7 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 
 void Graphics::InstancedRenderer::InstanceClear()
 {
-
+	instancedata.clear();
 }
 
 void Graphics::InstancedRenderer::InstanceDelete()

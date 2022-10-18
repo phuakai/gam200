@@ -675,6 +675,7 @@ void GLApp::draw()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	basicinstance.InstanceRender(Graphics::textureobjects);
+	basicinstance.InstanceClear();
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	//glLineWidth(2.f);
 	//debuglinebatch.BatchRender(Graphics::textureobjects);
@@ -860,10 +861,24 @@ void GLApp::entitydraw()
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
-		for (int i = 0; i < poscoord.size(); ++i)
+		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
+		(
+			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+		);
+
+		std::vector <vector2D::vec2D> ndccoord;
+		for (int i = 0; i < poscoord.size(); i++)
+		{
+			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+		}
+
+		for (int i = 0; i < ndccoord.size(); ++i)
 		{
 			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = poscoord[i];
+			tmpVtxData.posVtx = ndccoord[i];
 
 			tmpVtxData.clrVtx = clr_vtx[i];
 
