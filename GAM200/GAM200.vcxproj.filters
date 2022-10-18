@@ -9,14 +9,13 @@
     <ClInclude Include="Include\main.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="include\app.h">
-      <Filter>Include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\gam200.frag" />
     <None Include="..\shaders\gam200.vert" />
     <None Include="imgui.ini" />
+    <None Include="..\shaders\instancing.frag" />
+    <None Include="..\shaders\instancing.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />

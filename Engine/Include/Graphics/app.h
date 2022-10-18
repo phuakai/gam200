@@ -73,6 +73,9 @@ struct GLApp {
 		matrix3x3::mat3x3 world_to_ndc_xform{}; // world to ndc transformation
 
 		vector2D::vec2D ndcposition{}; // translation vector coordinates
+		
+		std::vector <vector2D::vec2D> controlworldpos;
+		std::vector <vector2D::vec2D> controlndcpos;
 
 		std::vector <vector2D::vec2D> ndc_coords;
 

@@ -20,6 +20,39 @@ This file handles the batch rendering of the game
 
 namespace Graphics {
 
+	class InstancedRenderer
+	{
+	public:
+		GLSLShader instanceshader{}; // Shader of all objects in instance
+		std::vector<vertexData> headerdata{}; // Main (control) object in instance
+		std::vector<vector2D::vec2D> instancedata{}; // All transformations for different instances
+		std::vector<GLushort> ebodata{}; // Ebo/indices data
+		GLuint vaoid{};
+
+		/******************************************************************************/
+		/*!
+			This function calls the instance renderer to render all data
+		*/
+		/******************************************************************************/
+		//static void InstanceRender(std::vector<Texture>& texobjs, GLSLShader shader, GLuint vaoid, std::vector<vertexData> data, std::vector<vector2D::vec2D> offsetdata); // instance renders all objects in render
+		void InstanceRender(std::vector<Texture>& texobjs); // instance renders all objects in render
+			
+		/******************************************************************************/
+		/*!
+			This function clear the instance
+		*/
+		/******************************************************************************/
+		void InstanceClear(); // instance renders all objects in render
+
+		/******************************************************************************/
+		/*!
+			This function deletes the instance
+		*/
+		/******************************************************************************/
+		void InstanceDelete();
+
+
+	};
 	class BatchRenderer
 	{
 	public:
