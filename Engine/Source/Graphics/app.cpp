@@ -266,7 +266,7 @@ void GLApp::GLObject::draw() const
 
 	Graphics::vertexData tmpHeaderData;
 	std::vector<Graphics::vertexData> vertexData;
-	std::vector<vector2D::Vec2> testdata;
+	std::vector<matrix3x3::mat3x3> testdata;
 	for (int i = 0; i < controlndcpos.size(); ++i)
 	{
 		Graphics::vertexData tmpVtxData;
@@ -282,7 +282,7 @@ void GLApp::GLObject::draw() const
 		tmpVtxData.txtVtx = texcoord[i];
 		tmpVtxData.txtIndex = 6.f;
 		vertexData.emplace_back(tmpVtxData);
-		testdata.emplace_back(vector2D::Vec2(1.f, 1.f)); // Emplace back a base 1, 1 translation
+		testdata.emplace_back(matrix3x3::mat3x3(1.f,0.f,0.f,  0.f, 1.f, 0.f,   0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
 	}
 
 
@@ -861,10 +861,11 @@ void GLApp::entitydraw()
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
+
 		std::vector <vector2D::vec2D> ndccoord;
 		for (int i = 0; i < poscoord.size(); i++)
 		{
-			//ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+			ndccoord.emplace_back(poscoord[i]);
 		}
 		
 		for (int i = 0; i < ndccoord.size(); ++i)
@@ -878,7 +879,6 @@ void GLApp::entitydraw()
 			tmpVtxData.txtVtx = texcoord[i];
 			tmpVtxData.txtIndex = 6.f;
 			vertexData.emplace_back(tmpVtxData);
-
 			matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
 			matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
 			matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
