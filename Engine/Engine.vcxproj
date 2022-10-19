@@ -231,6 +231,7 @@
     <ClInclude Include="Include\Math\vec2D.h" />
     <ClInclude Include="Include\Math\vec3D.h" />
     <ClInclude Include="Include\Physics\collision.h" />
+    <ClInclude Include="Include\Physics\physicsDeltaTime.h" />
     <ClInclude Include="Include\Physics\physics.h" />
     <ClInclude Include="Include\Physics\physicsPartition.h" />
     <ClInclude Include="Include\Physics\physicsRigidBody.h" />
