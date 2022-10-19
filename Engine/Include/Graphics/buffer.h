@@ -10,6 +10,7 @@ This file handles the VAO, VBO and EBO of the game
 
 #include <model.h>
 #include <vec2D.h>
+#include <mat3x3.h>
 
 namespace Graphics
 {
@@ -106,6 +107,13 @@ namespace Graphics
 		*/
 		/******************************************************************************/
 		static void store(GLuint vbo, int size, std::vector <vector2D::vec2D> data);
+
+		/******************************************************************************/
+		/*!
+			This function stores the vector data in the VBO
+		*/
+		/******************************************************************************/
+		static void store(GLuint vbo, int size, std::vector <matrix3x3::mat3x3> data);
 
 		/******************************************************************************/
 		/*!

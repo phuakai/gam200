@@ -25,7 +25,7 @@ namespace Graphics {
 	public:
 		GLSLShader instanceshader{}; // Shader of all objects in instance
 		std::vector<vertexData> headerdata{}; // Main (control) object in instance
-		std::vector<vector2D::vec2D> instancedata{}; // All transformations for different instances
+		std::vector<matrix3x3::mat3x3> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
 		GLuint vaoid{};
 
