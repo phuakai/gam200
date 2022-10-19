@@ -843,13 +843,13 @@ void GLApp::entitydraw()
 			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
 		}
 		std::vector<Graphics::vertexData> vertexData;
-		for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
 		{
 			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndccoord[i];
+			tmpVtxData.posVtx = ndccoord[j];
 			tmpVtxData.clrVtx = curobj->color;
-
-			tmpVtxData.txtVtx = texcoord[i];
+			std::cout << "Entity id " << i << " Posvtx " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			tmpVtxData.txtVtx = texcoord[j];
 			vertexData.emplace_back(tmpVtxData);
 		}
 
