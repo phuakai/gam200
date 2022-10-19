@@ -77,7 +77,7 @@ void Graphics::VBO::store(GLuint vbo, int size, std::vector <Graphics::vertexDat
 	// else you can only use server-side calls such as glCopyBufferSubData and glClearBufferSubData.
 }
 
-void Graphics::VBO::store(GLuint vbo, int size, std::vector <vector2D::vec2D> data)
+void Graphics::VBO::store(GLuint vbo, int size, std::vector <matrix3x3::mat3x3> data)
 {
 	glNamedBufferStorage(vbo, size, data.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
 	// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system

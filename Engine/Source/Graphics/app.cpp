@@ -851,7 +851,7 @@ void GLApp::entitydraw()
 
 		Graphics::vertexData tmpHeaderData;
 		std::vector<Graphics::vertexData> vertexData;
-		std::vector<vector2D::Vec2> testdata;
+		std::vector<matrix3x3::mat3x3> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobj->dimension.x / 2.f;
@@ -861,31 +861,43 @@ void GLApp::entitydraw()
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
-		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
-		(
-			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-		);
-
 		std::vector <vector2D::vec2D> ndccoord;
 		for (int i = 0; i < poscoord.size(); i++)
 		{
-			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+			//ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
 		}
-
+		
 		for (int i = 0; i < ndccoord.size(); ++i)
 		{
+			
 			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndccoord[i];
+			//tmpVtxData.posVtx = ndccoord[i];
 
 			tmpVtxData.clrVtx = clr_vtx[i];
-
+			//tmpVtxData.posVtx = models["square"].model_coords[i];
 			tmpVtxData.txtVtx = texcoord[i];
 			tmpVtxData.txtIndex = 6.f;
 			vertexData.emplace_back(tmpVtxData);
-			testdata.emplace_back(vector2D::Vec2(1.f, 1.f)); // Emplace back a base 1, 1 translation
+
+			matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
+			matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
+			matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
+
+			matrix3x3::mat3x3 model_to_world = translate * rot * scale;
+
+
+			matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+			matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
+			(
+				world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+				world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+				world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+			);
+
+
+			matrix3x3::mat3x3 model_to_world_xform = world_to_ndc_xform * model_to_world;
+
+			testdata.emplace_back(world_to_ndc_xform); // Emplace back a base 1, 1 translation
 		}
 
 

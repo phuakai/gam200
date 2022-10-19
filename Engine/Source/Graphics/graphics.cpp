@@ -23,7 +23,7 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = Graphics::VBO::init();
-	Graphics::VBO::store(instancevboid, sizeof(vector2D::vec2D) * instancedata.size(), instancedata); // Data passed in
+	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
 
 
 	// Position
@@ -56,7 +56,7 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 
 	// Instancing offset array
 	Graphics::VAO::enableattrib(vaoid, 4); // Attrib 4
-	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(vector2D::vec2D) * instancedata.size()); // Set buffer binding point 
+	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3) * instancedata.size()); // Set buffer binding point 
 	// Not sure what to put for last parameter of bind
 	glVertexArrayBindingDivisor(vaoid, 4, 1);
 	Graphics::VAO::setattrib(vaoid, 4, 1); // Attrib format 

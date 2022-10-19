@@ -126,3 +126,30 @@ vector2D::vec2D Transform::convertWorldtoNDC(vector2D::vec2D world)
 	vector2D::vec2D converted = createWorldtoNDC() * vector2D::vec2D(world.x, world.y);
 	return converted;
 }
+
+matrix3x3::mat3x3 Transform::createTranslationMat(vector2D::vec2D translation)
+{
+	matrix3x3::mat3x3 final;
+	matrix3x3::Mtx33Identity(final);
+	final.m2[0][2] = translation.x;
+	final.m2[1][2] = translation.y;
+	return final;
+}
+
+matrix3x3::mat3x3 Transform::createRotationMat(float rot)
+{
+	matrix3x3::mat3x3 final
+	(cos(rot), -sin(rot), 0,
+		sin(rot), cos(rot), 0,
+		0, 0, 1);
+	return final;
+}
+
+matrix3x3::mat3x3 Transform::createScaleMat(vector2D::vec2D scale)
+{
+	matrix3x3::mat3x3 final;
+	matrix3x3::Mtx33Identity(final);
+	final.m2[0][0] = scale.x;
+	final.m2[1][1] = scale.y;
+	return final;
+}
