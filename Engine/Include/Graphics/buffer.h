@@ -58,7 +58,7 @@ namespace Graphics
 				This function sets some attributes of the VAO
 			*/
 			/******************************************************************************/
-			static void setattrib(GLuint vao, int index, int unitsize = 2); // Set attrib
+			static void setattrib(GLuint vao, int index, int unitsize = 2, int offset = 0); // Set attrib
 
 			/******************************************************************************/
 			/*!
@@ -100,13 +100,6 @@ namespace Graphics
 		*/
 		/******************************************************************************/
 		static void store(GLuint vbo, int size, std::vector <Graphics::vertexData> data);
-
-		/******************************************************************************/
-		/*!
-			This function stores the vector data in the VBO
-		*/
-		/******************************************************************************/
-		static void store(GLuint vbo, int size, std::vector <matrix3x3::mat3x3> data);
 
 		/******************************************************************************/
 		/*!

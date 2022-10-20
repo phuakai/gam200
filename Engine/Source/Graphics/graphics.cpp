@@ -23,8 +23,14 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = Graphics::VBO::init();
-	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
+	for (int j = 0; j < instancedata.size(); j++)
+	{
+		std::cout << "Matrix " << j << " = " << instancedata[j].m2[0][0] << ", " << instancedata[j].m2[0][1] << ", " << instancedata[j].m2[0][2]
+			<< ", " << instancedata[j].m2[1][0] << ", " << instancedata[j].m2[1][1] << ", " << instancedata[j].m2[1][2]
+			<< ", " << instancedata[j].m2[2][0] << ", " << instancedata[j].m2[2][1] << ", " << instancedata[j].m2[2][2] << std::endl;
 
+	}
+	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
 
 	// Position
 	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
@@ -54,13 +60,23 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	Graphics::VAO::setattrib(vaoid, 3, 1); // Attrib format 
 	Graphics::VAO::bindattrib(vaoid, 3, 3); // Bind attrib 
 
-	// Instancing offset array
-	Graphics::VAO::enableattrib(vaoid, 4); // Attrib 4
-	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3) * instancedata.size()); // Set buffer binding point 
-	// Not sure what to put for last parameter of bind
-	glVertexArrayBindingDivisor(vaoid, 4, 1);
-	Graphics::VAO::setattrib(vaoid, 4, 1); // Attrib format 
-	Graphics::VAO::bindattrib(vaoid, 4, 4); // Bind attrib 
+
+	int matrix_loc = 4;
+
+	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
+
+	// Matrix requires n consecutive input locations, where N is the columns in a matrix
+	// So mat3x3 is 3 vertex attributes
+	for (int col = 0; col < 3; col++)
+	{
+		// Instancing offset array
+		Graphics::VAO::enableattrib(vaoid, matrix_loc+col); // Attrib 4
+		// Not sure what to put for last parameter of bind
+		//glVertexArrayBindingDivisor(vaoid, 4, 1);
+		glVertexAttribDivisor(matrix_loc + col, 1);
+		Graphics::VAO::setattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
+		Graphics::VAO::bindattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
+	}
 
 	// Creating ebo
 	GLuint eboid = Graphics::EBO::init();
@@ -108,7 +124,9 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 
 void Graphics::InstancedRenderer::InstanceClear()
 {
+	//std::cout << "Instance size before " << instancedata.size() << std::endl;
 	instancedata.clear();
+	//std::cout << "Instance size after " << instancedata.size() << std::endl;
 }
 
 void Graphics::InstancedRenderer::InstanceDelete()

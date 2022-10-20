@@ -234,8 +234,19 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	{
 		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
 		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
+		std::cout << "For obj update (OLD) " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
 	}
-	
+	std::cout << "Model to world " << mdl_to_world_xform.m2[0][0] << ", " << mdl_to_world_xform.m2[0][1] << ", " << mdl_to_world_xform.m2[0][2] << std::endl
+		<< mdl_to_world_xform.m2[1][0] << ", " << mdl_to_world_xform.m2[1][1] << ", " << mdl_to_world_xform.m2[1][2] << std::endl
+		<< mdl_to_world_xform.m2[2][0] << ", " << mdl_to_world_xform.m2[2][1] << ", " << mdl_to_world_xform.m2[2][2] << std::endl;
+
+	std::cout << "World to ndc " << world_to_ndc_xform.m2[0][0] << ", " << world_to_ndc_xform.m2[0][1] << ", " << world_to_ndc_xform.m2[0][2] << std::endl
+		<< world_to_ndc_xform.m2[1][0] << ", " << world_to_ndc_xform.m2[1][1] << ", " << world_to_ndc_xform.m2[1][2] << std::endl
+		<< world_to_ndc_xform.m2[2][0] << ", " << world_to_ndc_xform.m2[2][1] << ", " << world_to_ndc_xform.m2[2][2] << std::endl;
+
+	std::cout << "Model to ndc " << mdl_to_ndc_xform.m2[0][0] << ", " << mdl_to_ndc_xform.m2[0][1] << ", " << mdl_to_ndc_xform.m2[0][2] << std::endl
+		<< mdl_to_ndc_xform.m2[1][0] << ", " << mdl_to_ndc_xform.m2[1][1] << ", " << mdl_to_ndc_xform.m2[1][2] << std::endl
+		<< mdl_to_ndc_xform.m2[2][0] << ", " << mdl_to_ndc_xform.m2[2][1] << ", " << mdl_to_ndc_xform.m2[2][2] << std::endl;
 }
 
 
@@ -671,9 +682,11 @@ void GLApp::draw()
 			obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
+	basicinstance.InstanceClear();
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
 	basicinstance.InstanceRender(Graphics::textureobjects);
 	basicinstance.InstanceClear();
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -779,7 +792,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	else
 	{
-		insert_shdrpgm("gam200-shdrpgm", "../shaders/gam200.vert", "../shaders/gam200.frag");
+		insert_shdrpgm("gam200-shdrpgm", "../shaders/instancing.vert", "../shaders/instancing.frag");
 		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
 	}
 
@@ -831,7 +844,7 @@ void GLApp::entitydraw()
 		}
 		else
 		{
-			insert_shdrpgm(curobj->shaderName, "../shaders/gam200.vert", "../shaders/gam200.frag");
+			insert_shdrpgm(curobj->shaderName, "../shaders/instancing.vert", "../shaders/instancing.frag");
 			shaderid = shdrpgms.find(curobj->shaderName)->second;
 		}
 
@@ -868,17 +881,8 @@ void GLApp::entitydraw()
 			ndccoord.emplace_back(poscoord[i]);
 		}
 		
-		for (int i = 0; i < ndccoord.size(); ++i)
+		for (int j = 0; j < ndccoord.size(); ++j)
 		{
-			
-			Graphics::vertexData tmpVtxData;
-			//tmpVtxData.posVtx = ndccoord[i];
-
-			tmpVtxData.clrVtx = clr_vtx[i];
-			//tmpVtxData.posVtx = models["square"].model_coords[i];
-			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = 6.f;
-			vertexData.emplace_back(tmpVtxData);
 			matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
 			matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
 			matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
@@ -895,10 +899,54 @@ void GLApp::entitydraw()
 			);
 
 
-			matrix3x3::mat3x3 model_to_world_xform = world_to_ndc_xform * model_to_world;
+			matrix3x3::mat3x3 model_to_ndc_xform = world_to_ndc_xform * model_to_world;
 
-			testdata.emplace_back(world_to_ndc_xform); // Emplace back a base 1, 1 translation
+			Graphics::vertexData tmpVtxData;
+			//tmpVtxData.posVtx = ndccoord[i];
+
+			tmpVtxData.clrVtx = clr_vtx[j];
+			tmpVtxData.posVtx = models["square"].model_coords[j];
+			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			tmpVtxData.txtVtx = texcoord[j];
+			tmpVtxData.txtIndex = 6.f;
+			vertexData.emplace_back(tmpVtxData);
+
+			vector2D::vec2D testend = model_to_ndc_xform * tmpVtxData.posVtx;
+			std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
+
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
+		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
+
+		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
+
+
+		matrix3x3::mat3x3 world_to_ndc_xform = Graphics::camera2d.getWorldtoNDCxForm();
+
+		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+
+		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
+		(
+			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
+			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], model_to_ndc_xformnotglm.m[8]
+		);
+		
+		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
+		std::cout << "Entity id " << i <<  " Size " << basicinstance.instancedata.size() << std::endl;
+		std::cout << "Model to world " << model_to_world.m2[0][0] << ", " << model_to_world.m2[0][1] << ", " << model_to_world.m2[0][2]
+			<< ", " << model_to_world.m2[1][0] << ", " << model_to_world.m2[1][1] << ", " << model_to_world.m2[1][2]
+			<< ", " << model_to_world.m2[2][0] << ", " << model_to_world.m2[2][1] << ", " << model_to_world.m2[2][2] << std::endl;
+
+		std::cout << "World to ndc " << world_to_ndc_xform.m2[0][0] << ", " << world_to_ndc_xform.m2[0][1] << ", " << world_to_ndc_xform.m2[0][2]
+			<< ", " << world_to_ndc_xform.m2[1][0] << ", " << world_to_ndc_xform.m2[1][1] << ", " << world_to_ndc_xform.m2[1][2]
+			<< ", " << world_to_ndc_xform.m2[2][0] << ", " << world_to_ndc_xform.m2[2][1] << ", " << world_to_ndc_xform.m2[2][2] << std::endl;
+
+		std::cout << "Model to ndc " << model_to_ndc_xform.m2[0][0] << ", " << model_to_ndc_xform.m2[0][1] << ", " << model_to_ndc_xform.m2[0][2]
+			<< ", " << model_to_ndc_xform.m2[1][0] << ", " << model_to_ndc_xform.m2[1][1] << ", " << model_to_ndc_xform.m2[1][2]
+			<< ", " << model_to_ndc_xform.m2[2][0] << ", " << model_to_ndc_xform.m2[2][1] << ", " << model_to_ndc_xform.m2[2][2] << std::endl;
 
 
 		basicinstance.headerdata.clear();
@@ -908,7 +956,7 @@ void GLApp::entitydraw()
 		basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
 		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
 		basicinstance.vaoid = models["square"].getVAOid();
-
+		testdata.clear();
 
 		//if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
 		//{
