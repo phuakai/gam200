@@ -11,6 +11,7 @@ This file includes the function definitions for pathfinding functions.
 #include <input.h>
 #include <iostream>
 #include <iomanip>
+#include <math.h>
 
 // make these parameters instead of global (pointers)
 int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
@@ -26,7 +27,6 @@ vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0)
 /*! movementFlocking
 
 @param id				Entity ID of the unit to calculate
-@param destination		Target of the unit
 @param allVelocity		The 3 vectors, separation, cohesion and alignment vectors
 @param maintree			reference to main branch in quadTree
 @return none
@@ -34,7 +34,7 @@ vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0)
 This function calculates the 3 vectors that allows the units to have a
 flocking behaviour with the surrounding units.
 */
-void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
+void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
 {
 	Movement* movement = ecs.GetComponent<Movement>(id);
 	Render* entity = ecs.GetComponent<Render>(id);
@@ -361,4 +361,153 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 	}
 }
 
+bool FormationManager::addCharacter(EntityID& id)
+{
+	int occupiedSlots = slotAssignment.size();
 
+	// change this to an array / define
+	if (occupiedSlots <= 100)
+	{
+		// Adding new entityID into slotAssignment
+		slotAssignment.push_back(id);
+		return true;
+	}
+
+	return false;
+}
+
+bool FormationManager::removeCharacter(EntityID& id)
+{
+	auto foundIterator = std::find(begin(slotAssignment), end(slotAssignment), id);
+
+	if (foundIterator == end(slotAssignment))
+	{
+		return false;
+	}
+
+	slotAssignment.erase(foundIterator);
+
+	return true;
+}
+
+void FormationManager::updateSlots()
+{
+	for (int i = 0; i < slotAssignment.size(); ++i)
+	{
+		Movement* movement = ecs.GetComponent<Movement>(slotAssignment[i]);
+
+		// Change to implement orientation
+		// vector2D::vec2D* velocity = &ecs.GetComponent<Movement>(slotAssignment[i])->velocity;
+		
+		// change 1 to orientation matrix
+		movement->formationTarget = anchorPosition + 1 * formationPosition(i);
+
+		// implement orientation here
+
+		movement->formationTarget -= offsetPosition;
+	}
+}
+
+void FormationManager::updateAnchorPosition()
+{
+	vector2D::vec2D totalPositions { 0 , 0 };
+
+	for (int i = 0; i < slotAssignment.size(); ++i)
+	{
+		totalPositions += ecs.GetComponent<Render>(slotAssignment[i])->position;
+	}
+
+	anchorPosition = totalPositions / slotAssignment.size();
+
+	vector2D::vec2D anchorNode = (anchorPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+	anchorPosition += flowField[(int)anchorNode.y][(int)anchorNode.x] * 5;
+
+	// For checking
+	// ecs.GetComponent<Render>(enemyManagerEntity.GetID())->position = anchorPosition;
+}
+
+//void FormationManager::updateAnchorOrientation()
+//{
+//	vector2D::vec2D totalVelocities;
+//
+//	for (int i = 0; i < slotAssignment.size(); ++i)
+//	{
+//		totalVelocities += ecs.GetComponent<Movement>(slotAssignment[i])->velocity;
+//	}
+//
+//	anchorOrientation = totalVelocities / slotAssignment.size();
+//}
+
+void FormationManager::updateOffsetPosition()
+{
+	vector2D::vec2D totalPositions { 0 , 0 };
+	for (int i = 0; i < slotAssignment.size(); ++i)
+	{
+		totalPositions += formationPosition(i);
+	}
+	offsetPosition = totalPositions / slotAssignment.size();
+}
+
+//void FormationManager::updateOffsetOrientation()
+//{
+//	
+//}
+
+vector2D::vec2D FormationManager::formationPosition(int index)
+{
+	++index;
+	vector2D::vec2D slotRelativePosition;
+	int rows = (int)round(sqrt(slotAssignment.size()));
+	int columns;
+	if (sqrt(slotAssignment.size()) == (int)sqrt(slotAssignment.size()))
+	{
+		columns = (int)round(slotAssignment.size() / rows);
+	}
+	else
+	{
+		columns = (int)round(slotAssignment.size() / rows) == (int)round(slotAssignment.size() / rows) + 1 ? (int)round(slotAssignment.size() / rows) : (int)round(slotAssignment.size() / rows) + 1;
+	}
+	
+	slotRelativePosition.x = (columns | 1) ? (columns - 1) / 2.f - index % columns : (columns + 1) / 2.f - index % columns;
+	slotRelativePosition.y = (rows | 1) ? (rows - 1) / 2.f - index / rows : (rows + 1) / 2.f - index / rows;
+
+	slotRelativePosition *= ecs.GetComponent<Movement>(slotAssignment[index - 1])->radius;
+
+	return slotRelativePosition;
+}
+
+vector2D::vec2D FormationManager::getAnchorPosition()
+{
+	return anchorPosition;
+}
+
+// Pushing the reached units to the front of the vector (to sort them)
+void FormationManager::updateSlot(const EntityID& id)
+{
+	for (int i = 0; i < slotAssignment.size(); ++i)
+	{
+		if (ecs.GetComponent<Movement>(slotAssignment[i])->reached)
+		{
+			continue;
+		}
+		else
+		{
+			auto found = std::find(slotAssignment.begin(), slotAssignment.end(), id);
+			EntityID temp = *found;
+			*found = slotAssignment[i];
+			slotAssignment[i] = temp;
+			return;
+		}
+	}
+}
+
+void FormationManager::updateReached()
+{
+	for (int i = 0; i < slotAssignment.size(); ++i)
+	{
+		ecs.GetComponent<Movement>(slotAssignment[i])->reached = false;
+	}
+	flocking = true;
+	reached = false;
+}

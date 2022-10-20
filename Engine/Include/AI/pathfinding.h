@@ -17,15 +17,33 @@ This file includes the function declarations for pathfinding functions.
 
 // FORMATION MANAGER CLASS =====================================================
 
-//class FormationManager
-//{
-//public:
-//
-//private:
-//	std::vector<EntityID> slotAssignment;
-//	vector2D::vec2D anchorPosition;
-//	matrix3x3::mat3x3 anchorOrientation;
-//};
+class FormationManager
+{
+public:
+	bool addCharacter(EntityID& id);
+	bool removeCharacter(EntityID& id);
+	void updateSlots();
+	void updateAnchorPosition();
+	//void updateAnchorOrientation();
+	void updateOffsetPosition();
+	//void updateOffsetOrientation();
+	vector2D::vec2D formationPosition(int index);
+	vector2D::vec2D getAnchorPosition();
+	void updateReached();
+
+	void updateSlot(const EntityID& id);
+
+	bool reached = false;
+	bool flocking = true;
+	vector2D::vec2D target;
+
+private:
+	std::vector<EntityID> slotAssignment;
+	vector2D::vec2D anchorPosition;				// Actual center of mass
+	//vector2D::vec2D anchorOrientation;			// Actual average orientation
+	vector2D::vec2D offsetPosition;				// Formation center of mass
+	//vector2D::vec2D offsetOrientation;			// Formation orientation
+};
 
 // =============================================================================
 
@@ -34,7 +52,10 @@ extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 // empty grid of vectors
 extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
 
-extern std::vector<Entity> enemyUnits;
+//extern std::vector<Entity> enemyUnits;
+//
+//extern Entity enemyManagerEntity;
+//extern FormationManager enemyManager;
 
 /*  _________________________________________________________________________*/
 /*! movementFlocking
@@ -48,7 +69,7 @@ extern std::vector<Entity> enemyUnits;
 This function calculates the 3 vectors that allows the units to have a 
 flocking behaviour with the surrounding units.
 */
-void movementFlocking(EntityID id, vector2D::vec2D destination, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree = mainTree);
+void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree = mainTree);
 
 /*  _________________________________________________________________________*/
 /*! generateDijkstraCost

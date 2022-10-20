@@ -171,6 +171,12 @@
     <Filter Include="Source Files\Serialization\rttr\detail\variant">
       <UniqueIdentifier>{676462eb-2d65-4106-9f0a-aca23d15e0ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\EventManager">
+      <UniqueIdentifier>{cede294d-3c12-43d9-85cd-8fd6a809e07f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EventManager">
+      <UniqueIdentifier>{d531c2d5-8d1e-497f-b823-f15ff0a67380}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\camera.cpp">
@@ -334,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\app.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EventManager\eventManager.cpp">
+      <Filter>Source Files\EventManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -909,6 +918,9 @@
     </ClInclude>
     <ClInclude Include="Include\mainHeader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\EventManager\eventManager.h">
+      <Filter>Header Files\EventManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -45,8 +45,8 @@ to OpenGL implementations.
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
 
-extern Entity player1;
-extern std::vector<Entity> walls;
+//extern Entity player1;
+//extern std::vector<Entity> walls;
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -160,8 +160,8 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 	coldebug = false;
 
-	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
+	//EntityID playerID = player1.GetID();
+	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
 
 }
 
@@ -549,19 +549,26 @@ void GLApp::update()
 	//		obj1->second.modelCenterPos = obj1->second.body.getPos();
 	//	}
 	//}
-	Render* player = ecs.GetComponent<Render>(player1.GetID());
+	//Render* player = ecs.GetComponent<Render>(player1.GetID());
 
 	bool test{ true };
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
-		if (player->name == obj->first && mouseClick)
-		{
-			player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
-			obj->second.modelCenterPos = player->position;
+		//if (player->name == obj->first && mouseClick)
+		//{
+		//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+		//	obj->second.modelCenterPos = player->position;
 
-			generateDijkstraCost(player->position, walls);
-			generateFlowField(player->position);
-		}
+		//	enemyManager.target = player->position;
+		//	enemyManager.updateReached();
+		//	for (int i = 0; i < enemyUnits.size(); ++i)
+		//	{
+		//		ecs.GetComponent<Movement>(enemyUnits[i].GetID())->target = player->position;
+		//	}
+
+		//	generateDijkstraCost(player->position, walls);
+		//	generateFlowField(player->position);
+		//}
 
 		if (obj->first != "Camera")
 		{

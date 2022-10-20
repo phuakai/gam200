@@ -62,8 +62,8 @@ typedef unsigned char* ComponentData;
 
 struct Archetype
 {
-    ArchetypeID type;
     // archtype ID is just a vector of all components in it
+    ArchetypeID type;
     std::vector<ComponentData> componentData;
     std::vector<EntityID> entityIds;
     std::vector<std::size_t> componentDataSize;
@@ -160,7 +160,8 @@ public:
 
 
 template<class C>
-class Component : public ComponentBase {
+class Component : public ComponentBase 
+{
 
 public:
     virtual void DestroyData(unsigned char* data) const override;
@@ -187,11 +188,9 @@ public:
 private:
     typedef std::unordered_map<ComponentTypeID, ComponentBase*> ComponentTypeIDBaseMap;
 
-
-
-    //track which entity is which archetype 
-    //idk how this works tbh
-    struct Record {
+    //track which entity is which archetype
+    struct Record 
+    {
         Archetype* archetype;
         std::size_t index;
         std::string entityName;
@@ -251,11 +250,11 @@ public:
 
     std::vector<std::string> getAllRegisteredComponents();
     std::vector<std::string> getEntityComponents(const EntityID& entityId);
-
+    
     std::vector<EntityID> getEntities();
     std::vector<std::string> getEntityNames();
 
-    std::string getEntityName(const EntityID& entityId);
+    std::string* getEntityName(const EntityID& entityId);
 
     //change back to priv 
 private:
@@ -278,7 +277,8 @@ private:
 //extern ECS ecs;
 
 //wrapper for entity ID
-class Entity {
+class Entity 
+{
 public:
 
     explicit Entity(ECS& ecs = ecs, std::string name = "nil");

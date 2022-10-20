@@ -170,7 +170,7 @@
     <ClCompile Include="Source\ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Source\ImGui\imgui_tables.cpp" />
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="Source\levelEditor.cpp" />
+    <ClCompile Include="Source\ImGui\levelEditor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

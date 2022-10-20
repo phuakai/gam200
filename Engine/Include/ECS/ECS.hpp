@@ -15,8 +15,8 @@ const IDType TypeIdGenerator<T>::GetNewID() {
     return idCounter;
 }
 
-
-inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) {
+inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) 
+{
     m_ecs.RegisterEntity(m_id, name);
 }
 template<typename C, typename... Args>
@@ -35,15 +35,15 @@ inline EntityID Entity::GetID() const
 }
 
 template<class C>
-void Component<C>::SetName(std::string name) {
+void Component<C>::SetName(std::string name) 
+{
     componentName = name;
 }
-
 template<class C>
-std::string Component<C>::GetName() const {
+std::string Component<C>::GetName() const 
+{
     return componentName;
 }
-
 // not 100% sure how this works but finds the correct place to delete memory
 template<class C>
 void Component<C>::DestroyData(unsigned char* data) const
@@ -52,31 +52,24 @@ void Component<C>::DestroyData(unsigned char* data) const
 
     dataLocation->~C();
 }
-//figure this out pls 
-
 // just allocating new memory
 template<class C>
 void Component<C>::ConstructData(unsigned char* data) const
 {
     new (&data[0]) C();
 }
-
 // same as above
 template<class C>
 void Component<C>::MoveData(unsigned char* source, unsigned char* destination) const
 {
     new (&destination[0]) C(std::move(*reinterpret_cast<C*>(source)));
 }
-
-
 //get size of components to help ecs later
 template<class C>
 std::size_t Component<C>::GetSize() const
 {
     return sizeof(C);
 }
-
-
 // check how this works
 template<class C>
 ComponentTypeID Component<C>::GetTypeID()
@@ -710,38 +703,43 @@ inline void ECS::setEntityName(const EntityID& entityId, std::string name)
     record.entityName = name;
 }
 
-inline std::vector<std::string> ECS::getAllRegisteredComponents() {
+inline std::vector<std::string> ECS::getAllRegisteredComponents() 
+{
     std::vector<std::string> componentNames;
     for (auto i : m_componentMap) {
         componentNames.push_back((i.second)->GetName());
     }
     return componentNames;
 }
-inline std::vector<EntityID> ECS::getEntities() {
+inline std::vector<EntityID> ECS::getEntities() 
+{
 
     std::vector<EntityID> entityIDs;
-    for (auto i : m_entityArchetypeMap) {
+    for (auto i : m_entityArchetypeMap) 
+    {
         entityIDs.push_back(i.first);
     }
     return entityIDs;
 }
 
-inline std::vector<std::string> ECS::getEntityNames() {
-
+inline std::vector<std::string> ECS::getEntityNames() 
+{
     std::vector<std::string> entitynames;
-    for (auto i : m_entityArchetypeMap) {
-        entitynames.push_back(getEntityName(i.first));
+    for (auto i : m_entityArchetypeMap) 
+    {
+        entitynames.push_back(*getEntityName(i.first));
     }
     return entitynames;
 }
 
-inline std::string ECS::getEntityName(const EntityID& entityId) {
+inline std::string* ECS::getEntityName(const EntityID& entityId) 
+{
     Record& record = m_entityArchetypeMap[entityId];
-    return record.entityName;
+    return &record.entityName;
 }
 
-inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId) {
-
+inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId)
+{
     std::vector<std::string> components;
 
     Record& record = m_entityArchetypeMap[entityId];

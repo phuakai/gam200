@@ -74,8 +74,8 @@
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\levelEditor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\ImGui\levelEditor.cpp">
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

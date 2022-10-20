@@ -49,24 +49,30 @@ RTTR_REGISTRATION{
 	rttr::registration::class_<Movement>("Movement")
 		.property("velocity", &Movement::velocity)
 		.property("target", &Movement::target)
+		.property("formationTarget", &Movement::formationTarget)
 		.property("force", &Movement::force)
 		.property("speed", &Movement::speed)
-		.property("collisionFlag", &Movement::collisionFlag);
+		.property("collisionFlag", &Movement::collisionFlag)
+		.property("radius", &Movement::radius)
+		.property("reached", &Movement::reached);
 
 	//rttr::registration::class_<Sprite>("Sprite")
 
 	rttr::registration::class_<Stats>("Stats")
-		.property("health", &Stats::health);
+		.property("health", &Stats::getHealth, &Stats::setHealth);
 }
 
 ECS ecs;
 
-extern Entity player1;
-extern std::vector<Entity> walls;
-
-Entity player1;
-std::vector<Entity> walls(0);
-std::vector<Entity> enemyUnits(2500);
+//extern Entity player1;
+//extern std::vector<Entity> walls;
+//
+//Entity player1;
+//std::vector<Entity> walls(0);
+//std::vector<Entity> enemyUnits(100);
+//
+//Entity enemyManagerEntity;
+//FormationManager enemyManager;
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
@@ -89,21 +95,23 @@ void engineInit()
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm");
+	///player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm");
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	//player1.Add<Texture>(0, 1, 1, "none");
-	player1.Add<Stats>(100);
-	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
+	///player1.Add<Stats>(100);
+	///ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
-	EntityID playerID = player1.GetID();
+	///EntityID playerID = player1.GetID();
 
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	///enemyManager.target = ecs.GetComponent<Render>(playerID)->position;
+
+	///unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
+	///std::default_random_engine generator(seed);
+	///std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	for (int i = 0; i < enemyUnits.size(); ++i)
+	/*for (int i = 0; i < enemyUnits.size(); ++i)
 	{
 		float randr = colour(generator);
 		float randg = colour(generator);
@@ -112,12 +120,14 @@ void engineInit()
 		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		// velocity, target, force, speed
-		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, 1, 2, 0, vector2D::vec2D(0, 0));
+		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
 		//enemyUnits[i].Add<Sprite>();
 		enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
 		EntityID enemyID = enemyUnits[i].GetID();
+
+		enemyManager.addCharacter(enemyID);
 		//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
 
 		//quadObj entity;
@@ -125,13 +135,21 @@ void engineInit()
 		//entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
 
 		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<Render>(enemyID)->position);
-	}
+	}*/
+
+	///enemyManagerEntity.Add<Render>("enemyManager", "square", vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), vector2D::vec2D(20, 20), 0, 0, 0, "gam200-shdrpgm");
+	///enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
+	// velocity, target, force, speed
+	///enemyManagerEntity.Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
+	//enemyUnits[i].Add<Sprite>();
+	///ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
 	timer = 4;
 
-	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
-	generateFlowField(ecs.GetComponent<Render>(playerID)->position);
+	///generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
+	///generateFlowField(ecs.GetComponent<Render>(playerID)->position);
 
+	/*
 	system1.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Movement* m, Render* p)
 	{
 		// Check with walls
@@ -196,10 +214,28 @@ void engineInit()
 			}
 		}
 
+		//vector2D::vec2D anchorNode = (enemyManager.getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+		//std::cout << enemyManager.target.x << "\t" << enemyManager.target.y << std::endl;
+		
+		if ((enemyManager.getAnchorPosition().x >= enemyManager.target.x - 20 && enemyManager.getAnchorPosition().x <= enemyManager.target.x + 20) &&
+			(enemyManager.getAnchorPosition().y >= enemyManager.target.y - 20 && enemyManager.getAnchorPosition().y <= enemyManager.target.y + 20))
+		{
+			enemyManager.reached = true;
+		}
+
+		if (!enemyManager.reached)
+		{
+			enemyManager.updateAnchorPosition();
+			enemyManager.updateSlots();
+		}
 
 		for (std::size_t i = 0; i < entities.size(); ++i)
 		{
-			//std::cout << "this is in glapp: " << entities[i] << " " << ecs.GetComponent<Render>(entities[i])->position.x << " " << ecs.GetComponent<Render>(entities[i])->position.y << std::endl;
+			if (entities[i] == enemyManagerEntity.GetID())
+			{
+				continue;
+			}
+
 			vector2D::vec2D oldPosition = p[i].position;
 			vector2D::vec2D changedVelocity(0, 0);
 			vector2D::vec2D offsetVector(0, 0);
@@ -209,19 +245,53 @@ void engineInit()
 				offsetVector = p[i].position - m[i].collisionResponse;
 				m[i].collisionFlag = false;
 			}
+			
+			if ((p[i].position.x >= m[i].target.x - 10 && p[i].position.x <= m[i].target.x + 10) &&
+				(p[i].position.y >= m[i].target.y - 10 && p[i].position.y <= m[i].target.y + 10) || enemyManager.reached)
+			{
+				if (!m[i].reached)
+				{
+					enemyManager.updateSlot(entities[i]);
+					m[i].reached = true;
+				}
 
-			vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+				if (!((p[i].position.x >= m[i].formationTarget.x - 2 && p[i].position.x <= m[i].formationTarget.x + 2) &&
+					(p[i].position.y >= m[i].formationTarget.y - 2 && p[i].position.y <= m[i].formationTarget.y + 2)))
+				{
+					changedVelocity = m[i].formationTarget - p[i].position;
+				}
+			}
+			else 
+			{
+				m[i].reached = false;
 
-			if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
-				changedVelocity = m[i].target - p[i].position;
-			else
-				changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
+				vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-			std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
+				if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
+				{
+					changedVelocity = m[i].target - p[i].position;
+				}
+				else
+				{
+					changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
+				}
 
-			movementFlocking(entities[i], m[i].target, allVelocity);
+				vector2D::Vector2DNormalize(m[i].formationTarget, m[i].formationTarget);
 
-			changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
+				changedVelocity += m[i].formationTarget * 0.1;
+
+				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
+
+				movementFlocking(entities[i], allVelocity);
+
+				changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
+			}
+
+			//if (!((p[i].position.x >= m[i].target.x - 5 && p[i].position.x <= m[i].target.x + 5) &&
+			//	(p[i].position.y >= m[i].target.y - 5 && p[i].position.y <= m[i].target.y + 5) || enemyManager.reached))
+			//{
+			//	changedVelocity = m[i].formationTarget - p[i].position;
+			//}
 
 			vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
 
@@ -239,20 +309,20 @@ void engineInit()
 		}
 
 	});
-
+	*/
 
 	GLApp::init();
 }
 
 void engineUpdate()
 {
-	Render* player = ecs.GetComponent<Render>(player1.GetID());
+	//Render* player = ecs.GetComponent<Render>(player1.GetID());
 
-	if (timer > 0)
-		timer -= (float)Graphics::Input::delta_time;
+	//if (timer > 0)
+	//	timer -= (float)Graphics::Input::delta_time;
 
-	else
-		ecs.RunSystems(2, 100);
+	//else
+	//	ecs.RunSystems(2, 100);
 
 	glfwPollEvents();
 
@@ -277,4 +347,14 @@ void swapBuffer()
 {
 	// Swap buffers: front <-> back
 	glfwSwapBuffers(Graphics::Input::ptr_to_window);
+}
+
+int Stats::getHealth () const
+{
+	return health;
+}
+
+void Stats::setHealth(const int h)
+{
+	health = h;
 }
