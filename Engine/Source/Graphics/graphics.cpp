@@ -11,7 +11,7 @@ This file handles the batch rendering of the game
 #include <iostream>
 
 
-void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
+void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs, int entitycount)
 {
 	instanceshader.Use(); //Use shader prog
 
@@ -23,13 +23,6 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = Graphics::VBO::init();
-	for (int j = 0; j < instancedata.size(); j++)
-	{
-		std::cout << "Matrix " << j << " = " << instancedata[j].m2[0][0] << ", " << instancedata[j].m2[0][1] << ", " << instancedata[j].m2[0][2]
-			<< ", " << instancedata[j].m2[1][0] << ", " << instancedata[j].m2[1][1] << ", " << instancedata[j].m2[1][2]
-			<< ", " << instancedata[j].m2[2][0] << ", " << instancedata[j].m2[2][1] << ", " << instancedata[j].m2[2][2] << std::endl;
-
-	}
 	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
 
 	// Position
@@ -70,9 +63,9 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	for (int col = 0; col < 3; col++)
 	{
 		// Instancing offset array
-		Graphics::VAO::enableattrib(vaoid, matrix_loc+col); // Attrib 4
+		Graphics::VAO::enableattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
 		// Not sure what to put for last parameter of bind
-		//glVertexArrayBindingDivisor(vaoid, 4, 1);
+		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
 		glVertexAttribDivisor(matrix_loc + col, 1);
 		Graphics::VAO::setattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
 		Graphics::VAO::bindattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
@@ -112,8 +105,8 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs)
 	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
 	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 
-
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, 6);
+	//std::cout << "Entity count " << entitycount << std::endl;
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
 	Graphics::VAO::unbind();

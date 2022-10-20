@@ -83,6 +83,8 @@ bool GLApp::graphicsmode;
 
 int GLApp::objectcounter;
 
+int entitycounter;
+
 /*! GLApp::init
 
 @param none
@@ -95,6 +97,7 @@ glClearColor and glViewport to initialize the app
 
 void GLApp::init()
 {
+	entitycounter = 0;
 	std::fstream myfile;
 	myfile.open("config.xml");
 	int width{};
@@ -234,19 +237,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	{
 		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
 		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
-		std::cout << "For obj update (OLD) " << ndc_coords[i].x << ", " << ndc_coords[i].y << std::endl;
 	}
-	std::cout << "Model to world " << mdl_to_world_xform.m2[0][0] << ", " << mdl_to_world_xform.m2[0][1] << ", " << mdl_to_world_xform.m2[0][2] << std::endl
-		<< mdl_to_world_xform.m2[1][0] << ", " << mdl_to_world_xform.m2[1][1] << ", " << mdl_to_world_xform.m2[1][2] << std::endl
-		<< mdl_to_world_xform.m2[2][0] << ", " << mdl_to_world_xform.m2[2][1] << ", " << mdl_to_world_xform.m2[2][2] << std::endl;
-
-	std::cout << "World to ndc " << world_to_ndc_xform.m2[0][0] << ", " << world_to_ndc_xform.m2[0][1] << ", " << world_to_ndc_xform.m2[0][2] << std::endl
-		<< world_to_ndc_xform.m2[1][0] << ", " << world_to_ndc_xform.m2[1][1] << ", " << world_to_ndc_xform.m2[1][2] << std::endl
-		<< world_to_ndc_xform.m2[2][0] << ", " << world_to_ndc_xform.m2[2][1] << ", " << world_to_ndc_xform.m2[2][2] << std::endl;
-
-	std::cout << "Model to ndc " << mdl_to_ndc_xform.m2[0][0] << ", " << mdl_to_ndc_xform.m2[0][1] << ", " << mdl_to_ndc_xform.m2[0][2] << std::endl
-		<< mdl_to_ndc_xform.m2[1][0] << ", " << mdl_to_ndc_xform.m2[1][1] << ", " << mdl_to_ndc_xform.m2[1][2] << std::endl
-		<< mdl_to_ndc_xform.m2[2][0] << ", " << mdl_to_ndc_xform.m2[2][1] << ", " << mdl_to_ndc_xform.m2[2][2] << std::endl;
 }
 
 
@@ -631,6 +622,7 @@ void GLApp::update()
 
 		if (obj->first != "Camera")
 		{
+			//std::cout << obj->first << std::endl;
 			obj->second.update(Graphics::Input::delta_time);
 
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
@@ -679,7 +671,7 @@ void GLApp::draw()
 	{
 		if (obj->first != "Camera")
 		{
-			obj->second.draw(); // Comment to stop drawing from object map
+			//obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
 	basicinstance.InstanceClear();
@@ -687,8 +679,9 @@ void GLApp::draw()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
-	basicinstance.InstanceRender(Graphics::textureobjects);
+	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
 	basicinstance.InstanceClear();
+	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	//glLineWidth(2.f);
 	//debuglinebatch.BatchRender(Graphics::textureobjects);
@@ -883,24 +876,6 @@ void GLApp::entitydraw()
 		
 		for (int j = 0; j < ndccoord.size(); ++j)
 		{
-			matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
-			matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
-			matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
-
-			matrix3x3::mat3x3 model_to_world = translate * rot * scale;
-
-
-			matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-			matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
-			(
-				world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-				world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-				world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-			);
-
-
-			matrix3x3::mat3x3 model_to_ndc_xform = world_to_ndc_xform * model_to_world;
-
 			Graphics::vertexData tmpVtxData;
 			//tmpVtxData.posVtx = ndccoord[i];
 
@@ -910,10 +885,8 @@ void GLApp::entitydraw()
 			tmpVtxData.txtVtx = texcoord[j];
 			tmpVtxData.txtIndex = 6.f;
 			vertexData.emplace_back(tmpVtxData);
-
-			vector2D::vec2D testend = model_to_ndc_xform * tmpVtxData.posVtx;
-			std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
-			std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
+			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
@@ -935,19 +908,6 @@ void GLApp::entitydraw()
 		);
 		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
-		std::cout << "Entity id " << i <<  " Size " << basicinstance.instancedata.size() << std::endl;
-		std::cout << "Model to world " << model_to_world.m2[0][0] << ", " << model_to_world.m2[0][1] << ", " << model_to_world.m2[0][2]
-			<< ", " << model_to_world.m2[1][0] << ", " << model_to_world.m2[1][1] << ", " << model_to_world.m2[1][2]
-			<< ", " << model_to_world.m2[2][0] << ", " << model_to_world.m2[2][1] << ", " << model_to_world.m2[2][2] << std::endl;
-
-		std::cout << "World to ndc " << world_to_ndc_xform.m2[0][0] << ", " << world_to_ndc_xform.m2[0][1] << ", " << world_to_ndc_xform.m2[0][2]
-			<< ", " << world_to_ndc_xform.m2[1][0] << ", " << world_to_ndc_xform.m2[1][1] << ", " << world_to_ndc_xform.m2[1][2]
-			<< ", " << world_to_ndc_xform.m2[2][0] << ", " << world_to_ndc_xform.m2[2][1] << ", " << world_to_ndc_xform.m2[2][2] << std::endl;
-
-		std::cout << "Model to ndc " << model_to_ndc_xform.m2[0][0] << ", " << model_to_ndc_xform.m2[0][1] << ", " << model_to_ndc_xform.m2[0][2]
-			<< ", " << model_to_ndc_xform.m2[1][0] << ", " << model_to_ndc_xform.m2[1][1] << ", " << model_to_ndc_xform.m2[1][2]
-			<< ", " << model_to_ndc_xform.m2[2][0] << ", " << model_to_ndc_xform.m2[2][1] << ", " << model_to_ndc_xform.m2[2][2] << std::endl;
-
 
 		basicinstance.headerdata.clear();
 		//basicinstance.instancedata.clear(); // Instance stacks up
@@ -956,6 +916,8 @@ void GLApp::entitydraw()
 		basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
 		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
 		basicinstance.vaoid = models["square"].getVAOid();
+		entitycounter++;
+		
 		testdata.clear();
 
 		//if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
