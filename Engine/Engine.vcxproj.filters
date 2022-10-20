@@ -922,6 +922,9 @@
     <ClInclude Include="Include\EventManager\eventManager.h">
       <Filter>Header Files\EventManager</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Physics\physicsDeltaTime.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Serialization\rttr\rttr.cmake">
