@@ -1,9 +1,11 @@
 
 #include "mainHeader.h"
 #include "ECS.h"
+#include "eventManager.h"
 #include "physicsPartition.h"
 #include "serialization.h"
 #include "pathfinding.h"
+#include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
 #include <app.h>
@@ -30,15 +32,17 @@ RTTR_REGISTRATION{
 
 
 	rttr::registration::class_<Render>("Render")
-		.property("name", &Render::name)
 		.property("type", &Render::type)
-		.property("position", &Render::position)
 		.property("color", &Render::color)
-		.property("dimension", &Render::dimension)
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
 		.property("shaderName", &Render::shaderName);
+
+	rttr::registration::class_<BaseInfo>("BaseInfo")
+		.property("name", &BaseInfo::name)
+		.property("position", &BaseInfo::position)
+		.property("dimension", &BaseInfo::dimension);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -46,17 +50,15 @@ RTTR_REGISTRATION{
 		.property("spriteStep", &Texture::spriteStep)
 		.property("numberOfSprites", &Texture::numberOfSprites);
 
-	rttr::registration::class_<Movement>("Movement")
-		.property("velocity", &Movement::velocity)
-		.property("target", &Movement::target)
-		.property("formationTarget", &Movement::formationTarget)
-		.property("force", &Movement::force)
-		.property("speed", &Movement::speed)
-		.property("collisionFlag", &Movement::collisionFlag)
-		.property("radius", &Movement::radius)
-		.property("reached", &Movement::reached);
-
-	//rttr::registration::class_<Sprite>("Sprite")
+	rttr::registration::class_<Physics>("Physics")
+		.property("velocity", &Physics::velocity)
+		.property("target", &Physics::target)
+		.property("formationTarget", &Physics::formationTarget)
+		.property("force", &Physics::force)
+		.property("speed", &Physics::speed)
+		.property("collisionFlag", &Physics::collisionFlag)
+		.property("radius", &Physics::radius)
+		.property("reached", &Physics::reached);
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::getHealth, &Stats::setHealth);
@@ -64,19 +66,27 @@ RTTR_REGISTRATION{
 
 ECS ecs;
 
-//extern Entity player1;
-//extern std::vector<Entity> walls;
-//
-//Entity player1;
-//std::vector<Entity> walls(0);
-//std::vector<Entity> enemyUnits(100);
-//
-//Entity enemyManagerEntity;
-//FormationManager enemyManager;
+extern Entity player1;
+extern std::vector<Entity> walls;
+
+Entity player1;
+std::vector<Entity> walls(0);
+std::vector<Entity> enemyUnits(100);
+
+// for checking
+Entity enemyManagerEntity;
+extern Entity enemyManagerEntity;
+
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
-System<Movement, Render> system1(ecs, 2);
+System<BaseInfo, Physics> system1(ecs, 2);
+
+extern EventManager eventManager;
+EventManager eventManager;
+
+extern std::vector<FormationManager> formationManagers;
+std::vector<FormationManager> formationManagers;
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 float timer;
@@ -88,247 +98,249 @@ void engineInit()
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<Render>("Render");
+	ecs.RegisterComponent<BaseInfo>("BaseInfo");
 	ecs.RegisterComponent<Texture>("Texture");
-	ecs.RegisterComponent<Movement>("Movement");
+	ecs.RegisterComponent<Physics>("Physics");
 	//ecs.RegisterComponent<Sprite>("Sprite");
 	ecs.RegisterComponent<Stats>("Stats");
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	///player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm");
+	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm");
+	player1.Add<BaseInfo>("player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
 	// velocity, target, force, speed
-	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
-	//player1.Add<Texture>(0, 1, 1, "none");
-	///player1.Add<Stats>(100);
-	///ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
+	player1.Add<Texture>(0, 1, 1, "none");
+	//player1.Add<Stats>(100);
+	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
-	///EntityID playerID = player1.GetID();
+	EntityID playerID = player1.GetID();
 
-	///enemyManager.target = ecs.GetComponent<Render>(playerID)->position;
+	FormationManager enemyManager;
+	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
 
-	///unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
-	///std::default_random_engine generator(seed);
-	///std::uniform_real_distribution<float> colour(0.f, 1.f);
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	/*for (int i = 0; i < enemyUnits.size(); ++i)
+	for (int i = 0; i < enemyUnits.size(); ++i)
 	{
 		float randr = colour(generator);
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
+		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm");
+		enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
-		// velocity, target, force, speed
-		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
-		//enemyUnits[i].Add<Sprite>();
-		enemyUnits[i].Add<Stats>(100);
+		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
 		EntityID enemyID = enemyUnits[i].GetID();
 
 		enemyManager.addCharacter(enemyID);
-		//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(enemyID)->type, ecs.GetComponent<Render>(enemyID)->name, ecs.GetComponent<Render>(enemyID)->dimension, ecs.GetComponent<Render>(enemyID)->position, vector3D::vec3D(randr, randg, randb));
+		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+	}
+	formationManagers.push_back(enemyManager);
 
-		//quadObj entity;
-		//entity.key = enemyUnits[i].GetID();
-		//entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
-
-		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<Render>(enemyID)->position);
-	}*/
-
-	///enemyManagerEntity.Add<Render>("enemyManager", "square", vector2D::vec2D(0, 0), vector3D::vec3D(0, 0, 0), vector2D::vec2D(20, 20), 0, 0, 0, "gam200-shdrpgm");
-	///enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
-	// velocity, target, force, speed
-	///enemyManagerEntity.Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
-	//enemyUnits[i].Add<Sprite>();
-	///ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
+	enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
+	enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
+	enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
+	enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
+	ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
 	timer = 4;
 
-	///generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);
-	///generateFlowField(ecs.GetComponent<Render>(playerID)->position);
+	generateDijkstraCost(ecs.GetComponent<BaseInfo>(playerID)->position, walls);
+	generateFlowField(ecs.GetComponent<BaseInfo>(playerID)->position);
+	
+	eventManager.subscribe(Systems::Collision);
+	eventManager.subscribe(Systems::Physics);
 
-	/*
-	system1.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Movement* m, Render* p)
+	system1.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, BaseInfo* p, Physics* m)
 	{
-		// Check with walls
-		for (int i = 0; i < walls.size(); ++i)
+		for (auto i : entities)
 		{
-			Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
-			std::list<EntityID*> myList;
-			AABB range(pointer->position.x - pointer->dimension.x,
-				pointer->position.y - pointer->dimension.y,
-				pointer->position.x + pointer->dimension.x,
-				pointer->position.y + pointer->dimension.y);
-			mainTree.query(range, myList);
-
-			vector2D::vec2D wallPos = ecs.GetComponent<Render>(walls[i].GetID())->position;
-			vector2D::vec2D wallDims = ecs.GetComponent<Render>(walls[i].GetID())->dimension;
-			wallDims /= 2.f;
-
-			// Create vertices for wall
-			std::vector<vector2D::vec2D> wallVtx;
-			for (int j = -1; j < 2; j += 2)
-			{
-				for (int k = -1; k < 2; k += 2)
-				{
-					wallVtx.emplace_back(vector2D::vec2D(wallPos.x + k * wallDims.x, wallPos.y + j * wallDims.y));
-				}
-			}
-
-			for (std::list <EntityID*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
-			{
-				bool check = false;
-				for (int j = 0; j < walls.size(); ++j)
-				{
-					if ((**enemyUnit) == walls[j].GetID())
-					{
-						check = true;
-						break;
-					}
-				}
-				if (check)
-					continue;
-
-				vector2D::vec2D enemyPos = ecs.GetComponent<Render>(**enemyUnit)->position;
-				vector2D::vec2D enemyDims = ecs.GetComponent<Render>(**enemyUnit)->dimension;
-				enemyDims /= 2.f;
-
-				// Create vertices for enemy
-				std::vector<vector2D::vec2D> enemyVtx;
-				for (int j = -1; j < 2; j += 2)
-				{
-					for (int k = -1; k < 2; k += 2)
-					{
-						enemyVtx.emplace_back(vector2D::vec2D(enemyPos.x + k * enemyDims.x, enemyPos.y + j * enemyDims.y));
-					}
-				}
-				if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
-				{
-					Movement* collided = ecs.GetComponent<Movement>(**enemyUnit);
-					collided->collisionFlag = true;
-					collided->collisionResponse = pointer->position;
-				}
-
-			}
-		}
-
-		//vector2D::vec2D anchorNode = (enemyManager.getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-		//std::cout << enemyManager.target.x << "\t" << enemyManager.target.y << std::endl;
-		
-		if ((enemyManager.getAnchorPosition().x >= enemyManager.target.x - 20 && enemyManager.getAnchorPosition().x <= enemyManager.target.x + 20) &&
-			(enemyManager.getAnchorPosition().y >= enemyManager.target.y - 20 && enemyManager.getAnchorPosition().y <= enemyManager.target.y + 20))
-		{
-			enemyManager.reached = true;
-		}
-
-		if (!enemyManager.reached)
-		{
-			enemyManager.updateAnchorPosition();
-			enemyManager.updateSlots();
-		}
-
-		for (std::size_t i = 0; i < entities.size(); ++i)
-		{
-			if (entities[i] == enemyManagerEntity.GetID())
+			if (i == enemyManagerEntity.GetID())
 			{
 				continue;
 			}
 
-			vector2D::vec2D oldPosition = p[i].position;
-			vector2D::vec2D changedVelocity(0, 0);
-			vector2D::vec2D offsetVector(0, 0);
+			MoveEvent entityToMove;
 
-			if (m[i].collisionFlag)
-			{
-				offsetVector = p[i].position - m[i].collisionResponse;
-				m[i].collisionFlag = false;
-			}
-			
-			if ((p[i].position.x >= m[i].target.x - 10 && p[i].position.x <= m[i].target.x + 10) &&
-				(p[i].position.y >= m[i].target.y - 10 && p[i].position.y <= m[i].target.y + 10) || enemyManager.reached)
-			{
-				if (!m[i].reached)
-				{
-					enemyManager.updateSlot(entities[i]);
-					m[i].reached = true;
-				}
+			entityToMove.id = i;
+			entityToMove.message = (1UL << Systems::Physics);
 
-				if (!((p[i].position.x >= m[i].formationTarget.x - 2 && p[i].position.x <= m[i].formationTarget.x + 2) &&
-					(p[i].position.y >= m[i].formationTarget.y - 2 && p[i].position.y <= m[i].formationTarget.y + 2)))
-				{
-					changedVelocity = m[i].formationTarget - p[i].position;
-				}
-			}
-			else 
-			{
-				m[i].reached = false;
-
-				vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-
-				if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
-				{
-					changedVelocity = m[i].target - p[i].position;
-				}
-				else
-				{
-					changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
-				}
-
-				vector2D::Vector2DNormalize(m[i].formationTarget, m[i].formationTarget);
-
-				changedVelocity += m[i].formationTarget * 0.1;
-
-				std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
-
-				movementFlocking(entities[i], allVelocity);
-
-				changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
-			}
-
-			//if (!((p[i].position.x >= m[i].target.x - 5 && p[i].position.x <= m[i].target.x + 5) &&
-			//	(p[i].position.y >= m[i].target.y - 5 && p[i].position.y <= m[i].target.y + 5) || enemyManager.reached))
-			//{
-			//	changedVelocity = m[i].formationTarget - p[i].position;
-			//}
-
-			vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
-
-			// capping speed
-			//if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
-			//{
-			//	changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
-			//}
-			changedVelocity *= m[i].speed;
-
-			p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
-
-			m[i].velocity = changedVelocity;
-			mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
+			eventManager.post(entityToMove);
 		}
+		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
 
+		// Check with walls
+		///for (int i = 0; i < walls.size(); ++i)
+		///{
+		///	BaseInfo* pointer = ecs.GetComponent<BaseInfo>(walls[i].GetID());
+		///	std::list<EntityID*> myList;
+		///	AABB range(pointer->position.x - pointer->dimension.x,
+		///		pointer->position.y - pointer->dimension.y,
+		///		pointer->position.x + pointer->dimension.x,
+		///		pointer->position.y + pointer->dimension.y);
+		///	mainTree.query(range, myList);
+
+		///	vector2D::vec2D wallPos = ecs.GetComponent<BaseInfo>(walls[i].GetID())->position;
+		///	vector2D::vec2D wallDims = ecs.GetComponent<BaseInfo>(walls[i].GetID())->dimension;
+		///	wallDims /= 2.f;
+
+		///	// Create vertices for wall
+		///	std::vector<vector2D::vec2D> wallVtx;
+		///	for (int j = -1; j < 2; j += 2)
+		///	{
+		///		for (int k = -1; k < 2; k += 2)
+		///		{
+		///			wallVtx.emplace_back(vector2D::vec2D(wallPos.x + k * wallDims.x, wallPos.y + j * wallDims.y));
+		///		}
+		///	}
+		
+		///	for (std::list <EntityID*>::iterator enemyUnit = myList.begin(); enemyUnit != myList.end(); ++enemyUnit)
+		///	{
+		///		bool check = false;
+		///		for (int j = 0; j < walls.size(); ++j)
+		///		{
+		///			if ((**enemyUnit) == walls[j].GetID())
+		///			{
+		///				check = true;
+		///				break;
+		///			}
+		///		}
+		///		if (check)
+		///			continue;
+
+		///		vector2D::vec2D enemyPos = ecs.GetComponent<BaseInfo>(**enemyUnit)->position;
+		///		vector2D::vec2D enemyDims = ecs.GetComponent<BaseInfo>(**enemyUnit)->dimension;
+		///		enemyDims /= 2.f;
+
+		///		// Create vertices for enemy
+		///		std::vector<vector2D::vec2D> enemyVtx;
+		///		for (int j = -1; j < 2; j += 2)
+		///		{
+		///			for (int k = -1; k < 2; k += 2)
+		///			{
+		///				enemyVtx.emplace_back(vector2D::vec2D(enemyPos.x + k * enemyDims.x, enemyPos.y + j * enemyDims.y));
+		///			}
+		///		}
+		///		if (physics::CollisionDetectionPolygonPolygon(wallVtx, enemyVtx))
+		///		{
+		///			Physics* collided = ecs.GetComponent<Physics>(**enemyUnit);
+		///			collided->collisionFlag = true;
+		///			collided->collisionResponse = pointer->position;
+		///		}
+
+		///	}
+		///}
+
+		//vector2D::vec2D oldPosition = baseInfo->position;
+		//vector2D::vec2D changedVelocity(0, 0);
+		//vector2D::vec2D offsetVector(0, 0);
+
+		//if ((p[i].position.x >= m[i].target.x - 10 && p[i].position.x <= m[i].target.x + 10) &&
+		//	(p[i].position.y >= m[i].target.y - 10 && p[i].position.y <= m[i].target.y + 10) || enemyManager.reached)
+		//{
+		//	if (!m[i].reached)
+		//	{
+		//		enemyManager.updateSlot(i);
+		//		m[i].reached = true;
+		//	}
+
+		//	if (!((p[i].position.x >= m[i].formationTarget.x - 2 && p[i].position.x <= m[i].formationTarget.x + 2) &&
+		//		(p[i].position.y >= m[i].formationTarget.y - 2 && p[i].position.y <= m[i].formationTarget.y + 2)))
+		//	{
+		//		changedVelocity = m[i].formationTarget - p[i].position;
+		//	}
+		//}
+		//else
+		//{
+		//	m[i].reached = false;
+
+		//	vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+		//	if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
+		//	{
+		//		changedVelocity = m[i].target - p[i].position;
+		//	}
+		//	else
+		//	{
+		//		changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
+		//	}
+
+		//	vector2D::Vector2DNormalize(m[i].formationTarget, m[i].formationTarget);
+
+		//	changedVelocity += m[i].formationTarget * 0.1;
+
+		//	std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
+
+		//	movementFlocking(entities[i], allVelocity);
+
+		//	changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
+		//}
+
+		//if (!((p[i].position.x >= m[i].target.x - 5 && p[i].position.x <= m[i].target.x + 5) &&
+		//	(p[i].position.y >= m[i].target.y - 5 && p[i].position.y <= m[i].target.y + 5) || enemyManager.reached))
+		//{
+		//	changedVelocity = m[i].formationTarget - p[i].position;
+		//}
+
+		//vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
+
+		//// capping speed
+		//if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
+		//{
+		//	changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
+		//}
+		//changedVelocity *= m[i].speed;
+
+		//p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
+
+		//m[i].velocity = changedVelocity;
+		//mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
 	});
-	*/
 
 	GLApp::init();
 }
 
 void engineUpdate()
 {
-	//Render* player = ecs.GetComponent<Render>(player1.GetID());
+	if (timer > 0)
+		timer -= (float)Graphics::Input::delta_time;
 
-	//if (timer > 0)
-	//	timer -= (float)Graphics::Input::delta_time;
+	else
+	{
+		ecs.RunSystems(2, 100);
 
-	//else
-	//	ecs.RunSystems(2, 100);
+		for (int i = 0; i < formationManagers.size(); ++i)
+		{
+			vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+			//std::cout << formationManagers[i].target.x << "\t" << formationManagers[i].target.y << std::endl;
+
+			if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 20 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 20) &&
+				(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 20 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 20))
+			{
+				formationManagers[i].reached = true;
+			}
+
+			if (!formationManagers[i].reached)
+			{
+				formationManagers[i].updateAnchorPosition();
+				ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
+				formationManagers[i].updateSlots();
+			}
+		}
+		physicsUpdate();					// physics system
+	}				
 
 	glfwPollEvents();
 
 	Graphics::Input::update_time(1.0);
 
-	GLApp::update();
+	GLApp::update();						// graphics system
 }
 
 void engineDraw()

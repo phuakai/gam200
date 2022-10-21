@@ -45,8 +45,9 @@ to OpenGL implementations.
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
 
-//extern Entity player1;
-//extern std::vector<Entity> walls;
+extern std::vector<FormationManager> formationManagers;
+extern Entity player1;
+extern std::vector<Entity> walls;
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
@@ -549,7 +550,7 @@ void GLApp::update()
 	//		obj1->second.modelCenterPos = obj1->second.body.getPos();
 	//	}
 	//}
-	//Render* player = ecs.GetComponent<Render>(player1.GetID());
+	BaseInfo* player = ecs.GetComponent<BaseInfo>(player1.GetID());
 
 	bool test{ true };
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
@@ -559,11 +560,10 @@ void GLApp::update()
 		//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 		//	obj->second.modelCenterPos = player->position;
 
-		//	enemyManager.target = player->position;
-		//	enemyManager.updateReached();
-		//	for (int i = 0; i < enemyUnits.size(); ++i)
+		//	for (int i = 0; i < formationManagers.size(); ++i)
 		//	{
-		//		ecs.GetComponent<Movement>(enemyUnits[i].GetID())->target = player->position;
+		//		formationManagers[i].target = player->position;
+		//		formationManagers[i].updateReached();
 		//	}
 
 		//	generateDijkstraCost(player->position, walls);
@@ -581,6 +581,21 @@ void GLApp::update()
 			}
 		}
 	}	
+
+
+	if (mouseClick)
+	{
+		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+
+		for (int i = 0; i < formationManagers.size(); ++i)
+		{
+			formationManagers[i].target = player->position;
+			formationManagers[i].updateReached();
+		}
+
+		generateDijkstraCost(player->position, walls);
+		generateFlowField(player->position);
+	}
 }
 
 /*  _________________________________________________________________________*/
@@ -773,6 +788,8 @@ void GLApp::entitydraw()
 		}
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
+		BaseInfo* curobjBaseInfo = ecs.GetComponent<BaseInfo>(entities[i]);
+
 		int texid = 0;
 		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
 		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
@@ -829,12 +846,12 @@ void GLApp::entitydraw()
 		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 1.f));
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
-		float halfwidth = curobj->dimension.x / 2.f;
-		float halfheight = curobj->dimension.y / 2.f;
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
+		float halfwidth = curobjBaseInfo->dimension.x / 2.f;
+		float halfheight = curobjBaseInfo->dimension.y / 2.f;
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y + halfheight));
 
 		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
 		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
@@ -878,11 +895,12 @@ void GLApp::entitydraw()
 		{
 
 
-			if (ecs.GetComponent<Movement>(entities[i]) == nullptr) // Added check for NIL objects
+			if (ecs.GetComponent<Physics>(entities[i]) == nullptr) // Added check for NIL objects
 			{
 				continue;
 			}
-			Movement* objmovement = ecs.GetComponent<Movement>(entities[i]);
+
+			Physics* objmovement = ecs.GetComponent<Physics>(entities[i]);
 			debuglinebatch.batchmodel = models["line"];
 			debuglinebatch.batchshader = shaderid;
 
@@ -898,8 +916,8 @@ void GLApp::entitydraw()
 
 			std::vector<vector2D::vec2D> debugline_poscoord
 			{
-				vector2D::vec2D(curobj->position.x, curobj->position.y),
-				vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
+				vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y),
+				vector2D::vec2D(curobjBaseInfo->position.x + (objmovement->velocity.x * 25), curobjBaseInfo->position.y + (objmovement->velocity.y * 25))
 			}; // CALCULATE POSITION FROM CENTER
 
 			std::vector <vector2D::vec2D> debugline_ndccoord;

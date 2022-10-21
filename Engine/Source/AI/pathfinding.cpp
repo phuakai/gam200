@@ -22,6 +22,95 @@ int LOSgrid[MAX_GRID_Y][MAX_GRID_X];
 
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
 
+extern std::vector<FormationManager> formationManagers;
+
+// MAIN FUNCTIONS ========================================================================
+
+bool pathfindingCalculation(EntityID& id)
+{
+	BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(id);
+	Physics* physics = ecs.GetComponent<Physics>(id);
+
+	vector2D::vec2D changedVelocity(0, 0);
+	vector2D::vec2D offsetVector(0, 0);
+
+	//if (physics->collisionFlag)
+	//{
+	//	offsetVector = baseInfo->position - physics->collisionResponse;
+	//	physics->collisionFlag = false;
+	//}
+
+	// if the agent is in range of the target
+	if ((baseInfo->position.x >= physics->target.x - 10 && baseInfo->position.x <= physics->target.x + 10) &&
+		(baseInfo->position.y >= physics->target.y - 10 && baseInfo->position.y <= physics->target.y + 10) || formationManagers[physics->formationManagerID].reached)
+	{
+		// last update of the formation position
+		if (!physics->reached)
+		{
+			formationManagers[physics->formationManagerID].updateSlot(id);
+			physics->reached = true;
+		}
+
+		// if the agent is not in range of the formation center, move to the its formation position
+		if (!((baseInfo->position.x >= physics->formationTarget.x - 2 && baseInfo->position.x <= physics->formationTarget.x + 2) &&
+			(baseInfo->position.y >= physics->formationTarget.y - 2 && baseInfo->position.y <= physics->formationTarget.y + 2)))
+		{
+			changedVelocity = physics->formationTarget - baseInfo->position;
+		}
+	}
+	// target continues to pathfind and flock
+	else
+	{
+		physics->reached = false;
+
+		vector2D::vec2D nodePosition = (baseInfo->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+		if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
+		{
+			changedVelocity = physics->target - baseInfo->position;
+		}
+		else
+		{
+			changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
+		}
+
+		//vector2D::Vector2DNormalize(physics->formationTarget, physics->formationTarget);
+
+		///changedVelocity += (physics->formationTarget - baseInfo->position) * 0.1;
+		changedVelocity += (physics->formationTarget - baseInfo->position) * 0.01;
+
+		std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
+
+		movementFlocking(id, allVelocity);
+
+		changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
+	}
+
+	//if (!((baseInfo->position.x >= physics->target.x - 5 && baseInfo->position.x <= physics->target.x + 5) &&
+	//	(baseInfo->position.y >= physics->target.y - 5 && baseInfo->position.y <= physics->target.y + 5) || formationManagers[physics->formationManagerID].reached))
+	//{
+	//	changedVelocity = physics->formationTarget - baseInfo->position;
+	//}
+
+	vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
+
+	// capping speed
+	if (vector2D::Vector2DLength(changedVelocity) > physics->speed)
+	{
+		changedVelocity *= physics->speed / vector2D::Vector2DLength(changedVelocity);
+	}
+	changedVelocity *= physics->speed;
+
+	///baseInfo->position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
+
+	physics->velocity = changedVelocity;
+
+	///mainTree.updatePoint(id, oldPosition, baseInfo->position, mainTree);
+
+	return true;
+}
+
+
 // MOVEMENT ==============================================================================
 /*  _________________________________________________________________________*/
 /*! movementFlocking
@@ -36,13 +125,13 @@ flocking behaviour with the surrounding units.
 */
 void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
 {
-	Movement* movement = ecs.GetComponent<Movement>(id);
-	Render* entity = ecs.GetComponent<Render>(id);
+	Physics* movement = ecs.GetComponent<Physics>(id);
+	BaseInfo* entity = ecs.GetComponent<BaseInfo>(id);
 
 	// make these not hardcoded please
 	float agentRadius = ((entity->dimension.x + entity->dimension.y) / 2) / 10;
 	float minimumSeparation = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Separation
-	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2);			// used for Cohesion and Alignment
+	float maximumCohesion = ((entity->dimension.x + entity->dimension.y) / 2);				// used for Cohesion and Alignment
 
 	vector2D::vec2D totalForce = { 0 , 0 };
 	// 1 count for each part of flocking -> separation, cohesion, and alignment
@@ -60,13 +149,13 @@ void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, qu
 
 	for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{
+		std::cout << "test" << std::endl;
 		// skip if it is the input agent
 		if ((**obj2) == id)
 			continue;
 
-		
-		Render* agentPosition = ecs.GetComponent<Render>((**obj2));
-		Movement* agentMovement = ecs.GetComponent<Movement>((**obj2));
+		BaseInfo* agentPosition = ecs.GetComponent<BaseInfo>((**obj2));
+		Physics* agentMovement = ecs.GetComponent<Physics>((**obj2));
 			
 		float distance = Vector2DDistance(agentPosition->position, entity->position);
 
@@ -169,7 +258,7 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 
 	for (int i = 0; i < walls.size(); ++i)
 	{
-		Render* pointer = ecs.GetComponent<Render>(walls[i].GetID());
+		BaseInfo* pointer = ecs.GetComponent<BaseInfo>(walls[i].GetID());
 		vector2D::vec2D wallNode = (pointer->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
 		dijkstraField[(int)wallNode.y][(int)wallNode.x] = WALL;
@@ -394,7 +483,7 @@ void FormationManager::updateSlots()
 {
 	for (int i = 0; i < slotAssignment.size(); ++i)
 	{
-		Movement* movement = ecs.GetComponent<Movement>(slotAssignment[i]);
+		Physics* movement = ecs.GetComponent<Physics>(slotAssignment[i]);
 
 		// Change to implement orientation
 		// vector2D::vec2D* velocity = &ecs.GetComponent<Movement>(slotAssignment[i])->velocity;
@@ -414,7 +503,7 @@ void FormationManager::updateAnchorPosition()
 
 	for (int i = 0; i < slotAssignment.size(); ++i)
 	{
-		totalPositions += ecs.GetComponent<Render>(slotAssignment[i])->position;
+		totalPositions += ecs.GetComponent<BaseInfo>(slotAssignment[i])->position;
 	}
 
 	anchorPosition = totalPositions / slotAssignment.size();
@@ -472,7 +561,7 @@ vector2D::vec2D FormationManager::formationPosition(int index)
 	slotRelativePosition.x = (columns | 1) ? (columns - 1) / 2.f - index % columns : (columns + 1) / 2.f - index % columns;
 	slotRelativePosition.y = (rows | 1) ? (rows - 1) / 2.f - index / rows : (rows + 1) / 2.f - index / rows;
 
-	slotRelativePosition *= ecs.GetComponent<Movement>(slotAssignment[index - 1])->radius;
+	slotRelativePosition *= ecs.GetComponent<Physics>(slotAssignment[index - 1])->radius;
 
 	return slotRelativePosition;
 }
@@ -487,7 +576,7 @@ void FormationManager::updateSlot(const EntityID& id)
 {
 	for (int i = 0; i < slotAssignment.size(); ++i)
 	{
-		if (ecs.GetComponent<Movement>(slotAssignment[i])->reached)
+		if (ecs.GetComponent<Physics>(slotAssignment[i])->reached)
 		{
 			continue;
 		}
@@ -506,7 +595,7 @@ void FormationManager::updateReached()
 {
 	for (int i = 0; i < slotAssignment.size(); ++i)
 	{
-		ecs.GetComponent<Movement>(slotAssignment[i])->reached = false;
+		ecs.GetComponent<Physics>(slotAssignment[i])->reached = false;
 	}
 	flocking = true;
 	reached = false;

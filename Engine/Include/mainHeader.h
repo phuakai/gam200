@@ -14,19 +14,21 @@
 
 struct Render // Sprite
 {
-	std::string name;
 	std::string type;					// still need this? Thought it is all squares?
-	vector2D::vec2D position { 0 , 0 };
 
 	vector3D::vec3D color{ 0 , 0 , 0 };
-
-	vector2D::vec2D dimension{ 0 , 0 };
 
 	unsigned int vaoID;
 	unsigned int vboID;
 	unsigned int eboID;
 	std::string shaderName;
+};
 
+struct BaseInfo
+{
+	std::string name;
+	vector2D::vec2D position{ 0 , 0 };
+	vector2D::vec2D dimension{ 0 , 0 };
 };
 
 struct Texture
@@ -37,7 +39,7 @@ struct Texture
 	std::string textureName;
 };
 
-struct Movement
+struct Physics
 {
 	vector2D::vec2D velocity;
 	vector2D::vec2D target;
@@ -48,6 +50,7 @@ struct Movement
 	vector2D::vec2D collisionResponse;
 	float radius;
 	bool reached;
+	int formationManagerID;
 };
 
 struct Stats {

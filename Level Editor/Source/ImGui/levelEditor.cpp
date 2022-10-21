@@ -17,12 +17,14 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 {
 	if (componentName == rttr::type::get<Render>())
 		return *ecs.GetComponent<Render>(entityId);
+	else if (componentName == rttr::type::get<BaseInfo>())
+		return *ecs.GetComponent<BaseInfo>(entityId);
 	else if (componentName == rttr::type::get<Texture>())
 		return *ecs.GetComponent<Texture>(entityId);
-	else if (componentName == rttr::type::get<Movement>())
-		return *ecs.GetComponent<Movement>(entityId);
-	else if (componentName == rttr::type::get<Stats>())
-		return *ecs.GetComponent<Stats>(entityId);
+	else if (componentName == rttr::type::get<Physics>())
+		return *ecs.GetComponent<Physics>(entityId);
+	//else if (componentName == rttr::type::get<Stats>())
+	//	return *ecs.GetComponent<Stats>(entityId);
 }
 
 
@@ -104,7 +106,7 @@ void imguiUpdate()
 	 
 
 	static bool inputs_step = true;
-	static float  f32_v = 0.123f;
+	static float f32_v = 0.123f;
 	const float f32_one = 1.f;
 	
 	// "Entities" tab ==========================================================================================
@@ -112,10 +114,11 @@ void imguiUpdate()
 
 	static int selected = -1;
 	static std::vector<EntityID> entities = ecs.getEntities();
-	for (int i = 0; i < entities.size(); ++i)
+
+	for (int i = 0; i < entities.size() - 1; ++i)
 	{
 		EntityID currentEntity = entities[i];
-		const char* name = (ecs.GetComponent<Render>(currentEntity)->name).c_str();
+		const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
 
 		if (ImGui::Selectable(name, selected == i))
 		{
@@ -213,12 +216,14 @@ void imguiUpdate()
 				{
 					if (componentName == "Render")
 						ecs.AddComponent<Render>(temp);
+					else if (componentName == "BaseInfo")
+						ecs.AddComponent<Texture>(temp);
 					else if (componentName == "Texture")
 						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Movement")
-						ecs.AddComponent<Movement>(temp);
-					else if (componentName == "Stats")
-						ecs.AddComponent<Stats>(temp);
+					else if (componentName == "Physics")
+						ecs.AddComponent<Physics>(temp);
+					//else if (componentName == "Stats")
+					//	ecs.AddComponent<Stats>(temp);
 
 					componentCheck[i] = 1;
 				}
@@ -261,20 +266,22 @@ void imguiUpdate()
 					}
 				}
 
-				if (ecs.GetComponent<Render>(temp) != nullptr)
-					std::cout << ecs.GetComponent<Render>(temp)->name << std::endl;
+				if (ecs.GetComponent<BaseInfo>(temp) != nullptr)
+					std::cout << ecs.GetComponent<BaseInfo>(temp)->name << std::endl;
 			}
 
 			else if (componentCheck[i])
 			{
 				if (componentName == "Render")
 					ecs.RemoveComponent<Render>(temp);
+				else if (componentName == "BaseInfo")
+					ecs.AddComponent<Texture>(temp);
 				else if (componentName == "Texture")
 					ecs.RemoveComponent<Texture>(temp);
-				else if (componentName == "Movement")
-					ecs.RemoveComponent<Movement>(temp);
-				else if (componentName == "Stats")
-					ecs.RemoveComponent<Stats>(temp);
+				else if (componentName == "Physics")
+					ecs.RemoveComponent<Physics>(temp);
+				//else if (componentName == "Stats")
+				//	ecs.RemoveComponent<Stats>(temp);
 
 				componentCheck[i] = 0;
 			}

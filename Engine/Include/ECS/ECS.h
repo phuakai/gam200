@@ -214,6 +214,8 @@ public:
 
     EntityID GetNewID();
 
+    int GetSystemCount();
+
     template<class C>
     void RegisterComponent(std::string name);
 
@@ -258,6 +260,8 @@ public:
 
     //change back to priv 
 private:
+
+    int systemCount = 0;
 
     EntityArchetypeMap m_entityArchetypeMap;
 

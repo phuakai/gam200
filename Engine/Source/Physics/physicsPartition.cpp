@@ -54,12 +54,12 @@ bool AABB::withinBoundary(vector2D::vec2D const& pos)
 	Key is the objectID
 */
 /******************************************************************************/
-quadObj::quadObj()
-{
-	position.x = 0.f;
-	position.y = 0.f;
-	key = -1;
-}
+//quadObj::quadObj()
+//{
+//	position.x = 0.f;
+//	position.y = 0.f;
+//	key = -1;
+//}
 
 /******************************************************************************/
 /*!
@@ -68,19 +68,19 @@ quadObj::quadObj()
 	Key is the objectID
 */
 /******************************************************************************/
-quadObj::quadObj(int id, vector2D::vec2D pos)
-{
-	position.x = pos.x;
-	position.y = pos.y;
-	key = id;
-}
+//quadObj::quadObj(int id, vector2D::vec2D pos)
+//{
+//	position.x = pos.x;
+//	position.y = pos.y;
+//	key = id;
+//}
 
 /******************************************************************************/
 /*!
 	Default deconstructor for quadtree object
 */
 /******************************************************************************/
-quadObj::~quadObj(){}
+//quadObj::~quadObj(){}
 
 /******************************************************************************/
 /*!
@@ -441,7 +441,7 @@ bool quadTree::query(AABB & queryRange, std::list<EntityID*> & objList)
 		// Query range and tree's boundary intersect
 		for (std::list<EntityID>::iterator it = points.begin(); it != points.end(); ++it)
 		{
-			if (queryRange.withinBoundary(ecs.GetComponent<Render>(*it)->position))
+			if (queryRange.withinBoundary(ecs.GetComponent<BaseInfo>(*it)->position))
 			{
 				// Point in tree is within the query range, add to list of obj to be tested for pathfinding/collision
 				objList.push_front(&*it);

@@ -57,6 +57,8 @@ extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
 //extern Entity enemyManagerEntity;
 //extern FormationManager enemyManager;
 
+bool pathfindingCalculation(EntityID& id);
+
 /*  _________________________________________________________________________*/
 /*! movementFlocking
 

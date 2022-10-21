@@ -492,7 +492,8 @@ bool write_basic_type(const type& t, const variant& var, PrettyWriter<StringBuff
             //    to_json(*ecs.GetComponent<Texture>(i));
             //if (ecs.GetComponent<Movement>(i))
             //    to_json(*ecs.GetComponent<Movement>(i));
-            //if (ecs.GetComponent<Stats>(i))
+            //if (ecs.GetComponent<
+            // >(i))
             //    to_json(*ecs.GetComponent<Stats>(i));
         }
     }
