@@ -30,7 +30,6 @@ RTTR_REGISTRATION{
 		.property("g", &vector3D::vec3D::g)
 		.property("b", &vector3D::vec3D::b);
 
-
 	rttr::registration::class_<Render>("Render")
 		.property("type", &Render::type)
 		.property("color", &Render::color)

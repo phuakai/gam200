@@ -87,7 +87,6 @@ mouse movement, and mouse scroller events to be processed.
 */
 static void update() 
 {
-
     engineUpdate();
     imguiUpdate();
 }

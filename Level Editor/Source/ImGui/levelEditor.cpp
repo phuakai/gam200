@@ -50,6 +50,7 @@ void imguiUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+	//ImGui::DockSpaceOverViewport();
 
 	//ImGui::ShowDemoWindow(&show_demo_window);
 
@@ -57,9 +58,6 @@ void imguiUpdate()
 
 	//static float f = 0.0f;
 	//static int counter = 0;
-
-
-
 
 	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
 
@@ -115,24 +113,35 @@ void imguiUpdate()
 	static int selected = -1;
 	static std::vector<EntityID> entities = ecs.getEntities();
 
-	for (int i = 0; i < entities.size() - 1; ++i)
+	if (ImGui::CollapsingHeader("Filtering"))
 	{
-		EntityID currentEntity = entities[i];
-		const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
+		// Helper class to easy setup a text filter.
+		// You may want to implement a more feature-full filtering scheme in your own application.
+		static ImGuiTextFilter filter;
+		filter.Draw();
 
-		if (ImGui::Selectable(name, selected == i))
+		for (int i = 0; i < entities.size() - 1; ++i)
 		{
-			selected = i;
-		}
-		else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-		{
-			int dragTo = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-			if (dragTo > 0 && dragTo <= entities.size())
+			EntityID currentEntity = entities[i];
+			const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
+
+			if (filter.PassFilter(name))
 			{
-				std::cout << "test" << std::endl;
-				entities[i] = entities[dragTo];
-				entities[dragTo] = currentEntity;
-				ImGui::ResetMouseDragDelta();
+				if (ImGui::Selectable(name, selected == i))
+				{
+					selected = i;
+				}
+				else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+				{
+					int dragTo = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
+					if (dragTo > 0 && dragTo <= entities.size())
+					{
+						std::cout << "test" << std::endl;
+						entities[i] = entities[dragTo];
+						entities[dragTo] = currentEntity;
+						ImGui::ResetMouseDragDelta();
+					}
+				}
 			}
 		}
 	}
