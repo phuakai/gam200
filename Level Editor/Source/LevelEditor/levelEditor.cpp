@@ -52,13 +52,6 @@ void imguiUpdate()
 	ImGui::NewFrame();
 	//ImGui::DockSpaceOverViewport();
 
-	//ImGui::ShowDemoWindow(&show_demo_window);
-
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-
-	//static float f = 0.0f;
-	//static int counter = 0;
-
 	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
 
 	//static bool inputs_step = true;
@@ -113,59 +106,35 @@ void imguiUpdate()
 	static int selected = -1;
 	static std::vector<EntityID> entities = ecs.getEntities();
 
-	if (ImGui::CollapsingHeader("Filtering"))
+	// Helper class to easy setup a text filter.
+	// You may want to implement a more feature-full filtering scheme in your own application.
+	static ImGuiTextFilter filter;
+	filter.Draw();
+
+	for (int i = 0; i < entities.size() - 1; ++i)
 	{
-		// Helper class to easy setup a text filter.
-		// You may want to implement a more feature-full filtering scheme in your own application.
-		static ImGuiTextFilter filter;
-		filter.Draw();
+		EntityID currentEntity = entities[i];
+		const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
 
-		for (int i = 0; i < entities.size() - 1; ++i)
+		if (filter.PassFilter(name))
 		{
-			EntityID currentEntity = entities[i];
-			const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
-
-			if (filter.PassFilter(name))
+			if (ImGui::Selectable(name, selected == i))
 			{
-				if (ImGui::Selectable(name, selected == i))
+				selected = i;
+			}
+			else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+			{
+				int dragTo = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
+				if (dragTo > 0 && dragTo <= entities.size())
 				{
-					selected = i;
-				}
-				else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-				{
-					int dragTo = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-					if (dragTo > 0 && dragTo <= entities.size())
-					{
-						std::cout << "test" << std::endl;
-						entities[i] = entities[dragTo];
-						entities[dragTo] = currentEntity;
-						ImGui::ResetMouseDragDelta();
-					}
+					std::cout << "test" << std::endl;
+					entities[i] = entities[dragTo];
+					entities[dragTo] = currentEntity;
+					ImGui::ResetMouseDragDelta();
 				}
 			}
 		}
 	}
-
-	/// DEMO
-	//static const char* item_names[] = { "Item One", "Item Two", "Item Three", "Item Four", "Item Five" };
-	//for (int n = 0; n < IM_ARRAYSIZE(item_names); n++)
-	//{
-	//	const char* item = item_names[n];
-
-	//	if (ImGui::Selectable(item_names[n], selected == n))
-	//		selected = n;
-	//	else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-	//	{
-	//		int n_next = n + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-	//		if (n_next >= 0 && n_next < IM_ARRAYSIZE(item_names))
-	//		{
-	//			item_names[n] = item_names[n_next];
-	//			item_names[n_next] = item;
-	//			ImGui::ResetMouseDragDelta();
-	//		}
-	//	}
-	//}
-
 
 	// button to create entity
 	static int counter = 0;

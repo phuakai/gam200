@@ -90,6 +90,8 @@ std::vector<FormationManager> formationManagers;
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 float timer;
 
+quadTree mainTree;
+
 void engineInit()
 {
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);

@@ -52,11 +52,6 @@ extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 // empty grid of vectors
 extern vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
 
-//extern std::vector<Entity> enemyUnits;
-//
-//extern Entity enemyManagerEntity;
-//extern FormationManager enemyManager;
-
 bool pathfindingCalculation(EntityID& id);
 
 /*  _________________________________________________________________________*/

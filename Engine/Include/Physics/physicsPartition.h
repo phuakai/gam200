@@ -261,6 +261,7 @@ public:
 	
 };
 
-static quadTree mainTree;
+extern quadTree mainTree;
+//static quadTree mainTree;
 //static std::shared_ptr<quadTree> mainTree;
 //#endif

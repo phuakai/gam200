@@ -83,7 +83,7 @@ bool pathfindingCalculation(EntityID& id)
 
 		movementFlocking(id, allVelocity);
 
-		changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
+		changedVelocity += (allVelocity[0] * 10 + (allVelocity[1] * 0.1f) + allVelocity[2] * 0.2f); // *flockingModifier;
 	}
 
 	//if (!((baseInfo->position.x >= physics->target.x - 5 && baseInfo->position.x <= physics->target.x + 5) &&
@@ -149,7 +149,6 @@ void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, qu
 
 	for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{
-		std::cout << "test" << std::endl;
 		// skip if it is the input agent
 		if ((**obj2) == id)
 			continue;
@@ -171,7 +170,7 @@ void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, qu
 
 		// COHESION ----------------------------------------------------------------------
 
-		// the 2 agents are too close to each other
+		// the 2 agents are in range of cohesion
 		if (distance < maximumCohesion)
 		{
 			centerForCohesion += agentPosition->position;
