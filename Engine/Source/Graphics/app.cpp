@@ -129,12 +129,11 @@ void GLApp::init()
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	Graphics::createTextureVector(Graphics::textureobjects, 9);
-
 	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // BaseTree
+	Graphics::Texture::createTexturePath("../images/Unit_tank_front.png", Graphics::textureobjects);
+	Graphics::Texture::loadTexture(Graphics::textureobjects); // BaseTree
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
 	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
