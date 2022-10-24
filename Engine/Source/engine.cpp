@@ -8,6 +8,7 @@
 #include "vec3D.h"
 #include <app.h>
 #include <collision.h>
+#include <fowMap.h>
 
 #include <random>
 
@@ -38,7 +39,8 @@ RTTR_REGISTRATION{
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
-		.property("shaderName", &Render::shaderName);
+		.property("shaderName", &Render::shaderName)
+		.property("name", &Render::render);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -67,6 +69,8 @@ extern std::vector<Entity> walls;
 Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(5);
+Entity cloud;
+//std::vector<Entity> cloud(1);
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
@@ -78,7 +82,7 @@ float timer;
 void engineInit()
 {
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
-
+	
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<Render>("Render");
@@ -89,12 +93,22 @@ void engineInit()
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm");
+	player1.Add<Render>("player1", "square", vector2D::vec2D(-200.f, 0.f), vector3D::vec3D(0.3f, 0.3f, 0.7f), vector2D::vec2D(20.f, 20.f), 0, 0, 0, "gam200-shdrpgm", true);
 	// velocity, target, force, speed
 	//player1.Add<Movement>(vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), 10, 2);
 	//player1.Add<Texture>(0, 1, 1, "none");
 	player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
+
+	// Create fow
+	//fow::fowMap.createFow();
+	int inc = 0;
+	//std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
+	//for (std::list<fow::fowTile>::iterator it = fowTileList.begin(); it != fowTileList.end(); ++it, ++inc)
+	//{
+	//	cloud.Add<Render>("cloud" + std::to_string(inc + 1), "square", vector2D::vec2D(0.f, 0.f), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(100.f, 100.f), 0, 0, 0, "gam200-shdrpgm", true);
+	//	cloud.Add<Texture>(9, 1, 1, "Cloud");
+	//}
 
 	EntityID playerID = player1.GetID();
 
@@ -109,7 +123,7 @@ void engineInit()
 		float randg = colour(generator);
 		float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm");
+		enemyUnits[i].Add<Render>("enemy" + std::to_string(i + 1), "square", vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector3D::vec3D(randr, randg, randb), vector2D::vec2D(10, 10), 0, 0, 0, "gam200-shdrpgm", true);
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		// velocity, target, force, speed
 		enemyUnits[i].Add<Movement>(vector2D::vec2D(0, 0), ecs.GetComponent<Render>(playerID)->position, 1, 2, 0, vector2D::vec2D(0, 0));
@@ -125,8 +139,9 @@ void engineInit()
 		//entity.position = ecs.GetComponent<Render>(enemyUnits[i].GetID())->position;
 
 		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<Render>(enemyID)->position);
+		//EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row
+		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<Render>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<Render>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
 	}
-
 	timer = 4;
 
 	generateDijkstraCost(ecs.GetComponent<Render>(playerID)->position, walls);

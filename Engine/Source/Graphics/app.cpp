@@ -125,7 +125,7 @@ void GLApp::init()
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	Graphics::createTextureVector(Graphics::textureobjects, 9);
+	Graphics::createTextureVector(Graphics::textureobjects, 10);
 
 	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
@@ -139,6 +139,7 @@ void GLApp::init()
 	Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
 	Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
 	Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
+	Graphics::Texture::loadTexture("../images/cloud.png", Graphics::textureobjects[9]); // fow
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
@@ -161,7 +162,7 @@ void GLApp::init()
 	coldebug = false;
 
 	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f), true);
 
 }
 
@@ -764,6 +765,11 @@ void GLApp::entitydraw()
 		{
 			continue;
 		}
+
+		// Below code (2 lines) is for fow
+		if (!ecs.GetComponent<Render>(entities[i])->render)
+			continue;
+		//std::cout << "this is render: " << ecs.GetComponent<Render>(entities[i])->render << std::endl;
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 		int texid = 0;

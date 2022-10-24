@@ -101,10 +101,11 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 	glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
 	glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
 	glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
+	glBindTextureUnit(9, texobjs[9].getTexid()); // cloud
 
 	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
-	glUniform1iv(tex_loc, 9, samplers);
+	int samplers[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	glUniform1iv(tex_loc, 10, samplers);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
