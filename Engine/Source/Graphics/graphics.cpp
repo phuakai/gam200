@@ -102,11 +102,10 @@ void Graphics::InstancedRenderer::InstanceRender(Texture& texobjs, int entitycou
 	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
 
 	glBindTextureUnit(0, texobjs.textureid);
-	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
-	int samplers[1] = { 0 };
-	glUniform1iv(tex_loc, 1, samplers);
+	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
+	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
+	glUniform1i(tex_loc, 0);
 
-	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
 	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	//glUniform1iv(tex_loc, 9, samplers);
 	//glUniform1i(tex_loc, 0); // Modulate bool temp
