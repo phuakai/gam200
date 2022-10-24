@@ -35,7 +35,7 @@ namespace Graphics {
 		*/
 		/******************************************************************************/
 		//static void InstanceRender(std::vector<Texture>& texobjs, GLSLShader shader, GLuint vaoid, std::vector<vertexData> data, std::vector<vector2D::vec2D> offsetdata); // instance renders all objects in render
-		void InstanceRender(std::vector<Texture>& texobjs, int entitycount); // instance renders all objects in render
+		void InstanceRender(Texture& texobjs, int entitycount); // instance renders all objects in render
 			
 		/******************************************************************************/
 		/*!

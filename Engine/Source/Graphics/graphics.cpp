@@ -11,7 +11,7 @@ This file handles the batch rendering of the game
 #include <iostream>
 
 
-void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs, int entitycount)
+void Graphics::InstancedRenderer::InstanceRender(Texture& texobjs, int entitycount)
 {
 	instanceshader.Use(); //Use shader prog
 
@@ -83,20 +83,33 @@ void Graphics::InstancedRenderer::InstanceRender(std::vector<Texture>& texobjs, 
 
 	Graphics::EBO::bind(vaoid, eboid);
 
+	//std::vector<Graphics::Texture> textures;
+	//for (int texids = 0; texids < 9; texids++)
+	//{
+	//	textures.emplace_back(texobjs[texids].getTexid());
+	//}
+	//Graphics::Texture textures;
 	//std::cout << "Texture units " << texobjs.size() << std::endl;
-	glBindTextureUnit(0, texobjs[0].getTexid());
-	glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
-	glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
-	glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
-	glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
-	glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
-	glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
-	glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
-	glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, textures);
+	//glBindTextureUnit(0, texobjs[0].getTexid());
+	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
+	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
+	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
+	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
+	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
+	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
+	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
+	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
 
+	glBindTextureUnit(0, texobjs.textureid);
 	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
-	int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-	glUniform1iv(tex_loc, 9, samplers);
+	int samplers[1] = { 0 };
+	glUniform1iv(tex_loc, 1, samplers);
+
+	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
+	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	//glUniform1iv(tex_loc, 9, samplers);
+	//glUniform1i(tex_loc, 0); // Modulate bool temp
 
 	GLboolean UniformModulate = glGetUniformLocation(instanceshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
@@ -210,19 +223,20 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 	Graphics::EBO::bind(vaoid, eboid);
 
 	//std::cout << "Texture units " << texobjs.size() << std::endl;
-	glBindTextureUnit(0, texobjs[0].getTexid());
-	glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
-	glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
-	glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
-	glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
-	glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
-	glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
-	glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
-	glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
 
-	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
-	glUniform1iv(tex_loc, 9, samplers);
+	//glBindTextureUnit(0, texobjs[0].getTexid());
+	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
+	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
+	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
+	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
+	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
+	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
+	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
+	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
+
+	//GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
+	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
+	//glUniform1iv(tex_loc, 9, samplers);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;

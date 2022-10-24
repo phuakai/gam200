@@ -10,6 +10,7 @@ This file loads, sets and deletes the textures in the game
 
 #include <string>
 #include <vector>
+#include <glad/glad.h>
 
 namespace Graphics
 {
@@ -29,6 +30,7 @@ namespace Graphics
 		*/
 		/******************************************************************************/
 		static void loadTexture(const char* path, Graphics::Texture& textureobj);
+		//static void loadTexture(const char* path);
 
 		/******************************************************************************/
 		/*!
@@ -49,8 +51,12 @@ namespace Graphics
 		*/
 		/******************************************************************************/
 		int getTexid();
-	private:
-		unsigned int texture;
+	public:
+		int curtexid;
+		GLenum target;
+		//std::vector<char> 
+		//std::vector<unsigned int> textures;
+		unsigned int textureid;
 	};
 
 	/******************************************************************************/
@@ -58,8 +64,8 @@ namespace Graphics
 		This function creates the texture vector containing all available textures
 	*/
 	/******************************************************************************/
-	void createTextureVector(std::vector<Texture>& texobjs, int texturecount);
+	void createTextureVector(Texture& texobjs, int texturecount);
 
-	static std::vector<Graphics::Texture> textureobjects; // Texture vector
+	static Graphics::Texture textureobjects; // Texture vector
 
 }
