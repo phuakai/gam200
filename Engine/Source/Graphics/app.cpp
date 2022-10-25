@@ -769,7 +769,7 @@ void GLApp::entitydraw()
 		// Below code (2 lines) is for fow
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
-		//std::cout << "this is render: " << ecs.GetComponent<Render>(entities[i])->render << std::endl;
+		//std::cout << "this is render: " << ecs.GetComponent<Render>(entities[i])->name << " " << ecs.GetComponent<Render>(entities[i])->render << std::endl;
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 		int texid = 0;

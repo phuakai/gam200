@@ -12,7 +12,7 @@
 
 namespace fow
 {
-	#define visionRad 5
+	#define visionRad 2
 	#define tileStateOffset 16
 
 	enum class direction : int
@@ -83,8 +83,16 @@ namespace fow
 		void createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
 		void removeFromTile(EntityID id, vector2D::vec2D oldMapPos);
 		void addToTile(EntityID id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
-		void updateTileState();
+		void updateTileStateToFog();
+		void updateTileStateToVisible();
+		EntityID getid();
+		int getWdith();
+		int getHeight();
+		vector2D::vec2D getWorldPos();
+		fowTileState getTileState();
+		void setid(EntityID _id);
 	private:
+		EntityID id;
 		int width;
 		int height;
 		vector2D::vec2D worldPos;

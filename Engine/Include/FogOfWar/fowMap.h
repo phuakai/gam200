@@ -1,4 +1,3 @@
-//#if false
 #include "fogOfWar.h"
 #include "mat3x3.h"
 #include <list>
@@ -6,6 +5,7 @@
 #include "../mainHeader.h"
 #include "ECS.h"
 
+//#if false
 namespace fow
 {
 	struct fogOfWarMap
@@ -29,8 +29,8 @@ namespace fow
 		int getCol();
 		int getRow();
 		int getDims();
-		std::list<fowTile> getFowTileMap();
-		std::list<fowObj> getFowObjList();
+		std::list<fowTile>& getFowTileMap();
+		std::list<fowObj>& getFowObjList();
 
 	private:
 		int width; // x-axis
@@ -43,7 +43,7 @@ namespace fow
 		std::list<fowObj> fowObjList;
 	};
 
-	static fogOfWarMap fowMap {1600, 900, 10, 10, vector2D::vec2D(0.f, 0.f)};
+	static fogOfWarMap fowMap {1600, 900, 100, 100, vector2D::vec2D(0.f, 0.f)};
 }
 
 //#endif

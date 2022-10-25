@@ -69,8 +69,7 @@ extern std::vector<Entity> walls;
 Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(5);
-Entity cloud;
-//std::vector<Entity> cloud(1);
+std::vector<Entity> cloud(fow::fowMap.getDims());
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
 System<Texture> textureSystem(ecs, 1);
@@ -100,17 +99,21 @@ void engineInit()
 	player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
-	// Create fow
-	//fow::fowMap.createFow();
-	int inc = 0;
-	//std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
-	//for (std::list<fow::fowTile>::iterator it = fowTileList.begin(); it != fowTileList.end(); ++it, ++inc)
-	//{
-	//	cloud.Add<Render>("cloud" + std::to_string(inc + 1), "square", vector2D::vec2D(0.f, 0.f), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(100.f, 100.f), 0, 0, 0, "gam200-shdrpgm", true);
-	//	cloud.Add<Texture>(9, 1, 1, "Cloud");
-	//}
-
 	EntityID playerID = player1.GetID();
+
+	// Create fow
+	fow::fowMap.createFow();
+	int inc = 0;
+	std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
+	//std::cout << "this is size of tile list: " << fowTileList.size() << std::endl;
+	for (std::list<fow::fowTile>::iterator it = fow::fowMap.getFowTileMap().begin(); it != fow::fowMap.getFowTileMap().end(); ++it, ++inc)
+	{
+		//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
+		cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos() , vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
+		cloud[inc].Add<Texture>(9, 1, 1, "Cloud");
+		it->setid(cloud[inc].GetID());
+		//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << std::endl;
+	}
 
 	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	// create default engine as source of randomness
@@ -140,7 +143,7 @@ void engineInit()
 
 		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<Render>(enemyID)->position);
 		//EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row
-		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<Render>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<Render>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
+		fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<Render>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<Render>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
 	}
 	timer = 4;
 
@@ -251,7 +254,13 @@ void engineInit()
 
 			m[i].velocity = changedVelocity;
 			mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
+
+			//std::list<fow::fowObj>::iterator it = fow::fowMap.getFowObjList().begin();
+			//auto it = std::find(fow::fowMap.getFowObjList().begin(), fow::fowMap.getFowObjList().end(), entities[i]);
+			//if (it != fow::fowMap.getFowObjList().end())
+			//	it->updateTilePos(p[i].position, fow::fowMap.getCol(), fow::fowMap.getRow());
 		}
+		fow::fowMap.updateFow();
 
 	});
 

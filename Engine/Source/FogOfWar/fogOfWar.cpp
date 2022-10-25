@@ -20,14 +20,14 @@ namespace fow
 
 	fowTile::fowTile()
 	{
-		width = height = 0;
-		worldPos = vector2D::vec2D(0.f, 0.f);
-		gridPos = vector2D::vec2D(0.f, 0.f);
+		id = width = height = 0;
+		worldPos = gridPos = vector2D::vec2D(0.f, 0.f);
 		state = fowTileState::unvisited;
 	}
 	
 	fowTile::fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos)
 	{
+		id = 0;
 		width = _width;
 		height = _height;
 		worldPos = _worldPos;
@@ -58,11 +58,50 @@ namespace fow
 		state = fowTileState::visible;
 	}
 
-	void fowTile::updateTileState()
+	void fowTile::updateTileStateToFog()
+	{
+		state = fowTileState::fogged;
+	}
+
+	void fowTile::updateTileStateToVisible()
 	{
 		state = fowTileState::visible;
 	}
 
+
+	EntityID fowTile::getid()
+	{
+		return id;
+	}
+
+	int fowTile::getWdith()
+	{
+		return width;
+	}
+
+	int fowTile::getHeight()
+	{
+		return height;
+	}
+
+	vector2D::vec2D fowTile::getWorldPos()
+	{
+		return worldPos;
+	}
+
+	fowTileState fowTile::getTileState()
+	{
+		return state;
+	}
+
+	void fowTile::setid(EntityID _id)
+	{
+		id = _id;
+	}
+
+	/**************************************************
+	*	FOG OF WAR OBJECT
+	**************************************************/
 	fowObj::fowObj()
 	{
 		id = 0;
