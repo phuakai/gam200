@@ -91,6 +91,7 @@ namespace fow
 				//if (it2->getTileState() == fowTileState::fogged)
 				//{
 					(ecs.GetComponent<Render>((*it2).getid()))->render = true;
+					(ecs.GetComponent<Texture>((*it2).getid()))->textureID = 0;
 				//}
 			}
 		}

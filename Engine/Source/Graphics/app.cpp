@@ -831,6 +831,14 @@ void GLApp::entitydraw()
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
 
+		int texid{};
+		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
+		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
+		{
+			texid = curobjTexture->textureID;
+			std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
+		}
+
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 
 		GLSLShader shaderid;
@@ -886,7 +894,7 @@ void GLApp::entitydraw()
 			tmpVtxData.posVtx = models["square"].model_coords[j];
 			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
 			tmpVtxData.txtVtx = texcoord[j];
-			tmpVtxData.txtIndex = 6.f;
+			tmpVtxData.txtIndex = texid;
 			vertexData.emplace_back(tmpVtxData);
 			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
 			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;

@@ -110,7 +110,7 @@ void engineInit()
 	{
 		//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 		cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos() , vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
-		cloud[inc].Add<Texture>(9, 1, 1, "Cloud");
+		cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
 		it->setid(cloud[inc].GetID());
 		//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << std::endl;
 	}
