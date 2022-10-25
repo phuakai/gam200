@@ -26,7 +26,6 @@ to OpenGL implementations.
 #include <math.h>
 
 #include <app.h>
-
 #include <collision.h>
 #include <physics.h>
 #include <collisiondebug.h>
@@ -34,7 +33,6 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
-
 
 #include <random>
 #include <stdint.h>
@@ -167,7 +165,7 @@ void GLApp::init()
 	coldebug = false;
 
 	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
+	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f), true);
 
 }
 
@@ -624,7 +622,6 @@ void GLApp::update()
 
 		if (obj->first != "Camera")
 		{
-			//std::cout << obj->first << std::endl;
 			obj->second.update(Graphics::Input::delta_time);
 
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
@@ -829,6 +826,10 @@ void GLApp::entitydraw()
 		{
 			continue;
 		}
+
+		// Below code (2 lines) is for fow
+		if (!ecs.GetComponent<Render>(entities[i])->render)
+			continue;
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 

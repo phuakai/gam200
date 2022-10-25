@@ -24,7 +24,7 @@ struct Render // Sprite
 	unsigned int vboID;
 	unsigned int eboID;
 	std::string shaderName;
-
+	bool render;
 };
 
 struct Texture

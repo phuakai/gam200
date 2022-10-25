@@ -87,7 +87,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\FogOfWar;$(ProjectDir)Include\ECS;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -157,9 +157,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fowMap.cpp" />
     <ClCompile Include="mat4x4.cpp" />
     <ClCompile Include="Source\AI\pathfinding.cpp" />
     <ClCompile Include="Source\engine.cpp" />
+    <ClCompile Include="Source\FogOfWar\fogOfWar.cpp" />
     <ClCompile Include="Source\Graphics\app.cpp" />
     <ClCompile Include="Source\Graphics\buffer.cpp" />
     <ClCompile Include="Source\Graphics\camera.cpp" />
@@ -217,6 +219,8 @@
     <ClInclude Include="Include\AI\pathfinding.h" />
     <ClInclude Include="Include\ECS\ECS.h" />
     <ClInclude Include="Include\ECS\ECS.hpp" />
+    <ClInclude Include="Include\FogOfWar\fogOfWar.h" />
+    <ClInclude Include="Include\FogOfWar\fowMap.h" />
     <ClInclude Include="Include\Graphics\app.h" />
     <ClInclude Include="Include\Graphics\buffer.h" />
     <ClInclude Include="Include\Graphics\camera.h" />

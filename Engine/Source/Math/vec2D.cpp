@@ -143,6 +143,32 @@ namespace vector2D
 	{
 		return vec2D(lhs.x / rhs, lhs.y / rhs);
 	}
+	
+	/**************************************************************************/
+	/*!
+		Equal-to operator overload that compares if lhs and rhs vector are the
+		same
+	 */
+	 /**************************************************************************/
+	bool operator ==(vec2D const& lhs, vec2D const& rhs)
+	{
+		if (lhs.x == rhs.x && lhs.y == rhs.y)
+			return true;
+		return false;
+	}
+
+	/**************************************************************************/
+	/*!
+		Not-equal-to operator overload that compares if lhs and rhs vector are
+		different
+	 */
+	 /**************************************************************************/
+	bool operator !=(vec2D const& lhs, vec2D const& rhs)
+	{
+		if (lhs.x != rhs.x || lhs.y != rhs.y)
+			return true;
+		return false;
+	}
 
 	/**************************************************************************/
 	/*!
