@@ -33,15 +33,10 @@ void main () {
 	else if (texturebool == true)
 	{
 		int index = int(vTextureIndex);
-		if (index == 0)
-		{
-			fFragColor = vec4(vInterpColor, 1.0);
-		}
-		else
-		{
-			fFragColor = texture(arrayTexture, vec3(vTexturecoord, index));
-			//fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
-		}
+
+		fFragColor = texture(arrayTexture, vec3(vTexturecoord, index));
+		//fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
+		
 	}
 	else
 	{

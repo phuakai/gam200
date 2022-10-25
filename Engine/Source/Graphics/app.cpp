@@ -134,6 +134,7 @@ void GLApp::init()
 
 	Graphics::Texture::createTexturePath("../images/DragBox_256x256.png", Graphics::textureobjects);
 	Graphics::Texture::createTexturePath("../images/cloud_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", Graphics::textureobjects);
 	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
@@ -915,7 +916,7 @@ void GLApp::entitydraw()
 		(
 			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
 			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], model_to_ndc_xformnotglm.m[8]
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 		);
 		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
