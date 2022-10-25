@@ -344,10 +344,10 @@
     <ClCompile Include="Source\FogOfWar\fogOfWar.cpp">
       <Filter>Source Files\FogOfWar</Filter>
     </ClCompile>
-    <ClCompile Include="fowMap.cpp">
+    <ClCompile Include="Source\FogOfWar\fowMap.cpp">
       <Filter>Source Files\FogOfWar</Filter>
     </ClCompile>
-    <ClCompile Include="mat4x4.cpp">
+    <ClCompile Include="Source\Math\mat4x4.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
@@ -928,11 +928,11 @@
     <ClInclude Include="Include\FogOfWar\fogOfWar.h">
       <Filter>Header Files\FogOfWar</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Math\mat4x4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Include\FogOfWar\fowMap.h">
       <Filter>Header Files\FogOfWar</Filter>
-    </ClInclude>
-    <ClInclude Include="mat4x4.h">
-      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

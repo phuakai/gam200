@@ -157,11 +157,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fowMap.cpp" />
-    <ClCompile Include="mat4x4.cpp" />
     <ClCompile Include="Source\AI\pathfinding.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\FogOfWar\fogOfWar.cpp" />
+    <ClCompile Include="Source\FogOfWar\fowMap.cpp" />
     <ClCompile Include="Source\Graphics\app.cpp" />
     <ClCompile Include="Source\Graphics\buffer.cpp" />
     <ClCompile Include="Source\Graphics\camera.cpp" />
@@ -174,6 +173,7 @@
     <ClCompile Include="Source\Graphics\texture.cpp" />
     <ClCompile Include="Source\Graphics\transform.cpp" />
     <ClCompile Include="Source\Math\mat3x3.cpp" />
+    <ClCompile Include="Source\Math\mat4x4.cpp" />
     <ClCompile Include="Source\Math\vec2D.cpp" />
     <ClCompile Include="Source\Math\vec3D.cpp" />
     <ClCompile Include="Source\Physics\collision.cpp" />
@@ -233,6 +233,7 @@
     <ClInclude Include="Include\Graphics\transform.h" />
     <ClInclude Include="Include\mainHeader.h" />
     <ClInclude Include="Include\Math\mat3x3.h" />
+    <ClInclude Include="Include\Math\mat4x4.h" />
     <ClInclude Include="Include\Math\vec2D.h" />
     <ClInclude Include="Include\Math\vec3D.h" />
     <ClInclude Include="Include\Physics\collision.h" />
@@ -409,7 +410,6 @@
     <ClInclude Include="Include\Serialization\rttr\variant_sequential_view.h" />
     <ClInclude Include="Include\Serialization\rttr\wrapper_mapper.h" />
     <ClInclude Include="Include\Serialization\serialization.h" />
-    <ClInclude Include="mat4x4.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Serialization\rttr\registration" />
