@@ -29,6 +29,7 @@ namespace fow
 		int getCol();
 		int getRow();
 		int getDims();
+		vector2D::vec2D getWorldPos();
 		std::list<fowTile>& getFowTileMap();
 		std::list<fowObj>& getFowObjList();
 

@@ -3,7 +3,6 @@
 #ifndef FOGOFWAR_H
 #define FOGOFWAR_H
 
-//#include "fowMap.h"
 #include "vec2D.h"
 #include <list>
 #include <iterator>
@@ -17,15 +16,14 @@ namespace fow
 
 	enum class direction : int
 	{
-		//  0, 1,  2, 3,  4, 5,  6, 7
+	//  0, 1,  2, 3,  4, 5,  6, 7
 		n, nw, w, sw, s, se, e, ne
-
 	};
+
 	//prefix
 	direction& operator ++ (const direction& rhs);
 	//postfix
 	direction operator++ (direction& x, int);
-	//direction& operator +=(direction in);
 
 	enum class fowTileState : int
 	{
@@ -85,12 +83,16 @@ namespace fow
 		void addToTile(EntityID id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
 		void updateTileStateToFog();
 		void updateTileStateToVisible();
+
 		EntityID getid();
 		int getWdith();
 		int getHeight();
 		vector2D::vec2D getWorldPos();
+		vector2D::vec2D getGridPos();
 		fowTileState getTileState();
+		std::list<EntityID> getEntitiesOnTile();
 		void setid(EntityID _id);
+
 	private:
 		EntityID id;
 		int width;
@@ -125,7 +127,6 @@ namespace fow
 
 	#if false
 	#endif
-
 }
 
 #endif
