@@ -43,7 +43,7 @@ namespace fow
 		std::list<fowObj> fowObjList;
 	};
 
-	static fogOfWarMap fowMap {1600, 900, 10, 10, vector2D::vec2D(0.f, 0.f)};
+	static fogOfWarMap fowMap {1600, 900, 20, 20, vector2D::vec2D(0.f, 0.f)};
 }
 
 //#endif

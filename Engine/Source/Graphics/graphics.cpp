@@ -124,7 +124,9 @@ void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int
 	Graphics::VAO::unbind();
 
 	instanceshader.UnUse();
-
+	glDeleteBuffers(1, &headervboid);
+	glDeleteBuffers(1, &instancevboid);
+	glDeleteBuffers(1, &eboid);
 }
 
 void RenderNS::InstancedRenderer::InstanceClear()
@@ -136,7 +138,7 @@ void RenderNS::InstancedRenderer::InstanceClear()
 
 void RenderNS::InstancedRenderer::InstanceDelete()
 {
-
+	glDeleteBuffers(1, &vaoid);
 }
 
 

@@ -132,8 +132,8 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::createTexturePath("../images/DragBox_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/cloud_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../images/cloud2_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../images/cloud3_256x256.png", Graphics::textureobjects);
 	Graphics::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", Graphics::textureobjects);
 	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
@@ -708,7 +708,7 @@ void GLApp::cleanup()
 	//basicbatch.BatchDelete();
 	//debuglinebatch.BatchDelete();
 	//debugbatch.BatchDelete();
-	//Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
+	Graphics::Texture::deleteTexture(Graphics::textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 	// empty for now
 }
@@ -837,7 +837,7 @@ void GLApp::entitydraw()
 		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
 		{
 			texid = curobjTexture->textureID;
-			std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
+			//std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
 		}
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
