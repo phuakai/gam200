@@ -60,6 +60,6 @@ namespace Graphics
 		unsigned int textureid;
 	};
 
-	static Graphics::Texture textureobjects; // Texture vector
+	static Graphics::Texture textureobjects; // Texture obj
 
 }

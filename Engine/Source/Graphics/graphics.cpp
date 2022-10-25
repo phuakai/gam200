@@ -11,7 +11,7 @@ This file handles the batch rendering of the game
 #include <iostream>
 
 
-void Graphics::InstancedRenderer::InstanceRender(Texture& texobjs, int entitycount)
+void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int entitycount)
 {
 	instanceshader.Use(); //Use shader prog
 
@@ -127,14 +127,14 @@ void Graphics::InstancedRenderer::InstanceRender(Texture& texobjs, int entitycou
 
 }
 
-void Graphics::InstancedRenderer::InstanceClear()
+void RenderNS::InstancedRenderer::InstanceClear()
 {
 	//std::cout << "Instance size before " << instancedata.size() << std::endl;
 	instancedata.clear();
 	//std::cout << "Instance size after " << instancedata.size() << std::endl;
 }
 
-void Graphics::InstancedRenderer::InstanceDelete()
+void RenderNS::InstancedRenderer::InstanceDelete()
 {
 
 }
@@ -142,7 +142,7 @@ void Graphics::InstancedRenderer::InstanceDelete()
 
 
 
-Graphics::BatchRenderer::BatchRenderer()
+RenderNS::BatchRenderer::BatchRenderer()
 {
 	//Model batchmodel{};
 	//GLSLShader batchshader{};
@@ -158,7 +158,7 @@ Graphics::BatchRenderer::BatchRenderer()
 	eboid = 0;
 }
 
-void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
+void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobjs)
 {
 	batchshader.Use();
 	glBindVertexArray(vaoid);
@@ -252,7 +252,7 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 
 }
 
-void Graphics::BatchRenderer::BatchClear()
+void RenderNS::BatchRenderer::BatchClear()
 {
 	totalindicesize = 0;
 	totaldrawcnt = 0;
@@ -263,7 +263,7 @@ void Graphics::BatchRenderer::BatchClear()
 	glDeleteBuffers(1, &eboid);
 }
 
-void Graphics::BatchRenderer::BatchDelete()
+void RenderNS::BatchRenderer::BatchDelete()
 {
 	glDeleteBuffers(1, &vaoid);
 }

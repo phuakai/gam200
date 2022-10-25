@@ -27,9 +27,9 @@ and transformations (in later labs).
 #include <unordered_map>
 #include <vec2D.h>
 #include <mat3x3.h>
+#include <graphics.h>
 #include <model.h>
 #include <physicsRigidBody.h>
-#include <graphics.h>
 
 
 struct GLApp {

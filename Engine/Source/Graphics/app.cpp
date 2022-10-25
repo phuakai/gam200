@@ -26,6 +26,7 @@ to OpenGL implementations.
 #include <math.h>
 
 #include <app.h>
+
 #include <collision.h>
 #include <physics.h>
 #include <collisiondebug.h>
@@ -33,6 +34,7 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
+
 
 #include <random>
 #include <stdint.h>
@@ -58,11 +60,11 @@ std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
-Graphics::BatchRenderer basicbatch; // Batch render object
-Graphics::BatchRenderer debugbatch; // Batch render object for collision debug
-Graphics::BatchRenderer debuglinebatch; // Batch render object for collision debug
+RenderNS::BatchRenderer basicbatch; // Batch render object
+RenderNS::BatchRenderer debugbatch; // Batch render object for collision debug
+RenderNS::BatchRenderer debuglinebatch; // Batch render object for collision debug
 
-Graphics::InstancedRenderer basicinstance; // Batch render object for collision debug
+RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
 
 //Graphics::Texture texobj;
 
@@ -129,12 +131,12 @@ void GLApp::init()
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
+	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/Unit_sapling_front_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::loadTexture(Graphics::textureobjects); // BaseTree
+	Graphics::Texture::createTexturePath("../images/DragBox_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../images/cloud_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
 	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
@@ -143,16 +145,6 @@ void GLApp::init()
 	//Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects); // Enemy unit
 	//Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects); // BG1
 	//Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects); // BG2
-
-	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
-	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]); // 
-	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects[2]); // Grass map
-	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
-	//Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
-	//Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Drag Box
-	//Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
-	//Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
-	//Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)

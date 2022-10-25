@@ -39,7 +39,7 @@ void main () {
 		}
 		else
 		{
-			fFragColor = texture(arrayTexture, vec3(vTexturecoord, 0));
+			fFragColor = texture(arrayTexture, vec3(vTexturecoord, 1));
 			//fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
 		}
 	}
