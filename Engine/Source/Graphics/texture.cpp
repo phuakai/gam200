@@ -16,55 +16,67 @@ This file loads, sets and deletes the textures in the game
 
 Graphics::Texture::Texture()
 {
-	texture = 0;
+	target = GL_TEXTURE_2D_ARRAY;
+	textureid = 0;
+	//textures.clear();
 }
 
-void Graphics::Texture::loadTexture(const char* path, Graphics::Texture& textureobj)
+void Graphics::Texture::createTexturePath(const char* path, Graphics::Texture& textureobj)
 {
-	int width, height, channels;
+	textureobj.paths.emplace_back(path);
+}
+
+void Graphics::Texture::loadTexture(Graphics::Texture& textureobj)
+{
+	int width{};
+	int height{};
+	int channels{};
+	std::vector<unsigned char*> images;
 	stbi_set_flip_vertically_on_load(1);
-	unsigned char* img = stbi_load(path, &width, &height, &channels, 0);
-	if (img == NULL) {
-		printf("Error in loading the image\n");
-		exit(1);
-	}
-	glGenTextures(1, &(textureobj.texture));
-	glBindTexture(GL_TEXTURE_2D, (textureobj.texture));
+	
+	glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &textureobj.textureid);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load and generate the texture
-	if (img)
+	glBindTexture(GL_TEXTURE_2D_ARRAY, (textureobj.textureid));
+	glTextureParameteri(textureobj.textureid, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTextureParameteri(textureobj.textureid, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTextureParameteri(textureobj.textureid, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(textureobj.textureid, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (textureobj.paths.size() == 0)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		std::cout << "No image path found" << std::endl;
+		return;
 	}
-	stbi_image_free(img);
+	for (int numoftexs = 0; numoftexs < textureobj.paths.size(); numoftexs++)
+	{
+		images.emplace_back(stbi_load(textureobj.paths[numoftexs], &width, &height, &channels, 0));
+		if (images[numoftexs] == NULL) 
+		{
+			std::cout << "Error in loading the image" << std::endl;
+			exit(1);
+		}
+	}
+	
+	// Target, level, internal format, width, height
+	glTextureStorage3D(textureobj.textureid, 1, GL_RGBA8, width, height, images.size());
+	for (int numoftexs = 0; numoftexs < textureobj.paths.size(); numoftexs++)
+	{
+		// Target, level, xoffset, yoffset, width, height, format, type, data
+		glTextureSubImage3D(textureobj.textureid, 0, 0, 0, numoftexs, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, images[numoftexs]);
+		stbi_image_free(images[numoftexs]);
+	}
 }
 
 void Graphics::Texture::deleteTexture(Graphics::Texture& textureobj)
 {
-	glDeleteTextures(1, &(textureobj.texture));
+	glDeleteTextures(1, &(textureobj.textureid));
 }
 
 int Graphics::Texture::getTexid()
 {
-	return texture;
+	return textureid;
 }
 
 void Graphics::Texture::setData(int handle, Graphics::Texture& textureobj)
 {
-	textureobj.texture = handle;
-}
-
-void Graphics::createTextureVector(std::vector<Texture>& texobjs, int texturecount)
-{
-	Texture tmp;
-	std::cout << "Texture count " << texturecount << std::endl;
-	for (int i = 0; i < texturecount; i++)
-	{
-		texobjs.emplace_back(tmp);
-	}
+	textureobj.textureid = handle;
 }

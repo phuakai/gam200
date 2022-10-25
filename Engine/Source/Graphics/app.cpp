@@ -26,6 +26,7 @@ to OpenGL implementations.
 #include <math.h>
 
 #include <app.h>
+
 #include <collision.h>
 #include <physics.h>
 #include <collisiondebug.h>
@@ -33,6 +34,7 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
+
 
 #include <random>
 #include <stdint.h>
@@ -58,10 +60,11 @@ std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
-Graphics::BatchRenderer basicbatch; // Batch render object
-Graphics::BatchRenderer debugbatch; // Batch render object for collision debug
-Graphics::BatchRenderer debuglinebatch; // Batch render object for collision debug
+RenderNS::BatchRenderer basicbatch; // Batch render object
+RenderNS::BatchRenderer debugbatch; // Batch render object for collision debug
+RenderNS::BatchRenderer debuglinebatch; // Batch render object for collision debug
 
+RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
 
 //Graphics::Texture texobj;
 
@@ -82,6 +85,8 @@ bool GLApp::graphicsmode;
 
 int GLApp::objectcounter;
 
+int entitycounter;
+
 /*! GLApp::init
 
 @param none
@@ -94,6 +99,7 @@ glClearColor and glViewport to initialize the app
 
 void GLApp::init()
 {
+	entitycounter = 0;
 	std::fstream myfile;
 	myfile.open("config.xml");
 	int width{};
@@ -125,20 +131,20 @@ void GLApp::init()
 	GLApp::textures = true;
 	GLApp::coldebug = false;
 
-	Graphics::createTextureVector(Graphics::textureobjects, 9);
-
-	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
+	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]); // 
-	Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects[2]); // Grass map
-	Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
-	Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
-	Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Drag Box
-	Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
-	Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
-	Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
+	Graphics::Texture::createTexturePath("../images/DragBox_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../images/cloud_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
+	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
+	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
+	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
+	//Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects); // Yellow Circle
+	//Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects); // Drag Box
+	//Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects); // Enemy unit
+	//Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects); // BG1
+	//Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects); // BG2
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
@@ -195,36 +201,45 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	sin(orientation.x), cos(orientation.x), 0,
 	0, 0, 1);
 
-		matrix3x3::mat3x3 translation
-		(1, 0, modelCenterPos.x,
-			0, 1, modelCenterPos.y,
-			0, 0, 1);
+	matrix3x3::mat3x3 translation
+	(1, 0, modelCenterPos.x,
+		0, 1, modelCenterPos.y,
+		0, 0, 1);
 
-		mdl_to_world_xform = translation * rotation * scale;
-		//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
-		//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
-		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-		world_to_ndc_xform = matrix3x3::mat3x3
-		(
-			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-		);
+	mdl_to_world_xform = translation * rotation * scale;
+	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
+	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
+	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+	world_to_ndc_xform = matrix3x3::mat3x3
+	(
+		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+	);
+	// TO MOVE OUT IN THE FUTURE (is called every draw when it only needs to be called once)
+	matrix3x3::mat3x3 controlxform = translation * rotation * scale;
+	controlworldpos.clear();
+	controlndcpos.clear();
+	std::vector <vector2D::vec2D> controlmodelpos = mdl_ref->second.getModelCoords();
+	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	{
+		controlworldpos.emplace_back(controlxform * controlmodelpos[i]);
+		controlndcpos.emplace_back(world_to_ndc_xform * controlworldpos[i]);
+	}	
 
-		mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
+	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
 
-		//compute world coordinates for physics calc
-		worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
+	//compute world coordinates for physics calc
+	worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
 
-		ndc_coords.clear();
-		worldVertices.clear();
-		std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
-		for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-		{
-			worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
-			ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
-		}
-	
+	ndc_coords.clear();
+	worldVertices.clear();
+	std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
+	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
+	{
+		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
+		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
+	}
 }
 
 
@@ -239,53 +254,27 @@ set the transformation matrix for the model and render using glDrawElements
 */
 void GLApp::GLObject::draw() const
 {
-	basicbatch.batchmodel = mdl_ref->second;
-	basicbatch.batchshader = shd_ref->second;
+	basicinstance.instanceshader = shd_ref->second;
 
 	std::vector<vector3D::Vec3> clr_vtx
 	{
 		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
 		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
 	};
-	int totalframes = 4;
-	int curframe = 4;
-	int textureid = texId; // TO REMOVE CONST
-	if (textureid == 3 || textureid == 4)
-	{
-		totalframes = 1;
-		curframe = 1;
-		if (overlap)
-		{
-			if (textureid == 3)
-			{
-				textureid = 4;
-			}
-		}
-		else
-		{
-			if (textureid == 4)
-			{
-				textureid = 3;
-			}
-		}
-	}
-	if (textureid == 7 || textureid == 8)
-	{
-		//std::cout << "Does it enter here\n";
-		totalframes = totalsprites;
-		curframe = 1;
-	}
-	std::vector<vector2D::Vec2> texcoord;
-	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f)); // Bottom left
-	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f)); // Bottom right
-	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 1.f)); // Top right
-	texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 1.f)); // Top left
 
+	std::vector<vector2D::Vec2> texcoord;
+	texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
+	texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
+	texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
+	texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
+
+	Graphics::vertexData tmpHeaderData;
 	std::vector<Graphics::vertexData> vertexData;
-	for (int i = 0; i < ndc_coords.size(); ++i)
+	std::vector<matrix3x3::mat3x3> testdata;
+	for (int i = 0; i < controlndcpos.size(); ++i)
 	{
 		Graphics::vertexData tmpVtxData;
-		tmpVtxData.posVtx = ndc_coords[i];
+		tmpVtxData.posVtx = controlndcpos[i];
 		if (mdl_ref->first == "circle")
 		{
 			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
@@ -295,64 +284,134 @@ void GLApp::GLObject::draw() const
 			tmpVtxData.clrVtx = clr_vtx[i];
 		}
 		tmpVtxData.txtVtx = texcoord[i];
-		tmpVtxData.txtIndex = (float)textureid;
+		tmpVtxData.txtIndex = 6.f;
 		vertexData.emplace_back(tmpVtxData);
+		testdata.emplace_back(matrix3x3::mat3x3(1.f,0.f,0.f,  0.f, 1.f, 0.f,   0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
 	}
-	basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-	basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-	basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-	basicbatch.vaoid = mdl_ref->second.getVAOid();
-	basicbatch.vboid = mdl_ref->second.getVBOid();
-	basicbatch.eboid = mdl_ref->second.getEBOid();
-	basicbatch.totalsize += (int)vertexData.size();
-	basicbatch.primtype = mdl_ref->second.getPrimitiveType();
-	basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
 
-	if (coldebug == true)
-	{
-		debugbatch.batchmodel = mdl_ref->second;
-		debugbatch.batchshader = shd_ref->second;
-		std::vector<vector3D::vec3D> clr_vtxcoldebug;
-		for (int i = 0; i < 4; i++)
-		{
-			if (overlap == true)
-			{
-				clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.8f, 0.f, 0.2f)); // red if overlapping
-			}
-			else
-			{
-				clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.f, 0.2f, 0.7f)); // blue if not overlapping
-			}
-		}
-		std::vector<Graphics::vertexData> colDebugData;
-		for (int i = 0; i < ndc_coords.size(); ++i)
-		{
-			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndc_coords[i];
-			if (mdl_ref->first == "circle")
-			{
-				tmpVtxData.clrVtx = vector3D::vec3D(1.f, 1.f, 1.f);
-			}
-			else
-			{
-				tmpVtxData.clrVtx = clr_vtxcoldebug[i];
-			}
-			tmpVtxData.txtVtx = texcoord[i];
-			tmpVtxData.txtIndex = (float)texId; // notexture for coldebug
-			colDebugData.emplace_back(tmpVtxData);
-		}
 
-		debugbatch.batchdata.insert(debugbatch.batchdata.end(), colDebugData.begin(), colDebugData.end());
-		debugbatch.ebodata.insert(debugbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-		debugbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-		debugbatch.vaoid = mdl_ref->second.getVAOid();
-		debugbatch.vboid = mdl_ref->second.getVBOid();
-		debugbatch.eboid = mdl_ref->second.getEBOid();
-		debugbatch.totalsize += (int)colDebugData.size();
-		debugbatch.primtype = mdl_ref->second.getPrimitiveType();
-		debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
-	}
-	texcoord.clear();
+	basicinstance.headerdata.clear();
+	//basicinstance.instancedata.clear(); // Instance stacks up
+	basicinstance.ebodata.clear();
+	basicinstance.headerdata.insert(basicinstance.headerdata.end(), vertexData.begin(), vertexData.end());
+	basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
+	basicinstance.ebodata.insert(basicinstance.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+	basicinstance.vaoid = mdl_ref->second.getVAOid();
+
+	//basicbatch.batchmodel = mdl_ref->second;
+	//basicbatch.batchshader = shd_ref->second;
+
+	//std::vector<vector3D::Vec3> clr_vtx
+	//{
+	//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
+	//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
+	//};
+	//int totalframes = 4;
+	//int curframe = 4;
+	//int textureid = texId; // TO REMOVE CONST
+	//if (textureid == 3 || textureid == 4)
+	//{
+	//	totalframes = 1;
+	//	curframe = 1;
+	//	if (overlap)
+	//	{
+	//		if (textureid == 3)
+	//		{
+	//			textureid = 4;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		if (textureid == 4)
+	//		{
+	//			textureid = 3;
+	//		}
+	//	}
+	//}
+	//if (textureid == 7 || textureid == 8)
+	//{
+	//	//std::cout << "Does it enter here\n";
+	//	totalframes = totalsprites;
+	//	curframe = 1;
+	//}
+	//std::vector<vector2D::Vec2> texcoord;
+	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f)); // Bottom left
+	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f)); // Bottom right
+	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 1.f)); // Top right
+	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 1.f)); // Top left
+
+	//std::vector<Graphics::vertexData> vertexData;
+	//for (int i = 0; i < ndc_coords.size(); ++i)
+	//{
+	//	Graphics::vertexData tmpVtxData;
+	//	tmpVtxData.posVtx = ndc_coords[i];
+	//	if (mdl_ref->first == "circle")
+	//	{
+	//		tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
+	//	}
+	//	else
+	//	{
+	//		tmpVtxData.clrVtx = clr_vtx[i];
+	//	}
+	//	tmpVtxData.txtVtx = texcoord[i];
+	//	tmpVtxData.txtIndex = (float)textureid;
+	//	vertexData.emplace_back(tmpVtxData);
+	//}
+	//basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+	//basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+	//basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
+	//basicbatch.vaoid = mdl_ref->second.getVAOid();
+	//basicbatch.vboid = mdl_ref->second.getVBOid();
+	//basicbatch.eboid = mdl_ref->second.getEBOid();
+	//basicbatch.totalsize += (int)vertexData.size();
+	//basicbatch.primtype = mdl_ref->second.getPrimitiveType();
+	//basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+
+	//if (coldebug == true)
+	//{
+	//	debugbatch.batchmodel = mdl_ref->second;
+	//	debugbatch.batchshader = shd_ref->second;
+	//	std::vector<vector3D::vec3D> clr_vtxcoldebug;
+	//	for (int i = 0; i < 4; i++)
+	//	{
+	//		if (overlap == true)
+	//		{
+	//			clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.8f, 0.f, 0.2f)); // red if overlapping
+	//		}
+	//		else
+	//		{
+	//			clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.f, 0.2f, 0.7f)); // blue if not overlapping
+	//		}
+	//	}
+	//	std::vector<Graphics::vertexData> colDebugData;
+	//	for (int i = 0; i < ndc_coords.size(); ++i)
+	//	{
+	//		Graphics::vertexData tmpVtxData;
+	//		tmpVtxData.posVtx = ndc_coords[i];
+	//		if (mdl_ref->first == "circle")
+	//		{
+	//			tmpVtxData.clrVtx = vector3D::vec3D(1.f, 1.f, 1.f);
+	//		}
+	//		else
+	//		{
+	//			tmpVtxData.clrVtx = clr_vtxcoldebug[i];
+	//		}
+	//		tmpVtxData.txtVtx = texcoord[i];
+	//		tmpVtxData.txtIndex = (float)texId; // notexture for coldebug
+	//		colDebugData.emplace_back(tmpVtxData);
+	//	}
+
+	//	debugbatch.batchdata.insert(debugbatch.batchdata.end(), colDebugData.begin(), colDebugData.end());
+	//	debugbatch.ebodata.insert(debugbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
+	//	debugbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
+	//	debugbatch.vaoid = mdl_ref->second.getVAOid();
+	//	debugbatch.vboid = mdl_ref->second.getVBOid();
+	//	debugbatch.eboid = mdl_ref->second.getEBOid();
+	//	debugbatch.totalsize += (int)colDebugData.size();
+	//	debugbatch.primtype = mdl_ref->second.getPrimitiveType();
+	//	debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
+	//}
+	//texcoord.clear();
 }
 
 
@@ -565,6 +624,7 @@ void GLApp::update()
 
 		if (obj->first != "Camera")
 		{
+			//std::cout << obj->first << std::endl;
 			obj->second.update(Graphics::Input::delta_time);
 
 			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
@@ -613,21 +673,26 @@ void GLApp::draw()
 	{
 		if (obj->first != "Camera")
 		{
-			obj->second.draw(); // Comment to stop drawing from object map
+			//obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
+	basicinstance.InstanceClear();
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
-	glLineWidth(2.f);
-	debuglinebatch.BatchRender(Graphics::textureobjects);
-	glLineWidth(1.f);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
-	basicbatch.BatchClear();
-	debuglinebatch.BatchClear();
-	debugbatch.BatchClear();
+	
+	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
+	basicinstance.InstanceClear();
+	entitycounter = 0;
+	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
+	//glLineWidth(2.f);
+	//debuglinebatch.BatchRender(Graphics::textureobjects);
+	//glLineWidth(1.f);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
+	//basicbatch.BatchClear();
+	//debuglinebatch.BatchClear();
+	//debugbatch.BatchClear();
 	glDisable(GL_BLEND);
 
 	objects["Camera"].draw();
@@ -642,11 +707,11 @@ This function is empty for now
 */
 void GLApp::cleanup() 
 {
-	basicbatch.BatchDelete();
-	debuglinebatch.BatchDelete();
-	debugbatch.BatchDelete();
-	Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
-	Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
+	//basicbatch.BatchDelete();
+	//debuglinebatch.BatchDelete();
+	//debugbatch.BatchDelete();
+	//Graphics::Texture::deleteTexture(Graphics::textureobjects[0]);
+	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 	// empty for now
 }
 
@@ -722,7 +787,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	else
 	{
-		insert_shdrpgm("gam200-shdrpgm", "../shaders/gam200.vert", "../shaders/gam200.frag");
+		insert_shdrpgm("gam200-shdrpgm", "../shaders/instancing.vert", "../shaders/instancing.frag");
 		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
 	}
 
@@ -766,13 +831,7 @@ void GLApp::entitydraw()
 		}
 
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
-		int texid = 0;
-		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
-		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
-		{
-			texid = curobjTexture->textureID;
-		}
-		basicbatch.batchmodel = models["square"];
+
 		GLSLShader shaderid;
 		if (shdrpgms.find(curobj->shaderName) != shdrpgms.end())
 		{
@@ -780,46 +839,27 @@ void GLApp::entitydraw()
 		}
 		else
 		{
-			insert_shdrpgm(curobj->shaderName, "../shaders/gam200.vert", "../shaders/gam200.frag");
+			insert_shdrpgm(curobj->shaderName, "../shaders/instancing.vert", "../shaders/instancing.frag");
 			shaderid = shdrpgms.find(curobj->shaderName)->second;
 		}
-		basicbatch.batchshader = shaderid;
 
-		std::vector<vector3D::vec3D> clr_vtx
+		basicinstance.instanceshader = shaderid;
+
+		std::vector<vector3D::Vec3> clr_vtx
 		{
-			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b),
-			vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
 
-		int numofsprites = 0;
-		int spritestep = 0;
-		if (texid)
-		{
-			numofsprites = curobjTexture->numberOfSprites;
-			spritestep = curobjTexture->spriteStep;
-			if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
-			{
-				//if (overlapobj->overlap)
-				//{
-				//	if (curobj->textureID == 3)
-				//	{
-				//		curobj->textureID = 4;
-				//	}
-				//}
-				//else
-				//{
-				//	if (curobj->textureID == 4)
-				//	{
-				//		curobj->textureID = 3;
-				//	}
-				//}
-			}
-		}
-		std::vector<vector2D::vec2D> texcoord;
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 0.f));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 0.f));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 1.f));
-		texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 1.f));
+		std::vector<vector2D::Vec2> texcoord;
+		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
+		texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
+		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
+		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
+
+		Graphics::vertexData tmpHeaderData;
+		std::vector<Graphics::vertexData> vertexData;
+		std::vector<matrix3x3::mat3x3> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobj->dimension.x / 2.f;
@@ -829,102 +869,224 @@ void GLApp::entitydraw()
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
 		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
 
-		matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-		matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
-		(
-			world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-			world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-			world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-		);
 
 		std::vector <vector2D::vec2D> ndccoord;
 		for (int i = 0; i < poscoord.size(); i++)
 		{
-			ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+			ndccoord.emplace_back(poscoord[i]);
 		}
-		std::vector<Graphics::vertexData> vertexData;
-		for (int j = 0; j < 4; ++j)
+		
+		for (int j = 0; j < ndccoord.size(); ++j)
 		{
 			Graphics::vertexData tmpVtxData;
-			tmpVtxData.posVtx = ndccoord[j];
-			tmpVtxData.clrVtx = curobj->color;
-			std::cout << "Entity id " << i << " Posvtx " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			//tmpVtxData.posVtx = ndccoord[i];
+
+			tmpVtxData.clrVtx = clr_vtx[j];
+			tmpVtxData.posVtx = models["square"].model_coords[j];
+			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
 			tmpVtxData.txtVtx = texcoord[j];
+			tmpVtxData.txtIndex = 6.f;
 			vertexData.emplace_back(tmpVtxData);
+			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
 
-		basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-		basicbatch.ebodata.insert(basicbatch.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
-		basicbatch.totalindicesize += models["square"].getPrimitiveCnt();
-		basicbatch.vaoid = models["square"].getVAOid();
-		basicbatch.vboid = models["square"].getVBOid();
-		basicbatch.eboid = models["square"].getEBOid();
-		basicbatch.totalsize += (int)vertexData.size();
-		basicbatch.primtype = models["square"].getPrimitiveType();
-		basicbatch.totaldrawcnt += models["square"].getDrawCnt();
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
+		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
-		texcoord.clear();
-		ndccoord.clear();
-		vertexData.clear();
-
-		if (velocitydirectiondebug == true)
-		{
+		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
 
 
-			if (ecs.GetComponent<Movement>(entities[i]) == nullptr) // Added check for NIL objects
-			{
-				continue;
-			}
-			Movement* objmovement = ecs.GetComponent<Movement>(entities[i]);
-			debuglinebatch.batchmodel = models["line"];
-			debuglinebatch.batchshader = shaderid;
+		matrix3x3::mat3x3 world_to_ndc_xform = Graphics::camera2d.getWorldtoNDCxForm();
 
-			std::vector<vector3D::vec3D> debugline_clrvtx
-			{
-				//vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
-				vector3D::vec3D(0.2f, 0.f, 0.f), vector3D::vec3D(0.2f, 0.f, 0.f)
-			};
-			std::vector<vector2D::vec2D> debugline_texcoord
-			{
-				vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f)
-			};
+		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
 
-			std::vector<vector2D::vec2D> debugline_poscoord
-			{
-				vector2D::vec2D(curobj->position.x, curobj->position.y),
-				vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
-			}; // CALCULATE POSITION FROM CENTER
+		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
+		(
+			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
+			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], model_to_ndc_xformnotglm.m[8]
+		);
+		
+		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
-			std::vector <vector2D::vec2D> debugline_ndccoord;
-			for (int i = 0; i < poscoord.size(); i++)
-			{
-				debugline_ndccoord.emplace_back(world_to_ndc_xform * debugline_poscoord[i]);
+		basicinstance.headerdata.clear();
+		//basicinstance.instancedata.clear(); // Instance stacks up
+		basicinstance.ebodata.clear();
+		basicinstance.headerdata.insert(basicinstance.headerdata.end(), vertexData.begin(), vertexData.end());
+		basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
+		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
+		basicinstance.vaoid = models["square"].getVAOid();
+		entitycounter++;
+		
+		testdata.clear();
 
-			}
-			std::vector<Graphics::vertexData> debugline_vertexData;
-			for (int i = 0; i < 2; ++i)
-			{
-				Graphics::vertexData tmpVtxData;
-				tmpVtxData.posVtx = debugline_ndccoord[i];
-				tmpVtxData.clrVtx = debugline_clrvtx[i];
+		//if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
+		//{
+		//	continue;
+		//}
 
-				tmpVtxData.txtVtx = debugline_texcoord[i];
-				tmpVtxData.txtIndex = 0;
-				debugline_vertexData.emplace_back(tmpVtxData);
-			}
+		//Render* curobj = ecs.GetComponent<Render>(entities[i]);
+		//int texid = 0;
+		//Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
+		//if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
+		//{
+		//	texid = curobjTexture->textureID;
+		//}
+		//basicbatch.batchmodel = models["square"];
+		//GLSLShader shaderid;
+		//if (shdrpgms.find(curobj->shaderName) != shdrpgms.end())
+		//{
+		//	shaderid = shdrpgms.find(curobj->shaderName)->second;
+		//}
+		//else
+		//{
+		//	insert_shdrpgm(curobj->shaderName, "../shaders/gam200.vert", "../shaders/gam200.frag");
+		//	shaderid = shdrpgms.find(curobj->shaderName)->second;
+		//}
+		//basicbatch.batchshader = shaderid;
 
-			debuglinebatch.batchdata.insert(debuglinebatch.batchdata.end(), debugline_vertexData.begin(), debugline_vertexData.end());
-			debuglinebatch.ebodata.insert(debuglinebatch.ebodata.end(), models["line"].primitive.begin(), models["line"].primitive.end());
-			debuglinebatch.totalindicesize += models["line"].getPrimitiveCnt();
-			debuglinebatch.vaoid = models["line"].getVAOid();
-			debuglinebatch.vboid = models["line"].getVBOid();
-			debuglinebatch.eboid = models["line"].getEBOid();
-			debuglinebatch.totalsize += (int)debugline_vertexData.size();
-			debuglinebatch.primtype = GL_LINES;
-			debuglinebatch.totaldrawcnt += models["line"].getDrawCnt();
+		//std::vector<vector3D::vec3D> clr_vtx
+		//{
+		//	vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b),
+		//	vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
+		//};
 
-			debugline_ndccoord.clear();
-			debugline_vertexData.clear();
-		}
+		//int numofsprites = 0;
+		//int spritestep = 0;
+		//if (texid)
+		//{
+		//	numofsprites = curobjTexture->numberOfSprites;
+		//	spritestep = curobjTexture->spriteStep;
+		//	if (curobjTexture->textureID == 3 || curobjTexture->textureID == 4)
+		//	{
+		//		//if (overlapobj->overlap)
+		//		//{
+		//		//	if (curobj->textureID == 3)
+		//		//	{
+		//		//		curobj->textureID = 4;
+		//		//	}
+		//		//}
+		//		//else
+		//		//{
+		//		//	if (curobj->textureID == 4)
+		//		//	{
+		//		//		curobj->textureID = 3;
+		//		//	}
+		//		//}
+		//	}
+		//}
+		//std::vector<vector2D::vec2D> texcoord;
+		//texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 0.f));
+		//texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 0.f));
+		//texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep) / float(numofsprites), 1.f));
+		//texcoord.emplace_back(vector2D::vec2D(0.f + float(spritestep - 1) / float(numofsprites), 1.f));
+
+		//std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
+		//float halfwidth = curobj->dimension.x / 2.f;
+		//float halfheight = curobj->dimension.y / 2.f;
+		//poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight));
+		//poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight));
+		//poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
+		//poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
+
+		//matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+		//matrix3x3::mat3x3 world_to_ndc_xform = matrix3x3::mat3x3
+		//(
+		//	world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
+		//	world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
+		//	world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
+		//);
+
+		//std::vector <vector2D::vec2D> ndccoord;
+		//for (int i = 0; i < poscoord.size(); i++)
+		//{
+		//	ndccoord.emplace_back(world_to_ndc_xform * poscoord[i]);
+		//}
+		//std::vector<Graphics::vertexData> vertexData;
+		//for (int i = 0; i < 4; ++i)
+		//{
+		//	Graphics::vertexData tmpVtxData;
+		//	tmpVtxData.posVtx = ndccoord[i];
+		//	tmpVtxData.clrVtx = curobj->color;
+
+		//	tmpVtxData.txtVtx = texcoord[i];
+		//	vertexData.emplace_back(tmpVtxData);
+		//}
+
+		//basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
+		//basicbatch.ebodata.insert(basicbatch.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
+		//basicbatch.totalindicesize += models["square"].getPrimitiveCnt();
+		//basicbatch.vaoid = models["square"].getVAOid();
+		//basicbatch.vboid = models["square"].getVBOid();
+		//basicbatch.eboid = models["square"].getEBOid();
+		//basicbatch.totalsize += (int)vertexData.size();
+		//basicbatch.primtype = models["square"].getPrimitiveType();
+		//basicbatch.totaldrawcnt += models["square"].getDrawCnt();
+
+		//texcoord.clear();
+		//ndccoord.clear();
+		//vertexData.clear();
+
+		//if (velocitydirectiondebug == true)
+		//{
+
+
+		//	if (ecs.GetComponent<Movement>(entities[i]) == nullptr) // Added check for NIL objects
+		//	{
+		//		continue;
+		//	}
+		//	Movement* objmovement = ecs.GetComponent<Movement>(entities[i]);
+		//	debuglinebatch.batchmodel = models["line"];
+		//	debuglinebatch.batchshader = shaderid;
+
+		//	std::vector<vector3D::vec3D> debugline_clrvtx
+		//	{
+		//		//vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::vec3D(curobj->color.r, curobj->color.g, curobj->color.b)
+		//		vector3D::vec3D(0.2f, 0.f, 0.f), vector3D::vec3D(0.2f, 0.f, 0.f)
+		//	};
+		//	std::vector<vector2D::vec2D> debugline_texcoord
+		//	{
+		//		vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f)
+		//	};
+
+		//	std::vector<vector2D::vec2D> debugline_poscoord
+		//	{
+		//		vector2D::vec2D(curobj->position.x, curobj->position.y),
+		//		vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
+		//	}; // CALCULATE POSITION FROM CENTER
+
+		//	std::vector <vector2D::vec2D> debugline_ndccoord;
+		//	for (int i = 0; i < poscoord.size(); i++)
+		//	{
+		//		debugline_ndccoord.emplace_back(world_to_ndc_xform * debugline_poscoord[i]);
+
+		//	}
+		//	std::vector<Graphics::vertexData> debugline_vertexData;
+		//	for (int i = 0; i < 2; ++i)
+		//	{
+		//		Graphics::vertexData tmpVtxData;
+		//		tmpVtxData.posVtx = debugline_ndccoord[i];
+		//		tmpVtxData.clrVtx = debugline_clrvtx[i];
+
+		//		tmpVtxData.txtVtx = debugline_texcoord[i];
+		//		tmpVtxData.txtIndex = 0;
+		//		debugline_vertexData.emplace_back(tmpVtxData);
+		//	}
+
+		//	debuglinebatch.batchdata.insert(debuglinebatch.batchdata.end(), debugline_vertexData.begin(), debugline_vertexData.end());
+		//	debuglinebatch.ebodata.insert(debuglinebatch.ebodata.end(), models["line"].primitive.begin(), models["line"].primitive.end());
+		//	debuglinebatch.totalindicesize += models["line"].getPrimitiveCnt();
+		//	debuglinebatch.vaoid = models["line"].getVAOid();
+		//	debuglinebatch.vboid = models["line"].getVBOid();
+		//	debuglinebatch.eboid = models["line"].getEBOid();
+		//	debuglinebatch.totalsize += (int)debugline_vertexData.size();
+		//	debuglinebatch.primtype = GL_LINES;
+		//	debuglinebatch.totaldrawcnt += models["line"].getDrawCnt();
+
+		//	debugline_ndccoord.clear();
+		//	debugline_vertexData.clear();
+		//}
 	}
 }

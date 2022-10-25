@@ -11,8 +11,138 @@ This file handles the batch rendering of the game
 #include <iostream>
 
 
+void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int entitycount)
+{
+	instanceshader.Use(); //Use shader prog
 
-Graphics::BatchRenderer::BatchRenderer()
+	glBindVertexArray(vaoid);
+
+	GLuint headervboid = Graphics::VBO::init();
+	Graphics::VBO::store(headervboid, sizeof(Graphics::vertexData) * headerdata.size(), headerdata); // Data passed in
+	// Note that for instance, stored data is 1 position, 1 colour, 1 texture pos, 1 texture index (or texture array later on)
+	// and an array consisting of the offsets for the different instance positions
+
+	GLuint instancevboid = Graphics::VBO::init();
+	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
+
+	// Position
+	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
+	Graphics::VBO::bind(vaoid, 0, headervboid, 0, sizeof(float) * 8); // Set buffer binding point 
+	// Pos is vec2
+	Graphics::VAO::setattrib(vaoid, 0, 2); // Attrib format
+	Graphics::VAO::bindattrib(vaoid, 0, 0); // Bind attrib
+
+	// Colour
+	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 1
+	Graphics::VBO::bind(vaoid, 1, headervboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
+	// Colour is vec3
+	Graphics::VAO::setattrib(vaoid, 1, 3); // Attrib format
+	Graphics::VAO::bindattrib(vaoid, 1, 1); // Bind attrib
+
+	// Texture Position (U/V)
+	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 2
+	Graphics::VBO::bind(vaoid, 2, headervboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
+	// Texpos is vec2
+	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 
+	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 
+
+	// Texture Index
+	Graphics::VAO::enableattrib(vaoid, 3); // Attrib 3
+	Graphics::VBO::bind(vaoid, 3, headervboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
+	// Texindex is 1 float
+	Graphics::VAO::setattrib(vaoid, 3, 1); // Attrib format 
+	Graphics::VAO::bindattrib(vaoid, 3, 3); // Bind attrib 
+
+
+	int matrix_loc = 4;
+
+	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
+
+	// Matrix requires n consecutive input locations, where N is the columns in a matrix
+	// So mat3x3 is 3 vertex attributes
+	for (int col = 0; col < 3; col++)
+	{
+		// Instancing offset array
+		Graphics::VAO::enableattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
+		// Not sure what to put for last parameter of bind
+		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
+		glVertexAttribDivisor(matrix_loc + col, 1);
+		Graphics::VAO::setattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
+		Graphics::VAO::bindattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
+	}
+
+	// Creating ebo
+	GLuint eboid = Graphics::EBO::init();
+	ebodata[0] = 0;
+	ebodata[1] = 1;
+	ebodata[2] = 2;
+	ebodata[3] = 2;
+	ebodata[4] = 3;
+	ebodata[5] = 0;
+	Graphics::EBO::store(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
+
+	Graphics::EBO::bind(vaoid, eboid);
+
+	//std::vector<Graphics::Texture> textures;
+	//for (int texids = 0; texids < 9; texids++)
+	//{
+	//	textures.emplace_back(texobjs[texids].getTexid());
+	//}
+	//Graphics::Texture textures;
+	//std::cout << "Texture units " << texobjs.size() << std::endl;
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, textures);
+	//glBindTextureUnit(0, texobjs[0].getTexid());
+	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
+	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
+	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
+	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
+	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
+	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
+	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
+	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
+
+	glBindTextureUnit(0, texobjs.textureid);
+	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
+	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
+	glUniform1i(tex_loc, 0);
+
+	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	//glUniform1iv(tex_loc, 9, samplers);
+	//glUniform1i(tex_loc, 0); // Modulate bool temp
+
+	GLboolean UniformModulate = glGetUniformLocation(instanceshader.GetHandle(), "modulatebool");
+	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
+	glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
+
+	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
+	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
+
+	//std::cout << "Entity count " << entitycount << std::endl;
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
+	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
+
+	Graphics::VAO::unbind();
+
+	instanceshader.UnUse();
+
+}
+
+void RenderNS::InstancedRenderer::InstanceClear()
+{
+	//std::cout << "Instance size before " << instancedata.size() << std::endl;
+	instancedata.clear();
+	//std::cout << "Instance size after " << instancedata.size() << std::endl;
+}
+
+void RenderNS::InstancedRenderer::InstanceDelete()
+{
+
+}
+
+
+
+
+RenderNS::BatchRenderer::BatchRenderer()
 {
 	//Model batchmodel{};
 	//GLSLShader batchshader{};
@@ -28,7 +158,7 @@ Graphics::BatchRenderer::BatchRenderer()
 	eboid = 0;
 }
 
-void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
+void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobjs)
 {
 	batchshader.Use();
 	glBindVertexArray(vaoid);
@@ -92,19 +222,20 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 	Graphics::EBO::bind(vaoid, eboid);
 
 	//std::cout << "Texture units " << texobjs.size() << std::endl;
-	glBindTextureUnit(0, texobjs[0].getTexid());
-	glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
-	glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
-	glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
-	glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
-	glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
-	glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
-	glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
-	glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
 
-	GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
-	glUniform1iv(tex_loc, 9, samplers);
+	//glBindTextureUnit(0, texobjs[0].getTexid());
+	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
+	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
+	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
+	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
+	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
+	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
+	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
+	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
+
+	//GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
+	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
+	//glUniform1iv(tex_loc, 9, samplers);
 
 	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
@@ -121,7 +252,7 @@ void Graphics::BatchRenderer::BatchRender(std::vector<Texture>& texobjs)
 
 }
 
-void Graphics::BatchRenderer::BatchClear()
+void RenderNS::BatchRenderer::BatchClear()
 {
 	totalindicesize = 0;
 	totaldrawcnt = 0;
@@ -132,7 +263,7 @@ void Graphics::BatchRenderer::BatchClear()
 	glDeleteBuffers(1, &eboid);
 }
 
-void Graphics::BatchRenderer::BatchDelete()
+void RenderNS::BatchRenderer::BatchDelete()
 {
 	glDeleteBuffers(1, &vaoid);
 }

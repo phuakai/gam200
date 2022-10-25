@@ -335,6 +335,9 @@
     <ClCompile Include="Source\Graphics\app.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="mat4x4.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Graphics\app.h">
@@ -909,6 +912,9 @@
     </ClInclude>
     <ClInclude Include="Include\mainHeader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mat4x4.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

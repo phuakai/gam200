@@ -18,7 +18,9 @@ layout (location=2) in float vTextureIndex;
 
 layout (location=0) out vec4 fFragColor;
 
-uniform sampler2D ourTexture;
+//uniform sampler2D ourTexture;
+uniform sampler2DArray arrayTexture;
+
 uniform bool modulatebool;
 uniform bool texturebool;
 void main () {
@@ -28,15 +30,17 @@ void main () {
 	{
         modulate = vInterpColor;
 	}
-	if (texturebool == true)
+	else if (texturebool == true)
 	{
-		if (vTextureIndex == 0)
+		int index = int(vTextureIndex);
+		if (index == 0)
 		{
 			fFragColor = vec4(vInterpColor, 1.0);
 		}
-		else if (vTextureIndex == 1) 
+		else
 		{
-			fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
+			fFragColor = texture(arrayTexture, vec3(vTexturecoord, 1));
+			//fFragColor = texture(ourTexture, vTexturecoord)  * vec4(modulate, 1.0);
 		}
 	}
 	else
