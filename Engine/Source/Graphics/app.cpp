@@ -865,10 +865,10 @@ void GLApp::entitydraw()
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobj->dimension.x / 2.f;
 		float halfheight = curobj->dimension.y / 2.f;
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight)); // Bottom left
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight)); // Bottom right
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight)); // Top right
+		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight)); // Top left
 
 
 		std::vector <vector2D::vec2D> ndccoord;
@@ -893,7 +893,7 @@ void GLApp::entitydraw()
 		}
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x, curobj->dimension.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x * 2.5f, curobj->dimension.y * 2.5f));
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
