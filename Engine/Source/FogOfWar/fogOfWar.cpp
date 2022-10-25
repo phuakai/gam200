@@ -3,6 +3,11 @@
 
 namespace fow
 {
+	/**************************************************
+	*
+	*	FOG OF WAR TILE
+	*
+	**************************************************/
 	direction& operator++(direction& dir) {
 		if (dir == direction::ne)
 			dir = direction::n;
@@ -68,7 +73,6 @@ namespace fow
 		state = fowTileState::visible;
 	}
 
-
 	EntityID fowTile::getid()
 	{
 		return id;
@@ -89,9 +93,19 @@ namespace fow
 		return worldPos;
 	}
 
+	vector2D::vec2D fowTile::getGridPos()
+	{
+		return gridPos;
+	}
+
 	fowTileState fowTile::getTileState()
 	{
 		return state;
+	}
+
+	std::list<EntityID> fowTile::getEntitiesOnTile()
+	{
+		return entitiesOnTile;
 	}
 
 	void fowTile::setid(EntityID _id)
@@ -100,7 +114,9 @@ namespace fow
 	}
 
 	/**************************************************
+	* 
 	*	FOG OF WAR OBJECT
+	* 
 	**************************************************/
 	fowObj::fowObj()
 	{
@@ -140,8 +156,7 @@ namespace fow
 			E{ static_cast<int>(currMapPos.x) + visionRad }, 
 			S{ static_cast<int>(currMapPos.y) - visionRad },
 			N{ static_cast<int>(currMapPos.y) + visionRad };
-		//std::cout << W << " " << E << " " << S << " " << N << std::endl;
-		// edge handling
+
 		if (mapPos.x < visionRad)
 		{
 			W = 0;
@@ -159,37 +174,26 @@ namespace fow
 			N = row - 1;
 		}
 
-		//std::list <fowTile*>::const_iterator  it = tileMap.begin();
 		// top row
-		//if (W < E)
-		//	std::cout << W << " " << E << "w is less than e\n";
-		//else
-		//	std::cout << W << " " << E << "w is more than e, THIS IUS WRONG\n";
 		for (int c = W; c <= E; ++c)
 		{
-			//std::cout << "1";
 			frontier.emplace_back(vector2D::vec2D(c, N));
 		}
-		// right column
 		for (int r = N; r >= S; --r)
 		{
-			//std::cout << "2";
 			frontier.emplace_back(vector2D::vec2D(E, r));
 		}
 		// bottom row
 		for (int c = E; c >= W; --c)
 		{
-			//std::cout << "3";
 			frontier.emplace_back(vector2D::vec2D(c, S));
 		}
 		// left column
 		for (int r = S; r <= N; ++r)
 		{
-			//std::cout << "4";
 			frontier.emplace_back(vector2D::vec2D(W, r));
 		}
 
-		//std::cout << "bye\n";
 		for (int r = S + 1; r <= N - 1; ++r)
 		{
 			for (int c = W + 1; c <= E - 1; ++c)
