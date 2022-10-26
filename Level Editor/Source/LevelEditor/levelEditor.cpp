@@ -60,6 +60,8 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
+
 	}
 
 	ImGui::End();
@@ -68,7 +70,7 @@ void imguiUpdate()
 	// "Details" tab ==========================================================================================
 	ImGui::Begin("Details");
 
-	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+	if (ImGui::BeginTabBar("MyTabBar2", tab_bar_flags))
 	{
 		if (ImGui::BeginTabItem("Properties"))
 		{
@@ -79,6 +81,7 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
 	}
 
 	ImGui::End();
@@ -98,6 +101,7 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
 	}
 
 	ImGui::End();

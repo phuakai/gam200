@@ -8,6 +8,7 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
+#include "Font.h"
 #include <app.h>
 #include <collision.h>
 
@@ -344,6 +345,9 @@ void engineUpdate()
 	Graphics::Input::update_time(1.0);
 
 	GLApp::update();						// graphics system
+
+	GLSLShader shader;
+	Font::RenderFont(shader, "Text Renderer Testing", 800.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineDraw()

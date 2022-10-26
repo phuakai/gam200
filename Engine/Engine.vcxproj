@@ -129,13 +129,20 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr;$(SolutionDir)Engine\include\FontSystem</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Lib>
+      <AdditionalDependencies>freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Digipen\CSD 2400\gam200\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,6 +167,7 @@
     <ClCompile Include="Source\AI\pathfinding.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\EventManager\eventManager.cpp" />
+    <ClCompile Include="Source\FontSystem\Font.cpp" />
     <ClCompile Include="Source\Graphics\app.cpp" />
     <ClCompile Include="Source\Graphics\buffer.cpp" />
     <ClCompile Include="Source\Graphics\camera.cpp" />
@@ -218,6 +226,7 @@
     <ClInclude Include="Include\ECS\ECS.h" />
     <ClInclude Include="Include\ECS\ECS.hpp" />
     <ClInclude Include="Include\EventManager\eventManager.h" />
+    <ClInclude Include="Include\FontSystem\Font.h" />
     <ClInclude Include="Include\Graphics\app.h" />
     <ClInclude Include="Include\Graphics\buffer.h" />
     <ClInclude Include="Include\Graphics\camera.h" />
