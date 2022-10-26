@@ -1,32 +1,14 @@
-#include "mainHeader.h"
-#include "ECS.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include "app.h"
 #include "levelEditor.h"
+#include "levelEditorHierarchy.h"
+#include "levelEditorProperties.h"
+#include "levelEditorContentBrowser.h"
 
 #include <cstring>
 
 bool show_demo_window;
 bool show_another_window;
 ImVec4 clear_color;
-
-
-rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityId)
-{
-	if (componentName == rttr::type::get<Render>())
-		return *ecs.GetComponent<Render>(entityId);
-	else if (componentName == rttr::type::get<BaseInfo>())
-		return *ecs.GetComponent<BaseInfo>(entityId);
-	else if (componentName == rttr::type::get<Texture>())
-		return *ecs.GetComponent<Texture>(entityId);
-	else if (componentName == rttr::type::get<Physics>())
-		return *ecs.GetComponent<Physics>(entityId);
-	//else if (componentName == rttr::type::get<Stats>())
-	//	return *ecs.GetComponent<Stats>(entityId);
-}
-
 
 void imguiInit()
 {
@@ -51,228 +33,34 @@ void imguiUpdate()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	//ImGui::DockSpaceOverViewport();
-
-	// -----------------------------------------------I'm pretty sure this should be checked with messaging system for when created/ destroyed or itll lag and explode later on
-
-	//static bool inputs_step = true;
-	//static float  f32_v = 0.123f;
-	//const float f32_one = 1.f;
-
-	//for (auto i : ecs.getEntities()) {
-
-	//if (ImGui::TreeNode("Entities")) {
-	//	for (int i = 1; i < ecs.getEntities().size() + 1; ++i) {
-	//		std::string str = ecs.getEntityName(i);
-
-	//		if (str == "")
-	//			continue;
-
-	//		const char* c = str.c_str();
-	//		if (ImGui::TreeNode((void*)(intptr_t)i, c)) {
-	//			std::vector<std::string> names = ecs.getEntityComponents(i);
-	//			//--------------------------------------------GET THIS HARDCODE SHIT AWAY FROM ME
-	//			for (int j = 0; j < names.size(); ++j) {
-	//				std::string str2 = names[j];
-	//				const char* c2 = str2.c_str();
-	//				ImGui::Text(c2);
-
-	//				if (str2 == "Render") {
-	//					//ecs.GetComponent<Object>(i)->x;
-	//					//ImGui::SameLine();
-	//					ImGui::InputScalar("Pos x", ImGuiDataType_Float, &ecs.GetComponent<Render>(i)->position.x, inputs_step ? &f32_one : NULL);
-	//					//ImGui::SameLine(); 
-	//					ImGui::InputScalar("Pos y", ImGuiDataType_Float, &ecs.GetComponent<Render>(i)->position.y, inputs_step ? &f32_one : NULL);
-	//				}
-	//			}
-	//			ImGui::TreePop();
-	//		}
-	//	}
-	//	ImGui::TreePop();
-	//}
-
-	//if (ImGui::TreeNode("Entities"))
-	//{
-
-	//}
+	//ImGui::FindViewportByID()
 	 
 
 	static bool inputs_step = true;
 	static float f32_v = 0.123f;
 	const float f32_one = 1.f;
+
+	levelEditorHierarchy& hierarchy = levelEditorHierarchy::getInstance();
+	levelEditorProperties& properties = levelEditorProperties::getInstance();
+	levelEditorContentBrowser& contentBrowser = levelEditorContentBrowser::getInstance();
+
+	ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 	
-	// "Entities" tab ==========================================================================================
+	// "Entities" tab =========================================================================================
 	ImGui::Begin("Entities");
 
-	static int selected = -1;
-	static std::vector<EntityID> entities = ecs.getEntities();
-
-	// Helper class to easy setup a text filter.
-	// You may want to implement a more feature-full filtering scheme in your own application.
-	static ImGuiTextFilter filter;
-	filter.Draw();
-
-	for (int i = 0; i < entities.size() - 1; ++i)
+	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
 	{
-		EntityID currentEntity = entities[i];
-		const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
-
-		if (filter.PassFilter(name))
+		if (ImGui::BeginTabItem("Hierarchy"))
 		{
-			if (ImGui::Selectable(name, selected == i))
-			{
-				selected = i;
-			}
-			else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-			{
-				int dragTo = i + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-				if (dragTo > 0 && dragTo <= entities.size())
-				{
-					std::cout << "test" << std::endl;
-					entities[i] = entities[dragTo];
-					entities[dragTo] = currentEntity;
-					ImGui::ResetMouseDragDelta();
-				}
-			}
+			hierarchy.ImGuiHierarchy();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Not Sure, Not Done"))
+		{
+			ImGui::EndTabItem();
 		}
 	}
-
-	// button to create entity
-	static int counter = 0;
-	static char name[100]{ '\0' };
-	static EntityID temp;
-	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
-
-	if (ImGui::Button("Create Entity"))
-	{
-		if (counter & 1)
-		{
-			bool check = false;
-			for (int i = 0; i < componentCheck.size(); ++i)
-			{
-				if (componentCheck[i])
-				{
-					check = true;
-					break;
-				}
-			}
-
-			if (check)
-			{
-				///std::string nameToString(name);
-				///render->name = nameToString;
-				///ecs.setEntityName(temp, nameToString);
-
-				for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
-					componentCheck[i] = 0;
-
-				memset(name, 0, sizeof(name));
-				counter++;
-				entities.push_back(temp);
-			}
-		}
-
-		else
-		{
-			temp = ecs.GetNewID();
-			ecs.RegisterEntity(temp, "In IMGUI");
-			std::cout << temp;
-			counter++;
-		}
-	}
-
-	if (counter & 1)
-	{
-		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
-		{
-			std::string componentName = ecs.getAllRegisteredComponents()[i];
-			bool check = componentCheck[i];
-			ImGui::Checkbox(ecs.getAllRegisteredComponents()[i].c_str(), &check);
-
-			if (check)
-			{
-				if (!componentCheck[i])
-				{
-					if (componentName == "Render")
-						ecs.AddComponent<Render>(temp);
-					else if (componentName == "BaseInfo")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Texture")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Physics")
-						ecs.AddComponent<Physics>(temp);
-					//else if (componentName == "Stats")
-					//	ecs.AddComponent<Stats>(temp);
-
-					componentCheck[i] = 1;
-				}
-
-				rttr::type component = rttr::type::get_by_name(componentName);
-				rttr::instance componentInstance = GetComponentByName(component, temp);
-
-				for (rttr::property property : component.get_properties())
-				{
-					if (property.get_type() == rttr::type::get<int>())
-					{
-						int temp = property.get_value(componentInstance).to_int();
-						ImGui::DragInt(property.get_name().data(), &temp, 1.f, 0, 0);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector2D::vec2D>())
-					{
-						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
-						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())
-					{
-						vector3D::vec3D temp = property.get_value(componentInstance).get_value<vector3D::vec3D>();
-						ImGui::DragFloat3(property.get_name().data(), temp.m, 0.01f, 0.0f, 1.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<std::string>())
-					{
-						char tempChar[100];
-						std::string temp = property.get_value(componentInstance).to_string();
-
-						strcpy_s(tempChar, temp.c_str());
-
-						ImGui::InputText(property.get_name().data(), tempChar, 100);
-						property.set_value(componentInstance, std::string(tempChar));
-					}
-				}
-
-				if (ecs.GetComponent<BaseInfo>(temp) != nullptr)
-					std::cout << ecs.GetComponent<BaseInfo>(temp)->name << std::endl;
-			}
-
-			else if (componentCheck[i])
-			{
-				if (componentName == "Render")
-					ecs.RemoveComponent<Render>(temp);
-				else if (componentName == "BaseInfo")
-					ecs.AddComponent<Texture>(temp);
-				else if (componentName == "Texture")
-					ecs.RemoveComponent<Texture>(temp);
-				else if (componentName == "Physics")
-					ecs.RemoveComponent<Physics>(temp);
-				//else if (componentName == "Stats")
-				//	ecs.RemoveComponent<Stats>(temp);
-
-				componentCheck[i] = 0;
-			}
-		}
-
-		if (ImGui::Button("Cancel"))
-		{
-			ecs.RemoveEntity(temp);
-			memset(name, 0, sizeof(name));
-			counter++;
-		}
-	}
-
 
 	ImGui::End();
 	// ========================================================================================================
@@ -280,55 +68,16 @@ void imguiUpdate()
 	// "Details" tab ==========================================================================================
 	ImGui::Begin("Details");
 
-	static int selectedNode = -1;
-	static bool check = true;
-	if (selected >= 0)
+	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
 	{
-		std::vector<std::string>componentNames = ecs.getEntityComponents(entities[selected]);
-		for (int i = 0; i < componentNames.size(); ++i)
+		if (ImGui::BeginTabItem("Properties"))
 		{
-			if (ImGui::TreeNode(componentNames[i].c_str()))
-			{
-				auto component = rttr::type::get_by_name(componentNames[i]);
-				rttr::instance componentInstance = GetComponentByName(component, entities[selected]);
-				
-				for (rttr::property property : component.get_properties())
-				{
-					if (property.get_type() == rttr::type::get<int>())
-					{
-						int temp = property.get_value(componentInstance).to_int();
-						ImGui::DragInt(property.get_name().data(), &temp, 1.f, 0, 0);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector2D::vec2D>())
-					{
-						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
-						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())
-					{
-						vector3D::vec3D temp = property.get_value(componentInstance).get_value<vector3D::vec3D>();
-						ImGui::DragFloat3(property.get_name().data(), temp.m, 0.01f, 0.0f, 1.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<std::string>())
-					{
-						char tempChar[100];
-						std::string temp = property.get_value(componentInstance).to_string();
-
-						strcpy_s(tempChar, temp.c_str());
-
-						ImGui::InputText(property.get_name().data(), tempChar, 100);
-						property.set_value(componentInstance, std::string(tempChar));
-					}
-				}
-
-				ImGui::TreePop();
-			}
+			properties.ImGuiProperties(hierarchy.getSelected());
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Not Sure, Not Done"))
+		{
+			ImGui::EndTabItem();
 		}
 	}
 
@@ -336,7 +85,20 @@ void imguiUpdate()
 	// ========================================================================================================
 
 	// "Prefabs" tab ==========================================================================================
-	ImGui::Begin("Prefabs");
+	ImGui::Begin("Content Browser");
+
+	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+	{
+		if (ImGui::BeginTabItem("File Browser"))
+		{
+			contentBrowser.ImGuiContentBrowser();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("Not Sure, Not Done"))
+		{
+			ImGui::EndTabItem();
+		}
+	}
 
 	ImGui::End();
 	// ========================================================================================================

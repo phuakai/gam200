@@ -56,8 +56,10 @@ RTTR_REGISTRATION{
 		.property("force", &Physics::force)
 		.property("speed", &Physics::speed)
 		.property("collisionFlag", &Physics::collisionFlag)
+		.property("collisionResponse", &Physics::collisionResponse)
 		.property("radius", &Physics::radius)
-		.property("reached", &Physics::reached);
+		.property("reached", &Physics::reached)
+		.property("formationManagerID", &Physics::formationManagerID);
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::getHealth, &Stats::setHealth);
@@ -98,12 +100,12 @@ void engineInit()
 
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
-	ecs.RegisterComponent<Render>("Render");
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Physics>("Physics");
 	//ecs.RegisterComponent<Sprite>("Sprite");
 	ecs.RegisterComponent<Stats>("Stats");
+	ecs.RegisterComponent<Render>("Render");
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)

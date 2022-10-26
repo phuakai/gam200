@@ -131,15 +131,15 @@ void GLApp::init()
 	glClearColor(0.3f, 1.f, 1.f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
-	Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects[1]); // 
-	Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects[2]); // Grass map
-	Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
-	Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
-	Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects[5]); // Drag Box
-	Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
-	Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
-	Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
+	Graphics::Texture::loadTexture("../asset/BaseTree.png", Graphics::textureobjects[0]); // BaseTree
+	Graphics::Texture::loadTexture("../asset/BaseTree.png", Graphics::textureobjects[1]); // 
+	Graphics::Texture::loadTexture("../asset/GrassMap.png", Graphics::textureobjects[2]); // Grass map
+	Graphics::Texture::loadTexture("../asset/BlueCircle.png", Graphics::textureobjects[3]); // Blue Circle
+	Graphics::Texture::loadTexture("../asset/YellowCircle.png", Graphics::textureobjects[4]); // Yellow Circle
+	Graphics::Texture::loadTexture("../asset/DragBox.png", Graphics::textureobjects[5]); // Drag Box
+	Graphics::Texture::loadTexture("../asset/Unit_tank_front.png", Graphics::textureobjects[6]); // Enemy unit
+	Graphics::Texture::loadTexture("../asset/Map_sprite1.png", Graphics::textureobjects[7]); // BG1
+	Graphics::Texture::loadTexture("../asset/Map_sprite2.png", Graphics::textureobjects[8]); // BG2
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)

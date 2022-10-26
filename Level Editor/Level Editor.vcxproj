@@ -161,12 +161,11 @@
     <ClInclude Include="Include\ImGui\imstb_textedit.h" />
     <ClInclude Include="Include\ImGui\imstb_truetype.h" />
     <ClInclude Include="Include\LevelEditor\levelEditor.h" />
-    <ClInclude Include="levelEditorHierarchy.h" />
+    <ClInclude Include="Include\LevelEditor\levelEditorContentBrowser.h" />
+    <ClInclude Include="Include\LevelEditor\levelEditorHierarchy.h" />
+    <ClInclude Include="Include\LevelEditor\levelEditorProperties.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="levelEditorHierarchy.cpp" />
-    <ClCompile Include="levelEditorProperties.cpp" />
-    <ClCompile Include="levelEditorProperties.h" />
     <ClCompile Include="Source\ImGui\imgui.cpp" />
     <ClCompile Include="Source\ImGui\imgui_demo.cpp" />
     <ClCompile Include="Source\ImGui\imgui_draw.cpp" />
@@ -175,6 +174,9 @@
     <ClCompile Include="Source\ImGui\imgui_tables.cpp" />
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\LevelEditor\levelEditor.cpp" />
+    <ClCompile Include="Source\LevelEditor\levelEditorContentBrowser.cpp" />
+    <ClCompile Include="Source\LevelEditor\levelEditorHierarchy.cpp" />
+    <ClCompile Include="Source\LevelEditor\levelEditorProperties.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

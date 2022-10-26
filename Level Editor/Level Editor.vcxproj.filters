@@ -57,7 +57,13 @@
     <ClInclude Include="Include\LevelEditor\levelEditor.h">
       <Filter>Header Files\LevelEditor</Filter>
     </ClInclude>
-    <ClInclude Include="levelEditorHierarchy.h">
+    <ClInclude Include="Include\LevelEditor\levelEditorHierarchy.h">
+      <Filter>Header Files\LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LevelEditor\levelEditorProperties.h">
+      <Filter>Header Files\LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LevelEditor\levelEditorContentBrowser.h">
       <Filter>Header Files\LevelEditor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,13 +92,13 @@
     <ClCompile Include="Source\LevelEditor\levelEditor.cpp">
       <Filter>Source Files\LevelEditor</Filter>
     </ClCompile>
-    <ClCompile Include="levelEditorHierarchy.cpp">
+    <ClCompile Include="Source\LevelEditor\levelEditorHierarchy.cpp">
       <Filter>Source Files\LevelEditor</Filter>
     </ClCompile>
-    <ClCompile Include="levelEditorProperties.h">
-      <Filter>Header Files\LevelEditor</Filter>
+    <ClCompile Include="Source\LevelEditor\levelEditorProperties.cpp">
+      <Filter>Source Files\LevelEditor</Filter>
     </ClCompile>
-    <ClCompile Include="levelEditorProperties.cpp">
+    <ClCompile Include="Source\LevelEditor\levelEditorContentBrowser.cpp">
       <Filter>Source Files\LevelEditor</Filter>
     </ClCompile>
   </ItemGroup>

@@ -81,7 +81,7 @@ bool pathfindingCalculation(EntityID& id)
 
 		std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
 
-		movementFlocking(id, allVelocity);
+		//movementFlocking(id, allVelocity);
 
 		changedVelocity += (allVelocity[0] * 10 + (allVelocity[1] * 0.1f) + allVelocity[2] * 0.2f); // *flockingModifier;
 	}
@@ -594,7 +594,10 @@ void FormationManager::updateReached()
 {
 	for (int i = 0; i < slotAssignment.size(); ++i)
 	{
-		ecs.GetComponent<Physics>(slotAssignment[i])->reached = false;
+		Physics* physics = ecs.GetComponent<Physics>(slotAssignment[i]);
+
+		physics->reached = false;
+		physics->target = target;
 	}
 	flocking = true;
 	reached = false;

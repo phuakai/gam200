@@ -819,7 +819,6 @@ inline std::vector<std::string> ECS::getAllRegisteredComponents()
 }
 inline std::vector<EntityID> ECS::getEntities() 
 {
-
     std::vector<EntityID> entityIDs;
     for (auto i : m_entityArchetypeMap) 
     {
