@@ -2,16 +2,15 @@
 
 namespace Font
 {
-	FT_Library library;
-	FT_Face face;
-	FT_Error ft_error_code;
-
 	std::map<char, Character> Characters;
-
-	static unsigned int VAO, VBO;
-
-	int main()
+	unsigned int VAO, VBO;
+	void init()
 	{
+		FT_Library library;
+		FT_Face face;
+		FT_Error ft_error_code;
+
+
 		ft_error_code = FT_Init_FreeType(&library);
 		if (ft_error_code)
 		{
@@ -23,11 +22,11 @@ namespace Font
 			assert("Another error code means that the font file could not be opened or read, or that it is broken.");
 		}
 
-		ft_error_code = FT_Load_Char(face, 'X', FT_LOAD_RENDER);
-		if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
-		{
-			assert("Failed to load glyph");
-		}
+		//ft_error_code = FT_Load_Char(face, 'X', FT_LOAD_RENDER);
+		//if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
+		//{
+		//	assert("Failed to load glyph");
+		//}
 
 		ft_error_code = FT_New_Face(library, "../asset/fonts/arial.ttf", 0, &face);
 		if (ft_error_code == FT_Err_Unknown_File_Format)
@@ -83,12 +82,19 @@ namespace Font
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		return 0;
 	}
 
 	void RenderFont(GLSLShader& s, std::string text, float x, float y, float scale, glm::vec3 color)
 	{
 		s.Use();
+
+		glm::mat4x4 proj(
+			2.0f / (float)Graphics::camera2d.getWinWidth(), 0.f, 0.f, 0.f,
+			0.f, 2.0f / (float)Graphics::camera2d.getWinHeight(), 0.f, 0.f,
+			0.f, 0.f, -1.f, 0.f,
+			-1.f, -1.f, 0.f, 1.f);
+		glUniformMatrix4fv(glGetUniformLocation(s.GetHandle(), "projection"), 1, GL_FALSE, glm::value_ptr(proj));
+
 		glUniform3f(glGetUniformLocation(s.GetHandle(), "textcolor"), color.x, color.y, color.z);
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(VAO);

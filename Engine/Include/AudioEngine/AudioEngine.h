@@ -40,7 +40,7 @@ namespace spooky
         unsigned int mpVersion;
         void* extradriverdata = 0;
 
-        int mnNextChannelId;
+        int mnNextChannelId = 0;
 
         typedef std::map<std::string, FMOD::Sound*> SoundMap;
         typedef std::map<int, FMOD::Channel*> ChannelMap;

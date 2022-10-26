@@ -311,8 +311,20 @@ void engineInit()
 	GLApp::init();
 
 	spooky::CAudioEngine audioEngine;
-
+	audioEngine.Init();
+	Font::init();
 	audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
+	audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}
 }
 
 void engineUpdate()
@@ -352,10 +364,7 @@ void engineUpdate()
 	GLApp::update();						// graphics system
 
 	spooky::CAudioEngine audioEngine;
-	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", audioEngine.Vector2{}, audioEngine.VolumeTodb(1.0f));
-
-	GLSLShader shader;
-	Font::RenderFont(shader, "Text Renderer Testing", 800.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+	Font::RenderFont(Font::shader, "Text Renderer Testing", 100.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineDraw()
