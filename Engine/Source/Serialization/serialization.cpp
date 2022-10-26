@@ -44,12 +44,12 @@ bool Serialiser::Write(std::string fileName)
         //std::string entity_name = ecs.getEntityName(i);
         //writer.Key(entity_name);
         WriteComponent(*ecs.GetComponent<Render>(entity_map[i]));
+        //BaseInfo
+        //writeComponent(*ecs.GetComponent<BaseInfo>(entity_map[i]));
         //Texture
         //writeComponent(*ecs.GetComponent<Texture>(entity_map[i]));
-        //Movement
-        //writeComponent(*ecs.GetComponent<Movement>(entity_map[i]));
-        //Stats
-        //writeComponent(*ecs.GetComponent<Stats>(entity_map[i]));
+        //Physics
+        //writeComponent(*ecs.GetComponent<Physics>(entity_map[i]));
         //writer.EndArray();
     }
     writer.EndArray();
