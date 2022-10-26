@@ -7,6 +7,13 @@ This file includes the serialisation function definitions.
 
 *//*__________________________________________________________________________*/
 
+/*Stuff that needs doing:
+* - Some way to iterate through components when serialising each component
+* - Serialise each component as part of an entity
+* - Serialisation in order
+* - Deserialising
+*/
+
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -16,6 +23,7 @@ This file includes the serialisation function definitions.
 
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "serialization.h"
+#include "ECS.h"
 
 using namespace rapidjson;
 using namespace rttr;
@@ -71,7 +79,7 @@ bool Serialiser::WriteComponent(rttr::instance obj)
 
     int counter{ 1 };
 
-    std::string component_name = obj.get_type();
+    //std::string component_name = obj.get_type(); //extract the name of the component somehow
     writer.StartObject();
     //writer.Key(component_name);
 
