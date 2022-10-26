@@ -102,20 +102,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

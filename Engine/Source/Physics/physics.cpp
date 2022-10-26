@@ -14,11 +14,38 @@ Technology is prohibited.
 /* End Header **************************************************************************/
 
 #include "physics.h"
+#include "eventManager.h"
+#include "pathfinding.h"
+#include "ECS.h"
 #define _USE_MATH_DEFINES //for M_PI
 #include <iostream>
 #include <math.h>
 #include <input.h>
 #include <iostream>
+
+extern EventManager eventManager;
+extern std::vector<FormationManager> formationManagers;
+
+void physicsUpdate()
+{
+	std::vector<Event>& eventQueue = eventManager.findQueue(Systems::Physics);
+
+	for (int i = 0; i < eventQueue.size(); ++i)
+	{
+		pathfindingCalculation(eventQueue[i].id);
+	}
+
+	while (eventQueue.size())
+	{
+		Event currentEvent = eventManager.dequeue(Systems::Physics);
+
+		vector2D::vec2D oldPosition = ecs.GetComponent<BaseInfo>(currentEvent.id)->position;
+		
+		ecs.GetComponent<BaseInfo>(currentEvent.id)->position += ecs.GetComponent<Physics>(currentEvent.id)->velocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
+		
+		mainTree.updatePoint(currentEvent.id, oldPosition, ecs.GetComponent<BaseInfo>(currentEvent.id)->position, mainTree);
+	}
+}
 
 vector2D::vec2D mouseMovement(vector2D::vec2D& src, vector2D::vec2D const& dest, float& speed)
 {

@@ -22,10 +22,12 @@ Technology is prohibited.
 #include "mat3x3.h"
 #include "app.h"
 //#include "rigidBody.h"
-
 #include <vector>
 
-
+//void entityCollision()
+//{
+//
+//}
 
 namespace physics
 {

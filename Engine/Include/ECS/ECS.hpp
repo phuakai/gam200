@@ -15,8 +15,8 @@ const IDType TypeIdGenerator<T>::GetNewID() {
     return idCounter;
 }
 
-
-inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) {
+inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) 
+{
     m_ecs.RegisterEntity(m_id, name);
 }
 template<typename C, typename... Args>
@@ -35,15 +35,15 @@ inline EntityID Entity::GetID() const
 }
 
 template<class C>
-void Component<C>::SetName(std::string name) {
+void Component<C>::SetName(std::string name) 
+{
     componentName = name;
 }
-
 template<class C>
-std::string Component<C>::GetName() const {
+std::string Component<C>::GetName() const 
+{
     return componentName;
 }
-
 // not 100% sure how this works but finds the correct place to delete memory
 template<class C>
 void Component<C>::DestroyData(unsigned char* data) const
@@ -52,31 +52,24 @@ void Component<C>::DestroyData(unsigned char* data) const
 
     dataLocation->~C();
 }
-//figure this out pls 
-
 // just allocating new memory
 template<class C>
 void Component<C>::ConstructData(unsigned char* data) const
 {
     new (&data[0]) C();
 }
-
 // same as above
 template<class C>
 void Component<C>::MoveData(unsigned char* source, unsigned char* destination) const
 {
     new (&destination[0]) C(std::move(*reinterpret_cast<C*>(source)));
 }
-
-
 //get size of components to help ecs later
 template<class C>
 std::size_t Component<C>::GetSize() const
 {
     return sizeof(C);
 }
-
-
 // check how this works
 template<class C>
 ComponentTypeID Component<C>::GetTypeID()
@@ -93,7 +86,7 @@ inline Archetype* ECS::GetArchetype(const ArchetypeID& id)
     }
 
     // archetype doesn't exist, so create a new one
-
+    
     Archetype* newArchetype = new Archetype;
     newArchetype->type = id;
     m_archetypes.push_back(newArchetype);
@@ -101,9 +94,23 @@ inline Archetype* ECS::GetArchetype(const ArchetypeID& id)
     // add an empty array for each component in the type
     for (ArchetypeID::size_type i = 0; i < id.size(); ++i)
     {
-        newArchetype->componentData.push_back(new unsigned char[0]);
-        newArchetype->componentDataSize.push_back(0);
+        if (newArchetype->type[i])
+        {
+            newArchetype->componentData.push_back(new unsigned char[0]);
+            newArchetype->componentDataSize.push_back(1);
+        }
+        else
+        {
+            newArchetype->componentData.push_back(nullptr);
+            newArchetype->componentDataSize.push_back(0);
+        }
     }
+
+    ///for (ArchetypeID::size_type i = 0; i < id.size(); ++i)
+    ///{
+    ///    newArchetype->componentData.push_back(new unsigned char[0]);
+    ///    newArchetype->componentDataSize.push_back(0);
+    ///}
 
     return newArchetype;
 }
@@ -116,18 +123,25 @@ inline EntityID ECS::GetNewID()
 {
     return m_entityIdCounter++;
 }
+inline int ECS::GetSystemCount()
+{
+    return systemCount;
+}
 //
 template<class C>
 void ECS::RegisterComponent(std::string name)
 {
     ComponentTypeID componentTypeId = Component<C>::GetTypeID();
 
-
     if (m_componentMap.contains(componentTypeId))
+    {
         return; // can't re-register a type
+    }
 
     m_componentMap.emplace(componentTypeId, new Component<C>);
     m_componentMap[componentTypeId]->SetName(name);
+
+    systemCount++;;
 }
 
 inline void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
@@ -145,7 +159,8 @@ inline void ECS::RegisterEntity(const EntityID entityId, const std::string name)
 }
 
 template<typename C, typename... Args>
-inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
+inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) 
+{
 
     // no safety checks
 
@@ -162,22 +177,28 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
 
     Archetype* newArchetype = nullptr;
 
-    // i have no clue
     if (oldArchetype)
     {
-        if (std::find(oldArchetype->type.begin(),
-            oldArchetype->type.end(),
-            newCompTypeId)
-            != oldArchetype->type.end())
+        ///if (std::find(oldArchetype->type.begin(),
+        ///    oldArchetype->type.end(),
+        ///    newCompTypeId)
+        ///    != oldArchetype->type.end())
+        ///{
+        ///    // this entity already contains this component, we can't have
+        ///    // multiple so just exit
+        ///    return nullptr;
+        ///}
+        /// 
+        if (oldArchetype->type[newCompTypeId])
         {
-            // this entity already contains this component, we can't have
-            // multiple so just exit
             return nullptr;
         }
 
+        // Copy the ArchetypeID to add in the new component
         ArchetypeID newArchetypeId = oldArchetype->type;
-        newArchetypeId.push_back(newCompTypeId);
-        std::sort(newArchetypeId.begin(), newArchetypeId.end());
+        ///newArchetypeId.push_back(newCompTypeId);
+        newArchetypeId[newCompTypeId] = 1;
+        ///std::sort(newArchetypeId.begin(), newArchetypeId.end());
 
         newArchetype = GetArchetype(newArchetypeId);
 
@@ -185,9 +206,14 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
         //----------------------------------------------------------------------------------REWRITE THIS
         for (std::size_t j = 0; j < newArchetypeId.size(); ++j)
         {
-            const ComponentTypeID& newCompId = newArchetypeId[j];
+            if (!newArchetypeId[j])
+            {
+                continue;
+            }
 
-            const ComponentBase* const newComp = m_componentMap[newCompId];
+            ///const ComponentTypeID& newCompId = newArchetypeId[j];
+
+            const ComponentBase* const newComp = m_componentMap[j];
 
             const std::size_t& newCompDataSize = newComp->GetSize();
 
@@ -213,10 +239,14 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
 
             for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
             {
-                const ComponentTypeID& oldCompId = oldArchetype->type[i];
-                if (oldCompId == newCompId)
+                if (!(oldArchetype->type[i]))
                 {
-                    const ComponentBase* const oldComp = m_componentMap[oldCompId];
+                    continue;
+                }
+
+                if (i == j)
+                {
+                    const ComponentBase* const oldComp = m_componentMap[i];
 
                     const std::size_t& oldCompDataSize = oldComp->GetSize();
 
@@ -239,16 +269,19 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
         {
             for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
             {
-                const ComponentTypeID& oldCompTypeID = oldArchetype->type[i];
+                if (!(oldArchetype->type[i]))
+                {
+                    continue;
+                }
 
-                if (oldCompTypeID == newCompTypeId)
+                if (i == newCompTypeId)
                 {
                     ComponentBase* removeWrapper = m_componentMap[newCompTypeId];
                     removeWrapper->DestroyData(
                         &oldArchetype->componentData[i][record.index * sizeof(C)]);
                 }
 
-                const ComponentBase* const oldComp = m_componentMap[oldCompTypeID];
+                const ComponentBase* const oldComp = m_componentMap[i];
 
                 const std::size_t& oldCompDataSize = oldComp->GetSize();
 
@@ -288,9 +321,12 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
 
         oldArchetype->entityIds.erase(willBeRemoved);
     }
+    // if "archetype" in records is not created yet (new entity)
     else
     {
-        ArchetypeID newArchetypeId(1, newCompTypeId);
+        ///ArchetypeID newArchetypeId(1, newCompTypeId);
+        ArchetypeID newArchetypeId(systemCount, 0);
+        newArchetypeId[newCompTypeId] = 1;
 
         const ComponentBase* const newComp = m_componentMap[newCompTypeId];
 
@@ -298,24 +334,24 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) {
 
         std::size_t currentSize = newArchetype->entityIds.size() * compDataSize;
         std::size_t newSize = currentSize + compDataSize;
-        if (newSize > newArchetype->componentDataSize[0])
+        if (newSize > newArchetype->componentDataSize[newCompTypeId])
         {
-            newArchetype->componentDataSize[0] *= 2;
-            newArchetype->componentDataSize[0] += compDataSize;
-            unsigned char* newData = new unsigned char[newArchetype->componentDataSize[0]];
+            newArchetype->componentDataSize[newCompTypeId] *= 2;
+            newArchetype->componentDataSize[newCompTypeId] += compDataSize;
+            unsigned char* newData = new unsigned char[newArchetype->componentDataSize[newCompTypeId]];
             for (std::size_t e = 0; e < newArchetype->entityIds.size(); ++e)
             {
-                newComp->MoveData(&newArchetype->componentData[0][e * compDataSize],
+                newComp->MoveData(&newArchetype->componentData[newCompTypeId][e * compDataSize],
                     &newData[e * compDataSize]);
-                newComp->DestroyData(&newArchetype->componentData[0][e * compDataSize]);
+                newComp->DestroyData(&newArchetype->componentData[newCompTypeId][e * compDataSize]);
             }
-            delete[](newArchetype->componentData[0]);
+            delete[](newArchetype->componentData[newCompTypeId]);
 
-            newArchetype->componentData[0] = newData;
+            newArchetype->componentData[newCompTypeId] = newData;
         }
 
         newComponent
-            = new (&newArchetype->componentData[0][currentSize])
+            = new (&newArchetype->componentData[newCompTypeId][currentSize])
             C(std::forward<Args>(args)...);
     }
 
@@ -350,10 +386,14 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
     if (!oldArchetype)
         return; // there's no components anyway
 
-    if (std::find(oldArchetype->type.begin(),
-        oldArchetype->type.end(),
-        compTypeId)
-        == oldArchetype->type.end())
+    ///if (std::find(oldArchetype->type.begin(),
+    ///    oldArchetype->type.end(),
+    ///    compTypeId)
+    ///    == oldArchetype->type.end())
+    ///{
+    ///    return;
+    ///}
+    if (!oldArchetype->type[compTypeId])
     {
         // this entity doesn't have this component
         return;
@@ -361,19 +401,23 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
 
     // find the new archetypeId by removing the old ComponentTypeId
     ArchetypeID newArchetypeId = oldArchetype->type;
-    newArchetypeId.erase(std::remove(newArchetypeId.begin(),
-        newArchetypeId.end(),
-        compTypeId),
-        newArchetypeId.end());
-    std::sort(newArchetypeId.begin(), newArchetypeId.end());
+    newArchetypeId[compTypeId] = 0;
+    ///newArchetypeId.erase(std::remove(newArchetypeId.begin(),
+    ///    newArchetypeId.end(),
+    ///    compTypeId),
+    ///    newArchetypeId.end());
+    ///std::sort(newArchetypeId.begin(), newArchetypeId.end());
 
     Archetype* newArchetype = GetArchetype(newArchetypeId);
 
     for (std::size_t j = 0; j < newArchetypeId.size(); ++j)
     {
-        const ComponentTypeID& newCompId = newArchetypeId[j];
+        if (!newArchetypeId[j])
+        {
+            continue;
+        }
 
-        const ComponentBase* const newComp = m_componentMap[newCompId];
+        const ComponentBase* const newComp = m_componentMap[j];
 
         const std::size_t& newCompDataSize = newComp->GetSize();
 
@@ -401,14 +445,17 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
 
         for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
         {
-            const ComponentTypeID& oldCompId = oldArchetype->type[i];
+            if (!(oldArchetype->type[i]))
+            {
+                continue;
+            }
 
-            if (oldCompId == newCompId)
+            if (i == j)
             {
                 const std::size_t& oldCompDataSize
-                    = m_componentMap[oldCompId]->GetSize();
+                    = m_componentMap[i]->GetSize();
 
-                ComponentBase* removeWrapper = m_componentMap[oldCompId];
+                ComponentBase* removeWrapper = m_componentMap[i];
                 removeWrapper->MoveData(&oldArchetype->componentData[i][record.index * oldCompDataSize],
                     &newArchetype->componentData[j][currentSize]);
 
@@ -421,17 +468,20 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
 
     for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
     {
-        const ComponentTypeID& oldCompTypeID = oldArchetype->type[i];
+        if (!(oldArchetype->type[i]))
+        {
+            continue;
+        }
 
         // if this is the component being removed, we should also destruct it
-        if (oldCompTypeID == compTypeId)
+        if (i == compTypeId)
         {
             ComponentBase* removeWrapper = m_componentMap[compTypeId];
             removeWrapper->DestroyData(
                 &oldArchetype->componentData[i][record.index * sizeof(C)]);
         }
 
-        const ComponentBase* const oldComp = m_componentMap[oldCompTypeID];
+        const ComponentBase* const oldComp = m_componentMap[i];
 
         const std::size_t& oldCompDataSize = oldComp->GetSize();
 
@@ -492,16 +542,19 @@ inline C* ECS::GetComponent(const EntityID& entityId)
     if (!record.archetype)
         return nullptr; // there's no components anyway
 
-    auto found = std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId);
-    if (found == record.archetype->type.end())
-    {
-        // this entity doesn't have this component
-        return nullptr;
-    }
+    if (!record.archetype->type[compTypeId])
+        return nullptr; // this entity doesn't have this component
 
-    int foundComponent = (int)std::distance(record.archetype->type.begin(), found);
+    ///auto found = std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId);
+    ///if (found == record.archetype->type.end())
+    ///{
+    ///    // this entity doesn't have this component
+    ///    return nullptr;
+    ///}
 
-    return reinterpret_cast<C*>(record.archetype->componentData[foundComponent] + record.index * sizeof(C));
+    ///int foundComponent = (int)std::distance(record.archetype->type.begin(), found);
+
+    return reinterpret_cast<C*>(record.archetype->componentData[compTypeId] + record.index * sizeof(C));
 }
 
 inline void ECS::RemoveEntity(const EntityID& entityId)
@@ -521,9 +574,12 @@ inline void ECS::RemoveEntity(const EntityID& entityId)
 
     for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
     {
-        const ComponentTypeID& oldCompId = oldArchetype->type[i];
+        if (!oldArchetype->type[i])
+        {
+            continue;
+        }
 
-        const ComponentBase* const comp = m_componentMap[oldCompId];
+        const ComponentBase* const comp = m_componentMap[i];
 
         const std::size_t& compSize = comp->GetSize();
 
@@ -533,9 +589,12 @@ inline void ECS::RemoveEntity(const EntityID& entityId)
 
     for (std::size_t i = 0; i < oldArchetype->type.size(); ++i)
     {
-        const ComponentTypeID& oldCompID = oldArchetype->type[i];
+        if (!oldArchetype->type[i])
+        {
+            continue;
+        }
 
-        const ComponentBase* const oldComp = m_componentMap[oldCompID];
+        const ComponentBase* const oldComp = m_componentMap[i];
 
         const std::size_t& oldCompDataSize = oldComp->GetSize();
 
@@ -589,8 +648,16 @@ inline void ECS::RunSystems(const std::uint8_t& layer, const float elapsedMillis
 
         for (Archetype* archetype : m_archetypes)
         {
-            if (std::includes(archetype->type.begin(), archetype->type.end(),
-                key.begin(), key.end()))
+            bool check = true;
+            for (auto i : key)
+            {
+                if (!(archetype->type[i]))
+                {
+                    check = false;
+                }
+            }
+
+            if (check)
             {
                 // this archetype has all the types required by the system
                 // so we can pull it's relevant data, reinterpret them as
@@ -607,7 +674,12 @@ inline ECS::~ECS()
     {
         for (std::size_t i = 0; i < archetype->type.size(); ++i)
         {
-            const ComponentBase* const comp = m_componentMap[archetype->type[i]];
+            if (!archetype->type[i])
+            {
+                continue;
+            }
+
+            const ComponentBase* const comp = m_componentMap[i];
             const std::size_t& dataSize = comp->GetSize();
             for (std::size_t e = 0; e < archetype->entityIds.size(); ++e)
             {
@@ -669,16 +741,43 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
     T& t,
     Ts... ts)
 {
+    //typedef std::tuple_element<Index, std::tuple<Cs...>>::type IthT;
+    //std::size_t index2 = 0;
+    //ComponentTypeID thisTypeCS = Component<IthT>::GetTypeID();
+    //ComponentTypeID thisArchetypeID = archeTypeIds[index2];
+    //while (thisTypeCS != thisArchetypeID && index2 < archeTypeIds.size())
+    //{
+    //    ++index2;
+    //    thisArchetypeID = archeTypeIds[index2];
+    //}
+    //if (index2 == archeTypeIds.size())
+    //{
+    //    throw std::runtime_error
+    //    ("System was executed against an incorrect Archetype");
+    //}
+
+    //DoAction<Index + 1>(elapsedMilliseconds,
+    //    archeTypeIds,
+    //    entityIDs,
+    //    t,
+    //    ts...,
+    //    reinterpret_cast<IthT*>(&t[index2][0]));
+
     typedef std::tuple_element<Index, std::tuple<Cs...>>::type IthT;
-    std::size_t index2 = 0;
+    //std::size_t index2 = 0;
     ComponentTypeID thisTypeCS = Component<IthT>::GetTypeID();
-    ComponentTypeID thisArchetypeID = archeTypeIds[index2];
-    while (thisTypeCS != thisArchetypeID && index2 < archeTypeIds.size())
-    {
-        ++index2;
-        thisArchetypeID = archeTypeIds[index2];
-    }
-    if (index2 == archeTypeIds.size())
+    //ComponentTypeID thisArchetypeID = index2;
+    //while (index2 < archeTypeIds.size())       // this has a problem
+    //{
+    //    if (thisTypeCS == thisArchetypeID)
+    //    {
+    //        break;
+    //    }
+    //    ++index2;
+    //    thisArchetypeID = archeTypeIds[index2];
+    //}
+
+    if (!archeTypeIds[thisTypeCS])
     {
         throw std::runtime_error
         ("System was executed against an incorrect Archetype");
@@ -689,7 +788,7 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
         entityIDs,
         t,
         ts...,
-        reinterpret_cast<IthT*>(&t[index2][0]));
+        reinterpret_cast<IthT*>(&t[thisTypeCS][0]));
 }
 
 template<class... Cs>
@@ -710,38 +809,42 @@ inline void ECS::setEntityName(const EntityID& entityId, std::string name)
     record.entityName = name;
 }
 
-inline std::vector<std::string> ECS::getAllRegisteredComponents() {
+inline std::vector<std::string> ECS::getAllRegisteredComponents() 
+{
     std::vector<std::string> componentNames;
     for (auto i : m_componentMap) {
         componentNames.push_back((i.second)->GetName());
     }
     return componentNames;
 }
-inline std::vector<EntityID> ECS::getEntities() {
-
+inline std::vector<EntityID> ECS::getEntities() 
+{
     std::vector<EntityID> entityIDs;
-    for (auto i : m_entityArchetypeMap) {
+    for (auto i : m_entityArchetypeMap) 
+    {
         entityIDs.push_back(i.first);
     }
     return entityIDs;
 }
 
-inline std::vector<std::string> ECS::getEntityNames() {
-
+inline std::vector<std::string> ECS::getEntityNames() 
+{
     std::vector<std::string> entitynames;
-    for (auto i : m_entityArchetypeMap) {
-        entitynames.push_back(getEntityName(i.first));
+    for (auto i : m_entityArchetypeMap) 
+    {
+        entitynames.push_back(*getEntityName(i.first));
     }
     return entitynames;
 }
 
-inline std::string ECS::getEntityName(const EntityID& entityId) {
+inline std::string* ECS::getEntityName(const EntityID& entityId) 
+{
     Record& record = m_entityArchetypeMap[entityId];
-    return record.entityName;
+    return &record.entityName;
 }
 
-inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId) {
-
+inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId)
+{
     std::vector<std::string> components;
 
     Record& record = m_entityArchetypeMap[entityId];
@@ -749,10 +852,15 @@ inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityI
     if (!record.archetype)
         return components; // there's no components anyway    
 
-    for (auto i : record.archetype->type) {
+    for (int i = 0; i < record.archetype->type.size(); ++i) 
+    {
+        if (!(record.archetype->type[i]))
+        {
+            continue;
+        }
+
         auto it = m_componentMap.find(i);
         components.push_back(it->second->GetName());
-
     }
     return components;
 }
