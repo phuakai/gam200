@@ -20,10 +20,10 @@ namespace spooky
     {
         result = FMOD::System_Create(&mpSystem);
         result = mpSystem->getVersion(&mpVersion);
-        if (mpVersion < FMOD_VERSION)
+        /*if (mpVersion < FMOD_VERSION)
         {
           ErrorIf(true, "FMOD lib version doesn't match header version\n");
-        }
+        }*/
         CAudioEngine::ErrorCheck(result = mpSystem->init(32, FMOD_INIT_NORMAL, extradriverdata));
     }
 
@@ -154,11 +154,11 @@ namespace spooky
 
     // FMOD Error Checking output
     int CAudioEngine::ErrorCheck(FMOD_RESULT result) {
-        if (result != FMOD_OK) {
+        /*if (result != FMOD_OK) {
             std::cout << "FMOD ERROR " << std::endl;
             ErrorIf(true, FMOD_ErrorString(result));
             return 1;
-        }
+        }*/
         // cout << "FMOD all good" << endl;
         return 0;
     }

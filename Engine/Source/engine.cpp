@@ -9,6 +9,7 @@
 #include "vec2D.h"
 #include "vec3D.h"
 #include "Font.h"
+#include "AudioEngine.h"
 #include <app.h>
 #include <collision.h>
 
@@ -308,6 +309,10 @@ void engineInit()
 	});
 
 	GLApp::init();
+
+	spooky::CAudioEngine audioEngine;
+
+	audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
 }
 
 void engineUpdate()
@@ -345,6 +350,9 @@ void engineUpdate()
 	Graphics::Input::update_time(1.0);
 
 	GLApp::update();						// graphics system
+
+	spooky::CAudioEngine audioEngine;
+	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", audioEngine.Vector2{}, audioEngine.VolumeTodb(1.0f));
 
 	GLSLShader shader;
 	Font::RenderFont(shader, "Text Renderer Testing", 800.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));

@@ -129,8 +129,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr;$(SolutionDir)Engine\include\FontSystem</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include\Serialization\rttr;$(SolutionDir)Engine\include\FontSystem;$(SolutionDir)Engine\include\AudioEngine;$(SolutionDir)Engine\include\AudioEngine\inc</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,7 +138,7 @@
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype.lib;fmod_vc.lib;fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>C:\Digipen\CSD 2400\gam200\lib\freetype;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\AI\pathfinding.cpp" />
+    <ClCompile Include="Source\AudioEngine\AudioEngine.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\EventManager\eventManager.cpp" />
     <ClCompile Include="Source\FontSystem\Font.cpp" />
@@ -223,6 +224,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\AI\pathfinding.h" />
+    <ClInclude Include="Include\AudioEngine\AudioEngine.h" />
     <ClInclude Include="Include\ECS\ECS.h" />
     <ClInclude Include="Include\ECS\ECS.hpp" />
     <ClInclude Include="Include\EventManager\eventManager.h" />

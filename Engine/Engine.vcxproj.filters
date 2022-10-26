@@ -183,6 +183,12 @@
     <Filter Include="Header Files\FontSystem">
       <UniqueIdentifier>{0977c938-04a6-4252-a17d-ba992bdad7db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AudioEngine">
+      <UniqueIdentifier>{ed499b16-44a2-4f9c-aba3-ebc52f7a52be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AudioEngine">
+      <UniqueIdentifier>{facc78b4-4b32-456b-a7dc-91118b5b3680}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\camera.cpp">
@@ -352,6 +358,9 @@
     </ClCompile>
     <ClCompile Include="Source\FontSystem\Font.cpp">
       <Filter>Source Files\FontSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AudioEngine\AudioEngine.cpp">
+      <Filter>Source Files\AudioEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -936,6 +945,9 @@
     </ClInclude>
     <ClInclude Include="Include\FontSystem\Font.h">
       <Filter>Header Files\FontSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\AudioEngine.h">
+      <Filter>Header Files\AudioEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

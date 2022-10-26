@@ -29,7 +29,7 @@ namespace Font
 			assert("Failed to load glyph");
 		}
 
-		ft_error_code = FT_New_Face(library, "../asset/font/arial.ttf", 0, &face);
+		ft_error_code = FT_New_Face(library, "../asset/fonts/arial.ttf", 0, &face);
 		if (ft_error_code == FT_Err_Unknown_File_Format)
 		{
 			assert("The font file could be opened and read, but it appears the font file could be opened and read, but it appears");
