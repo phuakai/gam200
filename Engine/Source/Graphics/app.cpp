@@ -133,9 +133,9 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::createTexturePath("../images/cloud2_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/cloud3_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../asset/cloud2_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../asset/cloud3_256x256.png", Graphics::textureobjects);
+	Graphics::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", Graphics::textureobjects);
 	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
@@ -852,7 +852,6 @@ void GLApp::entitydraw()
 
 		BaseInfo* curobjBaseInfo = ecs.GetComponent<BaseInfo>(entities[i]);
 
-		int texid = 0;
 		// Below code (2 lines) is for fow
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
@@ -926,8 +925,8 @@ void GLApp::entitydraw()
 			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
 
-		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x * 2.5f, curobj->dimension.y * 2.5f));
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
