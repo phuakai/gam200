@@ -26,7 +26,7 @@ namespace RenderNS
 	public:
 		GLSLShader instanceshader{}; // Shader of all objects in instance
 		GLSLShader frameshader{}; // Shader of all objects in instance
-		std::vector<Graphics::vertexData> headerdata{}; // Main (control) object in instance
+		std::vector<ModelNS::modelVtxData> headerdata{}; // Main (control) object in instance
 		std::vector<matrix3x3::mat3x3> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
 		GLuint vaoid{};
@@ -59,12 +59,12 @@ namespace RenderNS
 	{
 	public:
 
-		Graphics::Model batchmodel{}; // Model of all objects in batch
+		ModelNS::Model batchmodel{}; // Model of all objects in batch
 		GLSLShader batchshader{}; // Shader of all objects in batch
 		GLenum primtype{}; // Primitive type for all objects in batch
 		int totaldrawcnt{}; // Total count of all vertices to be drawn
 		int totalsize{}; // To add via subdata
-		std::vector<Graphics::vertexData> batchdata{}; // All vertices in batch
+		std::vector<ModelNS::modelVtxData> batchdata{}; // All vertices in batch
 		int totalindicesize{}; // For ebo
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
 

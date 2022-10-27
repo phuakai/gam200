@@ -100,7 +100,7 @@ namespace BufferNS
 			This function stores the vector data in the VBO
 		*/
 		/******************************************************************************/
-		static void createVBOstorage(GLuint vbo, int size, std::vector <Graphics::vertexData> data);
+		static void createVBOstorage(GLuint vbo, int size, std::vector <ModelNS::modelVtxData> data);
 
 		/******************************************************************************/
 		/*!

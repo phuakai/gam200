@@ -70,7 +70,7 @@ namespace BufferNS
 		//glBindVertexArray(0);
 	}
 
-	void VBO::createVBOstorage(GLuint vbo, int size, std::vector <Graphics::vertexData> data)
+	void VBO::createVBOstorage(GLuint vbo, int size, std::vector <ModelNS::modelVtxData> data)
 	{
 		glNamedBufferStorage(vbo, size, data.data(), GL_DYNAMIC_STORAGE_BIT); // Creates a buffer object's storage
 		// vbo is buffer name, followed by size of buffer (float type * number of data), data stored in buffer, and finally the flag of the storage system

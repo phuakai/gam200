@@ -53,7 +53,7 @@ extern std::vector<Entity> walls;
 ----------------------------------------------------------------------------- */
 std::map<std::string, GLSLShader> GLApp::shdrpgms; // define shaders
 
-std::map<std::string, Graphics::Model> models; // define models
+std::map<std::string, ModelNS::Model> models; // define models
 
 std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
@@ -125,7 +125,7 @@ void GLApp::init()
 	debugbatch.BatchClear(); // Clear debug batch
 	debuglinebatch.BatchClear(); // Clear debug line batch
 
-	Graphics::Model linemodel; // Init line model
+	ModelNS::Model linemodel; // Init line model
 	linemodel = linemodel.init("line");
 	models["line"] = linemodel;
 
@@ -283,12 +283,12 @@ void GLApp::GLObject::draw() const
 	texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
 	texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
 
-	Graphics::vertexData tmpHeaderData;
-	std::vector<Graphics::vertexData> vertexData;
+	ModelNS::modelVtxData tmpHeaderData;
+	std::vector<ModelNS::modelVtxData> vertexData;
 	std::vector<matrix3x3::mat3x3> testdata;
 	for (int i = 0; i < controlndcpos.size(); ++i)
 	{
-		Graphics::vertexData tmpVtxData;
+		ModelNS::modelVtxData tmpVtxData;
 		tmpVtxData.posVtx = controlndcpos[i];
 		if (mdl_ref->first == "circle")
 		{
@@ -811,7 +811,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	else
 	{
-		Graphics::Model Model;
+		ModelNS::Model Model;
 		Model = Model.init("square");
 		models["square"] = Model;
 		tmpObj.mdl_ref = models.find("square");
@@ -883,8 +883,8 @@ void GLApp::entitydraw()
 		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
 		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
 
-		Graphics::vertexData tmpHeaderData;
-		std::vector<Graphics::vertexData> vertexData;
+		ModelNS::modelVtxData tmpHeaderData;
+		std::vector<ModelNS::modelVtxData> vertexData;
 		std::vector<matrix3x3::mat3x3> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
@@ -904,7 +904,7 @@ void GLApp::entitydraw()
 		
 		for (int j = 0; j < ndccoord.size(); ++j)
 		{
-			Graphics::vertexData tmpVtxData;
+			ModelNS::modelVtxData tmpVtxData;
 			//tmpVtxData.posVtx = ndccoord[i];
 
 			tmpVtxData.clrVtx = clr_vtx[j];

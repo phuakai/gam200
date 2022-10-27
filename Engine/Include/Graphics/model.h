@@ -17,9 +17,9 @@ This file initializes the model mesh
 #include <unordered_map>
 
 
-namespace Graphics
+namespace ModelNS
 {
-	struct vertexData {
+	struct modelVtxData {
 		vector2D::vec2D posVtx;
 		vector3D::vec3D clrVtx;
 		vector2D::vec2D txtVtx;

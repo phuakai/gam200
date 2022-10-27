@@ -84,7 +84,7 @@ struct GLApp {
 		//added for physics testing (collision response)
 		//glm::mat3 worldToMdlXform{};
 
-		std::map<std::string, Graphics::Model>::iterator mdl_ref{};
+		std::map<std::string, ModelNS::Model>::iterator mdl_ref{};
 		std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 		//added for physics testing

@@ -22,7 +22,7 @@ void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int
 	glBindVertexArray(vaoid);
 
 	GLuint headervboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(headervboid, sizeof(Graphics::vertexData) * headerdata.size(), headerdata); // Data passed in
+	BufferNS::VBO::createVBOstorage(headervboid, sizeof(ModelNS::modelVtxData) * headerdata.size(), headerdata); // Data passed in
 	// Note that for instance, stored data is 1 position, 1 colour, 1 texture pos, 1 texture index (or texture array later on)
 	// and an array consisting of the offsets for the different instance positions
 
@@ -184,7 +184,7 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobj
 	glBindVertexArray(vaoid);
 
 	vboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(vboid, sizeof(Graphics::vertexData) * totalsize, batchdata);
+	BufferNS::VBO::createVBOstorage(vboid, sizeof(ModelNS::modelVtxData) * totalsize, batchdata);
 
 	// Position
 	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
