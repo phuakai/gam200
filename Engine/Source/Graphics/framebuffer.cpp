@@ -57,25 +57,25 @@ namespace FrameBufferNS
 			fBvertexData.emplace_back(tmpVtxData); // Emplaces the 6 vec2's into a storage container
 		}
 
-		framebuffervboid = Graphics::VBO::init();
-		Graphics::VBO::store(framebuffervboid, (int)sizeof(FrameBufferNS::fBvertexData) * (int)fBvertexData.size(), fBvertexData); // Pass storage container into VBO
+		framebuffervboid = BufferNS::VBO::createVBO();
+		BufferNS::VBO::createVBOstorage(framebuffervboid, (int)sizeof(FrameBufferNS::fBvertexData) * (int)fBvertexData.size(), fBvertexData); // Pass storage container into VBO
 
-		framebuffervaoid = Graphics::VAO::init();
-		Graphics::VAO::enableattrib(framebuffervaoid, 0); // Attrib 0
-		Graphics::VBO::bind(framebuffervaoid, 0, framebuffervboid, 0, sizeof(float) * 4); // Set buffer binding point 0
-		Graphics::VAO::setattrib(framebuffervaoid, 0, 2); // Attrib format
-		Graphics::VAO::bindattrib(framebuffervaoid, 0, 0); // Bind attrib
+		framebuffervaoid = BufferNS::VAO::createVAO();
+		BufferNS::VAO::enableVAOattrib(framebuffervaoid, 0); // Attrib 0
+		BufferNS::VBO::bindVBO(framebuffervaoid, 0, framebuffervboid, 0, sizeof(float) * 4); // Set buffer binding point 0
+		BufferNS::VAO::setVAOattrib(framebuffervaoid, 0, 2); // Attrib format
+		BufferNS::VAO::bindVAOattrib(framebuffervaoid, 0, 0); // Bind attrib
 
-		Graphics::VAO::enableattrib(framebuffervaoid, 1); // Attrib 1
-		Graphics::VBO::bind(framebuffervaoid, 1, framebuffervboid, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 1
-		Graphics::VAO::setattrib(framebuffervaoid, 1, 2); // Attrib format
-		Graphics::VAO::bindattrib(framebuffervaoid, 1, 1); // Bind attrib
+		BufferNS::VAO::enableVAOattrib(framebuffervaoid, 1); // Attrib 1
+		BufferNS::VBO::bindVBO(framebuffervaoid, 1, framebuffervboid, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 1
+		BufferNS::VAO::setVAOattrib(framebuffervaoid, 1, 2); // Attrib format
+		BufferNS::VAO::bindVAOattrib(framebuffervaoid, 1, 1); // Bind attrib
 	}
 
 	void frameBuffer::drawFrameBuffer()
 	{
 		frameshader.Use(); // Use frame shader
-		glBindVertexArray(framebuffervaoid);
+		BufferNS::VAO::bindVAO(framebuffervaoid);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // Bind to default frame buffer
 		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
@@ -83,7 +83,7 @@ namespace FrameBufferNS
 		glBindTexture(GL_TEXTURE_2D, texColorbuffer); // Automatically binds texture to sampler2D
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		Graphics::VAO::unbind();
+		BufferNS::VAO::unbindVAO();
 		frameshader.UnUse();
 
 	}

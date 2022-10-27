@@ -78,7 +78,7 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			break;
 		}
 	}
-	vbo = Graphics::VBO::init();
+	vbo = BufferNS::VBO::createVBO();
 	if (modelname == "square")
 	{
 		std::vector<vector2D::Vec2> tex_coord
@@ -111,7 +111,7 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			vertexData.emplace_back(tmpVtxData);
 		}
 
-		Graphics::VBO::store(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
+		BufferNS::VBO::createVBOstorage(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
 	}
 	if (modelname == "line")
 	{
@@ -134,37 +134,37 @@ Graphics::Model Graphics::Model::init(std::string modelname)
 			tmpVtxData.txtVtx = tex_coord[i];
 			vertexData.emplace_back(tmpVtxData);
 		}
-		Graphics::VBO::store(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
+		BufferNS::VBO::createVBOstorage(vbo, (int)sizeof(Graphics::vertexData) * (int)vertexData.size(), vertexData);
 	}
 	//Graphics::VBO::setdata(vbo, sizeof(float) * 2 * tempmodel.pos_vtx.size(), sizeof(float) * 2 * tempmodel.pos_vtx.size(), tex_coord);
 
-	vao = Graphics::VAO::init();
-	Graphics::VAO::enableattrib(vao, 0); // Attrib 0
-	Graphics::VBO::bind(vao, 0, vbo, 0, sizeof(float) * 7); // Set buffer binding point 0
-	Graphics::VAO::setattrib(vao, 0, 2); // Attrib format
-	Graphics::VAO::bindattrib(vao, 0, 0); // Bind attrib
+	vao = BufferNS::VAO::createVAO();
+	BufferNS::VAO::enableVAOattrib(vao, 0); // Attrib 0
+	BufferNS::VBO::bindVBO(vao, 0, vbo, 0, sizeof(float) * 7); // Set buffer binding point 0
+	BufferNS::VAO::setVAOattrib(vao, 0, 2); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vao, 0, 0); // Bind attrib
 
-	Graphics::VAO::enableattrib(vao, 1); // Attrib 0
-	Graphics::VBO::bind(vao, 1, vbo, sizeof(float) * 2, sizeof(float) * 7); // Set buffer binding point 0
-	Graphics::VAO::setattrib(vao, 1, 3); // Attrib format
-	Graphics::VAO::bindattrib(vao, 1, 1); // Bind attrib
+	BufferNS::VAO::enableVAOattrib(vao, 1); // Attrib 0
+	BufferNS::VBO::bindVBO(vao, 1, vbo, sizeof(float) * 2, sizeof(float) * 7); // Set buffer binding point 0
+	BufferNS::VAO::setVAOattrib(vao, 1, 3); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vao, 1, 1); // Bind attrib
 
 
-	Graphics::VAO::enableattrib(vao, 2); // Attrib 1
-	Graphics::VBO::bind(vao, 2, vbo, sizeof(float) * 5, sizeof(float) * 7); // Set buffer binding point 1
-	Graphics::VAO::setattrib(vao, 2, 2); // Attrib format 1
-	Graphics::VAO::bindattrib(vao, 2, 2); // Bind attrib 1
+	BufferNS::VAO::enableVAOattrib(vao, 2); // Attrib 1
+	BufferNS::VBO::bindVBO(vao, 2, vbo, sizeof(float) * 5, sizeof(float) * 7); // Set buffer binding point 1
+	BufferNS::VAO::setVAOattrib(vao, 2, 2); // Attrib format 1
+	BufferNS::VAO::bindVAOattrib(vao, 2, 2); // Bind attrib 1
 
-	ebo = Graphics::EBO::init();
+	ebo = BufferNS::EBO::createEBO();
 	for (int i = 0; i < tempmodel.primitive.size(); i++)
 	{
 		std::cout << "IDS " << tempmodel.primitive[i] << std::endl;
 	}
-	Graphics::EBO::store(ebo, (int)sizeof(GLushort) * (int)tempmodel.primitive.size(), tempmodel.primitive);
+	BufferNS::EBO::createEBOstorage(ebo, (int)sizeof(GLushort) * (int)tempmodel.primitive.size(), tempmodel.primitive);
 
-	Graphics::EBO::bind(vao, ebo);
+	BufferNS::EBO::bindEBO(vao, ebo);
 
-	Graphics::VAO::unbind();
+	BufferNS::VAO::unbindVAO();
 
 
 	tempmodel.primitive_cnt = (int)tempmodel.primitive.size();
