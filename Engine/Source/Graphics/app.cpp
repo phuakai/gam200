@@ -46,6 +46,7 @@ to OpenGL implementations.
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
 
+extern std::vector<FormationManager> formationManagers;
 extern Entity player1;
 extern std::vector<Entity> walls;
 
@@ -181,8 +182,8 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 	coldebug = false;
 
-	EntityID playerID = player1.GetID();
-	GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f), true);
+	//EntityID playerID = player1.GetID();
+	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
 
 }
 
@@ -623,19 +624,25 @@ void GLApp::update()
 	//		obj1->second.modelCenterPos = obj1->second.body.getPos();
 	//	}
 	//}
-	Render* player = ecs.GetComponent<Render>(player1.GetID());
+	BaseInfo* player = ecs.GetComponent<BaseInfo>(player1.GetID());
 
 	bool test{ true };
 	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
 	{
-		if (player->name == obj->first && mouseClick)
-		{
-			player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
-			obj->second.modelCenterPos = player->position;
+		//if (player->name == obj->first && mouseClick)
+		//{
+		//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+		//	obj->second.modelCenterPos = player->position;
 
-			generateDijkstraCost(player->position, walls);
-			generateFlowField(player->position);
-		}
+		//	for (int i = 0; i < formationManagers.size(); ++i)
+		//	{
+		//		formationManagers[i].target = player->position;
+		//		formationManagers[i].updateReached();
+		//	}
+
+		//	generateDijkstraCost(player->position, walls);
+		//	generateFlowField(player->position);
+		//}
 
 		if (obj->first != "Camera")
 		{
@@ -648,6 +655,21 @@ void GLApp::update()
 			}
 		}
 	}	
+
+
+	if (mouseClick)
+	{
+		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+
+		for (int i = 0; i < formationManagers.size(); ++i)
+		{
+			formationManagers[i].target = player->position;
+			formationManagers[i].updateReached();
+		}
+
+		generateDijkstraCost(player->position, walls);
+		generateFlowField(player->position);
+	}
 }
 
 /*  _________________________________________________________________________*/
@@ -844,6 +866,8 @@ void GLApp::entitydraw()
 			continue;
 		}
 
+		BaseInfo* curobjBaseInfo = ecs.GetComponent<BaseInfo>(entities[i]);
+
 		// Below code (2 lines) is for fow
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
@@ -888,12 +912,12 @@ void GLApp::entitydraw()
 		std::vector<matrix3x3::mat3x3> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
-		float halfwidth = curobj->dimension.x / 2.f;
-		float halfheight = curobj->dimension.y / 2.f;
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y - halfheight)); // Bottom left
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y - halfheight)); // Bottom right
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x + halfwidth, curobj->position.y + halfheight)); // Top right
-		poscoord.emplace_back(vector2D::vec2D(curobj->position.x - halfwidth, curobj->position.y + halfheight)); // Top left
+		float halfwidth = curobjBaseInfo->dimension.x / 2.f;
+		float halfheight = curobjBaseInfo->dimension.y / 2.f;
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y + halfheight));
 
 
 		std::vector <vector2D::vec2D> ndccoord;
@@ -917,8 +941,8 @@ void GLApp::entitydraw()
 			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
 
-		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobj->position.x, curobj->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobj->dimension.x * 2.5f, curobj->dimension.y * 2.5f));
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
@@ -1059,13 +1083,14 @@ void GLApp::entitydraw()
 		//{
 
 
-		//	if (ecs.GetComponent<Movement>(entities[i]) == nullptr) // Added check for NIL objects
-		//	{
-		//		continue;
-		//	}
-		//	Movement* objmovement = ecs.GetComponent<Movement>(entities[i]);
-		//	debuglinebatch.batchmodel = models["line"];
-		//	debuglinebatch.batchshader = shaderid;
+			//if (ecs.GetComponent<Physics>(entities[i]) == nullptr) // Added check for NIL objects
+			//{
+			//	continue;
+			//}
+
+			//Physics* objmovement = ecs.GetComponent<Physics>(entities[i]);
+			//debuglinebatch.batchmodel = models["line"];
+			//debuglinebatch.batchshader = shaderid;
 
 		//	std::vector<vector3D::vec3D> debugline_clrvtx
 		//	{
@@ -1077,11 +1102,11 @@ void GLApp::entitydraw()
 		//		vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f)
 		//	};
 
-		//	std::vector<vector2D::vec2D> debugline_poscoord
-		//	{
-		//		vector2D::vec2D(curobj->position.x, curobj->position.y),
-		//		vector2D::vec2D(curobj->position.x + (objmovement->velocity.x * 25), curobj->position.y + (objmovement->velocity.y * 25))
-		//	}; // CALCULATE POSITION FROM CENTER
+			//std::vector<vector2D::vec2D> debugline_poscoord
+			//{
+			//	vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y),
+			//	vector2D::vec2D(curobjBaseInfo->position.x + (objmovement->velocity.x * 25), curobjBaseInfo->position.y + (objmovement->velocity.y * 25))
+			//}; // CALCULATE POSITION FROM CENTER
 
 		//	std::vector <vector2D::vec2D> debugline_ndccoord;
 		//	for (int i = 0; i < poscoord.size(); i++)

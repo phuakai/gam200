@@ -19,6 +19,12 @@
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{3cefa1d0-0aeb-4f1d-99c5-ea9b34af8314}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\LevelEditor">
+      <UniqueIdentifier>{513cbfd7-95aa-4f25-825c-ac9b2d726d43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LevelEditor">
+      <UniqueIdentifier>{1d7d1957-173e-46ae-b00d-e410fdab6690}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\ImGui\imconfig.h">
@@ -48,8 +54,17 @@
     <ClInclude Include="Include\ImGui\imstb_truetype.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Include\ImGui\levelEditor.h">
-      <Filter>Header Files\ImGui</Filter>
+    <ClInclude Include="Include\LevelEditor\levelEditor.h">
+      <Filter>Header Files\LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LevelEditor\levelEditorHierarchy.h">
+      <Filter>Header Files\LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LevelEditor\levelEditorProperties.h">
+      <Filter>Header Files\LevelEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\LevelEditor\levelEditorContentBrowser.h">
+      <Filter>Header Files\LevelEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,8 +89,17 @@
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\levelEditor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\LevelEditor\levelEditor.cpp">
+      <Filter>Source Files\LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\levelEditorHierarchy.cpp">
+      <Filter>Source Files\LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\levelEditorProperties.cpp">
+      <Filter>Source Files\LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LevelEditor\levelEditorContentBrowser.cpp">
+      <Filter>Source Files\LevelEditor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

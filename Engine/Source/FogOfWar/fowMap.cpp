@@ -64,7 +64,7 @@ namespace fow
 		// Change all visible tiles to fogged
 		for (std::list<fowObj>::iterator it = fowObjList.begin(); it != fowObjList.end(); ++it)
 		{
-			vector2D::vec2D objWorldPos{ ecs.GetComponent<Render>((*it).getid())->position };
+			vector2D::vec2D objWorldPos{ ecs.GetComponent<BaseInfo>((*it).getid())->position };
 			// Obj did not move, no action required
 			if ((*it).getWorldPos() == objWorldPos)
 				continue;
@@ -101,7 +101,7 @@ namespace fow
 		// Change fogged/unvisited tiles to visible
 		for (std::list<fowObj>::iterator it = fowObjList.begin(); it != fowObjList.end(); ++it)
 		{
-			vector2D::vec2D objWorldPos{ ecs.GetComponent<Render>((*it).getid())->position };
+			vector2D::vec2D objWorldPos{ ecs.GetComponent<BaseInfo>((*it).getid())->position };
 			// Obj did not move, no action required
 			if ((*it).getWorldPos() == objWorldPos)
 				continue;

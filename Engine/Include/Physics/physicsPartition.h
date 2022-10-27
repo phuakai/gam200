@@ -65,38 +65,38 @@ public:
 	bool withinBoundary(vector2D::vec2D const& pos);
 };
 
-struct quadObj
-{
-private:
-public:
-	int key;																// Object's id
-	vector2D::vec2D position;												// Object's center pos
-
-	/******************************************************************************/
-	/*!
-		Default constructor for quadtree object
-		Position is the center position of the object (circle/box)
-		Key is the objectID
-	*/
-	/******************************************************************************/
-	quadObj();
-
-	/******************************************************************************/
-	/*!
-		Cconstructor for quadtree object
-		Position is the center position of the object (circle/box)
-		Key is the objectID
-	*/
-	/******************************************************************************/
-	quadObj(int id, vector2D::vec2D pos);
-
-	/******************************************************************************/
-	/*!
-		Default deconstructor for quadtree object
-	*/
-	/******************************************************************************/
-	~quadObj();
-};
+//struct quadObj
+//{
+//private:
+//public:
+//	int key;																// Object's id
+//	vector2D::vec2D position;												// Object's center pos
+//
+//	/******************************************************************************/
+//	/*!
+//		Default constructor for quadtree object
+//		Position is the center position of the object (circle/box)
+//		Key is the objectID
+//	*/
+//	/******************************************************************************/
+//	quadObj();
+//
+//	/******************************************************************************/
+//	/*!
+//		Cconstructor for quadtree object
+//		Position is the center position of the object (circle/box)
+//		Key is the objectID
+//	*/
+//	/******************************************************************************/
+//	quadObj(int id, vector2D::vec2D pos);
+//
+//	/******************************************************************************/
+//	/*!
+//		Default deconstructor for quadtree object
+//	*/
+//	/******************************************************************************/
+//	~quadObj();
+//};
 
 struct node
 {
@@ -261,6 +261,7 @@ public:
 	
 };
 
-static quadTree mainTree;
+extern quadTree mainTree;
+//static quadTree mainTree;
 //static std::shared_ptr<quadTree> mainTree;
 //#endif
