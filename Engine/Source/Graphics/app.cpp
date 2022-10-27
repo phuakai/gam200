@@ -139,9 +139,9 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	TextureNS::Texture::createTexturePath("../images/cloud2_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../images/cloud3_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/cloud2_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/cloud3_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", TextureNS::textureobjects);
 	TextureNS::Texture::loadTexture(TextureNS::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
@@ -871,6 +871,7 @@ void GLApp::entitydraw()
 		// Below code (2 lines) is for fow
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
+
 
 		int texid{};
 		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);

@@ -121,13 +121,9 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, in
 
 	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
 	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
-
-	//std::cout << "Entity count " << entitycount << std::endl;
 	
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
-
-	
 
 	//instanceshader.UnUse();
 
