@@ -363,7 +363,7 @@ void engineUpdate()
 
 	GLApp::update();						// graphics system
 
-	spooky::CAudioEngine audioEngine;
+	//spooky::CAudioEngine audioEngine;
 	Font::RenderFont(Font::shader, "Text Renderer Testing", 100.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
