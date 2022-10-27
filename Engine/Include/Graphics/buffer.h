@@ -11,6 +11,7 @@ This file handles the VAO, VBO and EBO of the game
 #include <model.h>
 #include <vec2D.h>
 #include <mat3x3.h>
+#include "framebuffer.h"
 
 namespace Graphics
 {
@@ -100,6 +101,13 @@ namespace Graphics
 		*/
 		/******************************************************************************/
 		static void store(GLuint vbo, int size, std::vector <Graphics::vertexData> data);
+
+		/******************************************************************************/
+		/*!
+			This function stores the vector data in the VBO
+		*/
+		/******************************************************************************/
+		static void store(GLuint vbo, int size, std::vector <FrameBufferNS::fBvertexData> data);
 
 		/******************************************************************************/
 		/*!

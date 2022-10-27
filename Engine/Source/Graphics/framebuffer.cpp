@@ -1,10 +1,13 @@
 #include "framebuffer.h"
+#include "buffer.h"
 #include "input.h" // For screen dimensions
 #include <glad/glad.h>
 #include <iostream> // Just to cout
 
+
 void FrameBufferNS::frameBuffer::createFrameBuffer()
 {
+	createFrameBufferVAO();
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	createFrameBufferTex();
@@ -27,12 +30,52 @@ void FrameBufferNS::frameBuffer::createFrameBufferTex()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorbuffer, 0);
 }
 
+void FrameBufferNS::frameBuffer::createFrameBufferVAO()
+{
+	std::vector<vector2D::Vec2> tex_coord
+	{
+		vector2D::Vec2(0.f, 1.f), vector2D::Vec2(0.f, 0.f),
+		vector2D::Vec2(1.f, 0.f), vector2D::Vec2(0.f, 1.f),
+		vector2D::Vec2(1.f, 0.f), vector2D::Vec2(1.f, 1.f)
+	};
+	std::vector<vector2D::Vec2> pos_coord
+	{
+		vector2D::Vec2(-1.f, 1.f), vector2D::Vec2(-1.f, -1.f),
+		vector2D::Vec2(1.f, -1.f), vector2D::Vec2(-1.f, 1.f),
+		vector2D::Vec2(1.f, -1.f), vector2D::Vec2(1.f, 1.f)
+	};
+
+	std::vector<FrameBufferNS::fBvertexData> fBvertexData;
+
+	for (int tmp = 0; tmp < 6; tmp++)
+	{
+		FrameBufferNS::fBvertexData tmpVtxData;
+		tmpVtxData.posVtx = pos_coord[tmp];
+		tmpVtxData.txtVtx = tex_coord[tmp];
+		fBvertexData.emplace_back(tmpVtxData);
+	}
+
+	framebuffervboid = Graphics::VBO::init();
+	Graphics::VBO::store(framebuffervboid, (int)sizeof(FrameBufferNS::fBvertexData) * (int)fBvertexData.size(), fBvertexData);
+
+	framebuffervaoid = Graphics::VAO::init();
+	Graphics::VAO::enableattrib(framebuffervaoid, 0); // Attrib 0
+	Graphics::VBO::bind(framebuffervaoid, 0, framebuffervboid, 0, sizeof(float) * 4); // Set buffer binding point 0
+	Graphics::VAO::setattrib(framebuffervaoid, 0, 2); // Attrib format
+	Graphics::VAO::bindattrib(framebuffervaoid, 0, 0); // Bind attrib
+
+	Graphics::VAO::enableattrib(framebuffervaoid, 1); // Attrib 0
+	Graphics::VBO::bind(framebuffervaoid, 1, framebuffervboid, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 0
+	Graphics::VAO::setattrib(framebuffervaoid, 1, 2); // Attrib format
+	Graphics::VAO::bindattrib(framebuffervaoid, 1, 1); // Bind attrib
+}
+
 void FrameBufferNS::frameBuffer::drawFrameBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // Bind to default frame buffer
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glBindTexture(0, texColorbuffer);
+	glBindTextureUnit(0, texColorbuffer);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
