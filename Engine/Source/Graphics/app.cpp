@@ -138,10 +138,10 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::createTexturePath("../images/cloud2_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/cloud3_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
+	TextureNS::Texture::createTexturePath("../images/cloud2_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../images/cloud3_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../images/Unit_tank_front_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::loadTexture(TextureNS::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
 	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
@@ -697,7 +697,7 @@ void GLApp::draw()
 	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
 	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
+	basicinstance.InstanceRender(TextureNS::textureobjects, entitycounter);
 	mainFrame.drawFrameBuffer();
 	basicinstance.InstanceClear();
 	entitycounter = 0;
@@ -725,7 +725,7 @@ This function is empty for now
 void GLApp::cleanup() 
 {
 	mainFrame.delFrameBuffer();
-	Graphics::Texture::deleteTexture(Graphics::textureobjects);
+	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 }
 

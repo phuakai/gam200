@@ -15,7 +15,7 @@ This file handles the batch rendering of the game
 
 extern FrameBufferNS::frameBuffer mainFrame;
 
-void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int entitycount)
+void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, int entitycount)
 {
 	instanceshader.Use(); //Use shader prog
 
@@ -178,7 +178,7 @@ RenderNS::BatchRenderer::BatchRenderer()
 	eboid = 0;
 }
 
-void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobjs)
+void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texobjs)
 {
 	batchshader.Use();
 	glBindVertexArray(vaoid);

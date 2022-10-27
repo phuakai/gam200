@@ -12,7 +12,7 @@ This file loads, sets and deletes the textures in the game
 #include <vector>
 #include <glad/glad.h>
 
-namespace Graphics
+namespace TextureNS
 {
 	class Texture
 	{
@@ -24,13 +24,13 @@ namespace Graphics
 		/******************************************************************************/
 		Texture();
 
-		static void createTexturePath(const char* path, Graphics::Texture& textureobj);
+		static void createTexturePath(const char* path, Texture& textureobj);
 		/******************************************************************************/
 		/*!
 			This function loads the texture object
 		*/
 		/******************************************************************************/
-		static void loadTexture(Graphics::Texture& textureobj);
+		static void loadTexture(Texture& textureobj);
 		//static void loadTexture(const char* path);
 
 		/******************************************************************************/
@@ -38,14 +38,14 @@ namespace Graphics
 			This function deletes the texture object
 		*/
 		/******************************************************************************/
-		static void deleteTexture(Graphics::Texture& textureobj);
+		static void deleteTexture(Texture& textureobj);
 		
 		/******************************************************************************/
 		/*!
 			This function set the handle of the texture
 		*/
 		/******************************************************************************/
-		static void setData(int handle, Graphics::Texture& textureobj);
+		static void setData(int handle, Texture& textureobj);
 		/******************************************************************************/
 		/*!
 			This function gets the texture id
@@ -60,6 +60,6 @@ namespace Graphics
 		unsigned int textureid;
 	};
 
-	static Graphics::Texture textureobjects; // Texture obj
+	static Texture textureobjects; // Texture obj
 
 }
