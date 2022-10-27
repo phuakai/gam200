@@ -350,6 +350,9 @@
     <ClCompile Include="Source\Math\mat4x4.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Graphics\framebuffer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Graphics\app.h">
@@ -933,6 +936,9 @@
     </ClInclude>
     <ClInclude Include="Include\FogOfWar\fowMap.h">
       <Filter>Header Files\FogOfWar</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\framebuffer.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,7 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
+#include "framebuffer.h"
 
 #include <random>
 #include <stdint.h>
@@ -63,6 +64,8 @@ RenderNS::BatchRenderer debugbatch; // Batch render object for collision debug
 RenderNS::BatchRenderer debuglinebatch; // Batch render object for collision debug
 
 RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
+
+FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
 //Graphics::Texture texobj;
 
@@ -111,6 +114,9 @@ void GLApp::init()
 		std::exit(EXIT_FAILURE);
 	}
 
+	mainFrame.createFrameBuffer();
+	
+
 	GLApp::shdrpgms.clear(); // clear shaders
 	models.clear(); // clear models
 	GLApp::objects.clear(); // clear objects
@@ -149,6 +155,16 @@ void GLApp::init()
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
 	Graphics::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
+
+	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
+	{
+		basicinstance.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+	}
+	else
+	{
+		insert_shdrpgm("framebuffer-shdrpgm", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
+		basicinstance.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+	}
 
 	// ======================================================================================================================================
 	// Store physics related info to be printed in title bar
@@ -678,8 +694,12 @@ void GLApp::draw()
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	
+	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
+
+	basicinstance.InstanceRender2(Graphics::textureobjects, entitycounter);
 	basicinstance.InstanceClear();
 	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -705,6 +725,7 @@ This function is empty for now
 */
 void GLApp::cleanup() 
 {
+	mainFrame.delFrameBuffer();
 	//basicbatch.BatchDelete();
 	//debuglinebatch.BatchDelete();
 	//debugbatch.BatchDelete();

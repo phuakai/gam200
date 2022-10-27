@@ -25,6 +25,7 @@ namespace RenderNS
 	{
 	public:
 		GLSLShader instanceshader{}; // Shader of all objects in instance
+		GLSLShader frameshader{}; // Shader of all objects in instance
 		std::vector<Graphics::vertexData> headerdata{}; // Main (control) object in instance
 		std::vector<matrix3x3::mat3x3> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
@@ -37,6 +38,8 @@ namespace RenderNS
 		/******************************************************************************/
 		//static void InstanceRender(std::vector<Texture>& texobjs, GLSLShader shader, GLuint vaoid, std::vector<vertexData> data, std::vector<vector2D::vec2D> offsetdata); // instance renders all objects in render
 		void InstanceRender(Graphics::Texture& texobjs, int entitycount); // instance renders all objects in render
+
+		void InstanceRender2(Graphics::Texture& texobjs, int entitycount); // instance renders all objects in render
 			
 		/******************************************************************************/
 		/*!
