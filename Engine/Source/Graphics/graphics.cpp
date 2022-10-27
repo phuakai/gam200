@@ -147,20 +147,6 @@ void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int
 	glDeleteBuffers(1, &eboid);
 }
 
-void RenderNS::InstancedRenderer::InstanceRender2(Graphics::Texture& texobjs, int entitycount)
-{
-	frameshader.Use();
-	glBindVertexArray(mainFrame.framebuffervaoid);
-
-	mainFrame.drawFrameBuffer();
-	GLuint tex_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
-	glUniform1i(tex_loc, 0);
-
-	Graphics::VAO::unbind();
-	frameshader.UnUse();
-}
-
-
 void RenderNS::InstancedRenderer::InstanceClear()
 {
 	//std::cout << "Instance size before " << instancedata.size() << std::endl;

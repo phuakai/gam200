@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec2D.h"
+#include <glslshader.h>
 
 namespace FrameBufferNS
 {
@@ -9,7 +10,7 @@ namespace FrameBufferNS
 		vector2D::vec2D txtVtx;
 	};
 
-	class frameBuffer
+	struct frameBuffer
 	{
 	public:
 		void createFrameBuffer();
@@ -24,10 +25,13 @@ namespace FrameBufferNS
 
 		void delFrameBufferTex();
 
+		void delFrameBufferVAO();
+
 		unsigned int framebuffer;
 		unsigned int framebuffervaoid;
 		unsigned int framebuffervboid;
 		unsigned int texColorbuffer;
+		GLSLShader frameshader{}; // Shader of all objects in instance
 	};
 
 	

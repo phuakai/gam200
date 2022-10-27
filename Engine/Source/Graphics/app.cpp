@@ -158,12 +158,12 @@ void GLApp::init()
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
 	{
-		basicinstance.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
 	}
 	else
 	{
 		insert_shdrpgm("framebuffer-shdrpgm", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
-		basicinstance.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
 	}
 
 	// ======================================================================================================================================
@@ -698,8 +698,7 @@ void GLApp::draw()
 	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
-
-	basicinstance.InstanceRender2(Graphics::textureobjects, entitycounter);
+	mainFrame.drawFrameBuffer();
 	basicinstance.InstanceClear();
 	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -726,12 +725,8 @@ This function is empty for now
 void GLApp::cleanup() 
 {
 	mainFrame.delFrameBuffer();
-	//basicbatch.BatchDelete();
-	//debuglinebatch.BatchDelete();
-	//debugbatch.BatchDelete();
 	Graphics::Texture::deleteTexture(Graphics::textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
-	// empty for now
 }
 
 /*  _________________________________________________________________________*/

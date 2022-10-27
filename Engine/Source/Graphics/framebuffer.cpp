@@ -4,87 +4,104 @@
 #include <glad/glad.h>
 #include <iostream> // Just to cout
 
-
-void FrameBufferNS::frameBuffer::createFrameBuffer()
+namespace FrameBufferNS
 {
-	createFrameBufferVAO();
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	createFrameBufferTex();
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	void frameBuffer::createFrameBuffer()
 	{
-		std::cout << "Frame buffer can't be created" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void FrameBufferNS::frameBuffer::createFrameBufferTex()
-{
-	glGenTextures(1, &texColorbuffer);
-	glBindTexture(GL_TEXTURE_2D, texColorbuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Graphics::Input::screenwidth, Graphics::Input::screenheight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorbuffer, 0);
-}
-
-void FrameBufferNS::frameBuffer::createFrameBufferVAO()
-{
-	std::vector<vector2D::Vec2> tex_coord
-	{
-		vector2D::Vec2(0.f, 1.f), vector2D::Vec2(0.f, 0.f),
-		vector2D::Vec2(1.f, 0.f), vector2D::Vec2(0.f, 1.f),
-		vector2D::Vec2(1.f, 0.f), vector2D::Vec2(1.f, 1.f)
-	};
-	std::vector<vector2D::Vec2> pos_coord
-	{
-		vector2D::Vec2(-1.f, 1.f), vector2D::Vec2(-1.f, -1.f),
-		vector2D::Vec2(1.f, -1.f), vector2D::Vec2(-1.f, 1.f),
-		vector2D::Vec2(1.f, -1.f), vector2D::Vec2(1.f, 1.f)
-	};
-
-	std::vector<FrameBufferNS::fBvertexData> fBvertexData;
-
-	for (int tmp = 0; tmp < 6; tmp++)
-	{
-		FrameBufferNS::fBvertexData tmpVtxData;
-		tmpVtxData.posVtx = pos_coord[tmp];
-		tmpVtxData.txtVtx = tex_coord[tmp];
-		fBvertexData.emplace_back(tmpVtxData);
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		createFrameBufferVAO(); // Create VAO for frame buffer (quad that covers screen)
+		createFrameBufferTex(); // Create frame buffer texture for draw calls to render to
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) // Make sure frame buffer is created
+		{
+			std::cout << "Frame buffer can't be created" << std::endl;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind frame buffer
 	}
 
-	framebuffervboid = Graphics::VBO::init();
-	Graphics::VBO::store(framebuffervboid, (int)sizeof(FrameBufferNS::fBvertexData) * (int)fBvertexData.size(), fBvertexData);
+	void frameBuffer::createFrameBufferTex() // Creates texture for draw calls to render to in framebuffer
+	{
+		glGenTextures(1, &texColorbuffer); // Generates a buffer
+		glBindTexture(GL_TEXTURE_2D, texColorbuffer); // Binds the buffer to texture2d
+		// Below creates space for texture based on size of screen
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Graphics::Input::screenwidth, Graphics::Input::screenheight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		// Set texture parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorbuffer, 0); // Attach texture to frame buffer
+	}
 
-	framebuffervaoid = Graphics::VAO::init();
-	Graphics::VAO::enableattrib(framebuffervaoid, 0); // Attrib 0
-	Graphics::VBO::bind(framebuffervaoid, 0, framebuffervboid, 0, sizeof(float) * 4); // Set buffer binding point 0
-	Graphics::VAO::setattrib(framebuffervaoid, 0, 2); // Attrib format
-	Graphics::VAO::bindattrib(framebuffervaoid, 0, 0); // Bind attrib
+	void frameBuffer::createFrameBufferVAO() // Create VAO for frame buffer (quad that covers screen)
+	{
+		std::vector<vector2D::Vec2> tex_coord // 6 indices since using DrawArray (4 if using element but requires EBO)
+		{
+			vector2D::Vec2(0.f, 1.f), vector2D::Vec2(0.f, 0.f),
+			vector2D::Vec2(1.f, 0.f), vector2D::Vec2(0.f, 1.f),
+			vector2D::Vec2(1.f, 0.f), vector2D::Vec2(1.f, 1.f)
+		};
+		std::vector<vector2D::Vec2> pos_coord
+		{
+			vector2D::Vec2(-1.f, 1.f), vector2D::Vec2(-1.f, -1.f),
+			vector2D::Vec2(1.f, -1.f), vector2D::Vec2(-1.f, 1.f),
+			vector2D::Vec2(1.f, -1.f), vector2D::Vec2(1.f, 1.f)
+		};
 
-	Graphics::VAO::enableattrib(framebuffervaoid, 1); // Attrib 0
-	Graphics::VBO::bind(framebuffervaoid, 1, framebuffervboid, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 0
-	Graphics::VAO::setattrib(framebuffervaoid, 1, 2); // Attrib format
-	Graphics::VAO::bindattrib(framebuffervaoid, 1, 1); // Bind attrib
-}
+		std::vector<FrameBufferNS::fBvertexData> fBvertexData;
 
-void FrameBufferNS::frameBuffer::drawFrameBuffer()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); // Bind to default frame buffer
-	glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glBindTextureUnit(0, texColorbuffer);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-}
+		for (int tmp = 0; tmp < 6; tmp++)
+		{
+			FrameBufferNS::fBvertexData tmpVtxData;
+			tmpVtxData.posVtx = pos_coord[tmp];
+			tmpVtxData.txtVtx = tex_coord[tmp];
+			fBvertexData.emplace_back(tmpVtxData); // Emplaces the 6 vec2's into a storage container
+		}
 
-void FrameBufferNS::frameBuffer::delFrameBuffer()
-{
-	glDeleteFramebuffers(1, &framebuffer);
-	delFrameBufferTex();
-}
-void FrameBufferNS::frameBuffer::delFrameBufferTex()
-{
-	glDeleteTextures(1, &(texColorbuffer)); // Delete generated texture
+		framebuffervboid = Graphics::VBO::init();
+		Graphics::VBO::store(framebuffervboid, (int)sizeof(FrameBufferNS::fBvertexData) * (int)fBvertexData.size(), fBvertexData); // Pass storage container into VBO
+
+		framebuffervaoid = Graphics::VAO::init();
+		Graphics::VAO::enableattrib(framebuffervaoid, 0); // Attrib 0
+		Graphics::VBO::bind(framebuffervaoid, 0, framebuffervboid, 0, sizeof(float) * 4); // Set buffer binding point 0
+		Graphics::VAO::setattrib(framebuffervaoid, 0, 2); // Attrib format
+		Graphics::VAO::bindattrib(framebuffervaoid, 0, 0); // Bind attrib
+
+		Graphics::VAO::enableattrib(framebuffervaoid, 1); // Attrib 1
+		Graphics::VBO::bind(framebuffervaoid, 1, framebuffervboid, sizeof(float) * 2, sizeof(float) * 4); // Set buffer binding point 1
+		Graphics::VAO::setattrib(framebuffervaoid, 1, 2); // Attrib format
+		Graphics::VAO::bindattrib(framebuffervaoid, 1, 1); // Bind attrib
+	}
+
+	void frameBuffer::drawFrameBuffer()
+	{
+		frameshader.Use(); // Use frame shader
+		glBindVertexArray(framebuffervaoid);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); // Bind to default frame buffer
+		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glBindTexture(GL_TEXTURE_2D, texColorbuffer); // Automatically binds texture to sampler2D
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		Graphics::VAO::unbind();
+		frameshader.UnUse();
+
+	}
+
+	void frameBuffer::delFrameBuffer()
+	{
+		glDeleteFramebuffers(1, &framebuffer);
+		delFrameBufferTex();
+		delFrameBufferVAO();
+	}
+	void frameBuffer::delFrameBufferTex()
+	{
+		glDeleteTextures(1, &(texColorbuffer)); // Delete generated texture
+	}
+
+	void frameBuffer::delFrameBufferVAO()
+	{
+		glDeleteVertexArrays(1, &framebuffervaoid);
+		glDeleteBuffers(1, &framebuffervboid);
+	}
 }
