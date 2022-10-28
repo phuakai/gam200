@@ -83,7 +83,7 @@ extern std::vector<Entity> walls;
 Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(100);
-std::vector<Entity> cloud(fow::fowMap.getDims());
+//std::vector<Entity> cloud(fow::fowMap.getDims());
 
 // for checking
 //Entity enemyManagerEntity;
@@ -149,48 +149,48 @@ void engineInit()
 	EntityID playerID = player1.GetID();
 
 	// Create fow
-	fow::fowMap.createFow();
-	int inc = 0;
-	std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
-	//std::cout << "this is size of tile list: " << fowTileList.size() << std::endl;
-	for (std::list<fow::fowTile>::iterator it = fow::fowMap.getFowTileMap().begin(); it != fow::fowMap.getFowTileMap().end(); ++it, ++inc)
-	{
-		//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
-		//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
-		cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-		cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
-		cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
-		it->setid(cloud[inc].GetID());
-		//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
-	}
+	//fow::fowMap.createFow();
+	//int inc = 0;
+	//std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
+	////std::cout << "this is size of tile list: " << fowTileList.size() << std::endl;
+	//for (std::list<fow::fowTile>::iterator it = fow::fowMap.getFowTileMap().begin(); it != fow::fowMap.getFowTileMap().end(); ++it, ++inc)
+	//{
+	//	//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
+	//	//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
+	//	cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+	//	cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
+	//	cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
+	//	it->setid(cloud[inc].GetID());
+	//	//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
+	//}
 
 	FormationManager enemyManager;
 	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
 
-	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	//// create default engine as source of randomness
-	//std::default_random_engine generator(seed);
-	//std::uniform_real_distribution<float> colour(0.f, 1.f);
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	//for (int i = 0; i < enemyUnits.size(); ++i)
-	//{
-	//	float randr = colour(generator);
-	//	float randg = colour(generator);
-	//	float randb = colour(generator);
+	for (int i = 0; i < enemyUnits.size(); ++i)
+	{
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
 
-	//	enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm");
-	//	enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
-	//	enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
-	//	enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
-	//	//enemyUnits[i].Add<Stats>(100);
-	//	ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
+		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
+		enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
+		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+		//enemyUnits[i].Add<Stats>(100);
+		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
-	//	EntityID enemyID = enemyUnits[i].GetID();
+		EntityID enemyID = enemyUnits[i].GetID();
 
-	//	enemyManager.addCharacter(enemyID);
-	//	mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
-	//}
-	//formationManagers.push_back(enemyManager);
+		enemyManager.addCharacter(enemyID);
+		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+	}
+	formationManagers.push_back(enemyManager);
 
 	//enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
 	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
@@ -198,7 +198,7 @@ void engineInit()
 	//enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
 	//ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
-	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
+	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
 	formationManager.Add<BaseInfo>("formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
 	ecs.setEntityName(formationManager.GetID(), "formationManager");
 
@@ -206,8 +206,8 @@ void engineInit()
 
 	//fromJsonECS("data.json");
 
-	//formationManagers[0].generateDijkstraCost(walls);
-	//formationManagers[0].generateFlowField();
+	formationManagers[0].generateDijkstraCost(walls);
+	formationManagers[0].generateFlowField();
 	
 	eventManager.subscribe(Systems::Collision);
 	eventManager.subscribe(Systems::Physics);

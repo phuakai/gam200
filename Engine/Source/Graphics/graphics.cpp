@@ -5,11 +5,12 @@
 
 This file handles the batch rendering of the game
 *//*__________________________________________________________________________*/
-#include <app.h>
+#include <graphics.h>
 #include <buffer.h>
 #include <texture.h>
 #include <iostream>
 #include "framebuffer.h"
+#include "app.h"
 
 #include "stb_image.h"
 
@@ -67,7 +68,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, in
 	for (int col = 0; col < 3; col++)
 	{
 		// Instancing offset array
-		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
+		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc + col); // Attrib 4 to 7
 		// Not sure what to put for last parameter of bind
 		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
 		glVertexAttribDivisor(matrix_loc + col, 1);
@@ -121,7 +122,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, in
 
 	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
 	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
-	
+
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
@@ -154,9 +155,6 @@ void RenderNS::InstancedRenderer::InstanceDelete()
 {
 	glDeleteBuffers(1, &vaoid);
 }
-
-
-
 
 RenderNS::BatchRenderer::BatchRenderer()
 {
@@ -210,7 +208,7 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	int offset = 0;
 	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		for (int i = 0; i < (totalindicesize-5); i += 6)
+		for (int i = 0; i < (totalindicesize - 5); i += 6)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;
@@ -222,10 +220,10 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 			offset += 4;
 		}
 	}
-	
+
 	else if (primtype == GL_POINTS || primtype == GL_LINES || primtype == GL_LINE_LOOP || primtype == GL_LINE_STRIP)
 	{
-		for (int i = 0; i < (totalindicesize-1); i += 2)
+		for (int i = 0; i < (totalindicesize - 1); i += 2)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;
@@ -265,7 +263,6 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	BufferNS::VAO::unbindVAO();
 
 	batchshader.UnUse();
-
 }
 
 void RenderNS::BatchRenderer::BatchClear()

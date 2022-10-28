@@ -36,12 +36,19 @@ void imguiUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	//ImGui::DockSpaceOverViewport();
+	ImGui::DockSpaceOverViewport();
 	//ImGuiViewport* viewportID = ImGui::FindViewportByPlatformHandle(Graphics::Input::ptr_to_window);
 	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
 	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
 	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
 	 
+	ImGui::Begin("Camera");
+	ImVec2 size;
+	size.x = ImGui::GetWindowWidth();
+	size.y = ImGui::GetWindowHeight();
+	auto tex = mainFrame.framebuffer;
+	ImGui::Image((void*)tex, size);
+	ImGui::End();
 
 	//static bool inputs_step = true;
 	//static float f32_v = 0.123f;

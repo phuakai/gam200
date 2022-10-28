@@ -108,7 +108,7 @@ struct GLApp {
 	};
 
 
-	static void entitydraw(Graphics::BatchRenderer test);
+	static void entitydraw();
 	//static void init_models_cont();
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 

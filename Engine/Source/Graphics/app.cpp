@@ -33,7 +33,6 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
-#include <graphics.h>
 #include "framebuffer.h"
 
 #include <random>
@@ -117,7 +116,7 @@ void GLApp::init()
 	}
 
 	mainFrame.createFrameBuffer();
-	
+
 
 	GLApp::shdrpgms.clear(); // clear shaders
 	models.clear(); // clear models
@@ -212,11 +211,11 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	}
 
 	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-	
+
 	matrix3x3::mat3x3 rotation
 	(cos(orientation.x), -sin(orientation.x), 0,
-	sin(orientation.x), cos(orientation.x), 0,
-	0, 0, 1);
+		sin(orientation.x), cos(orientation.x), 0,
+		0, 0, 1);
 
 	matrix3x3::mat3x3 translation
 	(1, 0, modelCenterPos.x,
@@ -242,7 +241,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	{
 		controlworldpos.emplace_back(controlxform * controlmodelpos[i]);
 		controlndcpos.emplace_back(world_to_ndc_xform * controlworldpos[i]);
-	}	
+	}
 
 	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
 
@@ -303,7 +302,7 @@ void GLApp::GLObject::draw() const
 		tmpVtxData.txtVtx = texcoord[i];
 		tmpVtxData.txtIndex = 6.f;
 		vertexData.emplace_back(tmpVtxData);
-		testdata.emplace_back(matrix3x3::mat3x3(1.f,0.f,0.f,  0.f, 1.f, 0.f,   0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
+		testdata.emplace_back(matrix3x3::mat3x3(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
 	}
 
 
@@ -655,7 +654,7 @@ void GLApp::update()
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
-	}	
+	}
 
 
 	//if (mouseClick)
@@ -668,7 +667,7 @@ void GLApp::update()
 	//		formationManagers[i].updateReached();
 	//	}
 
-	//	generateDijkstraCost(player->position, walls);
+	//	generateDijkstraxCost(player->position, walls);
 	//	generateFlowField(player->position);
 	//}
 }
@@ -713,7 +712,6 @@ void GLApp::draw()
 			//obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
-	GLApp::entitydraw(basicbatch); // Comment to stop drawing from ecs
 	basicinstance.InstanceClear();
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
@@ -746,7 +744,7 @@ void GLApp::draw()
 
 This function is empty for now
 */
-void GLApp::cleanup() 
+void GLApp::cleanup()
 {
 	mainFrame.delFrameBuffer();
 	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
@@ -802,7 +800,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	if (modelname == "circle")
 	{
-		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body);
+		tmpObj.body.createCircleBody(scale.x / 2.f, pos, 0.f, false, 0.f, &tmpObj.body);
 	}
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body);
@@ -858,7 +856,7 @@ void GLApp::GLObject::init()
 }
 
 
-void GLApp::entitydraw(Graphics::BatchRenderer test)
+void GLApp::entitydraw()
 {
 	std::vector<EntityID> entities = ecs.getEntities();
 	for (int i = 0; i < entities.size(); i++)
@@ -928,7 +926,7 @@ void GLApp::entitydraw(Graphics::BatchRenderer test)
 		{
 			ndccoord.emplace_back(poscoord[i]);
 		}
-		
+
 		for (int j = 0; j < ndccoord.size(); ++j)
 		{
 			ModelNS::modelVtxData tmpVtxData;
@@ -961,7 +959,7 @@ void GLApp::entitydraw(Graphics::BatchRenderer test)
 			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 		);
-		
+
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		basicinstance.headerdata.clear();
@@ -972,7 +970,7 @@ void GLApp::entitydraw(Graphics::BatchRenderer test)
 		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
 		basicinstance.vaoid = models["square"].getVAOid();
 		entitycounter++;
-		
+
 		testdata.clear();
 
 		//if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
