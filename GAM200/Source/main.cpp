@@ -44,20 +44,17 @@ Indicates how the program existed. Normal exit is signaled by a return value of
 0. Abnormal termination is signaled by a non-zero return value.
 Note that the C++ compiler will insert a return 0 statement if one is missing.
 */
-int main() {
-  // Part 1
-  init();
+int main() 
+{
+    init();
 
-  // Part 2
-  while (!glfwWindowShouldClose(Graphics::Input::ptr_to_window)) {
-    // Part 2a
-    update();
-    // Part 2b
-    draw();
-  }
+    while (!glfwWindowShouldClose(Graphics::Input::ptr_to_window)) 
+    {
+        update();
+        draw();
+    }
 
-  // Part 3
-  cleanup();
+    cleanup();
 }
 
 /*  _________________________________________________________________________ */

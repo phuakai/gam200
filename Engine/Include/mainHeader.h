@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <vector>
@@ -7,6 +6,7 @@
 #include "vec3D.h"
 #include "mat3x3.h"
 #include <rttr/type>
+#include "ECS.h"
 
 #define MAX_GRID_X 25
 #define MAX_GRID_Y 25
@@ -61,6 +61,8 @@ struct Stats {
 private:
 	int health;
 };
+
+rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID);
 
 void engineInit();
 void engineUpdate();

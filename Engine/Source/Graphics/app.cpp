@@ -33,6 +33,7 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
+#include <graphics.h>
 
 #include <random>
 #include <stdint.h>
@@ -62,7 +63,6 @@ std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 Graphics::BatchRenderer basicbatch; // Batch render object
 Graphics::BatchRenderer debugbatch; // Batch render object for collision debug
 Graphics::BatchRenderer debuglinebatch; // Batch render object for collision debug
-
 
 //Graphics::Texture texobj;
 
@@ -379,7 +379,7 @@ void GLApp::update()
 	bool mouseClick = false;
 	if (Graphics::Input::mousestateLeft)
 	{
-		Graphics::Input::mousestateLeft = false;
+		//Graphics::Input::mousestateLeft = false;
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		mouseClick = true;
 	}
@@ -583,19 +583,19 @@ void GLApp::update()
 	}	
 
 
-	if (mouseClick)
-	{
-		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+	//if (mouseClick)
+	//{
+	//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 
-		for (int i = 0; i < formationManagers.size(); ++i)
-		{
-			formationManagers[i].target = player->position;
-			formationManagers[i].updateReached();
-		}
+	//	for (int i = 0; i < formationManagers.size(); ++i)
+	//	{
+	//		formationManagers[i].target = player->position;
+	//		formationManagers[i].updateReached();
+	//	}
 
-		generateDijkstraCost(player->position, walls);
-		generateFlowField(player->position);
-	}
+	//	generateDijkstraCost(player->position, walls);
+	//	generateFlowField(player->position);
+	//}
 }
 
 /*  _________________________________________________________________________*/
@@ -638,7 +638,7 @@ void GLApp::draw()
 			obj->second.draw(); // Comment to stop drawing from object map
 		}
 	}
-	GLApp::entitydraw(); // Comment to stop drawing from ecs
+	GLApp::entitydraw(basicbatch); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -777,7 +777,7 @@ void GLApp::GLObject::init()
 }
 
 
-void GLApp::entitydraw()
+void GLApp::entitydraw(Graphics::BatchRenderer test)
 {
 	std::vector<EntityID> entities = ecs.getEntities();
 	for (int i = 0; i < entities.size(); i++)

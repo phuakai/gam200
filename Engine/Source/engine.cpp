@@ -30,6 +30,14 @@ RTTR_REGISTRATION{
 		.property("g", &vector3D::vec3D::g)
 		.property("b", &vector3D::vec3D::b);
 
+	rttr::registration::class_<EntityID>("EntityID")
+		.property("type", &Render::type)
+		.property("color", &Render::color)
+		.property("vaoID", &Render::vaoID)
+		.property("vboID", &Render::vboID)
+		.property("eboID", &Render::eboID)
+		.property("shaderName", &Render::shaderName);
+
 	rttr::registration::class_<Render>("Render")
 		.property("type", &Render::type)
 		.property("color", &Render::color)
@@ -72,11 +80,11 @@ extern std::vector<Entity> walls;
 
 Entity player1;
 std::vector<Entity> walls(0);
-std::vector<Entity> enemyUnits(100);
+//std::vector<Entity> enemyUnits(100);
 
 // for checking
-Entity enemyManagerEntity;
-extern Entity enemyManagerEntity;
+//Entity enemyManagerEntity;
+//extern Entity enemyManagerEntity;
 
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
@@ -86,13 +94,32 @@ System<BaseInfo, Physics> system1(ecs, 2);
 extern EventManager eventManager;
 EventManager eventManager;
 
-extern std::vector<FormationManager> formationManagers;
 std::vector<FormationManager> formationManagers;
 
-extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 float timer;
 
 quadTree mainTree;
+
+// PUT IN INPUT SYSTEM -> DRAG SELECT
+bool drag;
+int selected;
+int currentFormationManagerID;
+vector2D::vec2D dragSelectStartPosition;
+vector2D::vec2D dragSelectEndPosition;
+
+Entity formationManager;
+
+rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID)
+{
+	if (componentName == rttr::type::get<Render>())
+		return *(ecs.GetComponent<Render>(entityID));
+	else if (componentName == rttr::type::get<BaseInfo>())
+		return *(ecs.GetComponent<BaseInfo>(entityID));
+	else if (componentName == rttr::type::get<Texture>())
+		return *(ecs.GetComponent<Texture>(entityID));
+	else if (componentName == rttr::type::get<Physics>())
+		return *(ecs.GetComponent<Physics>(entityID));
+}
 
 void engineInit()
 {
@@ -118,44 +145,50 @@ void engineInit()
 
 	EntityID playerID = player1.GetID();
 
-	FormationManager enemyManager;
-	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
+	//FormationManager enemyManager;
+	//enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
 
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
+	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	//// create default engine as source of randomness
+	//std::default_random_engine generator(seed);
+	//std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	for (int i = 0; i < enemyUnits.size(); ++i)
-	{
-		float randr = colour(generator);
-		float randg = colour(generator);
-		float randb = colour(generator);
+	//for (int i = 0; i < enemyUnits.size(); ++i)
+	//{
+	//	float randr = colour(generator);
+	//	float randg = colour(generator);
+	//	float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm");
-		enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
-		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
-		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
-		//enemyUnits[i].Add<Stats>(100);
-		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
+	//	enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm");
+	//	enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
+	//	enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
+	//	enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+	//	//enemyUnits[i].Add<Stats>(100);
+	//	ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
-		EntityID enemyID = enemyUnits[i].GetID();
+	//	EntityID enemyID = enemyUnits[i].GetID();
 
-		enemyManager.addCharacter(enemyID);
-		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
-	}
-	formationManagers.push_back(enemyManager);
+	//	enemyManager.addCharacter(enemyID);
+	//	mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+	//}
+	//formationManagers.push_back(enemyManager);
 
-	enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
-	enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
-	enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
-	enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
-	ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
+	//enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
+	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
+	//enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
+	//enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
+	//ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
+
+	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
+	formationManager.Add<BaseInfo>("formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
+	ecs.setEntityName(formationManager.GetID(), "formationManager");
 
 	timer = 4;
 
-	generateDijkstraCost(ecs.GetComponent<BaseInfo>(playerID)->position, walls);
-	generateFlowField(ecs.GetComponent<BaseInfo>(playerID)->position);
+	//fromJsonECS("data.json");
+
+	//formationManagers[0].generateDijkstraCost(walls);
+	//formationManagers[0].generateFlowField();
 	
 	eventManager.subscribe(Systems::Collision);
 	eventManager.subscribe(Systems::Physics);
@@ -164,10 +197,14 @@ void engineInit()
 	{
 		for (auto i : entities)
 		{
-			if (i == enemyManagerEntity.GetID())
-			{
-				continue;
-			}
+			//if (i == enemyManagerEntity.GetID())
+			//{
+			//	continue;
+			//}
+			//if (m->reached)
+			//{
+			//	continue;
+			//}
 
 			MoveEvent entityToMove;
 
@@ -239,78 +276,175 @@ void engineInit()
 
 		///	}
 		///}
-
-		//vector2D::vec2D oldPosition = baseInfo->position;
-		//vector2D::vec2D changedVelocity(0, 0);
-		//vector2D::vec2D offsetVector(0, 0);
-
-		//if ((p[i].position.x >= m[i].target.x - 10 && p[i].position.x <= m[i].target.x + 10) &&
-		//	(p[i].position.y >= m[i].target.y - 10 && p[i].position.y <= m[i].target.y + 10) || enemyManager.reached)
-		//{
-		//	if (!m[i].reached)
-		//	{
-		//		enemyManager.updateSlot(i);
-		//		m[i].reached = true;
-		//	}
-
-		//	if (!((p[i].position.x >= m[i].formationTarget.x - 2 && p[i].position.x <= m[i].formationTarget.x + 2) &&
-		//		(p[i].position.y >= m[i].formationTarget.y - 2 && p[i].position.y <= m[i].formationTarget.y + 2)))
-		//	{
-		//		changedVelocity = m[i].formationTarget - p[i].position;
-		//	}
-		//}
-		//else
-		//{
-		//	m[i].reached = false;
-
-		//	vector2D::vec2D nodePosition = (p[i].position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-
-		//	if ((int)nodePosition.x < 0 || (int)nodePosition.y < 0 || (int)nodePosition.x >= MAX_GRID_X || (int)nodePosition.x >= MAX_GRID_Y)
-		//	{
-		//		changedVelocity = m[i].target - p[i].position;
-		//	}
-		//	else
-		//	{
-		//		changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
-		//	}
-
-		//	vector2D::Vector2DNormalize(m[i].formationTarget, m[i].formationTarget);
-
-		//	changedVelocity += m[i].formationTarget * 0.1;
-
-		//	std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
-
-		//	movementFlocking(entities[i], allVelocity);
-
-		//	changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2]); // *flockingModifier;
-		//}
-
-		//if (!((p[i].position.x >= m[i].target.x - 5 && p[i].position.x <= m[i].target.x + 5) &&
-		//	(p[i].position.y >= m[i].target.y - 5 && p[i].position.y <= m[i].target.y + 5) || enemyManager.reached))
-		//{
-		//	changedVelocity = m[i].formationTarget - p[i].position;
-		//}
-
-		//vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
-
-		//// capping speed
-		//if (vector2D::Vector2DLength(changedVelocity) > m[i].speed)
-		//{
-		//	changedVelocity *= m[i].speed / vector2D::Vector2DLength(changedVelocity);
-		//}
-		//changedVelocity *= m[i].speed;
-
-		//p[i].position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
-
-		//m[i].velocity = changedVelocity;
-		//mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
 	});
+
+	drag = false;
+	selected = 0;
+	currentFormationManagerID = -1;
+	dragSelectStartPosition = vector2D::vec2D{ 0 , 0 };
+	dragSelectEndPosition = vector2D::vec2D{ 0 , 0 };
+
+	// Serialisation ========================================================================================================
+	//std::vector<EntityID> enemyUnitsID;
+	//for (int i = 0; i < enemyUnits.size(); ++i)
+	//{
+	//	enemyUnitsID.push_back(enemyUnits[i].GetID());
+	//}
+	
+	//toJsonECS(enemyUnitsID, "data.json", true);
 
 	GLApp::init();
 }
 
 void engineUpdate()
 {
+	double mousePosX, mousePosY;
+	Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+
+	if (Graphics::Input::mousestateLeft) // just clicked
+	{
+		if (!drag)
+		{
+			dragSelectStartPosition.x = mousePosX;
+			dragSelectStartPosition.y = mousePosY;
+			drag = true;
+		}
+		else // still dragging
+		{
+			dragSelectEndPosition.x = mousePosX;
+			dragSelectEndPosition.y = mousePosY;
+
+			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+
+			formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
+			formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
+
+			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+		}
+	}
+	else if (drag) // released
+	{
+		BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+
+		if (formationManagerInfo->dimension.x < 2 && formationManagerInfo->dimension.y < 2)	// click and not drag
+		{
+			formationManagerInfo->dimension.x = 10;
+			formationManagerInfo->dimension.y = 10;
+
+			formationManagerInfo->position = dragSelectStartPosition;
+
+			dragSelectEndPosition.x = dragSelectStartPosition.x - 5;
+			dragSelectEndPosition.y = dragSelectStartPosition.y - 5;
+			dragSelectStartPosition.x += 5;
+			dragSelectStartPosition.y += 5;
+
+			selected = 2;
+		}
+		else
+		{
+			selected = 1;
+		}
+		drag = false;
+	}
+
+	if (Graphics::Input::mousestateRight)
+	{
+		if (selected)
+		{
+			// Checking for units in the selected area using quadTree
+			vector2D::vec2D center = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+			vector2D::vec2D dimension;
+			dimension.x = fabs(dragSelectEndPosition.x - dragSelectStartPosition.x);
+			dimension.y = fabs(dragSelectEndPosition.y - dragSelectStartPosition.y);
+
+			std::list<EntityID*> myList;
+			AABB range(center.x - dimension.x / 2,
+				center.y - dimension.y / 2,
+				center.x + dimension.x / 2,
+				center.y + dimension.y / 2);
+			mainTree.query(range, myList);
+
+			if (myList.size() != 0)
+			{
+				int newFormationManagerID = formationManagers.size();
+				// Finding inactive formation manager
+				for (int i = 0; i < formationManagers.size(); ++i)
+				{
+					// means inactive
+					if (formationManagers[i].slotAssignment.size() == 0)
+					{
+						newFormationManagerID = i;
+						break;
+					}
+				}
+				currentFormationManagerID = newFormationManagerID;
+
+				FormationManager newManager;
+				newManager.target = vector2D::vec2D(mousePosX, mousePosY);
+
+				for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
+				{
+					if ((**obj2) == player1.GetID()  /* || (**obj2) == enemyManagerEntity.GetID() */ || (**obj2) == formationManager.GetID())
+					{
+						continue;
+					}
+
+					int& formationManagerID = ecs.GetComponent<Physics>((**obj2))->formationManagerID;
+
+					if (formationManagerID != -1)
+					{
+						auto initialFormationManagerSlot = std::find(formationManagers[formationManagerID].slotAssignment.begin(), formationManagers[formationManagerID].slotAssignment.end(), (**obj2));
+
+						if (initialFormationManagerSlot == formationManagers[formationManagerID].slotAssignment.end())
+						{
+							std::cout << "what how huh\t" << formationManagerID << std::endl;
+						}
+
+						formationManagers[formationManagerID].slotAssignment.erase(initialFormationManagerSlot);
+					}
+
+					newManager.addCharacter((**obj2));
+					formationManagerID = newFormationManagerID;
+					ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
+
+					if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
+					{
+						break;
+					}
+				}
+				std::cout << newManager.slotAssignment.size() << std::endl;
+
+				newManager.generateDijkstraCost(walls);
+				newManager.generateFlowField();
+				newManager.updateReached();
+
+				if (newFormationManagerID != formationManagers.size())
+				{
+					formationManagers[newFormationManagerID] = newManager;
+				}
+				else
+				{
+					formationManagers.push_back(newManager);
+				}
+
+				selected = 0;
+
+				BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+
+				formationManagerInfo->dimension.x = 0;
+				formationManagerInfo->dimension.y = 0;
+			}
+		}
+		else
+		{
+			formationManagers[currentFormationManagerID].target = vector2D::vec2D(mousePosX, mousePosY);
+			formationManagers[currentFormationManagerID].generateDijkstraCost(walls);
+			formationManagers[currentFormationManagerID].generateFlowField();
+			formationManagers[currentFormationManagerID].updateReached();
+		}
+		Graphics::Input::mousestateRight = false;
+	}
+
 	if (timer > 0)
 		timer -= (float)Graphics::Input::delta_time;
 
@@ -321,10 +455,9 @@ void engineUpdate()
 		for (int i = 0; i < formationManagers.size(); ++i)
 		{
 			vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-			//std::cout << formationManagers[i].target.x << "\t" << formationManagers[i].target.y << std::endl;
 
-			if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 20 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 20) &&
-				(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 20 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 20))
+			if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 5 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 5) &&
+				(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 5 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 5))
 			{
 				formationManagers[i].reached = true;
 			}
@@ -332,7 +465,7 @@ void engineUpdate()
 			if (!formationManagers[i].reached)
 			{
 				formationManagers[i].updateAnchorPosition();
-				ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
+				//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
 				formationManagers[i].updateSlots();
 			}
 		}
@@ -362,6 +495,8 @@ void swapBuffer()
 {
 	// Swap buffers: front <-> back
 	glfwSwapBuffers(Graphics::Input::ptr_to_window);
+
+	//std::cout << "test" << std::endl;
 }
 
 int Stats::getHealth () const

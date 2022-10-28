@@ -17,80 +17,61 @@ void levelEditorHierarchy::ImGuiHierarchy()
 
 	// Adding folder button =================================================================================
 	ImGui::SameLine(ImGui::GetWindowWidth() * 0.9);
+
+	/// Should be a function on its own: called AddFolder(int parent)
 	if (ImGui::Button("+"))
 	{
-		/// Should be a function on its own: called AddFolder(int parent)
-		// Adding a new folder, without a parent (0)
-		parent.push_back(0);
+		// main parent ID starts from 1000, then 2000, 3000
+		latestParentID += 1000;
+		parent.push_back(latestParentID);
 		listOfEntities.push_back(std::vector<EntityID>());
 	}
 	// Adding folder button end =============================================================================
 
 	// Drawing folders & entities ===========================================================================
-	//static bool dragCheck = false;
-	//static int dragEntityNo = -1;
-	//static EntityID dragEntity = -1;
-	//static int dragEntityVector = -1;
-	//static int dragEntityVectorTo = -1;
-	//static int dragType = -1;				// 0 - Entity, 1 - File
-
 	int moveFrom = -1, moveTo = -1;
 	int moveFromVector = -1, moveToVector = -1;
-	static std::string dragType = "";
+	int treeLevel = 0;
+	static std::string dragTypeFrom = "", dragTypeTo = "";
 
 	for (int i = 0; i < parent.size(); ++i)
 	{
+		ImGui::PushID(i);
 		// Drawing Folder 
 		bool nodeOpen = false;
 		//static int nodeHovered = -1;
 
-		if (parent[i] >= 0)
+		if (parent[i] > 0)
 		{
 			ImGuiTreeNodeFlags nodeFlags =
 				ImGuiTreeNodeFlags_DefaultOpen |
 				ImGuiTreeNodeFlags_FramePadding |
 				ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			//if (dragCheck && nodeHovered == i)
-			//{
-			//	dragEntityVectorTo = i;
-			//}
-
 			nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "File", i);
-
-			//if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
-			//{
-			//	nodeHovered = i;
-			//}
-			
-			//else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-			//{
-			//	int dragTo = j + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-
-			//	dragEntityNo = j;
-			//	dragEntityVector = i;
-			//	dragEntity = listOfEntities[i][j];
-			//	dragCheck = true;
-			//	dragType = 1;
-			//	ImGui::ResetMouseDragDelta();
-			//}
+			++treeLevel;
 
 			if (ImGui::BeginDragDropSource())
 			{
-				dragType = "Folder";
-				ImGui::SetDragDropPayload("ENTITYDRAG", &i, sizeof(EntityID));
-				ImGui::Text("This is a drag and drop source");
+				dragTypeFrom = "Folder";
+				vector2D::vec2D entityLocation{ (float)i , 0.f };
+				ImGui::SetDragDropPayload("dragEntity", &entityLocation, sizeof(vector2D::vec2D));
+				//ImGui::Text("This is a drag and drop source");
 				ImGui::EndDragDropSource();
 			}
 
 			if (ImGui::BeginDragDropTarget())
 			{
+				dragTypeTo = "Folder";
 				ImGuiDragDropFlags target_flags = 0;	//ImGuiDragDropFlags_AcceptBeforeDelivery;		// Don't wait until the delivery (release mouse button on a target) to do something
 				//| ImGuiDragDropFlags_AcceptNoDrawDefaultRect;	// Don't display the yellow rectangle
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITYDRAG", target_flags))
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("dragEntity", target_flags))
 				{
-					moveFrom = *(const EntityID*)payload->Data;
-					moveTo = i;
+					vector2D::vec2D entityLocation = *(const vector2D::vec2D*)payload->Data;
+					moveFromVector = entityLocation.x;
+					moveFrom = entityLocation.y;
+					moveToVector = i;
+					moveTo = 0;
 				}
 
 				ImGui::EndDragDropTarget();
@@ -98,10 +79,11 @@ void levelEditorHierarchy::ImGuiHierarchy()
 			
 		}
 		
-		if (nodeOpen || parent[i] == -1)
+		if (nodeOpen || parent[i] == 0)
 		{
 			for (int j = 0; j < listOfEntities[i].size(); ++j)
 			{
+				ImGui::PushID(j);
 				EntityID currentEntity = listOfEntities[i][j];
 				const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
 
@@ -112,65 +94,41 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					{
 						selected = currentEntity;
 					}
-
-					//else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-					//{
-					//	int dragTo = j + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-					//	if (dragTo >= 0 && dragTo < listOfEntities[i].size())
-					//	{
-					//		listOfEntities[i][j] = listOfEntities[i][dragTo];
-					//		listOfEntities[i][dragTo] = currentEntity;
-					//		ImGui::ResetMouseDragDelta();
-					//	}
-					//	else
-					//	{
-					//		dragEntityNo = j;
-					//		dragEntityVector = i;
-					//		dragEntity = listOfEntities[i][j];
-					//		dragCheck = true;
-					//		dragType = 0;
-					//		ImGui::ResetMouseDragDelta();
-					//	}
-					//}
-					//else if (!ImGui::IsItemActive() && dragEntity == listOfEntities[i][j] && dragEntityVector != -1)
-					//{
-					//	listOfEntities[dragEntityVector].erase(listOfEntities[dragEntityVector].begin() + dragEntityNo);
-					//	listOfEntities[dragEntityVectorTo].push_back(dragEntity);
-
-					//	dragEntity = -1;
-					//	dragEntityVector = -1;
-					//	nodeHovered = -1;
-					//	dragCheck = false;
-					//}
 				}
 
 				if (ImGui::BeginDragDropSource())
 				{
-					dragType = "Entity";
-					ImGui::SetDragDropPayload("ENTITYDRAG", &j, sizeof(EntityID));
-					ImGui::Text("This is a drag and drop source");
+					dragTypeFrom = "Entity"; 
+					vector2D::vec2D entityLocation{ (float)i , (float)j };
+					ImGui::SetDragDropPayload("dragEntity", &entityLocation, sizeof(vector2D::vec2D));
+					//ImGui::Text("This is a drag and drop source");
 					ImGui::EndDragDropSource();
 				}
 
-				if (ImGui::BeginDragDropTarget())
+				if (dragTypeFrom != "Folder" && ImGui::BeginDragDropTarget())
 				{
-					ImGuiDragDropFlags target_flags = 0;	//ImGuiDragDropFlags_AcceptBeforeDelivery;		// Don't wait until the delivery (release mouse button on a target) to do something
-					//| ImGuiDragDropFlags_AcceptNoDrawDefaultRect;	// Don't display the yellow rectangle
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITYDRAG", target_flags))
+					dragTypeTo = "Entity";
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("dragEntity"))
 					{
-						moveFrom = *(const EntityID*)payload->Data;
+						vector2D::vec2D entityLocation = *(const vector2D::vec2D*)payload->Data;
+						moveFromVector = entityLocation.x;
+						moveFrom = entityLocation.y;
+						moveToVector = i;
 						moveTo = j;
 					}
 
 					ImGui::EndDragDropTarget();
 				}
+
+				ImGui::PopID();
 			}
 		}
 
 		if (moveFrom != -1 && moveTo != -1)
 		{
 			// Reorder items
-			if (dragType == "Folder")
+			if (dragTypeFrom == "Folder")
 			{
 				int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
 				int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
@@ -179,14 +137,110 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
 				listOfEntities[i][moveTo] = tmp;
 			}
-			else // dragType == "Entity"
+			else // dragTypeFrom == "Entity"
 			{
-				int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
-				int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
-				int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
-				EntityID tmp = listOfEntities[i][moveFrom];
-				memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
-				listOfEntities[i][moveTo] = tmp;
+				if (dragTypeTo == "Folder")
+				{
+					// change 4 to macro
+					int levelID = 4 - treeLevel - 1;
+
+					if (levelID < 0)
+					{
+						continue;
+					}
+
+					int levelMask = pow(10, levelID);
+
+					int moveFromVectorID = parent[moveFromVector];		// to move the children of this parent as well
+					int moveToVectorID = parent[moveToVector];
+
+					while (true)
+					{
+						// Checking if there are children in the parent to move into
+						if (moveToVector + 1 < parent.size() && parent[moveToVector + 1] == moveToVectorID + levelMask)
+						{
+							++moveToVector;
+							moveToVectorID += levelMask;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					// Changing the folder to be under the parent folder, after its children 
+					parent[moveFromVector] = moveToVectorID + levelMask;
+
+					// Finding and changing the original folder's children
+					// Finding the treeLevel of the original folder
+					int moveFromLevelID = 0;
+					bool check = false;
+					while (true)
+					{
+						if (moveFromLevelID > 4)
+						{
+							check = true;
+							break;
+						}
+
+						if (!(moveFromVectorID % (int)pow(10, moveFromLevelID + 1)))
+						{
+							++moveFromLevelID;
+						}
+						else
+						{
+							break;
+						}
+					}
+					if (check)
+					{
+						continue;
+					}
+
+					moveFromLevelID /= 10;
+					int moveFromLevelMask = pow(10, moveFromLevelID);
+					auto nextFolderIndex = std::find(parent.begin(), parent.end(), moveFromLevelID + moveFromLevelMask);
+
+					if (nextFolderIndex == parent.end())
+					{
+						continue;
+					}
+
+					int numberOfChildren = std::distance(parent.begin(), nextFolderIndex) - moveFromVector;
+
+					//while (numberOfChildren) 
+					//{
+
+					//}
+				}
+				else // dragTypeTo == "Entity"
+				{
+					int copyDst, copySrc, copyCount;
+					if (moveFromVector == moveToVector)
+					{
+						copyDst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
+						copySrc = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
+						copyCount = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
+					}
+					else
+					{
+						int moveFromVectorID = parent[moveFromVector];
+						int moveToVectorID = parent[moveToVector];
+						int difference = abs(moveFromVectorID - moveToVectorID);
+						
+						while (true)
+						{
+							
+						}
+						
+					}
+					int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
+					int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
+					int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
+					EntityID tmp = listOfEntities[i][moveFrom];
+					memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
+					listOfEntities[i][moveTo] = tmp;
+				}
 			}
 			
 			ImGui::SetDragDropPayload("DND_DEMO_NAME", &moveTo, sizeof(EntityID)); // Update payload immediately so on the next frame if we move the mouse to an earlier item our index payload will be correct. This is odd and showcase how the DnD api isn't best presented in this example.
@@ -194,8 +248,11 @@ void levelEditorHierarchy::ImGuiHierarchy()
 
 		if (nodeOpen)
 		{
+			--treeLevel;
 			ImGui::TreePop();
 		}
+
+		ImGui::PopID();
 	}
 	// Drawing folders & entities end =======================================================================
 
@@ -238,7 +295,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		else
 		{
 			temp = ecs.GetNewID();
-			ecs.RegisterEntity(temp, "In IMGUI");
+			ecs.RegisterEntity(temp);
 			std::cout << temp;
 			counter++;
 		}

@@ -56,6 +56,7 @@ GLboolean Graphics::Input::keystateSquareBracketLeft; // Object rotation
 GLboolean Graphics::Input::keystateSquareBracketRight; // Object rotation
 
 GLboolean Graphics::Input::mousestateLeft = GL_FALSE;
+GLboolean Graphics::Input::mousestateRight = GL_FALSE;
 
 
 bool Graphics::Input::init(GLint w, GLint h, std::string t)
@@ -430,6 +431,18 @@ void Graphics::Input::mousebutton_callback(GLFWwindow* pwin, int button, int act
 		if (GLFW_RELEASE == action)
 		{
 			mousestateLeft = GL_FALSE; // Disable mouse left state on release
+		}
+	}
+
+	if (GLFW_MOUSE_BUTTON_RIGHT == button)
+	{
+		if (GLFW_PRESS == action)
+		{
+			mousestateRight = GL_TRUE; // Enable mouse left state on click
+		}
+		if (GLFW_RELEASE == action)
+		{
+			mousestateRight = GL_FALSE; // Disable mouse left state on release
 		}
 	}
 }

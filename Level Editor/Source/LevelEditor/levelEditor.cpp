@@ -23,22 +23,26 @@ void imguiInit()
 	show_demo_window = true;
 	show_another_window = true;
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 }
 
 void imguiUpdate()
 {
 	//-----------------------------------------extra imgui stuff here  -- we are so moving this out
-	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	//ImGui::DockSpaceOverViewport();
-	//ImGui::FindViewportByID()
+	//ImGuiViewport* viewportID = ImGui::FindViewportByPlatformHandle(Graphics::Input::ptr_to_window);
+	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
+	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
+	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
 	 
 
-	static bool inputs_step = true;
-	static float f32_v = 0.123f;
-	const float f32_one = 1.f;
+	//static bool inputs_step = true;
+	//static float f32_v = 0.123f;
+	//const float f32_one = 1.f;
 
 	levelEditorHierarchy& hierarchy = levelEditorHierarchy::getInstance();
 	levelEditorProperties& properties = levelEditorProperties::getInstance();
@@ -60,6 +64,7 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
 	}
 
 	ImGui::End();
@@ -79,6 +84,7 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
 	}
 
 	ImGui::End();
@@ -98,6 +104,7 @@ void imguiUpdate()
 		{
 			ImGui::EndTabItem();
 		}
+		ImGui::EndTabBar();
 	}
 
 	ImGui::End();

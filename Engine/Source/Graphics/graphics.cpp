@@ -5,7 +5,7 @@
 
 This file handles the batch rendering of the game
 *//*__________________________________________________________________________*/
-#include <graphics.h>
+#include <app.h>
 #include <buffer.h>
 #include <texture.h>
 #include <iostream>

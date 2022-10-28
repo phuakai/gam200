@@ -22,6 +22,7 @@ namespace Graphics
 		static std::string windowtitle; // Title of window
 		static GLFWwindow* ptr_to_window; // Pointer to window 
 		static GLboolean mousestateLeft; // Boolean to check left mouse click
+		static GLboolean mousestateRight; // Boolean to check left mouse click
 
 		static GLdouble fps;
 		static GLdouble delta_time; // time taken to complete most recent game loop

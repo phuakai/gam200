@@ -24,8 +24,6 @@ Technology is prohibited.
 #include "mat3x3.h"
 #include "ECS.h"
 
-extern Entity enemyManagerEntity;
-
 void physicsUpdate();
 
 /******************************************************************************/

@@ -193,7 +193,6 @@ private:
     {
         Archetype* archetype;
         std::size_t index;
-        std::string entityName;
     };
 
     typedef std::unordered_map<EntityID, Record> EntityArchetypeMap;
@@ -224,7 +223,7 @@ public:
 
     void RegisterSystem(const std::uint8_t& layer, SystemBase* system);
 
-    void RegisterEntity(const EntityID entityId, const std::string name);
+    void RegisterEntity(const EntityID entityId);
 
     void RunSystems(const std::uint8_t& layer, const float elapsedMilliseconds);
 
@@ -308,10 +307,6 @@ private:
         // EntityID myEntity = ecs.CreateEntity();
         //ecs.AddComponent<Physics>(myEntity, { 2.f, 5.f, .34f, .1f });
 };
-
-
-
-
 
 
 

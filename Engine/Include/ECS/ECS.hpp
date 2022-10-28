@@ -17,7 +17,7 @@ const IDType TypeIdGenerator<T>::GetNewID() {
 
 inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) 
 {
-    m_ecs.RegisterEntity(m_id, name);
+    m_ecs.RegisterEntity(m_id);
 }
 template<typename C, typename... Args>
 inline C* Entity::Add(Args&&... args)
@@ -149,12 +149,11 @@ inline void ECS::RegisterSystem(const std::uint8_t& layer, SystemBase* system)
     m_systems[layer].push_back(system);
 }
 
-inline void ECS::RegisterEntity(const EntityID entityId, const std::string name)
+inline void ECS::RegisterEntity(const EntityID entityId)
 {
     Record dummyRecord;
     dummyRecord.archetype = nullptr;
     dummyRecord.index = 0;
-    dummyRecord.entityName = name;
     m_entityArchetypeMap[entityId] = dummyRecord;
 }
 
@@ -806,7 +805,6 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
 inline void ECS::setEntityName(const EntityID& entityId, std::string name)
 {
     Record& record = m_entityArchetypeMap[entityId];
-    record.entityName = name;
 }
 
 inline std::vector<std::string> ECS::getAllRegisteredComponents() 
@@ -840,7 +838,6 @@ inline std::vector<std::string> ECS::getEntityNames()
 inline std::string* ECS::getEntityName(const EntityID& entityId) 
 {
     Record& record = m_entityArchetypeMap[entityId];
-    return &record.entityName;
 }
 
 inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId)

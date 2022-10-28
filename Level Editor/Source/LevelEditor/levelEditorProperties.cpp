@@ -1,19 +1,5 @@
 #include "levelEditorProperties.h"
 
-rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityId)
-{
-	if (componentName == rttr::type::get<Render>())
-		return *ecs.GetComponent<Render>(entityId);
-	else if (componentName == rttr::type::get<BaseInfo>())
-		return *ecs.GetComponent<BaseInfo>(entityId);
-	else if (componentName == rttr::type::get<Texture>())
-		return *ecs.GetComponent<Texture>(entityId);
-	else if (componentName == rttr::type::get<Physics>())
-		return *ecs.GetComponent<Physics>(entityId);
-	//else if (componentName == rttr::type::get<Stats>())
-	//	return *ecs.GetComponent<Stats>(entityId);
-}
-
 levelEditorProperties& levelEditorProperties::getInstance()
 {
 	static levelEditorProperties instance;

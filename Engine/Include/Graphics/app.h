@@ -20,7 +20,6 @@ and transformations (in later labs).
 /*                                                             
 ----------------------------------------------------------------------------- */
 #include <input.h>
-#include <glslshader.h>
 #include <list> 
 #include <random>
 #include <map>
@@ -30,6 +29,7 @@ and transformations (in later labs).
 #include <model.h>
 #include <physicsRigidBody.h>
 #include <graphics.h>
+#include "input.h"
 
 
 struct GLApp {
@@ -104,7 +104,7 @@ struct GLApp {
 	};
 
 
-	static void entitydraw();
+	static void entitydraw(Graphics::BatchRenderer test);
 	//static void init_models_cont();
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
