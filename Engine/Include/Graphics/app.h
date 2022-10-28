@@ -58,7 +58,7 @@ struct GLApp {
 	static bool movableShape;
 	static std::unordered_map<collisionType, std::string> collisionInfo;
 
-	static void entitydraw();
+	static void entitydraw(RenderNS::InstancedRenderer& instanceobj);
 
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 

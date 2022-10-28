@@ -362,7 +362,7 @@ void GLApp::draw()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	basicinstance.InstanceClear();
-	GLApp::entitydraw(); // Comment to stop drawing from ecs
+	GLApp::entitydraw(basicinstance); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
@@ -435,7 +435,7 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 }
 
 
-void GLApp::entitydraw()
+void GLApp::entitydraw(RenderNS::InstancedRenderer& instanceobj)
 {
 	std::vector<EntityID> entities = ecs.getEntities();
 
@@ -481,7 +481,7 @@ void GLApp::entitydraw()
 			shaderid = shdrpgms.find(curobj->shaderName)->second;
 		}
 
-		basicinstance.instanceshader = shaderid;
+		instanceobj.instanceshader = shaderid;
 
 		std::vector<vector3D::Vec3> clr_vtx
 		{
@@ -553,13 +553,13 @@ void GLApp::entitydraw()
 		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
-		basicinstance.headerdata.clear();
-		//basicinstance.instancedata.clear(); // Instance stacks up
-		basicinstance.ebodata.clear();
-		basicinstance.headerdata.insert(basicinstance.headerdata.end(), vertexData.begin(), vertexData.end());
-		basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
-		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
-		basicinstance.vaoid = models["square"].getVAOid();
+		instanceobj.headerdata.clear();
+		//instanceobj.instancedata.clear(); // Instance stacks up
+		instanceobj.ebodata.clear();
+		instanceobj.headerdata.insert(instanceobj.headerdata.end(), vertexData.begin(), vertexData.end());
+		instanceobj.instancedata.insert(instanceobj.instancedata.end(), testdata.begin(), testdata.end());
+		instanceobj.ebodata.insert(instanceobj.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
+		instanceobj.vaoid = models["square"].getVAOid();
 		entitycounter++;
 		
 		testdata.clear();
