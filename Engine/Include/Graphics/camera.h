@@ -37,10 +37,8 @@ namespace CameraNS
 		// Get world to NDC transformation matrix
 		matrix3x3::mat3x3 getWorldtoNDCxForm();
 
-		// Get camera object
-		GLApp::GLObject getCameraObject();
-		//vector2D::Vec2 getCamPosition();
-		//vector2D::Vec2 getCamOrientation();
+		vector2D::Vec2 getCamPosition();
+		vector2D::Vec2 getCamOrientation();
 
 		// Get height
 		GLint getHeight();

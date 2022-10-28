@@ -154,7 +154,7 @@ void GLApp::init()
 
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
-	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
+	//GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
 	CameraNS::camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
@@ -445,7 +445,7 @@ void GLApp::update()
 {
 	// first, update camera
 	CameraNS::camera2d.update(Graphics::Input::ptr_to_window);
-	objects["Camera"].update(Graphics::Input::delta_time);
+	//objects["Camera"].update(Graphics::Input::delta_time);
 
 	// update other inputs for physics
 
@@ -734,7 +734,7 @@ void GLApp::draw()
 	//debugbatch.BatchClear();
 	glDisable(GL_BLEND);
 
-	objects["Camera"].draw();
+	//objects["Camera"].draw();
 }
 /*  _________________________________________________________________________*/
 /*! cleanup
@@ -859,6 +859,14 @@ void GLApp::GLObject::init()
 void GLApp::entitydraw()
 {
 	std::vector<EntityID> entities = ecs.getEntities();
+
+	if (models.find("square") == models.end())
+	{
+		ModelNS::Model Model;
+		Model = Model.init("square");
+		models["square"] = Model;
+	}
+
 	for (int i = 0; i < entities.size(); i++)
 	{
 		if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
