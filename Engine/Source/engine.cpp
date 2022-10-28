@@ -8,6 +8,7 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
+#include "camera.h"
 #include <app.h>
 #include <collision.h>
 #include <fowMap.h>
@@ -94,6 +95,8 @@ std::vector<FormationManager> formationManagers;
 
 extern int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
 float timer;
+
+extern CameraNS::Camera2D camera2d;
 
 quadTree mainTree;
 

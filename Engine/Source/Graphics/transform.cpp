@@ -10,11 +10,12 @@ This file creates the transformation matrices and converts NDC to World / World 
 #include <camera.h>
 #include <iostream>
 
+extern CameraNS::Camera2D camera2d;
+
 matrix3x3::mat3x3 Transform::createNDCtoViewport()
 {
-
-	int winWidth = CameraNS::camera2d.getWinWidth();
-	int winHeight = CameraNS::camera2d.getWinHeight();
+	int winWidth = camera2d.getWinWidth();
+	int winHeight = camera2d.getWinHeight();
 
 	float halfWinWidth{ static_cast<float>(winWidth) / 2 };
 	float halfWinHeight{ static_cast<float>(winHeight) / 2 };
@@ -99,7 +100,7 @@ matrix3x3::mat3x3 Transform::createWorldtoNDC()
 
 	//return world_to_ndc_xform;
 
-	return CameraNS::camera2d.getWorldtoNDCxForm();
+	return camera2d.getWorldtoNDCxForm();
 }
 
 matrix3x3::mat3x3 Transform::createNDCtoWorld()
