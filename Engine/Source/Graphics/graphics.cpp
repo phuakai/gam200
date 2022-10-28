@@ -130,8 +130,6 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, in
 
 	//frameshader.Use();
 
-	mainFrame.drawFrameBuffer();
-
 	GLuint tex2_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
 	glUniform1i(tex2_loc, 0);
 	//glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
