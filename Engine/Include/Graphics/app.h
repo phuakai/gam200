@@ -96,14 +96,7 @@ struct GLApp {
 		std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
 
 		void init();
-		// function to render object's model (specified by index mdl_ref)
-		// uses model transformation matrix mdl_to_ndc_xform matrix
-		// and shader program specified by index shd_ref ...
-		void draw() const;
-		// function to update the object's model transformation matrix
-		void update(GLdouble delta_time);
 
-		static void gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id = 0, int texid = 0, int totalsprite = 1); // Temp
 	};
 
 

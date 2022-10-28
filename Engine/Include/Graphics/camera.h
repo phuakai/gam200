@@ -15,8 +15,6 @@ This file controls the camera of the game
 
 namespace CameraNS
 {
-
-
 	struct GLViewport
 	{
 		GLint x, y;

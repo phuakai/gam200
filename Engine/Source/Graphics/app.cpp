@@ -152,9 +152,6 @@ void GLApp::init()
 	//Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects); // BG1
 	//Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects); // BG2
 
-
-	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
-	//GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
 	CameraNS::camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
@@ -182,254 +179,7 @@ void GLApp::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 	coldebug = false;
 
-	//EntityID playerID = player1.GetID();
-	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
-
 }
-
-
-/*  _________________________________________________________________________*/
-/*! GLObject::update
-
-@param GLdouble delta_time
-
-@return none
-
-This function is called once per frame to update an object's scale, rotation and translation matrices
-*/
-void GLApp::GLObject::update(GLdouble delta_time)
-{
-
-	matrix3x3::mat3x3 scale
-	(scaling.x, 0, 0,
-		0, scaling.y, 0,
-		0, 0, 1);
-
-	if (mdl_ref->first != "triangle")	// check if is black triangle
-	{
-		orientation.x += orientation.y * float(delta_time);
-	}
-
-	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-	
-	matrix3x3::mat3x3 rotation
-	(cos(orientation.x), -sin(orientation.x), 0,
-	sin(orientation.x), cos(orientation.x), 0,
-	0, 0, 1);
-
-	matrix3x3::mat3x3 translation
-	(1, 0, modelCenterPos.x,
-		0, 1, modelCenterPos.y,
-		0, 0, 1);
-
-	mdl_to_world_xform = translation * rotation * scale;
-	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
-	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
-	matrix3x3::mat3x3 world_to_ndc_notglm = CameraNS::camera2d.getWorldtoNDCxForm();
-	world_to_ndc_xform = matrix3x3::mat3x3
-	(
-		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-	);
-	// TO MOVE OUT IN THE FUTURE (is called every draw when it only needs to be called once)
-	matrix3x3::mat3x3 controlxform = translation * rotation * scale;
-	controlworldpos.clear();
-	controlndcpos.clear();
-	std::vector <vector2D::vec2D> controlmodelpos = mdl_ref->second.getModelCoords();
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		controlworldpos.emplace_back(controlxform * controlmodelpos[i]);
-		controlndcpos.emplace_back(world_to_ndc_xform * controlworldpos[i]);
-	}	
-
-	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
-
-	//compute world coordinates for physics calc
-	worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
-
-	ndc_coords.clear();
-	worldVertices.clear();
-	std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
-		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
-	}
-}
-
-
-/*  _________________________________________________________________________*/
-/*! GLObject::draw
-
-@param none
-@return none
-
-This function is called once per frame to install the shader program used by the model,
-set the transformation matrix for the model and render using glDrawElements
-*/
-void GLApp::GLObject::draw() const
-{
-	basicinstance.instanceshader = shd_ref->second;
-
-	std::vector<vector3D::Vec3> clr_vtx
-	{
-		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-		vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-	};
-
-	std::vector<vector2D::Vec2> texcoord;
-	texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
-	texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
-	texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
-	texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
-
-	ModelNS::modelVtxData tmpHeaderData;
-	std::vector<ModelNS::modelVtxData> vertexData;
-	std::vector<matrix3x3::mat3x3> testdata;
-	for (int i = 0; i < controlndcpos.size(); ++i)
-	{
-		ModelNS::modelVtxData tmpVtxData;
-		tmpVtxData.posVtx = controlndcpos[i];
-		if (mdl_ref->first == "circle")
-		{
-			tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-		}
-		else
-		{
-			tmpVtxData.clrVtx = clr_vtx[i];
-		}
-		tmpVtxData.txtVtx = texcoord[i];
-		tmpVtxData.txtIndex = 6.f;
-		vertexData.emplace_back(tmpVtxData);
-		testdata.emplace_back(matrix3x3::mat3x3(1.f,0.f,0.f,  0.f, 1.f, 0.f,   0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
-	}
-
-
-	basicinstance.headerdata.clear();
-	//basicinstance.instancedata.clear(); // Instance stacks up
-	basicinstance.ebodata.clear();
-	basicinstance.headerdata.insert(basicinstance.headerdata.end(), vertexData.begin(), vertexData.end());
-	basicinstance.instancedata.insert(basicinstance.instancedata.end(), testdata.begin(), testdata.end());
-	basicinstance.ebodata.insert(basicinstance.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-	basicinstance.vaoid = mdl_ref->second.getVAOid();
-
-	//basicbatch.batchmodel = mdl_ref->second;
-	//basicbatch.batchshader = shd_ref->second;
-
-	//std::vector<vector3D::Vec3> clr_vtx
-	//{
-	//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b),
-	//	vector3D::Vec3(color.r, color.g, color.b), vector3D::Vec3(color.r, color.g, color.b)
-	//};
-	//int totalframes = 4;
-	//int curframe = 4;
-	//int textureid = texId; // TO REMOVE CONST
-	//if (textureid == 3 || textureid == 4)
-	//{
-	//	totalframes = 1;
-	//	curframe = 1;
-	//	if (overlap)
-	//	{
-	//		if (textureid == 3)
-	//		{
-	//			textureid = 4;
-	//		}
-	//	}
-	//	else
-	//	{
-	//		if (textureid == 4)
-	//		{
-	//			textureid = 3;
-	//		}
-	//	}
-	//}
-	//if (textureid == 7 || textureid == 8)
-	//{
-	//	//std::cout << "Does it enter here\n";
-	//	totalframes = totalsprites;
-	//	curframe = 1;
-	//}
-	//std::vector<vector2D::Vec2> texcoord;
-	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 0.f)); // Bottom left
-	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 0.f)); // Bottom right
-	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe) / float(totalframes), 1.f)); // Top right
-	//texcoord.emplace_back(vector2D::Vec2(0.f + float(curframe - 1) / float(totalframes), 1.f)); // Top left
-
-	//std::vector<Graphics::vertexData> vertexData;
-	//for (int i = 0; i < ndc_coords.size(); ++i)
-	//{
-	//	Graphics::vertexData tmpVtxData;
-	//	tmpVtxData.posVtx = ndc_coords[i];
-	//	if (mdl_ref->first == "circle")
-	//	{
-	//		tmpVtxData.clrVtx = vector3D::Vec3(color.r, color.g, color.b);
-	//	}
-	//	else
-	//	{
-	//		tmpVtxData.clrVtx = clr_vtx[i];
-	//	}
-	//	tmpVtxData.txtVtx = texcoord[i];
-	//	tmpVtxData.txtIndex = (float)textureid;
-	//	vertexData.emplace_back(tmpVtxData);
-	//}
-	//basicbatch.batchdata.insert(basicbatch.batchdata.end(), vertexData.begin(), vertexData.end());
-	//basicbatch.ebodata.insert(basicbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-	//basicbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-	//basicbatch.vaoid = mdl_ref->second.getVAOid();
-	//basicbatch.vboid = mdl_ref->second.getVBOid();
-	//basicbatch.eboid = mdl_ref->second.getEBOid();
-	//basicbatch.totalsize += (int)vertexData.size();
-	//basicbatch.primtype = mdl_ref->second.getPrimitiveType();
-	//basicbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
-
-	//if (coldebug == true)
-	//{
-	//	debugbatch.batchmodel = mdl_ref->second;
-	//	debugbatch.batchshader = shd_ref->second;
-	//	std::vector<vector3D::vec3D> clr_vtxcoldebug;
-	//	for (int i = 0; i < 4; i++)
-	//	{
-	//		if (overlap == true)
-	//		{
-	//			clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.8f, 0.f, 0.2f)); // red if overlapping
-	//		}
-	//		else
-	//		{
-	//			clr_vtxcoldebug.emplace_back(vector3D::vec3D(0.f, 0.2f, 0.7f)); // blue if not overlapping
-	//		}
-	//	}
-	//	std::vector<Graphics::vertexData> colDebugData;
-	//	for (int i = 0; i < ndc_coords.size(); ++i)
-	//	{
-	//		Graphics::vertexData tmpVtxData;
-	//		tmpVtxData.posVtx = ndc_coords[i];
-	//		if (mdl_ref->first == "circle")
-	//		{
-	//			tmpVtxData.clrVtx = vector3D::vec3D(1.f, 1.f, 1.f);
-	//		}
-	//		else
-	//		{
-	//			tmpVtxData.clrVtx = clr_vtxcoldebug[i];
-	//		}
-	//		tmpVtxData.txtVtx = texcoord[i];
-	//		tmpVtxData.txtIndex = (float)texId; // notexture for coldebug
-	//		colDebugData.emplace_back(tmpVtxData);
-	//	}
-
-	//	debugbatch.batchdata.insert(debugbatch.batchdata.end(), colDebugData.begin(), colDebugData.end());
-	//	debugbatch.ebodata.insert(debugbatch.ebodata.end(), mdl_ref->second.primitive.begin(), mdl_ref->second.primitive.end());
-	//	debugbatch.totalindicesize += mdl_ref->second.getPrimitiveCnt();
-	//	debugbatch.vaoid = mdl_ref->second.getVAOid();
-	//	debugbatch.vboid = mdl_ref->second.getVBOid();
-	//	debugbatch.eboid = mdl_ref->second.getEBOid();
-	//	debugbatch.totalsize += (int)colDebugData.size();
-	//	debugbatch.primtype = mdl_ref->second.getPrimitiveType();
-	//	debugbatch.totaldrawcnt += mdl_ref->second.getDrawCnt();
-	//}
-	//texcoord.clear();
-}
-
 
 /*  _________________________________________________________________________*/
 /*! GLApp::update
@@ -508,87 +258,24 @@ void GLApp::update()
 		if (Graphics::Input::keystatePlus)
 		{
 			std::cout << "INCREASING" << std::endl;
-			objects["Banana1"].scaling *= 1.1f;
-
 		}
 		if (Graphics::Input::keystateMinus)
 		{
 			std::cout << "DECREASING" << std::endl;
-			objects["Banana1"].scaling /= 1.1f;
 		}
 		if (Graphics::Input::keystateSquareBracketLeft)
 		{
 			std::cout << "ROT LEFT" << std::endl;
-			//objects["Banana1"].orientation.x += -1.5f;
-			objects["Banana1"].orientation.x += (-1.5f * float(M_PI / 180));
-			std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
 		}
 		if (Graphics::Input::keystateSquareBracketRight)
 		{
 			std::cout << "ROT RIGHT" << std::endl;
-			//objects["Banana1"].orientation.x += 1.5f;
-			objects["Banana1"].orientation.x += (1.5f * float(M_PI / 180));
-			std::cout << "Orientation " << objects["Banana1"].orientation.x << ", " << objects["Banana1"].orientation.y << std::endl;
 		}
 	}
 
 	if (Graphics::Input::keystateQ || Graphics::Input::keystateE)
 	{
-		std::string modelname;
-		if (Graphics::Input::keystateQ)
-		{
-			modelname = "circle";
-		}
-		else
-		{
-			modelname = "square";
-		}
-		for (int j = 0; j < 1; j++)
-		{
-			std::string tmpobjname = "Banana";
-			objectcounter++;
-			std::stringstream tmpstream;
-			tmpstream << tmpobjname << objectcounter;
-			std::string finalobjname = tmpstream.str();
-			std::cout << "Final obj name " << finalobjname << std::endl;
-			//using uniform_distribution_type = typename uniform_distribution_selector<std::is_integral<T>::value, T>::type;
-			unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-			// create default engine as source of randomness
-			std::default_random_engine generator(seed);
 
-			std::uniform_int_distribution<int> posrandom(-500, 500);
-			int randx = posrandom(generator);
-			int randy = posrandom(generator);
-
-			std::uniform_int_distribution<int> sizerandom(50, 150);
-			float randwidth = (float)sizerandom(generator);
-			float randheight = (float)sizerandom(generator);
-
-			std::uniform_real_distribution<float> colour(0.2f, 0.8f);
-			float randr = colour(generator);
-			float randg = colour(generator);
-			float randb = colour(generator);
-			vector3D::vec3D tmpcolor = vector3D::vec3D(randr, randg, randb);
-
-			std::uniform_int_distribution<int> texrandom(1, 1);
-			float randindex = float(texrandom(generator));
-			if (modelname == "circle")
-			{
-				//std::cout << "Tex id set\n";
-				randindex = 3;
-				randwidth = 100;
-				randheight = 100;
-			}
-			GLApp::GLObject::gimmeObject(modelname, finalobjname, vector2D::vec2D(randwidth, randwidth), vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, objectcounter, (int)randindex);
-			// Name, type, pos, color, texid, dimension, spritestep, numofsprites, vao, vbo, ebo, shadername
-			//createdUnits[objectcounter].Add<Render>(finalobjname, "square", vector2D::vec2D(static_cast<float>(randx), static_cast<float>(randy)), tmpcolor, vector2D::vec2D(randwidth, randheight), models.find(modelname)->second.vaoid, models.find(modelname)->second.vboid, models.find(modelname)->second.eboid, "gam200-shdrpgm");
-			//createdUnits[objectcounter].Add<Texture>(randindex, 1, 4, "");
-			//createdUnits[objectcounter].Add<Stats>(100);
-			//ecs.setEntityName(createdUnits[objectcounter].GetID(), finalobjname);
-
-			Graphics::Input::keystateQ = false;
-			Graphics::Input::keystateE = false;
-		}
 	}
 	//check for movement
 
@@ -643,17 +330,6 @@ void GLApp::update()
 		//	generateDijkstraCost(player->position, walls);
 		//	generateFlowField(player->position);
 		//}
-
-		if (obj->first != "Camera")
-		{
-			obj->second.update(Graphics::Input::delta_time);
-
-			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
-			{
-
-				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
-			}
-		}
 	}	
 
 
@@ -783,63 +459,6 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	}
 
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
-}
-
-void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, vector2D::vec2D scale, vector2D::vec2D pos, vector3D::vec3D colour, int id, int texid, int totalsprite)
-{
-	GLObject tmpObj;
-	std::string hi;
-
-	tmpObj.objId = id;
-	tmpObj.texId = texid;
-	tmpObj.totalsprites = totalsprite;
-	if (modelname == "circle")
-	{
-		//std::cout << "Tex id set\n";
-		tmpObj.texId = 3;
-	}
-	if (modelname == "circle")
-	{
-		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body);
-	}
-	else if (modelname == "square")
-		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body);
-
-	tmpObj.color = colour;
-
-	if (modelname == "circle")
-		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getRad(), tmpObj.body.getRad());
-	else if (modelname == "square")
-		tmpObj.scaling = vector2D::vec2D(tmpObj.body.getWidth(), tmpObj.body.getWidth());
-	tmpObj.color = colour;
-	tmpObj.scaling = scale;
-	tmpObj.orientation = vector2D::vec2D(0, 0);
-	tmpObj.modelCenterPos = pos;
-	tmpObj.speed = 200.f;
-
-	if (shdrpgms.find("gam200-shdrpgm") != shdrpgms.end())
-	{
-		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
-	}
-	else
-	{
-		insert_shdrpgm("gam200-shdrpgm", "../shaders/instancing.vert", "../shaders/instancing.frag");
-		tmpObj.shd_ref = shdrpgms.find("gam200-shdrpgm");
-	}
-
-	if (models.find("square") != models.end())
-	{
-		tmpObj.mdl_ref = models.find("square");
-	}
-	else
-	{
-		ModelNS::Model Model;
-		Model = Model.init("square");
-		models["square"] = Model;
-		tmpObj.mdl_ref = models.find("square");
-	}
-	objects[objname] = tmpObj;
-
 }
 
 /*  _________________________________________________________________________*/
