@@ -70,6 +70,9 @@ namespace vector2D
 	vec2D operator * (float lhs, const vec2D& rhs);
 	vec2D operator / (const vec2D& lhs, float rhs);
 
+	bool operator ==(vec2D const& lhs, vec2D const& rhs);
+	bool operator !=(vec2D const& lhs, vec2D const& rhs);
+
 	/**************************************************************************/
 	/*!
 		In this function, pResult will be the unit vector of pVec0

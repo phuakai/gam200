@@ -10,8 +10,9 @@ This file loads, sets and deletes the textures in the game
 
 #include <string>
 #include <vector>
+#include <glad/glad.h>
 
-namespace Graphics
+namespace TextureNS
 {
 	class Texture
 	{
@@ -23,43 +24,42 @@ namespace Graphics
 		/******************************************************************************/
 		Texture();
 
+		static void createTexturePath(const char* path, Texture& textureobj);
 		/******************************************************************************/
 		/*!
 			This function loads the texture object
 		*/
 		/******************************************************************************/
-		static void loadTexture(const char* path, Graphics::Texture& textureobj);
+		static void loadTexture(Texture& textureobj);
+		//static void loadTexture(const char* path);
 
 		/******************************************************************************/
 		/*!
 			This function deletes the texture object
 		*/
 		/******************************************************************************/
-		static void deleteTexture(Graphics::Texture& textureobj);
+		static void deleteTexture(Texture& textureobj);
 		
 		/******************************************************************************/
 		/*!
 			This function set the handle of the texture
 		*/
 		/******************************************************************************/
-		static void setData(int handle, Graphics::Texture& textureobj);
+		static void setData(int handle, Texture& textureobj);
 		/******************************************************************************/
 		/*!
 			This function gets the texture id
 		*/
 		/******************************************************************************/
 		int getTexid();
-	private:
-		unsigned int texture;
+	public:
+		GLenum target;
+		std::vector<const char*> paths;
+		//std::vector<char> 
+		//std::vector<unsigned int> textures;
+		unsigned int textureid;
 	};
 
-	/******************************************************************************/
-	/*!
-		This function creates the texture vector containing all available textures
-	*/
-	/******************************************************************************/
-	void createTextureVector(std::vector<Texture>& texobjs, int texturecount);
-
-	static std::vector<Graphics::Texture> textureobjects; // Texture vector
+	static Texture textureobjects; // Texture obj
 
 }

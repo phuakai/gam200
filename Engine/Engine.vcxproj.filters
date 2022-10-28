@@ -177,6 +177,12 @@
     <Filter Include="Header Files\EventManager">
       <UniqueIdentifier>{d531c2d5-8d1e-497f-b823-f15ff0a67380}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\FogOfWar">
+      <UniqueIdentifier>{76c5100f-fe36-4671-a5fd-5b1bd50d83e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FogOfWar">
+      <UniqueIdentifier>{566f6bbc-526f-4809-990d-08e9daab6c19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\camera.cpp">
@@ -343,6 +349,18 @@
     </ClCompile>
     <ClCompile Include="Source\EventManager\eventManager.cpp">
       <Filter>Source Files\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FogOfWar\fogOfWar.cpp">
+      <Filter>Source Files\FogOfWar</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FogOfWar\fowMap.cpp">
+      <Filter>Source Files\FogOfWar</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\mat4x4.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\framebuffer.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -924,6 +942,18 @@
     </ClInclude>
     <ClInclude Include="Include\Physics\physicsDeltaTime.h">
       <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FogOfWar\fogOfWar.h">
+      <Filter>Header Files\FogOfWar</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\mat4x4.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FogOfWar\fowMap.h">
+      <Filter>Header Files\FogOfWar</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Graphics\framebuffer.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,12 +3,15 @@
 #include "levelEditorHierarchy.h"
 #include "levelEditorProperties.h"
 #include "levelEditorContentBrowser.h"
+#include "framebuffer.h"
 
 #include <cstring>
 
 bool show_demo_window;
 bool show_another_window;
 ImVec4 clear_color;
+
+extern FrameBufferNS::frameBuffer mainFrame; // This is the externed mainFrame variable to read framebuffer id from
 
 void imguiInit()
 {

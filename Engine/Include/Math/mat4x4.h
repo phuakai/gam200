@@ -1,11 +1,11 @@
 /******************************************************************************/
 /*!
-\file		Matrix3x3.h
+\file		Matrix4x4.h
 \author		Grace Lee, lee.g, 390002621
 \par		lee.g\@digipen.edu
-\date		Sep 23, 2022
+\date		Oct 19, 2022
 \brief		This file contains the function declarations and structs
-			used by Matrix3x3.cpp
+			used by Matrix4x4.cpp
 
 Copyright (C) 2022 DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents without the
@@ -15,12 +15,12 @@ prior written consent of DigiPen Institute of Technology is prohibited.
 
 #pragma once
 
-#ifndef MAT3X3_H_
-#define MAT3X3_H_
+#ifndef MAT4X4_H_
+#define MAT4X4_H_
 
-#include "vec2D.h"
+#include "vec3D.h"
 
-namespace matrix3x3
+namespace matrix4x4
 {
 #ifdef _MSC_VER
 	// Supress warning: nonstandard extension used : nameless struct/union
@@ -33,41 +33,44 @@ namespace matrix3x3
 	overloads
  */
  /**************************************************************************/
-	typedef union mat3x3
+	typedef union mat4x4
 	{
 		struct
 		{
-			float m00, m01, m02;
-			float m10, m11, m12;
-			float m20, m21, m22;
+			float m00, m01, m02, m03;
+			float m10, m11, m12, m13;
+			float m20, m21, m22, m23;
+			float m30, m31, m32, m33;
 		};
 
-		float m[9];
-		float m2[3][3];
+		float m[16];
+		float m2[4][4];
 
-		mat3x3() {
-			m00 = 0.f, m01 = 0.f, m02 = 0.f;
-			m10 = 0.f, m11 = 0.f, m12 = 0.f;
-			m20 = 0.f, m21 = 0.f, m22 = 0.f;
+		mat4x4() {
+			m00 = 0.f, m01 = 0.f, m02 = 0.f, m03 = 0.f;
+			m10 = 0.f, m11 = 0.f, m12 = 0.f, m13 = 0.f;
+			m20 = 0.f, m21 = 0.f, m22 = 0.f, m23 = 0.f;
+			m30 = 0.f, m31 = 0.f, m32 = 0.f, m33 = 0.f;
 		}
 
-		mat3x3(const float* pArr);
-		mat3x3(	float _00, float _01, float _02,
-				float _10, float _11, float _12,
-				float _20, float _21, float _22);
-		mat3x3& operator=(const mat3x3& rhs);
+		mat4x4(const float* pArr);
+		mat4x4(float _00, float _01, float _02, float _03,
+				float _10, float _11, float _12, float _13,
+				float _20, float _21, float _22, float _23,
+				float _30, float _31, float _32, float _33);
+		mat4x4& operator=(const mat4x4& rhs);
 
 		// Assignment operators
-		mat3x3& operator *= (const mat3x3& rhs);
+		mat4x4& operator *= (const mat4x4& rhs);
 
-	} mat3x3, Mtx33;
+	} mat4x4, Mtx44;
 
 #ifdef _MSC_VER
 	// Supress warning: nonstandard extension used : nameless struct/union
 #pragma warning( default : 4201 )
 #endif
 
-	mat3x3 operator * (const mat3x3& lhs, const mat3x3& rhs);
+	mat4x4 operator * (const mat4x4& lhs, const mat4x4& rhs);
 
 	/**************************************************************************/
 	/*!
@@ -75,14 +78,14 @@ namespace matrix3x3
 		and returns the result as a vector
 	 */
 	 /**************************************************************************/
-	vector2D::vec2D  operator * (const mat3x3& pMtx, const vector2D::vec2D& rhs);
+	vector3D::vec3D  operator * (const mat4x4& pMtx, const vector3D::vec3D& rhs);
 
 	/**************************************************************************/
 	/*!
 		This function sets the matrix pResult to the identity matrix
 	 */
 	 /**************************************************************************/
-	void Mtx33Identity(mat3x3& pResult);
+	void Mtx44Identity(mat4x4& pResult);
 
 	/**************************************************************************/
 	/*!
@@ -90,7 +93,7 @@ namespace matrix3x3
 		and saves it in pResult
 	 */
 	 /**************************************************************************/
-	void Mtx33Translate(mat3x3& pResult, float x, float y);
+	void Mtx44Translate(mat4x4& pResult, float x, float y, float z);
 
 	/**************************************************************************/
 	/*!
@@ -98,7 +101,7 @@ namespace matrix3x3
 		and saves it in pResult
 	 */
 	 /**************************************************************************/
-	void Mtx33Scale(mat3x3& pResult, float x, float y);
+	void Mtx44Scale(mat4x4& pResult, float x, float y, float z);
 
 	/**************************************************************************/
 	/*!
@@ -106,7 +109,7 @@ namespace matrix3x3
 		is in radian. Save the resultant matrix in pResult.
 	 */
 	 /**************************************************************************/
-	void Mtx33RotRad(mat3x3& pResult, float angle);
+	void Mtx44RotRad(mat4x4& pResult, float angle);
 
 	/**************************************************************************/
 	/*!
@@ -114,7 +117,7 @@ namespace matrix3x3
 		is in degree. Save the resultant matrix in pResult.
 	 */
 	 /**************************************************************************/
-	void Mtx33RotDeg(mat3x3& pResult, float angle);
+	void Mtx44RotDeg(mat4x4& pResult, float angle);
 
 	/**************************************************************************/
 	/*!
@@ -122,16 +125,16 @@ namespace matrix3x3
 		and saves it in pResult
 	 */
 	 /**************************************************************************/
-	void Mtx33Transpose(mat3x3& pResult, const mat3x3& pMtx);
+	void Mtx44Transpose(mat4x4& pResult, const mat4x4& pMtx);
 
-	/**************************************************************************/
-	/*!
-		This function calculates the inverse matrix of pMtx and saves the
-		result in pResult. If the matrix inversion fails, pResult
-		would be set to NULL.
-	*/
-	/**************************************************************************/
-	void Mtx33Inverse(mat3x3* pResult, mat3x3 const& pMtx);
+	///**************************************************************************/
+	///*!
+	//	This function calculates the inverse matrix of pMtx and saves the
+	//	result in pResult. If the matrix inversion fails, pResult
+	//	would be set to NULL.
+	//*/
+	///**************************************************************************/
+	//void Mtx44Inverse(mat4x4* pResult, mat4x4 const& pMtx);
 }
 
-#endif // MAT3X3_H_
+#endif // MAT4X4_H_

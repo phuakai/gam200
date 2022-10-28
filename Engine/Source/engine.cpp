@@ -10,6 +10,7 @@
 #include "vec3D.h"
 #include <app.h>
 #include <collision.h>
+#include <fowMap.h>
 
 #include <random>
 
@@ -44,7 +45,8 @@ RTTR_REGISTRATION{
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
-		.property("shaderName", &Render::shaderName);
+		.property("shaderName", &Render::shaderName)
+		.property("name", &Render::render);
 
 	rttr::registration::class_<BaseInfo>("BaseInfo")
 		.property("name", &BaseInfo::name)
@@ -80,7 +82,8 @@ extern std::vector<Entity> walls;
 
 Entity player1;
 std::vector<Entity> walls(0);
-//std::vector<Entity> enemyUnits(100);
+std::vector<Entity> enemyUnits(100);
+std::vector<Entity> cloud(fow::fowMap.getDims());
 
 // for checking
 //Entity enemyManagerEntity;
@@ -124,7 +127,7 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 void engineInit()
 {
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
-
+	
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
@@ -136,7 +139,7 @@ void engineInit()
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm");
+	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
 	player1.Add<BaseInfo>("player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
 	// velocity, target, force, speed
 	player1.Add<Texture>(0, 1, 1, "none");
@@ -145,8 +148,24 @@ void engineInit()
 
 	EntityID playerID = player1.GetID();
 
-	//FormationManager enemyManager;
-	//enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
+	// Create fow
+	fow::fowMap.createFow();
+	int inc = 0;
+	std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
+	//std::cout << "this is size of tile list: " << fowTileList.size() << std::endl;
+	for (std::list<fow::fowTile>::iterator it = fow::fowMap.getFowTileMap().begin(); it != fow::fowMap.getFowTileMap().end(); ++it, ++inc)
+	{
+		//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
+		//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
+		cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+		cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
+		cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
+		it->setid(cloud[inc].GetID());
+		//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
+	}
+
+	FormationManager enemyManager;
+	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
 
 	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 	//// create default engine as source of randomness
@@ -213,6 +232,7 @@ void engineInit()
 
 			eventManager.post(entityToMove);
 		}
+		fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
 
 		// Check with walls

@@ -26,6 +26,7 @@ and transformations (in later labs).
 #include <unordered_map>
 #include <vec2D.h>
 #include <mat3x3.h>
+#include <graphics.h>
 #include <model.h>
 #include <physicsRigidBody.h>
 #include <graphics.h>
@@ -73,6 +74,9 @@ struct GLApp {
 		matrix3x3::mat3x3 world_to_ndc_xform{}; // world to ndc transformation
 
 		vector2D::vec2D ndcposition{}; // translation vector coordinates
+		
+		std::vector <vector2D::vec2D> controlworldpos;
+		std::vector <vector2D::vec2D> controlndcpos;
 
 		std::vector <vector2D::vec2D> ndc_coords;
 
@@ -81,7 +85,7 @@ struct GLApp {
 		//added for physics testing (collision response)
 		//glm::mat3 worldToMdlXform{};
 
-		std::map<std::string, Graphics::Model>::iterator mdl_ref{};
+		std::map<std::string, ModelNS::Model>::iterator mdl_ref{};
 		std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 		//added for physics testing

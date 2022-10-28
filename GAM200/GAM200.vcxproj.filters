@@ -14,6 +14,10 @@
     <None Include="..\shaders\gam200.frag" />
     <None Include="..\shaders\gam200.vert" />
     <None Include="imgui.ini" />
+    <None Include="..\shaders\instancing.frag" />
+    <None Include="..\shaders\instancing.vert" />
+    <None Include="..\shaders\framebuffer.frag" />
+    <None Include="..\shaders\framebuffer.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />

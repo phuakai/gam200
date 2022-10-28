@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -87,7 +87,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\ECS;$(ProjectDir)Include\EventManager;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\FogOfWar;$(ProjectDir)Include\ECS;$(ProjectDir)Include\EventManager;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,10 +160,13 @@
     <ClCompile Include="Source\AI\pathfinding.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\EventManager\eventManager.cpp" />
+    <ClCompile Include="Source\FogOfWar\fogOfWar.cpp" />
+    <ClCompile Include="Source\FogOfWar\fowMap.cpp" />
     <ClCompile Include="Source\Graphics\app.cpp" />
     <ClCompile Include="Source\Graphics\buffer.cpp" />
     <ClCompile Include="Source\Graphics\camera.cpp" />
     <ClCompile Include="Source\Graphics\collisiondebug.cpp" />
+    <ClCompile Include="Source\Graphics\framebuffer.cpp" />
     <ClCompile Include="Source\Graphics\glad.c" />
     <ClCompile Include="Source\Graphics\glslshader.cpp" />
     <ClCompile Include="Source\Graphics\graphics.cpp" />
@@ -172,6 +175,7 @@
     <ClCompile Include="Source\Graphics\texture.cpp" />
     <ClCompile Include="Source\Graphics\transform.cpp" />
     <ClCompile Include="Source\Math\mat3x3.cpp" />
+    <ClCompile Include="Source\Math\mat4x4.cpp" />
     <ClCompile Include="Source\Math\vec2D.cpp" />
     <ClCompile Include="Source\Math\vec3D.cpp" />
     <ClCompile Include="Source\Physics\collision.cpp" />
@@ -218,10 +222,13 @@
     <ClInclude Include="Include\ECS\ECS.h" />
     <ClInclude Include="Include\ECS\ECS.hpp" />
     <ClInclude Include="Include\EventManager\eventManager.h" />
+    <ClInclude Include="Include\FogOfWar\fogOfWar.h" />
+    <ClInclude Include="Include\FogOfWar\fowMap.h" />
     <ClInclude Include="Include\Graphics\app.h" />
     <ClInclude Include="Include\Graphics\buffer.h" />
     <ClInclude Include="Include\Graphics\camera.h" />
     <ClInclude Include="Include\Graphics\collisiondebug.h" />
+    <ClInclude Include="Include\Graphics\framebuffer.h" />
     <ClInclude Include="Include\Graphics\glslshader.h" />
     <ClInclude Include="Include\Graphics\graphics.h" />
     <ClInclude Include="Include\Graphics\input.h" />
@@ -230,6 +237,7 @@
     <ClInclude Include="Include\Graphics\transform.h" />
     <ClInclude Include="Include\mainHeader.h" />
     <ClInclude Include="Include\Math\mat3x3.h" />
+    <ClInclude Include="Include\Math\mat4x4.h" />
     <ClInclude Include="Include\Math\vec2D.h" />
     <ClInclude Include="Include\Math\vec3D.h" />
     <ClInclude Include="Include\Physics\collision.h" />

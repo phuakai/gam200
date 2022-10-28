@@ -35,6 +35,12 @@ public:
 	vector2D::vec2D convertNDCtoWorld(vector2D::vec2D ndc);
 
 	vector2D::vec2D convertWorldtoNDC(vector2D::vec2D world);
+
+	static matrix3x3::mat3x3 createTranslationMat(vector2D::vec2D translation);
+
+	static matrix3x3::mat3x3 createRotationMat(float rot);
+
+	static matrix3x3::mat3x3 createScaleMat(vector2D::vec2D scale);
 private:
 	//// Model to NDC
 	//matrix3x3::mat3x3 model_to_ndc_xform{};
