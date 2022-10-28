@@ -13,7 +13,7 @@ This file controls the camera of the game
 #include <mat3x3.h>
 #include <app.h>
 
-namespace Graphics
+namespace CameraNS
 {
 
 

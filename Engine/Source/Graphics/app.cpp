@@ -72,7 +72,7 @@ FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
 //std::vector<Graphics::Texture> Graphics::textureobjects;
 
-Graphics::Camera2D camera2d;
+CameraNS::Camera2D camera2d;
 
 GLApp::collisionType GLApp::currentCollision;
 bool GLApp::movableShape;
@@ -155,7 +155,7 @@ void GLApp::init()
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
-	Graphics::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
+	CameraNS::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
 	{
@@ -225,7 +225,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	mdl_to_world_xform = translation * rotation * scale;
 	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
 	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
-	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
+	matrix3x3::mat3x3 world_to_ndc_notglm = CameraNS::camera2d.getWorldtoNDCxForm();
 	world_to_ndc_xform = matrix3x3::mat3x3
 	(
 		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
@@ -444,7 +444,7 @@ despawn the oldest objects, and respawn objects again once no objects are left.
 void GLApp::update()
 {
 	// first, update camera
-	Graphics::camera2d.update(Graphics::Input::ptr_to_window);
+	CameraNS::camera2d.update(Graphics::Input::ptr_to_window);
 	objects["Camera"].update(Graphics::Input::delta_time);
 
 	// update other inputs for physics
@@ -690,8 +690,8 @@ void GLApp::draw()
 	title << std::setprecision(2);
 	title << "Bloom";
 	title << std::setprecision(2) << " | FPS " << int(Graphics::Input::fps * 100) / 100.0;
-	title << " | Camera Position (" << Graphics::camera2d.getCameraObject().modelCenterPos.x << ", " << Graphics::camera2d.getCameraObject().modelCenterPos.y << ")";
-	title << " | Window height: " << Graphics::camera2d.getHeight();
+	title << " | Camera Position (" << CameraNS::camera2d.getCameraObject().modelCenterPos.x << ", " << CameraNS::camera2d.getCameraObject().modelCenterPos.y << ")";
+	title << " | Window height: " << CameraNS::camera2d.getHeight();
 	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
 
 	glfwSetWindowTitle(Graphics::Input::ptr_to_window, title.str().c_str());
@@ -949,7 +949,7 @@ void GLApp::entitydraw()
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
 
 
-		matrix3x3::mat3x3 world_to_ndc_xform = Graphics::camera2d.getWorldtoNDCxForm();
+		matrix3x3::mat3x3 world_to_ndc_xform = CameraNS::camera2d.getWorldtoNDCxForm();
 
 		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
 
