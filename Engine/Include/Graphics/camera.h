@@ -27,7 +27,7 @@ namespace CameraNS
 	{
 	public:
 		Camera2D();
-		void init(GLFWwindow* pWindow, GLApp::GLObject* ptr);
+		void init(GLFWwindow* pWindow, vector2D::Vec2 pos, vector2D::Vec2 orient);
 		void update(GLFWwindow* pWindow);
 
 		// Temp
@@ -49,12 +49,14 @@ namespace CameraNS
 		int getWinHeight();
 		// Get Window Width
 		int getWinWidth();
-	private:
+	public:
 
 		vector2D::Vec2 right{};
 		vector2D::Vec2 up{};
-		//vector2D::Vec2 position{}; // Camera position
-		//vector2D::vec2D orientation{}; // Orientation
+
+		vector2D::Vec2 position{}; // Camera position
+		vector2D::vec2D orientation{}; // Orientation
+
 		matrix3x3::mat3x3 camworld_to_ndc_xform{};
 		GLApp::GLObject* pgo{}; // pointer to game object that embeds camera
 

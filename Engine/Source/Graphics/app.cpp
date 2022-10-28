@@ -155,7 +155,7 @@ void GLApp::init()
 
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
-	CameraNS::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
+	CameraNS::camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
 	{
@@ -690,7 +690,7 @@ void GLApp::draw()
 	title << std::setprecision(2);
 	title << "Bloom";
 	title << std::setprecision(2) << " | FPS " << int(Graphics::Input::fps * 100) / 100.0;
-	title << " | Camera Position (" << CameraNS::camera2d.getCameraObject().modelCenterPos.x << ", " << CameraNS::camera2d.getCameraObject().modelCenterPos.y << ")";
+	title << " | Camera Position (" << CameraNS::camera2d.position.x << ", " << CameraNS::camera2d.position.y << ")";
 	title << " | Window height: " << CameraNS::camera2d.getHeight();
 	title << " | Collision Type: " << collisionInfo[static_cast<collisionType>(currentCollision)];
 

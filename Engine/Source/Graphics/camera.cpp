@@ -31,12 +31,14 @@ namespace CameraNS
 
 	This function is called once at the initialization of the camera to compute and initialize the camera window
 	*/
-	void Camera2D::init(GLFWwindow* pWindow, GLApp::GLObject* ptr)
+	void Camera2D::init(GLFWwindow* pWindow, vector2D::Vec2 pos, vector2D::Vec2 orient)
 	{
 		// assign address of object of type GLApp::GLObject with
 		// name "Camera" in std::map container GLApp::objects ...
-		pgo = ptr;
-		pgo->orientation.y = 2.f * float(M_PI / 180); // Rotation amount
+		//pgo = ptr;
+		orientation = orient;
+		position = pos;
+		orientation.y = 2.f * float(M_PI / 180); // Rotation amount
 		// compute camera window's aspect ratio ...
 		GLsizei fb_width, fb_height;
 		glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
@@ -44,11 +46,11 @@ namespace CameraNS
 		int width = int(ar * height);
 
 		// compute camera's up and right vectors ...
-		up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
-		right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
+		up = { -sin(orientation.x), cos(orientation.x) };
+		right = { cos(orientation.x), sin(orientation.x) };
 		// at startup, the camera must be initialized to free camera ...
-		view_xform = matrix3x3::mat3x3(1, 0, -pgo->modelCenterPos.x,
-			0, 1, -pgo->modelCenterPos.y,
+		view_xform = matrix3x3::mat3x3(1, 0, -position.x,
+			0, 1, -position.y,
 			0, 0, 1);
 
 		camwin_to_ndc_xform = matrix3x3::mat3x3(float(2 / width), 0, 0,
@@ -86,8 +88,8 @@ namespace CameraNS
 
 		//std::cout << "Height and width " << height << ", " << width << std::endl;
 		// compute camera's up and right vectors ...
-		up = { -sin(pgo->orientation.x), cos(pgo->orientation.x) };
-		right = { cos(pgo->orientation.x), sin(pgo->orientation.x) };
+		up = { -sin(orientation.x), cos(orientation.x) };
+		right = { cos(orientation.x), sin(orientation.x) };
 		// at startup, the camera must be initialized to free camera ...
 
 		// compute other matrices ...
@@ -98,18 +100,18 @@ namespace CameraNS
 		if (Graphics::Input::keystateW == GL_TRUE)
 		{
 			//pgo->modelCenterPos = pgo->modelCenterPos + linear_speed * up;
-			pgo->modelCenterPos.y = pgo->modelCenterPos.y + linear_speed;
+			position.y = position.y + linear_speed;
 		}
 
 		if (Graphics::Input::keystateS == GL_TRUE)
 		{
 			//pgo->modelCenterPos = pgo->modelCenterPos - linear_speed * up;
-			pgo->modelCenterPos.y = pgo->modelCenterPos.y - linear_speed;
+			position.y = position.y - linear_speed;
 		}
 		//std::cout << "Top of cam " << pgo->modelCenterPos.x << ", " << pgo->modelCenterPos.y << std::endl;
 		if (Graphics::Input::keystateA == GL_TRUE)
 		{
-			pgo->modelCenterPos.x = pgo->modelCenterPos.x - linear_speed;
+			position.x = position.x - linear_speed;
 			//if (pgo->orientation.x / M_PI * 180 >= 360)
 			//{
 			//	pgo->orientation.x = 0;
@@ -119,7 +121,7 @@ namespace CameraNS
 
 		if (Graphics::Input::keystateD == GL_TRUE)
 		{
-			pgo->modelCenterPos.x = pgo->modelCenterPos.x + linear_speed;
+			position.x = position.x + linear_speed;
 			//if (pgo->orientation.x / M_PI * 180 <= -360)
 			//{
 			//	pgo->orientation.x = 0;
@@ -156,15 +158,15 @@ namespace CameraNS
 
 		if (camtype_flag == GL_FALSE)
 		{
-			view_xform = matrix3x3::mat3x3(1, 0, -pgo->modelCenterPos.x,
-				0, 1, -pgo->modelCenterPos.y,
+			view_xform = matrix3x3::mat3x3(1, 0, -position.x,
+				0, 1, -position.y,
 				0, 0, 1);
 		}
 		else
 		{
 			//std::cout << "isit this\n";
-			view_xform = matrix3x3::mat3x3(right.x, right.y, -(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y),
-				up.x, up.y, -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y),
+			view_xform = matrix3x3::mat3x3(right.x, right.y, -(right.x * position.x + right.y * position.y),
+				up.x, up.y, -(up.x * position.x + up.y * position.y),
 				0, 0, 1);
 		}
 
