@@ -36,7 +36,7 @@ void imguiUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	ImGui::DockSpaceOverViewport();
+	//ImGui::DockSpaceOverViewport();
 	//ImGuiViewport* viewportID = ImGui::FindViewportByPlatformHandle(Graphics::Input::ptr_to_window);
 	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
 	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
