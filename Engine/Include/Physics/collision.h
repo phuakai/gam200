@@ -198,7 +198,7 @@ namespace physics
 		This helper function computes the bounding box of a convex polygon
 	*/
 	/******************************************************************************/
-	void computeBoundingBox(GLApp::GLObject& polygon);
+	//void computeBoundingBox(GLApp::GLObject& polygon);
 
 }
 #endif /* PHYSICS_H */

@@ -22,6 +22,7 @@ prior written consent of DigiPen Institute of Technology is prohibited.
 
 static int tmpcollisionobjcounter{ 0 };
 
+#if false
 void Graphics::collisionDebugInit(GLApp::GLObject& object)
 {
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
@@ -43,7 +44,8 @@ void Graphics::collisionDebugInit(GLApp::GLObject& object)
 	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
 
 }
-
+#endif
+#if false
 void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 {
 	//std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
@@ -72,3 +74,4 @@ void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
 	
 }
+#endif

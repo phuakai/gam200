@@ -56,8 +56,6 @@ std::map<std::string, GLSLShader> GLApp::shdrpgms; // define shaders
 
 std::map<std::string, ModelNS::Model> models; // define models
 
-std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
-
 std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
 
 RenderNS::BatchRenderer basicbatch; // Batch render object
@@ -120,7 +118,6 @@ void GLApp::init()
 
 	GLApp::shdrpgms.clear(); // clear shaders
 	models.clear(); // clear models
-	GLApp::objects.clear(); // clear objects
 
 	basicbatch.BatchClear(); // Clear basic batch
 	debugbatch.BatchClear(); // Clear debug batch
@@ -314,24 +311,6 @@ void GLApp::update()
 	BaseInfo* player = ecs.GetComponent<BaseInfo>(player1.GetID());
 
 	bool test{ true };
-	for (std::map <std::string, GLObject> ::iterator obj = objects.begin(); obj != objects.end(); ++obj)
-	{
-		//if (player->name == obj->first && mouseClick)
-		//{
-		//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
-		//	obj->second.modelCenterPos = player->position;
-
-		//	for (int i = 0; i < formationManagers.size(); ++i)
-		//	{
-		//		formationManagers[i].target = player->position;
-		//		formationManagers[i].updateReached();
-		//	}
-
-		//	generateDijkstraCost(player->position, walls);
-		//	generateFlowField(player->position);
-		//}
-	}	
-
 
 	if (mouseClick)
 	{
@@ -379,14 +358,6 @@ void GLApp::draw()
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	for (std::map <std::string, GLObject>::iterator obj = objects.begin(); obj != objects.end(); ++obj)
-	{
-		if (obj->first != "Camera")
-		{
-			//obj->second.draw(); // Comment to stop drawing from object map
-		}
 	}
 	basicinstance.InstanceClear();
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
@@ -459,19 +430,6 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 	}
 
 	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
-}
-
-/*  _________________________________________________________________________*/
-/*! GLObject::init
-
-@param none
-@return none
-
-This function is currently empty
-*/
-void GLApp::GLObject::init()
-{
-
 }
 
 

@@ -40,76 +40,31 @@ struct GLApp {
 	static void cleanup();
 
 
-  //added for physics testing
-  enum class collisionType
-  {
-	NIL = 0,					//0
-	CircleDetection,			//1
-	CirclePushResolution,		//2
-	CircleBlockResolution,		//3
-	PolygonDetection,			//4
-	PolygonPushResolution,		//5
-	PolygonBlockResolution,		//6
-	PolygonCircleDetection,		//7
-	PolygonCircleResolution		//8
-  };
-
-  static collisionType currentCollision;
-  static bool movableShape;
-  static std::unordered_map<collisionType, std::string> collisionInfo;
-
-  struct GLObject {
-		vector2D::vec2D orientation{};													// orientation x is angle disp, orientation y is angle speed specified in degrees
-		vector2D::vec2D scaling{};														// scaling parameters
-		vector2D::vec2D modelCenterPos{};													// center of shape coordinates
-		float speed{};																	// speed
-		physicsRigidBody body;															// param for collision
-		int objId;																		// For collision debugger
-		int texId;
-		int totalsprites;
-
-		matrix3x3::mat3x3 mdl_to_ndc_xform{}; // model to ndc transformation
-		matrix3x3::mat3x3 mdl_to_world_xform{}; // model to world transformation
-		matrix3x3::mat3x3 world_to_ndc_xform{}; // world to ndc transformation
-
-		vector2D::vec2D ndcposition{}; // translation vector coordinates
-		
-		std::vector <vector2D::vec2D> controlworldpos;
-		std::vector <vector2D::vec2D> controlndcpos;
-
-		std::vector <vector2D::vec2D> ndc_coords;
-
-		//added for physics testing
-		bool overlap{ false };														// flag for overlap
-		//added for physics testing (collision response)
-		//glm::mat3 worldToMdlXform{};
-
-		std::map<std::string, ModelNS::Model>::iterator mdl_ref{};
-		std::map<std::string, GLSLShader>::iterator shd_ref{};
-
-		//added for physics testing
-		vector3D::vec3D color{};
-		matrix3x3::mat3x3 mdlXform{};															// model to world transformation
-		vector2D::vec2D worldCenterPos{};
-		std::vector<vector2D::vec2D> boundingBoxWorldVertices;
-		std::vector<vector2D::vec2D> worldVertices;												// vertices coordinates
-		std::vector<vector2D::vec2D> modelVertices;												// vertices coordinates
-
-		void init();
-
+	//added for physics testing
+	enum class collisionType
+	{
+		NIL = 0,					//0
+		CircleDetection,			//1
+		CirclePushResolution,		//2
+		CircleBlockResolution,		//3
+		PolygonDetection,			//4
+		PolygonPushResolution,		//5
+		PolygonBlockResolution,		//6
+		PolygonCircleDetection,		//7
+		PolygonCircleResolution		//8
 	};
 
+	static collisionType currentCollision;
+	static bool movableShape;
+	static std::unordered_map<collisionType, std::string> collisionInfo;
 
 	static void entitydraw();
-	//static void init_models_cont();
+
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
 
-	// function to insert shader program into container GLApp::shdrpgms ...
+	// function to insert shader program into container shdrpgms 
 	static void insert_shdrpgm(std::string, std::string, std::string);
-	// function to parse scene file ...
-	static void init_scene(std::string);
 
-	static std::map<std::string, GLObject> objects; // singleton
 
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 

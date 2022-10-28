@@ -288,6 +288,7 @@ namespace physics
 		}
 	}
 #endif
+#if false
 	/******************************************************************************/
 	/*!
 		
@@ -353,7 +354,7 @@ namespace physics
 		}
 		return true;
 	}
-
+#endif
 	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx)
 	{
 

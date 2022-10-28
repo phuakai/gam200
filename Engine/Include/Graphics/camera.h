@@ -54,7 +54,6 @@ namespace CameraNS
 		vector2D::vec2D orientation{}; // Orientation
 
 		matrix3x3::mat3x3 camworld_to_ndc_xform{};
-		GLApp::GLObject* pgo{}; // pointer to game object that embeds camera
 
 		matrix3x3::mat3x3 view_xform{};
 		matrix3x3::mat3x3 camwin_to_ndc_xform{};
