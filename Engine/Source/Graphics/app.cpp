@@ -955,9 +955,13 @@ void GLApp::entitydraw()
 
 		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
 		(
-			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
-			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
+			//model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
+			curobj->color.r, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+
 		);
 		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation

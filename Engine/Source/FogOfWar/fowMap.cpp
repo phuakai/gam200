@@ -94,7 +94,7 @@ namespace fow
 				}
 				(it2)->updateTileStateToFog();
 				(ecs.GetComponent<Render>((*it2).getid()))->render = true;
-				(ecs.GetComponent<Texture>((*it2).getid()))->textureID = 0;
+				(ecs.GetComponent<Texture>((*it2).getid()))->textureID = 1;
 			}
 		}
 

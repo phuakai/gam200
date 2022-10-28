@@ -99,6 +99,8 @@ quadTree mainTree;
 
 void engineInit()
 {
+	GLApp::init();
+
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
 	
 	// ======================================================================================================================================
@@ -110,9 +112,11 @@ void engineInit()
 	ecs.RegisterComponent<Stats>("Stats");
 	ecs.RegisterComponent<Render>("Render");
 
+	
+
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+	player1.Add<Render>("square", vector3D::vec3D(0.9f, 0.1f, 0.1f), 0, 0, 0, "gam200-shdrpgm", true);
 	player1.Add<BaseInfo>("player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
 	// velocity, target, force, speed
 	player1.Add<Texture>(0, 1, 1, "none");
@@ -132,7 +136,7 @@ void engineInit()
 		//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
 		cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
 		cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
-		cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
+		cloud[inc].Add<Texture>(2, 1, 1, "Cloud");
 		it->setid(cloud[inc].GetID());
 		//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	}
@@ -153,7 +157,7 @@ void engineInit()
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
 		enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
-		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
+		enemyUnits[i].Add<Texture>(3, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
 		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
@@ -168,7 +172,7 @@ void engineInit()
 
 	enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
 	enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
-	enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
+	enemyManagerEntity.Add<Texture>(3, 1, 1, "Enemy");
 	enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
 	ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
@@ -328,8 +332,6 @@ void engineInit()
 		//m[i].velocity = changedVelocity;
 		//mainTree.updatePoint(entities[i], oldPosition, p[i].position, mainTree);
 	});
-
-	GLApp::init();
 }
 
 void engineUpdate()
