@@ -98,9 +98,9 @@ namespace CameraNS
 		// compute camera window's aspect ratio 
 		GLsizei fb_width, fb_height;
 		glfwGetFramebufferSize(pWindow, &fb_width, &fb_height);
-		width = fb_width;
-		height = fb_height;
-		aspectratio = static_cast<float>(width) / height;
+		//height = fb_height;
+		aspectratio = static_cast<float>(fb_width) / fb_height;
+		width = int(aspectratio * height); // To recalculate width from height
 
 		// compute camera's up and right vectors 
 		up = { -sin(orientation.x), cos(orientation.x) };
@@ -135,8 +135,8 @@ namespace CameraNS
 
 		if (Graphics::Input::keystateZ == GL_TRUE)
 		{
-			int height_chg_dir = 0;
-			int height_chg_val = 5;
+			static int height_chg_dir = 1;
+			static int height_chg_val = 5;
 			if (height >= 2000)
 			{
 				height_chg_dir = -1;
