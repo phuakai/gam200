@@ -22,7 +22,7 @@
 #include <iostream>
 
 namespace spooky
-{
+{   
     struct Vector2
     {
         float x;
@@ -58,7 +58,7 @@ namespace spooky
 
         void LoadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false, bool bStream = false);
         void UnLoadSound(const std::string& strSoundName);
-        void Set2dListenerAndOrientation(const Vector2& vPos = Vector2{ 0, 0 }, float fVolumedB = 0.0f);
+        //void Set2dListenerAndOrientation(const Vector2& vPos = Vector2{ 0, 0 }, float fVolumedB = 0.0f);
         int PlaySound(const std::string& strSoundName, const Vector2& vPos = Vector2{ 0, 0 }, float fVolumedB = 0.0f);
         void StopChannel(int nChannelId);
         void StopAllChannels();

@@ -98,7 +98,7 @@ namespace spooky
         auto tFoundIt = sgpImplementation->mSounds.find(strSoundName);
         if (tFoundIt == sgpImplementation->mSounds.end())
         {
-            LoadSound(strSoundName);
+            LoadSound(strSoundName, false);
             tFoundIt = sgpImplementation->mSounds.find(strSoundName);
             if (tFoundIt == sgpImplementation->mSounds.end())
             {
@@ -122,6 +122,23 @@ namespace spooky
         return nChannelId;
     }
 
+    //stops the Channel being played
+    void CAudioEngine::StopChannel(int nChannelId)
+    {
+        sgpImplementation->mChannels[nChannelId] = nullptr;
+    }
+
+    //stops all Channels from playing
+    void CAudioEngine::StopAllChannels()
+    {
+        while (!sgpImplementation->mChannels.empty())
+        {
+            int counter{ 0 };
+            StopChannel(counter);
+            counter++;
+        }
+    }
+
     // Sets Channel Volume
     void CAudioEngine::SetChannelVolume(int nChannelId, float fVolumedB)
     {
@@ -130,6 +147,13 @@ namespace spooky
             return;
 
         CAudioEngine::ErrorCheck(tFoundIt->second->setVolume(dbToVolume(fVolumedB)));
+    }
+
+    //checks if the channel is still playing audio
+    bool CAudioEngine::IsPlaying(int nChannelId) const
+    {
+        auto tFoundIt = sgpImplementation->mChannels.find(nChannelId);
+        return (tFoundIt == sgpImplementation->mChannels.end()) ? true : false;
     }
 
     // Converts Struct Vector to FMOD Vector

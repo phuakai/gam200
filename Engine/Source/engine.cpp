@@ -96,6 +96,8 @@ float timer;
 
 quadTree mainTree;
 
+spooky::CAudioEngine audioEngine;
+
 void engineInit()
 {
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
@@ -310,10 +312,12 @@ void engineInit()
 
 	GLApp::init();
 
-	spooky::CAudioEngine audioEngine;
+	//spooky::CAudioEngine audioEngine;
 	audioEngine.Init();
-	audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
+	
+	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
 	audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
 	Font::init();
 	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
@@ -364,7 +368,11 @@ void engineUpdate()
 
 	GLApp::update();						// graphics system
 
-	//spooky::CAudioEngine audioEngine;
+	if (Graphics::Input::mousestateLeft)
+	{
+		audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	}
+
 	Font::RenderFont(Font::shader, "Text Renderer Testing", 100.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
