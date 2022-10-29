@@ -62,13 +62,10 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	BufferNS::VAO::setVAOattrib(vaoid, 3, 1); // Attrib format 
 	BufferNS::VAO::bindVAOattrib(vaoid, 3, 3); // Bind attrib 
 
-
-	int matrix_loc = 4;
-
 	BufferNS::VBO::bindVBO(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
-
 	// Matrix requires n consecutive input locations, where N is the columns in a matrix
 	// So mat3x3 is 3 vertex attributes
+	int matrix_loc = 4;
 	for (int col = 0; col < 3; col++)
 	{
 		// Instancing offset array
@@ -79,7 +76,6 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 		BufferNS::VAO::setVAOattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
 		BufferNS::VAO::bindVAOattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
 	}
-
 	// Creating ebo
 	GLuint eboid = BufferNS::EBO::createEBO();
 	ebodata[0] = 0;
@@ -89,59 +85,18 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	ebodata[4] = 3;
 	ebodata[5] = 0;
 	BufferNS::EBO::createEBOstorage(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
-
 	BufferNS::EBO::bindEBO(vaoid, eboid);
 
-	//std::vector<Graphics::Texture> textures;
-	//for (int texids = 0; texids < 9; texids++)
-	//{
-	//	textures.emplace_back(texobjs[texids].getTexid());
-	//}
-	//Graphics::Texture textures;
-	//std::cout << "Texture units " << texobjs.size() << std::endl;
-	//glBindTexture(GL_TEXTURE_2D_ARRAY, textures);
-	//glBindTextureUnit(0, texobjs[0].getTexid());
-	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
-	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
-	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
-	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
-	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
-	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
-	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
-	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
-
-
 	glBindTextureUnit(0, texobjs.textureid);
-	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
 	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
 	glUniform1i(tex_loc, 0);
-
-	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-	//glUniform1iv(tex_loc, 9, samplers);
-	//glUniform1i(tex_loc, 0); // Modulate bool temp
-
-	//GLboolean UniformModulate = glGetUniformLocation(instanceshader.GetHandle(), "modulatebool");
-	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
-	//glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
-
-	//GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
-	//glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
-	
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
-	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
-
-	//instanceshader.UnUse();
-
-	//frameshader.Use();
 
 	mainFrame.drawFrameBuffer();
-
 	GLuint tex2_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
 	glUniform1i(tex2_loc, 0);
-	//glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	instanceshader.UnUse();
 	BufferNS::VAO::unbindVAO();
-	//frameshader.UnUse();
 
 	glDeleteBuffers(1, &headervboid);
 	glDeleteBuffers(1, &instancevboid);
@@ -150,9 +105,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 
 void RenderNS::InstancedRenderer::InstanceClear()
 {
-	//std::cout << "Instance size before " << instancedata.size() << std::endl;
 	instancedata.clear();
-	//std::cout << "Instance size after " << instancedata.size() << std::endl;
 }
 
 void RenderNS::InstancedRenderer::InstanceDelete()
@@ -223,11 +176,9 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 			ebodata[i + 3] = 2 + offset;
 			ebodata[i + 4] = 3 + offset;
 			ebodata[i + 5] = 0 + offset;
-
 			offset += 4;
 		}
 	}
-	
 	else if (primtype == GL_POINTS || primtype == GL_LINES || primtype == GL_LINE_LOOP || primtype == GL_LINE_STRIP)
 	{
 		for (int i = 0; i < (totalindicesize-1); i += 2)
@@ -242,35 +193,11 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 
 	BufferNS::EBO::bindEBO(vaoid, eboid);
 
-	//std::cout << "Texture units " << texobjs.size() << std::endl;
-
-	//glBindTextureUnit(0, texobjs[0].getTexid());
-	//glBindTextureUnit(1, texobjs[1].getTexid()); // Basetree
-	//glBindTextureUnit(2, texobjs[2].getTexid()); // Grass
-	//glBindTextureUnit(3, texobjs[3].getTexid()); // Circuwu
-	//glBindTextureUnit(4, texobjs[4].getTexid()); // Circuwu
-	//glBindTextureUnit(5, texobjs[5].getTexid()); // Dragbox
-	//glBindTextureUnit(6, texobjs[6].getTexid()); // Enemy
-	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
-	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
-
-	//GLuint tex_loc = glGetUniformLocation(batchshader.GetHandle(), "ourTexture");
-	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
-	//glUniform1iv(tex_loc, 9, samplers);
-
-	//GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
-	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
-	//glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
-
-	//GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
-	//glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
-
 	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
 	BufferNS::VAO::unbindVAO();
 
 	batchshader.UnUse();
-
 }
 
 void RenderNS::BatchRenderer::BatchClear()
@@ -327,7 +254,6 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
 		{
 			texid = curobjTexture->textureID;
-			//std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
 		}
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 
@@ -369,12 +295,9 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 			tmpVtxData.clrVtx = clr_vtx[j];
 			tmpVtxData.posVtx = models["square"].model_coords[j];
-			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
 			tmpVtxData.txtVtx = texcoord[j];
 			tmpVtxData.txtIndex = texid;
 			vertexData.emplace_back(tmpVtxData);
-			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
-			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
 		}
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
@@ -402,7 +325,6 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		instanceobj.headerdata.clear();
-		//instanceobj.instancedata.clear(); // Instance stacks up
 		instanceobj.ebodata.clear();
 		instanceobj.headerdata.insert(instanceobj.headerdata.end(), vertexData.begin(), vertexData.end());
 		instanceobj.instancedata.insert(instanceobj.instancedata.end(), testdata.begin(), testdata.end());

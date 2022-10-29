@@ -3,15 +3,12 @@
 @author  a.weiren@digipen.edu, ruoyan.go@digipen.edu, p.jiankai@digipen.edu
 @date    10/08/2022
 
-This file contains the declaration of namespace GLApp that encapsulates the
+This file contains the declaration of namespace App that encapsulates the
 functionality required to implement an OpenGL application including
 compiling, linking, and validating shader programs
 setting up geometry and index buffers,
 configuring VAO to present the buffered geometry and index data to
 vertex shaders,
-configuring textures (in later labs),
-configuring cameras (in later labs),
-and transformations (in later labs).
 *//*__________________________________________________________________________*/
 
 #ifndef APP_H
@@ -32,7 +29,7 @@ and transformations (in later labs).
 #include <physicsRigidBody.h>
 
 
-struct GLApp 
+struct App 
 {
 
 	static void init();
@@ -66,8 +63,6 @@ struct GLApp
 	static bool coldebug;
 	static bool velocitydirectiondebug;
 	static bool graphicsmode;
-
-	static int objectcounter;
 };
 
 #endif /* APP_H */

@@ -46,7 +46,7 @@ namespace CameraNS
 	@param GLFWwindow* pWindow
 	Pointer to GLFW window currently in use
 
-	@param GLApp::GLObject* ptr
+	@param App::GLObject* ptr
 	Pointer to Camera object
 
 	@return none

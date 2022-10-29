@@ -102,7 +102,7 @@ quadTree mainTree;
 
 void engineInit()
 {
-	GLApp::init();
+	App::init();
 
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
 	
@@ -371,17 +371,17 @@ void engineUpdate()
 
 	Graphics::Input::update_time(1.0);
 
-	GLApp::update();						// graphics system
+	App::update();						// graphics system
 }
 
 void engineDraw()
 {
-	GLApp::draw();
+	App::draw();
 }
 
 void engineFree()
 {
-	GLApp::cleanup();
+	App::cleanup();
 
 	Graphics::Input::cleanup();
 }

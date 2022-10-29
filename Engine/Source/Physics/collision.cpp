@@ -136,7 +136,7 @@ namespace physics
 	*/
 	/**************************************************************************/
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
-	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
+	bool shapeOverlapStaticAABB(App::GLObject & polygon1, App::GLObject & polygon2)
 	{
 		polygon1.boundingBoxWorldVertices.clear();
 		polygon2.boundingBoxWorldVertices.clear();
@@ -196,7 +196,7 @@ namespace physics
 
 #endif
 #if false
-	void computeBoundingBox(GLApp::GLObject& polygon)
+	void computeBoundingBox(App::GLObject& polygon)
 	{
 		polygon.boundingBoxWorldVertices.clear();
 
@@ -214,7 +214,7 @@ namespace physics
 #if false
 	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
 	//const AABB& aabb2, const vector2D::vec2D& vel2)
-	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon)
+	void shapeOverlapDynamicAABB(App::GLObject& staticPolygon, App::GLObject& dynamicPolygon)
 	{
 		if (shapeOverlapStaticAABB(staticPolygon, dynamicPolygon)) //polygon1 is pushed back
 		{
@@ -294,10 +294,10 @@ namespace physics
 		
 	*/
 	/******************************************************************************/
-	bool shapeOverlapSAT(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2)
+	bool shapeOverlapSAT(App::GLObject const& polygon1, App::GLObject const& polygon2)
 	{
-		GLApp::GLObject const* shape1 = &polygon1;
-		GLApp::GLObject const* shape2 = &polygon2;
+		App::GLObject const* shape1 = &polygon1;
+		App::GLObject const* shape2 = &polygon2;
 		static float myInf{ std::numeric_limits<float>::infinity() };
 
 		for (int i = 0; i < 2; ++i)

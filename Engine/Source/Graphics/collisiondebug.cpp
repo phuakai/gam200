@@ -23,7 +23,7 @@ prior written consent of DigiPen Institute of Technology is prohibited.
 static int tmpcollisionobjcounter{ 0 };
 
 #if false
-void Graphics::collisionDebugInit(GLApp::GLObject& object)
+void Graphics::collisionDebugInit(App::GLObject& object)
 {
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
 	matrix3x3::mat3x3 worldtondc = transform.createWorldtoNDC();
@@ -41,12 +41,12 @@ void Graphics::collisionDebugInit(GLApp::GLObject& object)
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
+	//App::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(0.0f, 1.0f, 0.0f), tmpcollisionobjcounter, false);
 
 }
 #endif
 #if false
-void Graphics::collisionDebugCreate(GLApp::GLObject& object)
+void Graphics::collisionDebugCreate(App::GLObject& object)
 {
 	//std::cout << "Vertice size " << object.body.getTfmVtx().size() << std::endl;
 	std::vector<vector2D::vec2D> tmp = object.body.getTfmVtx();
@@ -71,7 +71,7 @@ void Graphics::collisionDebugCreate(GLApp::GLObject& object)
 	tmpstream << tmpobjname << tmpcollisionobjcounter;
 	std::string finalobjname = tmpstream.str();
 	//std::cout << "Final obj name " << finalobjname << std::endl;
-	//GLApp::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
+	//App::GLObject::gimmeObject("square", finalobjname, vector2D::vec2D(width, height), vector2D::vec2D(object.modelCenterPos.x, object.modelCenterPos.y), vector3D::vec3D(1.0f, 1.0f, 1.0f), tmpcollisionobjcounter, false);
 	
 }
 #endif

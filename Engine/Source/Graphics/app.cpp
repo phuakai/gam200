@@ -52,39 +52,29 @@ extern std::vector<Entity> walls;
 
 /*                                                   objects with file scope
 ----------------------------------------------------------------------------- */
-std::map<std::string, GLSLShader> GLApp::shdrpgms; // define shaders
+std::map<std::string, GLSLShader> App::shdrpgms; // define shaders
 
 std::map<std::string, ModelNS::Model> models; // define models
 
-std::unordered_map<GLApp::collisionType, std::string> GLApp::collisionInfo;
-
-RenderNS::BatchRenderer basicbatch; // Batch render object
-RenderNS::BatchRenderer debugbatch; // Batch render object for collision debug
-RenderNS::BatchRenderer debuglinebatch; // Batch render object for collision debug
+std::unordered_map<App::collisionType, std::string> App::collisionInfo;
 
 RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
 
 FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
-//Graphics::Texture texobj;
-
-//std::vector<Graphics::Texture> Graphics::textureobjects;
-
 CameraNS::Camera2D camera2d;
 
-GLApp::collisionType GLApp::currentCollision;
-bool GLApp::movableShape;
+App::collisionType App::currentCollision;
+bool App::movableShape;
 //std::list <std::pair<int, partitionObj>> partitionStorage;
 
-bool GLApp::coldebug;
-bool GLApp::velocitydirectiondebug;
-bool GLApp::graphicsmode;
-
-int GLApp::objectcounter;
+bool App::coldebug;
+bool App::velocitydirectiondebug;
+bool App::graphicsmode;
 
 vector2D::vec2D readConfig(std::string path);
 
-/*! GLApp::init
+/*! App::init
 
 @param none
 @return none
@@ -94,7 +84,7 @@ It uses OpenGL functions such as:
 glClearColor and glViewport to initialize the app
 */
 
-void GLApp::init()
+void App::init()
 {
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
 	if (!Graphics::Input::init(screensize.x, screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
@@ -107,8 +97,7 @@ void GLApp::init()
 
 	ModelNS::initModels(models); // Initialize line and square models
 
-	GLApp::coldebug = false;
-	GLApp::objectcounter = 0;
+	App::coldebug = false;
 
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);	// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
@@ -139,7 +128,7 @@ void GLApp::init()
 }
 
 /*  _________________________________________________________________________*/
-/*! GLApp::update
+/*! App::update
 
 @param none
 @return none
@@ -148,7 +137,7 @@ This function updates the polygon rasterization mode when 'P' is pressed,
 it also spawns new objects until reaching the maximum object limit, where it will
 despawn the oldest objects, and respawn objects again once no objects are left.
 */
-void GLApp::update()
+void App::update()
 {
 	// first, update camera
 	//std::cout << "cam2d camworld bef update " << CameraNS::camera2d.camworld_to_ndc_xform.m[0] << std::endl;
@@ -287,7 +276,7 @@ void GLApp::update()
 }
 
 /*  _________________________________________________________________________*/
-/*! GLApp::draw
+/*! App::draw
 
 @param none
 @return none
@@ -297,7 +286,7 @@ update the rendering mode and renders all objects out onto the viewport
 It uses OpenGL functions such as:
 glClear to set the color buffer bit, glfwSetWindowTitle to set the window title
 */
-void GLApp::draw()
+void App::draw()
 {
 	std::stringstream title;
 	title << std::fixed;
@@ -319,8 +308,6 @@ void GLApp::draw()
 	RenderNS::DrawFunc(basicinstance, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
 
 	glDisable(GL_BLEND);
-
-	//objects["Camera"].draw();
 }
 /*  _________________________________________________________________________*/
 /*! cleanup
@@ -330,7 +317,7 @@ void GLApp::draw()
 
 This function is empty for now
 */
-void GLApp::cleanup() 
+void App::cleanup() 
 {
 	mainFrame.delFrameBuffer();
 	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
