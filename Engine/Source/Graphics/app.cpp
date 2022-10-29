@@ -69,7 +69,7 @@ RenderNS::InstancedRenderer basicinstance; // Instance render object for collisi
 
 //std::vector<Graphics::Texture> Graphics::textureobjects;
 
-Graphics::Camera2D camera2d;
+//Graphics::Camera2D camera2d;
 
 GLApp::collisionType GLApp::currentCollision;
 bool GLApp::movableShape;
@@ -926,7 +926,8 @@ void GLApp::entitydraw()
 		}
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
+		//matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
@@ -938,8 +939,8 @@ void GLApp::entitydraw()
 
 		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
 		(
-			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
-			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
+			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 		);
 		

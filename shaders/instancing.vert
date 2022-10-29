@@ -16,10 +16,13 @@ void main()
 	//gl_Position = vec4(vec2(uModel_to_NDC * vec3(aVertexPosition, 1.0)), 0.0, 1.0);
 	//gl_Position = vec4(aVertexPosition, 0.0, 1.0);
 	vTextureIndex = aOffset[2][2];
+	vColor = vec3(aOffset[0][1], aOffset[0][2], aOffset[1][0]);
 	mat3 fakeOffset = aOffset;
+	fakeOffset[0][1] = 0;
+	fakeOffset[0][2] = 0;
+	fakeOffset[1][0] = 0;
 	fakeOffset[2][2] = 1;
 	gl_Position = vec4(vec2(fakeOffset * vec3(aVertexPosition, 1.0)), 0.0, 1.0);
 
-	vColor = aVertexColor;
 	vTextureCoord = aTextureCoord;
 }

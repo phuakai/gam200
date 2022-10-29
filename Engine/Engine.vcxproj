@@ -87,7 +87,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\FogOfWar;$(ProjectDir)Include\ECS;$(ProjectDir)Include\EventManager;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(ProjectDir)Include\AI;$(ProjectDir)Include\FogOfWar;$(ProjectDir)Include\ECS;$(ProjectDir)Include\EventManager;$(ProjectDir)Include\Graphics;$(ProjectDir)Include\Math;$(ProjectDir)Include\Physics;$(ProjectDir)Include\Serialization;$(ProjectDir)Include\Serialization\rapidjson;$(ProjectDir)Include\Serialization\rttr;$(ProjectDir)Include\Serialization\rttr\detail;$(ProjectDir)Source\Serialization\rttr;$(ProjectDir)Source\Serialization\rttr\detail;$(ProjectDir)Include\UI;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)Level Editor\Include\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -170,9 +170,11 @@
     <ClCompile Include="Source\Graphics\glslshader.cpp" />
     <ClCompile Include="Source\Graphics\graphics.cpp" />
     <ClCompile Include="Source\Graphics\input.cpp" />
+    <ClCompile Include="Source\Graphics\inputSystem.cpp" />
     <ClCompile Include="Source\Graphics\model.cpp" />
     <ClCompile Include="Source\Graphics\texture.cpp" />
     <ClCompile Include="Source\Graphics\transform.cpp" />
+    <ClCompile Include="Source\Graphics\window.cpp" />
     <ClCompile Include="Source\Math\mat3x3.cpp" />
     <ClCompile Include="Source\Math\mat4x4.cpp" />
     <ClCompile Include="Source\Math\vec2D.cpp" />
@@ -215,6 +217,8 @@
     <ClCompile Include="Source\Serialization\rttr\variant_associative_view.cpp" />
     <ClCompile Include="Source\Serialization\rttr\variant_sequential_view.cpp" />
     <ClCompile Include="Source\Serialization\serialization.cpp" />
+    <ClCompile Include="Source\UI\ui.cpp" />
+    <ClCompile Include="Source\UI\uiManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\AI\pathfinding.h" />
@@ -230,9 +234,11 @@
     <ClInclude Include="Include\Graphics\glslshader.h" />
     <ClInclude Include="Include\Graphics\graphics.h" />
     <ClInclude Include="Include\Graphics\input.h" />
+    <ClInclude Include="Include\Graphics\inputSystem.h" />
     <ClInclude Include="Include\Graphics\model.h" />
     <ClInclude Include="Include\Graphics\texture.h" />
     <ClInclude Include="Include\Graphics\transform.h" />
+    <ClInclude Include="Include\Graphics\window.h" />
     <ClInclude Include="Include\mainHeader.h" />
     <ClInclude Include="Include\Math\mat3x3.h" />
     <ClInclude Include="Include\Math\mat4x4.h" />
@@ -413,6 +419,8 @@
     <ClInclude Include="Include\Serialization\rttr\variant_sequential_view.h" />
     <ClInclude Include="Include\Serialization\rttr\wrapper_mapper.h" />
     <ClInclude Include="Include\Serialization\serialization.h" />
+    <ClInclude Include="Include\UI\ui.h" />
+    <ClInclude Include="Include\UI\uiManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Include\Serialization\rttr\registration" />
