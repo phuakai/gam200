@@ -312,9 +312,10 @@ void engineInit()
 
 	spooky::CAudioEngine audioEngine;
 	audioEngine.Init();
-	Font::init();
 	audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
 	audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+
+	Font::init();
 	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
 	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
 	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
@@ -363,7 +364,7 @@ void engineUpdate()
 
 	GLApp::update();						// graphics system
 
-	spooky::CAudioEngine audioEngine;
+	//spooky::CAudioEngine audioEngine;
 	Font::RenderFont(Font::shader, "Text Renderer Testing", 100.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 

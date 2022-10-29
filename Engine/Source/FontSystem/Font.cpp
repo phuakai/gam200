@@ -36,7 +36,7 @@ namespace Font
 
 		else
 		{
-			FT_Set_Pixel_Sizes(face, 0, 48);
+			FT_Set_Pixel_Sizes(face, 0, 48); // Disable byte-alignment restriction 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			for (unsigned char c = 0; c < 128; c++)
@@ -87,7 +87,6 @@ namespace Font
 	void RenderFont(GLSLShader& s, std::string text, float x, float y, float scale, glm::vec3 color)
 	{
 		s.Use();
-
 		glm::mat4x4 proj(
 			2.0f / (float)Graphics::camera2d.getWinWidth(), 0.f, 0.f, 0.f,
 			0.f, 2.0f / (float)Graphics::camera2d.getWinHeight(), 0.f, 0.f,
@@ -99,6 +98,7 @@ namespace Font
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(VAO);
 
+		// Iterate through the characters
 		std::string::const_iterator c;
 		for (c = text.begin(); c != text.end(); c++)
 		{
