@@ -120,12 +120,12 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	//glUniform1iv(tex_loc, 9, samplers);
 	//glUniform1i(tex_loc, 0); // Modulate bool temp
 
-	GLboolean UniformModulate = glGetUniformLocation(instanceshader.GetHandle(), "modulatebool");
+	//GLboolean UniformModulate = glGetUniformLocation(instanceshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
-	glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
+	//glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
 
-	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
-	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
+	//GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
+	//glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 	
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
@@ -258,12 +258,12 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	//int samplers[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8};
 	//glUniform1iv(tex_loc, 9, samplers);
 
-	GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
+	//GLboolean UniformModulate = glGetUniformLocation(batchshader.GetHandle(), "modulatebool");
 	//std::cout << "Modul " << GLApp::modulate << " Text " << GLApp::textures << std::endl;
-	glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
+	//glUniform1i(UniformModulate, GLApp::modulate); // Modulate bool temp
 
-	GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
-	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
+	//GLboolean UniformTextures = glGetUniformLocation(batchshader.GetHandle(), "texturebool");
+	//glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 
 	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 

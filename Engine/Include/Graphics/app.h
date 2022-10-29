@@ -63,9 +63,6 @@ struct GLApp
 
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 
-	static bool modulate;
-	static bool alphablend;
-	static bool textures;
 	static bool coldebug;
 	static bool velocitydirectiondebug;
 	static bool graphicsmode;

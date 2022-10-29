@@ -76,16 +76,11 @@ GLApp::collisionType GLApp::currentCollision;
 bool GLApp::movableShape;
 //std::list <std::pair<int, partitionObj>> partitionStorage;
 
-bool GLApp::modulate;
-bool GLApp::alphablend;
-bool GLApp::textures;
 bool GLApp::coldebug;
 bool GLApp::velocitydirectiondebug;
 bool GLApp::graphicsmode;
 
 int GLApp::objectcounter;
-
-int entitycounter;
 
 vector2D::vec2D readConfig(std::string path);
 
@@ -101,7 +96,6 @@ glClearColor and glViewport to initialize the app
 
 void GLApp::init()
 {
-	entitycounter = 0;
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
 	if (!Graphics::Input::init(screensize.x, screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
@@ -113,9 +107,6 @@ void GLApp::init()
 
 	ModelNS::initModels(models); // Initialize line and square models
 
-	GLApp::modulate = false;
-	GLApp::alphablend = true;
-	GLApp::textures = true;
 	GLApp::coldebug = false;
 	GLApp::objectcounter = 0;
 
@@ -190,18 +181,15 @@ void GLApp::update()
 	}
 	if (Graphics::Input::keystateM)
 	{
-		modulate = !modulate;
 		std::cout << "M pressed\n";
 		Graphics::Input::keystateM = GL_FALSE;
 	}
 	if (Graphics::Input::keystateB)
 	{
-		alphablend = !alphablend;
 		Graphics::Input::keystateB = GL_FALSE;
 	}
 	if (Graphics::Input::keystateT)
 	{
-		textures = !textures;
 		std::cout << "T pressed\n";
 		Graphics::Input::keystateT = GL_FALSE;
 	}
@@ -325,34 +313,11 @@ void GLApp::draw()
 	// clear color buffer
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	if (alphablend)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	RenderNS::DrawFunc(basicinstance, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
-	
-	//basicinstance.instanceshader = shdrpgms["instanceshader"];
-	//RenderNS::entitydraw(basicinstance, models); // Comment to stop drawing from ecs
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
-	//glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//basicinstance.InstanceRender(TextureNS::textureobjects);
-
-	//mainFrame.drawFrameBuffer();
-	//basicinstance.InstanceClear();
-	entitycounter = 0;
-	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
-	//glLineWidth(2.f);
-	//debuglinebatch.BatchRender(Graphics::textureobjects);
-	//glLineWidth(1.f);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//debugbatch.BatchRender(Graphics::textureobjects); // For collision debug
-	//basicbatch.BatchClear();
-	//debuglinebatch.BatchClear();
-	//debugbatch.BatchClear();
 	glDisable(GL_BLEND);
 
 	//objects["Camera"].draw();
