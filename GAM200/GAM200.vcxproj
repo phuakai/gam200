@@ -177,6 +177,7 @@ copy "$(SolutionDir)lib\glew-2.2.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -316,11 +316,10 @@ void engineInit()
 	audioEngine.Init();
 	
 	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
-	audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
-	audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
-	Font::init();
-	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
 	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
 	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
 	{
@@ -329,7 +328,10 @@ void engineInit()
 	if (false == Font::shader.Validate() || false == Font::shader.Validate())
 	{
 		assert("ERROR: Unable to validate shaders!");
-	}
+	}*/
+
+	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	Font::init();
 }
 
 void engineUpdate()
@@ -372,13 +374,13 @@ void engineUpdate()
 	{
 		audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 	}
-
-	Font::RenderFont(Font::shader, "Text Renderer Testing", 100.f, 450.f, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineDraw()
 {
 	GLApp::draw();
+	GLApp::shdrpgms.find("font");
+	Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineFree()

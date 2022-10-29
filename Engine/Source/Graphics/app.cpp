@@ -44,6 +44,7 @@ to OpenGL implementations.
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
+#include "Font.h";
 
 extern std::vector<FormationManager> formationManagers;
 extern Entity player1;
@@ -164,6 +165,17 @@ void GLApp::init()
 	//EntityID playerID = player1.GetID();
 	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
 
+	/*Font::init();
+	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}*/
 }
 
 
