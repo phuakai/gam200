@@ -33,6 +33,8 @@ namespace TextureNS
 		static void loadTexture(Texture& textureobj);
 		//static void loadTexture(const char* path);
 
+		static void CreateandLoadTexture(Texture& textureobj);
+
 		/******************************************************************************/
 		/*!
 			This function deletes the texture object

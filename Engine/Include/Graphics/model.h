@@ -69,6 +69,8 @@ namespace ModelNS
 		GLuint vboid = 0;
 		GLuint eboid = 0;
 	};
+
+	void initModels(std::map<std::string, ModelNS::Model>& modellist);
 }
 
 #endif

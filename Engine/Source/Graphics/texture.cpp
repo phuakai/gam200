@@ -67,6 +67,14 @@ namespace TextureNS
 		}
 	}
 
+	void Texture::CreateandLoadTexture(Texture& textureobj)
+	{
+		Texture::createTexturePath("../asset/cloud2_256x256.png", textureobj);
+		Texture::createTexturePath("../asset/cloud3_256x256.png", textureobj);
+		Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", textureobj);
+		Texture::loadTexture(textureobj); // Load all textures
+	}
+
 	void Texture::deleteTexture(Texture& textureobj)
 	{
 		glDeleteTextures(1, &(textureobj.textureid));

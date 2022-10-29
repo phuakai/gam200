@@ -87,6 +87,8 @@ int GLApp::objectcounter;
 
 int entitycounter;
 
+vector2D::vec2D readConfig(std::string path);
+
 /*! GLApp::init
 
 @param none
@@ -100,56 +102,29 @@ glClearColor and glViewport to initialize the app
 void GLApp::init()
 {
 	entitycounter = 0;
-	std::fstream myfile;
-	myfile.open("config.xml");
-	int width{};
-	int height{};
-	myfile >> width;
-	myfile >> height;
-
-	if (!Graphics::Input::init(width, height, "Bloom"))
+	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
+	if (!Graphics::Input::init(screensize.x, screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
 		std::cout << "Unable to create OpenGL context" << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
 
-	mainFrame.createFrameBuffer();
-	
+	mainFrame.createFrameBuffer(); // Create frame buffer
 
-	GLApp::shdrpgms.clear(); // clear shaders
-	models.clear(); // clear models
+	ModelNS::initModels(models); // Initialize line and square models
 
-	basicbatch.BatchClear(); // Clear basic batch
-	debugbatch.BatchClear(); // Clear debug batch
-	debuglinebatch.BatchClear(); // Clear debug line batch
-
-	ModelNS::Model linemodel; // Init line model
-	linemodel = linemodel.init("line");
-	models["line"] = linemodel;
-
-	GLApp::objectcounter = 0;
 	GLApp::modulate = false;
 	GLApp::alphablend = true;
 	GLApp::textures = true;
 	GLApp::coldebug = false;
+	GLApp::objectcounter = 0;
 
-	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
+	glClearColor(0.2f, 1.f, 0.3f, 1.f);	// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	TextureNS::Texture::createTexturePath("../asset/cloud2_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../asset/cloud3_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::loadTexture(TextureNS::textureobjects); // Load all textures
-	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
-	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
-	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
-	//Graphics::Texture::loadTexture("../images/YellowCircle.png", Graphics::textureobjects); // Yellow Circle
-	//Graphics::Texture::loadTexture("../images/DragBox.png", Graphics::textureobjects); // Drag Box
-	//Graphics::Texture::loadTexture("../images/Unit_tank_front.png", Graphics::textureobjects); // Enemy unit
-	//Graphics::Texture::loadTexture("../images/Map_sprite1.png", Graphics::textureobjects); // BG1
-	//Graphics::Texture::loadTexture("../images/Map_sprite2.png", Graphics::textureobjects); // BG2
+	TextureNS::Texture::CreateandLoadTexture(TextureNS::textureobjects); // Create and load textures
 
-	camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
+	camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0)); // Initialize camera
 
 	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
 	{
@@ -438,14 +413,6 @@ void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std:
 void GLApp::entitydraw(RenderNS::InstancedRenderer& instanceobj)
 {
 	std::vector<EntityID> entities = ecs.getEntities();
-
-	if (models.find("square") == models.end())
-	{
-		ModelNS::Model Model;
-		Model = Model.init("square");
-		models["square"] = Model;
-	}
-
 	for (int i = 0; i < entities.size(); i++)
 	{
 		if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
@@ -565,4 +532,14 @@ void GLApp::entitydraw(RenderNS::InstancedRenderer& instanceobj)
 		testdata.clear();
 
 	}
+}
+
+vector2D::vec2D readConfig(std::string path)
+{
+	std::fstream myfile;
+	myfile.open(path);
+	vector2D::vec2D dimension{};
+	myfile >> dimension.x;
+	myfile >> dimension.y;
+	return dimension;
 }
