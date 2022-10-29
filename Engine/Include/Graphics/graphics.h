@@ -16,6 +16,7 @@ This file handles the batch rendering of the game
 #include <mat3x3.h>
 #include <model.h>
 #include <texture.h>
+#include "framebuffer.h"
 
 namespace RenderNS
 {
@@ -23,6 +24,7 @@ namespace RenderNS
 	class InstancedRenderer
 	{
 	public:
+		int entitycounter{};
 		GLSLShader instanceshader{}; // Shader of all objects in instance
 		GLSLShader frameshader{}; // Shader of all objects in instance
 		std::vector<ModelNS::modelVtxData> headerdata{}; // Main (control) object in instance
@@ -36,7 +38,7 @@ namespace RenderNS
 		*/
 		/******************************************************************************/
 		//static void InstanceRender(std::vector<Texture>& texobjs, GLSLShader shader, GLuint vaoid, std::vector<vertexData> data, std::vector<vector2D::vec2D> offsetdata); // instance renders all objects in render
-		void InstanceRender(TextureNS::Texture& texobjs, int entitycount); // instance renders all objects in render
+		void InstanceRender(TextureNS::Texture& texobjs); // instance renders all objects in render
 
 		/******************************************************************************/
 		/*!
@@ -102,6 +104,8 @@ namespace RenderNS
 	};
 
 	//static BatchRenderer basicbatch;
+	void DrawFunc(RenderNS::InstancedRenderer& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj);
 
+	void entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models);
 
 }

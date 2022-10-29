@@ -126,15 +126,9 @@ void GLApp::init()
 
 	camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0)); // Initialize camera
 
-	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
-	{
-		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
-	}
-	else
-	{
-		insert_shdrpgm("framebuffer-shdrpgm", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
-		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
-	}
+
+	insertallshdrs(shdrpgms);
+	mainFrame.frameshader = shdrpgms["framebuffershader"];
 
 	// ======================================================================================================================================
 	// Store physics related info to be printed in title bar
@@ -336,16 +330,19 @@ void GLApp::draw()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	basicinstance.InstanceClear();
-	GLApp::entitydraw(basicinstance); // Comment to stop drawing from ecs
+	RenderNS::DrawFunc(basicinstance, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
+	
+	//basicinstance.instanceshader = shdrpgms["instanceshader"];
+	//RenderNS::entitydraw(basicinstance, models); // Comment to stop drawing from ecs
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
-	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	basicinstance.InstanceRender(TextureNS::textureobjects, entitycounter);
-	mainFrame.drawFrameBuffer();
-	basicinstance.InstanceClear();
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	//glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//basicinstance.InstanceRender(TextureNS::textureobjects);
+
+	//mainFrame.drawFrameBuffer();
+	//basicinstance.InstanceClear();
 	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
 	//glLineWidth(2.f);
@@ -375,164 +372,6 @@ void GLApp::cleanup()
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 }
 
-/*  _________________________________________________________________________*/
-/*!  GLApp::insert_shdrpgm
-
-@param std::string shdr_pgm_name
-Name of shader program to be used
-
-@param std::string vtx_shdr
-Name of vertex shader to be used
-
-@param std::string frg_shdr
-Name of fragment shader to be used
-
-@return none
-
-This function is called at the initialization of the scene to insert the different shader programs into a map container
-*/
-void GLApp::insert_shdrpgm(std::string shdr_pgm_name, std::string vtx_shdr, std::string frg_shdr)
-{
-	std::vector<std::pair<GLenum, std::string>> shdr_files
-	{
-		std::make_pair(GL_VERTEX_SHADER, vtx_shdr),
-		std::make_pair(GL_FRAGMENT_SHADER, frg_shdr)
-	};
-	GLSLShader shdr_pgm;
-	shdr_pgm.CompileLinkValidate(shdr_files);
-	if (GL_FALSE == shdr_pgm.IsLinked()) {
-		std::cout << "Unable to compile/link/validate shader programs\n";
-		std::cout << shdr_pgm.GetLog() << "\n";
-		std::exit(EXIT_FAILURE);
-	}
-
-	GLApp::shdrpgms[shdr_pgm_name] = shdr_pgm;
-}
-
-
-void GLApp::entitydraw(RenderNS::InstancedRenderer& instanceobj)
-{
-	std::vector<EntityID> entities = ecs.getEntities();
-	for (int i = 0; i < entities.size(); i++)
-	{
-		if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
-		{
-			continue;
-		}
-
-		BaseInfo* curobjBaseInfo = ecs.GetComponent<BaseInfo>(entities[i]);
-
-		// Below code (2 lines) is for fow
-		if (!ecs.GetComponent<Render>(entities[i])->render)
-			continue;
-
-
-		int texid{};
-		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
-		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
-		{
-			texid = curobjTexture->textureID;
-			//std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
-		}
-
-		Render* curobj = ecs.GetComponent<Render>(entities[i]);
-
-		GLSLShader shaderid;
-		if (shdrpgms.find(curobj->shaderName) != shdrpgms.end())
-		{
-			shaderid = shdrpgms.find(curobj->shaderName)->second;
-		}
-		else
-		{
-			insert_shdrpgm(curobj->shaderName, "../shaders/instancing.vert", "../shaders/instancing.frag");
-			shaderid = shdrpgms.find(curobj->shaderName)->second;
-		}
-
-		instanceobj.instanceshader = shaderid;
-
-		std::vector<vector3D::Vec3> clr_vtx
-		{
-			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
-			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
-		};
-
-		std::vector<vector2D::Vec2> texcoord;
-		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
-		texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
-		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
-		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
-
-		ModelNS::modelVtxData tmpHeaderData;
-		std::vector<ModelNS::modelVtxData> vertexData;
-		std::vector<matrix3x3::mat3x3> testdata;
-
-		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
-		float halfwidth = curobjBaseInfo->dimension.x / 2.f;
-		float halfheight = curobjBaseInfo->dimension.y / 2.f;
-		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y - halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y + halfheight));
-		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y + halfheight));
-
-
-		std::vector <vector2D::vec2D> ndccoord;
-		for (int i = 0; i < poscoord.size(); i++)
-		{
-			ndccoord.emplace_back(poscoord[i]);
-		}
-		
-		for (int j = 0; j < ndccoord.size(); ++j)
-		{
-			ModelNS::modelVtxData tmpVtxData;
-			//tmpVtxData.posVtx = ndccoord[i];
-
-			tmpVtxData.clrVtx = clr_vtx[j];
-			tmpVtxData.posVtx = models["square"].model_coords[j];
-			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
-			tmpVtxData.txtVtx = texcoord[j];
-			tmpVtxData.txtIndex = texid;
-			vertexData.emplace_back(tmpVtxData);
-			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
-			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
-		}
-
-		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
-		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
-
-		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
-
-
-		matrix3x3::mat3x3 world_to_ndc_xform = camera2d.getWorldtoNDCxForm();
-
-		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
-
-		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
-		(
-			//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
-			//model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
-			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
-			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
-			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
-
-		);
-		
-		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
-
-		instanceobj.headerdata.clear();
-		//instanceobj.instancedata.clear(); // Instance stacks up
-		instanceobj.ebodata.clear();
-		instanceobj.headerdata.insert(instanceobj.headerdata.end(), vertexData.begin(), vertexData.end());
-		instanceobj.instancedata.insert(instanceobj.instancedata.end(), testdata.begin(), testdata.end());
-		instanceobj.ebodata.insert(instanceobj.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
-		instanceobj.vaoid = models["square"].getVAOid();
-		entitycounter++;
-		
-		testdata.clear();
-
-	}
-}
 
 vector2D::vec2D readConfig(std::string path)
 {

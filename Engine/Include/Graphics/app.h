@@ -32,7 +32,8 @@ and transformations (in later labs).
 #include <physicsRigidBody.h>
 
 
-struct GLApp {
+struct GLApp 
+{
 
 	static void init();
 	static void update();
@@ -58,13 +59,7 @@ struct GLApp {
 	static bool movableShape;
 	static std::unordered_map<collisionType, std::string> collisionInfo;
 
-	static void entitydraw(RenderNS::InstancedRenderer& instanceobj);
-
 	using VPSS = std::vector<std::pair<std::string, std::string>>;
-
-	// function to insert shader program into container shdrpgms 
-	static void insert_shdrpgm(std::string, std::string, std::string);
-
 
 	static std::map<std::string, GLSLShader> shdrpgms; // singleton
 

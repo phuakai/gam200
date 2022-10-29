@@ -10,12 +10,17 @@ This file handles the batch rendering of the game
 #include <texture.h>
 #include <iostream>
 #include "framebuffer.h"
+#include "ecs.h"
+#include "mainHeader.h"
+#include "transform.h"
+#include "camera.h"
 
 #include "stb_image.h"
 
 extern FrameBufferNS::frameBuffer mainFrame;
+extern CameraNS::Camera2D camera2d;
 
-void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, int entitycount)
+void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 {
 	instanceshader.Use(); //Use shader prog
 
@@ -122,7 +127,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, in
 	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
 	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 	
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
+	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
 	//instanceshader.UnUse();
@@ -282,4 +287,129 @@ void RenderNS::BatchRenderer::BatchClear()
 void RenderNS::BatchRenderer::BatchDelete()
 {
 	glDeleteBuffers(1, &vaoid);
+}
+
+void RenderNS::DrawFunc(RenderNS::InstancedRenderer& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj)
+{
+	instanceobj.instanceshader = shadertouse;
+	entitydraw(instanceobj, models);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindFramebuffer(GL_FRAMEBUFFER, frame.framebuffer);
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	instanceobj.InstanceRender(texobj);
+	frame.drawFrameBuffer();
+	instanceobj.InstanceClear();
+
+}
+
+void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models)
+{
+	std::vector<EntityID> entities = ecs.getEntities();
+	for (int i = 0; i < entities.size(); i++)
+	{
+		if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects
+		{
+			continue;
+		}
+
+		BaseInfo* curobjBaseInfo = ecs.GetComponent<BaseInfo>(entities[i]);
+
+		// Below code (2 lines) is for fow
+		if (!ecs.GetComponent<Render>(entities[i])->render)
+		{
+			continue;
+		}
+
+		int texid{};
+		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
+		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
+		{
+			texid = curobjTexture->textureID;
+			//std::cout << " this is texid: "<< ecs.GetComponent <Render>(entities[i])->name << " " << texid << std::endl;
+		}
+		Render* curobj = ecs.GetComponent<Render>(entities[i]);
+
+		std::vector<vector3D::Vec3> clr_vtx
+		{
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
+			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
+		};
+
+		std::vector<vector2D::Vec2> texcoord;
+		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
+		texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
+		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
+		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
+
+		ModelNS::modelVtxData tmpHeaderData;
+		std::vector<ModelNS::modelVtxData> vertexData;
+		std::vector<matrix3x3::mat3x3> testdata;
+
+		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
+		float halfwidth = curobjBaseInfo->dimension.x / 2.f;
+		float halfheight = curobjBaseInfo->dimension.y / 2.f;
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y - halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x + halfwidth, curobjBaseInfo->position.y + halfheight));
+		poscoord.emplace_back(vector2D::vec2D(curobjBaseInfo->position.x - halfwidth, curobjBaseInfo->position.y + halfheight));
+
+
+		std::vector <vector2D::vec2D> ndccoord;
+		for (int i = 0; i < poscoord.size(); i++)
+		{
+			ndccoord.emplace_back(poscoord[i]);
+		}
+
+		for (int j = 0; j < ndccoord.size(); ++j)
+		{
+			ModelNS::modelVtxData tmpVtxData;
+			//tmpVtxData.posVtx = ndccoord[i];
+
+			tmpVtxData.clrVtx = clr_vtx[j];
+			tmpVtxData.posVtx = models["square"].model_coords[j];
+			//std::cout << "Position " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			tmpVtxData.txtVtx = texcoord[j];
+			tmpVtxData.txtIndex = texid;
+			vertexData.emplace_back(tmpVtxData);
+			//std::cout << "Start of position before matrix mult " << tmpVtxData.posVtx.x << ", " << tmpVtxData.posVtx.y << std::endl;
+			//std::cout << "End NDC for entity draw " << testend.x << ", " << testend.y << std::endl;
+		}
+
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
+		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
+
+		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
+
+
+		matrix3x3::mat3x3 world_to_ndc_xform = camera2d.getWorldtoNDCxForm();
+
+		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+
+		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
+		(
+			//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
+			//model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
+			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+
+		);
+
+		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
+
+		instanceobj.headerdata.clear();
+		//instanceobj.instancedata.clear(); // Instance stacks up
+		instanceobj.ebodata.clear();
+		instanceobj.headerdata.insert(instanceobj.headerdata.end(), vertexData.begin(), vertexData.end());
+		instanceobj.instancedata.insert(instanceobj.instancedata.end(), testdata.begin(), testdata.end());
+		instanceobj.ebodata.insert(instanceobj.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
+		instanceobj.vaoid = models["square"].getVAOid();
+		instanceobj.entitycounter++;
+
+		testdata.clear();
+	}
 }
