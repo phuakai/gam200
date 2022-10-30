@@ -33,6 +33,7 @@ to OpenGL implementations.
 #include <model.h>
 #include <texture.h>
 #include <transform.h>
+#include "framebuffer.h"
 
 #include <random>
 #include <stdint.h>
@@ -53,7 +54,7 @@ extern std::vector<Entity> walls;
 ----------------------------------------------------------------------------- */
 std::map<std::string, GLSLShader> GLApp::shdrpgms; // define shaders
 
-std::map<std::string, Graphics::Model> models; // define models
+std::map<std::string, ModelNS::Model> models; // define models
 
 std::map<std::string, GLApp::GLObject> GLApp::objects; // define objects
 
@@ -64,6 +65,8 @@ RenderNS::BatchRenderer debugbatch; // Batch render object for collision debug
 RenderNS::BatchRenderer debuglinebatch; // Batch render object for collision debug
 
 RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
+
+FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
 //Graphics::Texture texobj;
 
@@ -112,6 +115,9 @@ void GLApp::init()
 		std::exit(EXIT_FAILURE);
 	}
 
+	mainFrame.createFrameBuffer();
+
+
 	GLApp::shdrpgms.clear(); // clear shaders
 	models.clear(); // clear models
 	GLApp::objects.clear(); // clear objects
@@ -120,7 +126,7 @@ void GLApp::init()
 	debugbatch.BatchClear(); // Clear debug batch
 	debuglinebatch.BatchClear(); // Clear debug line batch
 
-	Graphics::Model linemodel; // Init line model
+	ModelNS::Model linemodel; // Init line model
 	linemodel = linemodel.init("line");
 	models["line"] = linemodel;
 
@@ -133,10 +139,10 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	Graphics::Texture::createTexturePath("../asset/cloud2_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../asset/cloud3_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", Graphics::textureobjects);
-	Graphics::Texture::loadTexture(Graphics::textureobjects); // Load all textures
+	TextureNS::Texture::createTexturePath("../asset/cloud2_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/cloud3_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", TextureNS::textureobjects);
+	TextureNS::Texture::loadTexture(TextureNS::textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
 	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
@@ -150,6 +156,16 @@ void GLApp::init()
 	// Part 4: initialize camera (NEED TO CHANGE THIS PLEASE)
 	GLApp::GLObject::gimmeObject("square", "Camera", vector2D::vec2D(1, 1), vector2D::vec2D(0, 0), vector3D::vec3D(1, 1, 1));
 	Graphics::camera2d.init(Graphics::Input::ptr_to_window, &GLApp::objects.at("Camera"));
+
+	if (shdrpgms.find("framebuffer-shdrpgm") != shdrpgms.end())
+	{
+		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+	}
+	else
+	{
+		insert_shdrpgm("framebuffer-shdrpgm", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
+		mainFrame.frameshader = shdrpgms.find("framebuffer-shdrpgm")->second;
+	}
 
 	// ======================================================================================================================================
 	// Store physics related info to be printed in title bar
@@ -195,11 +211,11 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	}
 
 	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-	
+
 	matrix3x3::mat3x3 rotation
 	(cos(orientation.x), -sin(orientation.x), 0,
-	sin(orientation.x), cos(orientation.x), 0,
-	0, 0, 1);
+		sin(orientation.x), cos(orientation.x), 0,
+		0, 0, 1);
 
 	matrix3x3::mat3x3 translation
 	(1, 0, modelCenterPos.x,
@@ -225,7 +241,7 @@ void GLApp::GLObject::update(GLdouble delta_time)
 	{
 		controlworldpos.emplace_back(controlxform * controlmodelpos[i]);
 		controlndcpos.emplace_back(world_to_ndc_xform * controlworldpos[i]);
-	}	
+	}
 
 	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
 
@@ -268,12 +284,12 @@ void GLApp::GLObject::draw() const
 	texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
 	texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
 
-	Graphics::vertexData tmpHeaderData;
-	std::vector<Graphics::vertexData> vertexData;
+	ModelNS::modelVtxData tmpHeaderData;
+	std::vector<ModelNS::modelVtxData> vertexData;
 	std::vector<matrix3x3::mat3x3> testdata;
 	for (int i = 0; i < controlndcpos.size(); ++i)
 	{
-		Graphics::vertexData tmpVtxData;
+		ModelNS::modelVtxData tmpVtxData;
 		tmpVtxData.posVtx = controlndcpos[i];
 		if (mdl_ref->first == "circle")
 		{
@@ -286,7 +302,7 @@ void GLApp::GLObject::draw() const
 		tmpVtxData.txtVtx = texcoord[i];
 		tmpVtxData.txtIndex = 6.f;
 		vertexData.emplace_back(tmpVtxData);
-		testdata.emplace_back(matrix3x3::mat3x3(1.f,0.f,0.f,  0.f, 1.f, 0.f,   0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
+		testdata.emplace_back(matrix3x3::mat3x3(1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f)); // Emplace back a base 1, 1 translation
 	}
 
 
@@ -437,7 +453,7 @@ void GLApp::update()
 	bool mouseClick = false;
 	if (Graphics::Input::mousestateLeft)
 	{
-		Graphics::Input::mousestateLeft = false;
+		//Graphics::Input::mousestateLeft = false;
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		mouseClick = true;
 	}
@@ -638,22 +654,22 @@ void GLApp::update()
 				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
 			}
 		}
-	}	
-
-
-	if (mouseClick)
-	{
-		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
-
-		for (int i = 0; i < formationManagers.size(); ++i)
-		{
-			formationManagers[i].target = player->position;
-			formationManagers[i].updateReached();
-		}
-
-		generateDijkstraCost(player->position, walls);
-		generateFlowField(player->position);
 	}
+
+
+	//if (mouseClick)
+	//{
+	//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+
+	//	for (int i = 0; i < formationManagers.size(); ++i)
+	//	{
+	//		formationManagers[i].target = player->position;
+	//		formationManagers[i].updateReached();
+	//	}
+
+	//	generateDijkstraxCost(player->position, walls);
+	//	generateFlowField(player->position);
+	//}
 }
 
 /*  _________________________________________________________________________*/
@@ -700,8 +716,18 @@ void GLApp::draw()
 	GLApp::entitydraw(); // Comment to stop drawing from ecs
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	
-	basicinstance.InstanceRender(Graphics::textureobjects, entitycounter);
+	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	basicinstance.InstanceRender(TextureNS::textureobjects, entitycounter);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// If Imgui is closed
+	if (!imguiShow)
+	{
+		mainFrame.drawFrameBuffer();
+	}
+
 	basicinstance.InstanceClear();
 	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once
@@ -725,14 +751,11 @@ void GLApp::draw()
 
 This function is empty for now
 */
-void GLApp::cleanup() 
+void GLApp::cleanup()
 {
-	//basicbatch.BatchDelete();
-	//debuglinebatch.BatchDelete();
-	//debugbatch.BatchDelete();
-	Graphics::Texture::deleteTexture(Graphics::textureobjects);
+	mainFrame.delFrameBuffer();
+	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
-	// empty for now
 }
 
 /*  _________________________________________________________________________*/
@@ -784,7 +807,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	if (modelname == "circle")
 	{
-		tmpObj.body.createCircleBody(scale.x/2.f, pos, 0.f, false, 0.f, &tmpObj.body);
+		tmpObj.body.createCircleBody(scale.x / 2.f, pos, 0.f, false, 0.f, &tmpObj.body);
 	}
 	else if (modelname == "square")
 		tmpObj.body.createBoxBody(scale.x, scale.x, pos, 0.f, false, 0.f, &tmpObj.body);
@@ -817,7 +840,7 @@ void GLApp::GLObject::gimmeObject(std::string modelname, std::string objname, ve
 	}
 	else
 	{
-		Graphics::Model Model;
+		ModelNS::Model Model;
 		Model = Model.init("square");
 		models["square"] = Model;
 		tmpObj.mdl_ref = models.find("square");
@@ -856,6 +879,7 @@ void GLApp::entitydraw()
 		if (!ecs.GetComponent<Render>(entities[i])->render)
 			continue;
 
+
 		int texid{};
 		Texture* curobjTexture = ecs.GetComponent<Texture>(entities[i]);
 		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
@@ -891,8 +915,8 @@ void GLApp::entitydraw()
 		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
 		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
 
-		Graphics::vertexData tmpHeaderData;
-		std::vector<Graphics::vertexData> vertexData;
+		ModelNS::modelVtxData tmpHeaderData;
+		std::vector<ModelNS::modelVtxData> vertexData;
 		std::vector<matrix3x3::mat3x3> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
@@ -909,10 +933,10 @@ void GLApp::entitydraw()
 		{
 			ndccoord.emplace_back(poscoord[i]);
 		}
-		
+
 		for (int j = 0; j < ndccoord.size(); ++j)
 		{
-			Graphics::vertexData tmpVtxData;
+			ModelNS::modelVtxData tmpVtxData;
 			//tmpVtxData.posVtx = ndccoord[i];
 
 			tmpVtxData.clrVtx = clr_vtx[j];
@@ -943,7 +967,7 @@ void GLApp::entitydraw()
 			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 		);
-		
+
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		basicinstance.headerdata.clear();
@@ -954,7 +978,7 @@ void GLApp::entitydraw()
 		basicinstance.ebodata.insert(basicinstance.ebodata.end(), models["square"].primitive.begin(), models["square"].primitive.end());
 		basicinstance.vaoid = models["square"].getVAOid();
 		entitycounter++;
-		
+
 		testdata.clear();
 
 		//if (ecs.GetComponent<Render>(entities[i]) == nullptr) // Added check for NIL objects

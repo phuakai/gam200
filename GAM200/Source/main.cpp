@@ -31,6 +31,10 @@ static void update();
 static void init();
 static void cleanup();
 
+bool imguiShow;
+double imguiMouseX;
+double imguiMouseY;
+
 /*                                                      function definitions
 ----------------------------------------------------------------------------- */
 /*  _________________________________________________________________________ */
@@ -44,20 +48,17 @@ Indicates how the program existed. Normal exit is signaled by a return value of
 0. Abnormal termination is signaled by a non-zero return value.
 Note that the C++ compiler will insert a return 0 statement if one is missing.
 */
-int main() {
-  // Part 1
-  init();
+int main() 
+{
+    init();
 
-  // Part 2
-  while (!glfwWindowShouldClose(Graphics::Input::ptr_to_window)) {
-    // Part 2a
-    update();
-    // Part 2b
-    draw();
-  }
+    while (!glfwWindowShouldClose(Graphics::Input::ptr_to_window)) 
+    {
+        update();
+        draw();
+    }
 
-  // Part 3
-  cleanup();
+    cleanup();
 }
 
 /*  _________________________________________________________________________ */
@@ -88,7 +89,17 @@ mouse movement, and mouse scroller events to be processed.
 static void update() 
 {
     engineUpdate();
-    imguiUpdate();
+
+    if (Graphics::Input::keystateI)
+    {
+        imguiShow = imguiShow ? false : true;
+        Graphics::Input::keystateI = false;
+    }
+
+    if (imguiShow)
+    {
+        imguiUpdate();
+    }
 }
 
 /*  _________________________________________________________________________ */
@@ -102,7 +113,12 @@ Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 static void draw() 
 {
     engineDraw();
-    imguiDraw();
+
+    if (imguiShow)
+    {
+        imguiDraw();
+    }
+
     swapBuffer();
 }
 

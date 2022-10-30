@@ -1,17 +1,17 @@
 #include "levelEditorProperties.h"
+#include "pathfinding.h"
 
-rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityId)
+void* checkComponentByName(rttr::type& componentName, const EntityID& entityID)
 {
 	if (componentName == rttr::type::get<Render>())
-		return *ecs.GetComponent<Render>(entityId);
+		return ecs.GetComponent<Render>(entityID);
 	else if (componentName == rttr::type::get<BaseInfo>())
-		return *ecs.GetComponent<BaseInfo>(entityId);
+		return ecs.GetComponent<BaseInfo>(entityID);
 	else if (componentName == rttr::type::get<Texture>())
-		return *ecs.GetComponent<Texture>(entityId);
+		return ecs.GetComponent<Texture>(entityID);
 	else if (componentName == rttr::type::get<Physics>())
-		return *ecs.GetComponent<Physics>(entityId);
-	//else if (componentName == rttr::type::get<Stats>())
-	//	return *ecs.GetComponent<Stats>(entityId);
+		return ecs.GetComponent<Physics>(entityID);
+	return nullptr;
 }
 
 levelEditorProperties& levelEditorProperties::getInstance()
@@ -20,20 +20,72 @@ levelEditorProperties& levelEditorProperties::getInstance()
 	return instance;
 }
 
-void levelEditorProperties::ImGuiProperties(EntityID id)
+void levelEditorProperties::ImGuiProperties(const int& id)
 {
 	static int selectedNode = -1;
 	static bool check = true;
-	if (id >= 0)
+	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
+
+	if (id != -1)
 	{
-		std::vector<std::string>componentNames = ecs.getEntityComponents(id);
-		for (int i = 0; i < componentNames.size(); ++i)
+		std::vector<std::string>allComponents = ecs.getAllRegisteredComponents();
+
+		for (int i = 0; i < allComponents.size(); ++i)
 		{
-			if (ImGui::TreeNode(componentNames[i].c_str()))
+			auto component = rttr::type::get_by_name(allComponents[i]);
+
+			void* componentExistCheck = checkComponentByName(component, id);
+			bool check = componentExistCheck == nullptr ? false : true;
+
+			if (allComponents[i] == "BaseInfo")
 			{
-				auto component = rttr::type::get_by_name(componentNames[i]);
+				ImGui::Text(allComponents[i].c_str());
+
+				ImGui::Indent();
+
+				BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(id);
+
+				char tempChar[100];
+				std::string tempName = baseInfo->name;
+
+				strcpy_s(tempChar, tempName.c_str());
+
+				ImGui::InputText("name", tempChar, 100);
+				baseInfo->name = std::string(tempChar);
+
+				vector2D::vec2D tempPosition = baseInfo->position;
+				ImGui::DragFloat2("position", tempPosition.m, 1.0f, -500.0f, 500.0f);
+				baseInfo->position = tempPosition;
+
+				vector2D::vec2D tempDimension = baseInfo->dimension;
+				ImGui::DragFloat2("dimension", tempDimension.m, 1.0f, -500.0f, 500.0f);
+				baseInfo->dimension = tempDimension;
+
+				ImGui::Unindent();
+
+				continue;
+			}
+
+			ImGui::Checkbox(allComponents[i].c_str(), &check);
+
+			if (check)
+			{
+				if (componentExistCheck == nullptr)
+				{
+					if (allComponents[i] == "Render")
+						ecs.AddComponent<Render>(id);
+					else if (allComponents[i] == "Texture")
+						ecs.AddComponent<Texture>(id);
+					else if (allComponents[i] == "Physics")
+					{
+						ecs.AddComponent<Physics>(id);
+						ecs.GetComponent<Physics>(id)->formationManagerID = -1;
+					}
+				}
+
 				rttr::instance componentInstance = GetComponentByName(component, id);
 
+				ImGui::Indent();
 				for (rttr::property property : component.get_properties())
 				{
 					if (property.get_type() == rttr::type::get<vector2D::vec2D>())
@@ -83,7 +135,24 @@ void levelEditorProperties::ImGuiProperties(EntityID id)
 					}
 				}
 
-				ImGui::TreePop();
+				ImGui::Unindent();
+			}
+
+			else if (componentExistCheck != nullptr)
+			{
+				if (allComponents[i] == "Render")
+					ecs.RemoveComponent<Render>(id);
+				else if (allComponents[i] == "Texture")
+					ecs.RemoveComponent<Texture>(id);
+				else if (allComponents[i] == "Physics")
+				{
+					int formationManagerID = ecs.GetComponent<Physics>(id)->formationManagerID;
+					if (formationManagerID != -1)
+					{
+						formationManagers[formationManagerID].slotAssignment.erase(std::find(formationManagers[formationManagerID].slotAssignment.begin(), formationManagers[formationManagerID].slotAssignment.end(), id));
+					}
+					ecs.RemoveComponent<Physics>(id);
+				}
 			}
 		}
 	}

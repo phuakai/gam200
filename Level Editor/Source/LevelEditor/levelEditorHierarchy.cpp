@@ -1,5 +1,7 @@
 #include "levelEditorHierarchy.h"
 
+std::vector<EntityID> prefabs;
+
 levelEditorHierarchy& levelEditorHierarchy::getInstance()
 {
 	static levelEditorHierarchy instance;
@@ -11,98 +13,145 @@ void levelEditorHierarchy::ImGuiHierarchy()
 	// Helper class to easy setup a text filter.
 	// You may want to implement a more feature-full filtering scheme in your own application.
 	static ImGuiTextFilter filter;
-	filter.Draw("", ImGui::GetWindowWidth() * 0.73);
-	ImGui::SameLine(ImGui::GetWindowWidth() * 0.77);
-	ImGui::Button("Clear");
+	filter.Draw("", ImGui::GetWindowWidth() * 0.5f);
+	ImGui::SameLine();
+	if (ImGui::Button("Clear", { ImGui::GetWindowWidth() * 0.13f , 20 }))
+	{
+		filter.Clear();
+	}
 
 	// Adding folder button =================================================================================
-	ImGui::SameLine(ImGui::GetWindowWidth() * 0.9);
-	if (ImGui::Button("+"))
+	ImGui::SameLine();
+	/// Should be a function on its own: called AddFolder(int parent)
+	if (ImGui::Button("Create New", { ImGui::GetWindowWidth() * 0.25f , 20 }))
 	{
-		/// Should be a function on its own: called AddFolder(int parent)
-		// Adding a new folder, without a parent (0)
-		parent.push_back(0);
-		listOfEntities.push_back(std::vector<EntityID>());
+		ImGui::OpenPopup("createNew");
+	}
+
+	if (ImGui::BeginPopup("createNew"))
+	{
+		if (ImGui::Selectable("New Folder"))
+		{
+			int folderID = 0;
+			if (hierarchyList.size() > 1)
+			{
+				folderID = (++hierarchyList.rbegin())->first.first;
+			}
+			folderID = ((folderID / 1000) + 1) * 1000;
+			std::vector<EntityID> entityList;
+			hierarchyList[std::make_pair(folderID, 1)] = entityList;
+		}
+		ImGui::Separator();
+		if (ImGui::Selectable("New Entity"))
+		{
+			selected = ecs.GetNewID();
+			ecs.AddComponent<BaseInfo>(selected);
+			ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
+			hierarchyList[std::make_pair(100000, 1)].push_back(selected);
+		}
+		for (int i = 0; i < prefabs.size(); i++)
+		{
+			if (ImGui::Selectable(ecs.GetComponent<BaseInfo>(prefabs[i])->name.c_str()))
+			{
+				selected = ecs.GetNewID();
+				for (auto j : ecs.getEntityComponents(prefabs[i]))
+				{
+					rttr::type component = rttr::type::get_by_name(j);
+					addComponentByName(component, selected);
+					if (j == "Physics")
+					{
+						ecs.GetComponent<Physics>(selected)->formationManagerID = -1;
+					}
+					if (j == "BaseInfo")
+					{
+						ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
+					}
+				}
+				hierarchyList[std::make_pair(100000, 1)].push_back(selected);
+			}
+		}
+		ImGui::EndPopup();
 	}
 	// Adding folder button end =============================================================================
 
 	// Drawing folders & entities ===========================================================================
-	//static bool dragCheck = false;
-	//static int dragEntityNo = -1;
-	//static EntityID dragEntity = -1;
-	//static int dragEntityVector = -1;
-	//static int dragEntityVectorTo = -1;
-	//static int dragType = -1;				// 0 - Entity, 1 - File
-
 	int moveFrom = -1, moveTo = -1;
-	int moveFromVector = -1, moveToVector = -1;
-	static std::string dragType = "";
+	int moveFromFolderID = -1, moveToFolderID = -1;
+	int moveFromFolderLevel = -1, moveToFolderLevel = -1;
+	static std::string dragTypeFrom = "", dragTypeTo = "";
+	int treeLevel = 0;
+	bool parentNodeOpen = true;
+	int returnLevel = 1;
 
-	for (int i = 0; i < parent.size(); ++i)
+	int i = 0;
+	for (auto folder : hierarchyList)
 	{
+		if (folder.first.second > returnLevel && !parentNodeOpen)
+		{
+			continue;
+		}
+
+		// folderID = map < pair < folderID, folderLevel >, listOfEntities >
+		// folderID
+		ImGui::PushID(i);
+		std::vector<EntityID>& listOfEntities = folder.second;
 		// Drawing Folder 
 		bool nodeOpen = false;
-		//static int nodeHovered = -1;
 
-		if (parent[i] >= 0)
+		if (folder.first.first < 100000)
 		{
 			ImGuiTreeNodeFlags nodeFlags =
 				ImGuiTreeNodeFlags_DefaultOpen |
 				ImGuiTreeNodeFlags_FramePadding |
 				ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			//if (dragCheck && nodeHovered == i)
-			//{
-			//	dragEntityVectorTo = i;
-			//}
-
-			nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, "File", i);
-
-			//if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
-			//{
-			//	nodeHovered = i;
-			//}
-			
-			//else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-			//{
-			//	int dragTo = j + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-
-			//	dragEntityNo = j;
-			//	dragEntityVector = i;
-			//	dragEntity = listOfEntities[i][j];
-			//	dragCheck = true;
-			//	dragType = 1;
-			//	ImGui::ResetMouseDragDelta();
-			//}
+			nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, std::to_string(folder.first.first).c_str());
+			parentNodeOpen = nodeOpen;
+			if (nodeOpen)
+			{
+				++treeLevel;
+			}
 
 			if (ImGui::BeginDragDropSource())
 			{
-				dragType = "Folder";
-				ImGui::SetDragDropPayload("ENTITYDRAG", &i, sizeof(EntityID));
-				ImGui::Text("This is a drag and drop source");
+				dragTypeFrom = "Folder";
+				vector3D::vec3D folderLocation{ (float)folder.first.first , (float)folder.first.second , (float)i };
+				ImGui::SetDragDropPayload("dragEntity", &folderLocation, sizeof(vector3D::vec3D));
+				//ImGui::Text("This is a drag and drop source");
 				ImGui::EndDragDropSource();
 			}
 
 			if (ImGui::BeginDragDropTarget())
 			{
+				dragTypeTo = "Folder";
 				ImGuiDragDropFlags target_flags = 0;	//ImGuiDragDropFlags_AcceptBeforeDelivery;		// Don't wait until the delivery (release mouse button on a target) to do something
 				//| ImGuiDragDropFlags_AcceptNoDrawDefaultRect;	// Don't display the yellow rectangle
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITYDRAG", target_flags))
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("dragEntity", target_flags))
 				{
-					moveFrom = *(const EntityID*)payload->Data;
-					moveTo = i;
+					vector3D::vec3D location = *(const vector3D::vec3D*)payload->Data;
+					moveFromFolderID = location.x;
+					moveFromFolderLevel = location.y;
+					moveFrom = location.z;
+					moveToFolderID = folder.first.first;
+					moveToFolderLevel = folder.first.second;
+					moveTo = 0;
 				}
 
 				ImGui::EndDragDropTarget();
 			}
-			
 		}
 		
-		if (nodeOpen || parent[i] == -1)
+		if (nodeOpen || folder.first.first == 100000)
 		{
-			for (int j = 0; j < listOfEntities[i].size(); ++j)
+			for (int j = 0; j < listOfEntities.size(); ++j)
 			{
-				EntityID currentEntity = listOfEntities[i][j];
+				if (ecs.GetComponent<BaseInfo>(listOfEntities[j])->type == "Prefab")
+				{
+					continue;
+				}
+
+				ImGui::PushID(j);
+				EntityID currentEntity = listOfEntities[j];
 				const char* name = (ecs.GetComponent<BaseInfo>(currentEntity)->name).c_str();
 
 				// Filtering of names
@@ -112,230 +161,179 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					{
 						selected = currentEntity;
 					}
-
-					//else if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
-					//{
-					//	int dragTo = j + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
-					//	if (dragTo >= 0 && dragTo < listOfEntities[i].size())
-					//	{
-					//		listOfEntities[i][j] = listOfEntities[i][dragTo];
-					//		listOfEntities[i][dragTo] = currentEntity;
-					//		ImGui::ResetMouseDragDelta();
-					//	}
-					//	else
-					//	{
-					//		dragEntityNo = j;
-					//		dragEntityVector = i;
-					//		dragEntity = listOfEntities[i][j];
-					//		dragCheck = true;
-					//		dragType = 0;
-					//		ImGui::ResetMouseDragDelta();
-					//	}
-					//}
-					//else if (!ImGui::IsItemActive() && dragEntity == listOfEntities[i][j] && dragEntityVector != -1)
-					//{
-					//	listOfEntities[dragEntityVector].erase(listOfEntities[dragEntityVector].begin() + dragEntityNo);
-					//	listOfEntities[dragEntityVectorTo].push_back(dragEntity);
-
-					//	dragEntity = -1;
-					//	dragEntityVector = -1;
-					//	nodeHovered = -1;
-					//	dragCheck = false;
-					//}
 				}
 
 				if (ImGui::BeginDragDropSource())
 				{
-					dragType = "Entity";
-					ImGui::SetDragDropPayload("ENTITYDRAG", &j, sizeof(EntityID));
-					ImGui::Text("This is a drag and drop source");
+					dragTypeFrom = "Entity";
+					vector3D::vec3D entityLocation{ (float)folder.first.first , (float)folder.first.second , (float)j };
+					ImGui::SetDragDropPayload("dragEntity", &entityLocation, sizeof(vector3D::vec3D));
+					//ImGui::Text("This is a drag and drop source");
 					ImGui::EndDragDropSource();
 				}
 
-				if (ImGui::BeginDragDropTarget())
+				if (dragTypeFrom != "Folder" && ImGui::BeginDragDropTarget())
 				{
-					ImGuiDragDropFlags target_flags = 0;	//ImGuiDragDropFlags_AcceptBeforeDelivery;		// Don't wait until the delivery (release mouse button on a target) to do something
-					//| ImGuiDragDropFlags_AcceptNoDrawDefaultRect;	// Don't display the yellow rectangle
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITYDRAG", target_flags))
+					dragTypeTo = "Entity";
+
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("dragEntity"))
 					{
-						moveFrom = *(const EntityID*)payload->Data;
+						vector3D::vec3D location = *(const vector3D::vec3D*)payload->Data;
+						moveFromFolderID = location.x;
+						moveFromFolderLevel = location.y;
+						moveFrom = location.z;
+						moveToFolderID = folder.first.first;
+						moveToFolderLevel = folder.first.second;
 						moveTo = j;
 					}
 
 					ImGui::EndDragDropTarget();
 				}
+
+				ImGui::PopID();
 			}
 		}
 
 		if (moveFrom != -1 && moveTo != -1)
 		{
 			// Reorder items
-			if (dragType == "Folder")
+			if (dragTypeFrom == "Folder")
 			{
-				int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
-				int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
-				int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
-				EntityID tmp = listOfEntities[i][moveFrom];
-				memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
-				listOfEntities[i][moveTo] = tmp;
+				if (dragTypeTo == "Folder")
+				{
+					// Finding children under selected folder
+					int numberOfChildren = 0;
+					int lowestChildLevel = 0;
+					for (auto it = ++(hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel))); it != hierarchyList.end(); ++it, ++numberOfChildren)
+					{
+						if (it->first.second <= moveFromFolderLevel)
+						{
+							break;
+						}
+						lowestChildLevel = it->first.second;
+					}
+					std::cout << numberOfChildren << std::endl;
+
+					// Check if moving is valid (there is a limit of 4 layers of folders)
+					if (lowestChildLevel - moveFromFolderLevel - moveToFolderLevel > 4)
+					{
+						std::cout << "the hell " << std::endl;
+						moveFrom = -1;
+						moveTo = -1;
+						continue;
+					}
+
+					// Changing selected folderID
+					// Unlinks the node in the map and returns the node handler
+					auto initialFolderPosition = hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel));
+					auto folder = hierarchyList.extract(std::make_pair(moveFromFolderID, moveFromFolderLevel));
+
+					int childID = moveToFolderID;
+					int increment = (int)pow(10, 3 - moveToFolderLevel);
+					do
+					{
+						// Checking if the folder already exists
+						childID += increment;
+					} 
+					while (hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1)) != hierarchyList.end());
+
+					folder.key().first = childID;
+					folder.key().second = moveToFolderLevel + 1;
+					hierarchyList.insert(std::move(folder));
+
+					initialFolderPosition = hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1));
+					for (; numberOfChildren > 0; --numberOfChildren)
+					{
+						if (moveFromFolderID > moveToFolderLevel)
+						{
+							// Is now to child position in map
+							++initialFolderPosition;
+						}
+
+						auto childFolder = hierarchyList.extract(std::make_pair(initialFolderPosition->first.first, initialFolderPosition->first.second));
+
+						std::cout << childFolder.key().second << std::endl;
+						childFolder.key().second = moveToFolderLevel + 1 + childFolder.key().second - moveFromFolderLevel;
+
+						childID += (int)pow(10, 4 - childFolder.key().second);
+						childFolder.key().first = childID;
+
+						hierarchyList.insert(std::move(childFolder));
+					}
+				}
 			}
-			else // dragType == "Entity"
+			else // dragTypeFrom == "Entity"
 			{
-				int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
-				int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
-				int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
-				EntityID tmp = listOfEntities[i][moveFrom];
-				memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
-				listOfEntities[i][moveTo] = tmp;
+				if (dragTypeTo == "Folder" || moveFromFolderID != moveToFolderID)
+				{
+					EntityID temp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
+					hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].erase(hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].begin() + moveFrom);
+					hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].emplace(hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].begin() + moveTo, temp);
+				}
+				else // dragTypeTo == "Entity" && moveFromFolderID == moveToFolderID
+				{
+					int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
+					int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
+					int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
+					EntityID tmp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
+					memmove(&hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_dst], &hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_src], (size_t)copy_count * sizeof(EntityID));
+					hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveTo] = tmp;
+				}
 			}
 			
-			ImGui::SetDragDropPayload("DND_DEMO_NAME", &moveTo, sizeof(EntityID)); // Update payload immediately so on the next frame if we move the mouse to an earlier item our index payload will be correct. This is odd and showcase how the DnD api isn't best presented in this example.
+			//ImGui::SetDragDropPayload("DND_DEMO_NAME", &moveTo, sizeof(EntityID)); // Update payload immediately so on the next frame if we move the mouse to an earlier item our index payload will be correct. This is odd and showcase how the DnD api isn't best presented in this example.
+			
+			moveFrom = -1;
+			moveTo = -1;
 		}
 
-		if (nodeOpen)
+		// If there is a child, and the tree is opened, dont pop
+		// Checking if there is a child
+		bool child = false;
+		returnLevel = folder.first.second;
+		auto itAfter = hierarchyList.find(folder.first);
+		if (++itAfter != hierarchyList.end())
 		{
-			ImGui::TreePop();
-		}
-	}
-	// Drawing folders & entities end =======================================================================
-
-
-	// button to create entity
-	static int counter = 0;
-	static char name[100]{ '\0' };
-	static EntityID temp;
-	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
-
-	if (ImGui::Button("Create Entity"))
-	{
-		if (counter & 1)
-		{
-			bool check = false;
-			for (int i = 0; i < componentCheck.size(); ++i)
+			if (itAfter->first.second > returnLevel)
 			{
-				if (componentCheck[i])
+				child = true;
+			}
+			else if (!nodeOpen)
+			{
+				if (hierarchyList.find(std::make_pair(folder.first.first + pow(10, 4 - folder.first.second), folder.first.second)) != hierarchyList.end())
 				{
-					check = true;
-					break;
+					returnLevel = folder.first.second;
+				}
+				else
+				{
+					returnLevel = 1;
 				}
 			}
-
-			if (check)
+			else
 			{
-				///std::string nameToString(name);
-				///render->name = nameToString;
-				///ecs.setEntityName(temp, nameToString);
-
-				for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
-					componentCheck[i] = 0;
-
-				memset(name, 0, sizeof(name));
-				counter++;
-				listOfEntities[0].push_back(temp);
+				returnLevel = itAfter->first.second;
 			}
 		}
-
 		else
 		{
-			temp = ecs.GetNewID();
-			ecs.RegisterEntity(temp, "In IMGUI");
-			std::cout << temp;
-			counter++;
+			returnLevel = 0;
 		}
-	}
 
-	if (counter & 1)
-	{
-		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
+		while (nodeOpen && !child)
 		{
-			std::string componentName = ecs.getAllRegisteredComponents()[i];
-			bool check = componentCheck[i];
-			ImGui::Checkbox(ecs.getAllRegisteredComponents()[i].c_str(), &check);
+			ImGui::TreePop();
+			--treeLevel;
 
-			if (check)
+			if (treeLevel < returnLevel)
 			{
-				if (!componentCheck[i])
-				{
-					if (componentName == "Render")
-						ecs.AddComponent<Render>(temp);
-					else if (componentName == "BaseInfo")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Texture")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Physics")
-						ecs.AddComponent<Physics>(temp);
-					//else if (componentName == "Stats")
-					//	ecs.AddComponent<Stats>(temp);
-
-					componentCheck[i] = 1;
-				}
-
-				rttr::type component = rttr::type::get_by_name(componentName);
-				rttr::instance componentInstance = GetComponentByName(component, temp);
-
-				for (rttr::property property : component.get_properties())
-				{
-					if (property.get_type() == rttr::type::get<int>())
-					{
-						int temp = property.get_value(componentInstance).to_int();
-						ImGui::DragInt(property.get_name().data(), &temp, 1.f, 0, 0);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector2D::vec2D>())
-					{
-						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
-						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())
-					{
-						vector3D::vec3D temp = property.get_value(componentInstance).get_value<vector3D::vec3D>();
-						ImGui::DragFloat3(property.get_name().data(), temp.m, 0.01f, 0.0f, 1.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<std::string>())
-					{
-						char tempChar[100];
-						std::string temp = property.get_value(componentInstance).to_string();
-
-						strcpy_s(tempChar, temp.c_str());
-
-						ImGui::InputText(property.get_name().data(), tempChar, 100);
-						property.set_value(componentInstance, std::string(tempChar));
-					}
-				}
-
-				if (ecs.GetComponent<BaseInfo>(temp) != nullptr)
-					std::cout << ecs.GetComponent<BaseInfo>(temp)->name << std::endl;
-			}
-
-			else if (componentCheck[i])
-			{
-				if (componentName == "Render")
-					ecs.RemoveComponent<Render>(temp);
-				else if (componentName == "BaseInfo")
-					ecs.AddComponent<Texture>(temp);
-				else if (componentName == "Texture")
-					ecs.RemoveComponent<Texture>(temp);
-				else if (componentName == "Physics")
-					ecs.RemoveComponent<Physics>(temp);
-				//else if (componentName == "Stats")
-				//	ecs.RemoveComponent<Stats>(temp);
-
-				componentCheck[i] = 0;
+				break;
 			}
 		}
 
-		if (ImGui::Button("Cancel"))
-		{
-			ecs.RemoveEntity(temp);
-			memset(name, 0, sizeof(name));
-			counter++;
-		}
+		ImGui::PopID();
+		++i;
 	}
+	// Drawing folders & entities end =======================================================================
 }
 
 int levelEditorHierarchy::getSelected()

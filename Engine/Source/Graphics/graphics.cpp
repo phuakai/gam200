@@ -9,79 +9,84 @@ This file handles the batch rendering of the game
 #include <buffer.h>
 #include <texture.h>
 #include <iostream>
+#include "framebuffer.h"
+#include "app.h"
 
+#include "stb_image.h"
 
-void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int entitycount)
+extern FrameBufferNS::frameBuffer mainFrame;
+
+void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs, int entitycount)
 {
 	instanceshader.Use(); //Use shader prog
 
 	glBindVertexArray(vaoid);
 
-	GLuint headervboid = Graphics::VBO::init();
-	Graphics::VBO::store(headervboid, sizeof(Graphics::vertexData) * headerdata.size(), headerdata); // Data passed in
+	GLuint headervboid = BufferNS::VBO::createVBO();
+	BufferNS::VBO::createVBOstorage(headervboid, sizeof(ModelNS::modelVtxData) * headerdata.size(), headerdata); // Data passed in
 	// Note that for instance, stored data is 1 position, 1 colour, 1 texture pos, 1 texture index (or texture array later on)
 	// and an array consisting of the offsets for the different instance positions
 
-	GLuint instancevboid = Graphics::VBO::init();
-	Graphics::VBO::store(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
+	GLuint instancevboid = BufferNS::VBO::createVBO();
+	BufferNS::VBO::createVBOstorage(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
 
 	// Position
-	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
-	Graphics::VBO::bind(vaoid, 0, headervboid, 0, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
+	BufferNS::VBO::bindVBO(vaoid, 0, headervboid, 0, sizeof(float) * 8); // Set buffer binding point 
 	// Pos is vec2
-	Graphics::VAO::setattrib(vaoid, 0, 2); // Attrib format
-	Graphics::VAO::bindattrib(vaoid, 0, 0); // Bind attrib
+	BufferNS::VAO::setVAOattrib(vaoid, 0, 2); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vaoid, 0, 0); // Bind attrib
 
 	// Colour
-	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 1
-	Graphics::VBO::bind(vaoid, 1, headervboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::enableVAOattrib(vaoid, 1); // Attrib 1
+	BufferNS::VBO::bindVBO(vaoid, 1, headervboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
 	// Colour is vec3
-	Graphics::VAO::setattrib(vaoid, 1, 3); // Attrib format
-	Graphics::VAO::bindattrib(vaoid, 1, 1); // Bind attrib
+	BufferNS::VAO::setVAOattrib(vaoid, 1, 3); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vaoid, 1, 1); // Bind attrib
 
 	// Texture Position (U/V)
-	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 2
-	Graphics::VBO::bind(vaoid, 2, headervboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::enableVAOattrib(vaoid, 2); // Attrib 2
+	BufferNS::VBO::bindVBO(vaoid, 2, headervboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
 	// Texpos is vec2
-	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 
-	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 
+	BufferNS::VAO::setVAOattrib(vaoid, 2, 2); // Attrib format 
+	BufferNS::VAO::bindVAOattrib(vaoid, 2, 2); // Bind attrib 
 
 	// Texture Index
-	Graphics::VAO::enableattrib(vaoid, 3); // Attrib 3
-	Graphics::VBO::bind(vaoid, 3, headervboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::enableVAOattrib(vaoid, 3); // Attrib 3
+	BufferNS::VBO::bindVBO(vaoid, 3, headervboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
 	// Texindex is 1 float
-	Graphics::VAO::setattrib(vaoid, 3, 1); // Attrib format 
-	Graphics::VAO::bindattrib(vaoid, 3, 3); // Bind attrib 
+	BufferNS::VAO::setVAOattrib(vaoid, 3, 1); // Attrib format 
+	BufferNS::VAO::bindVAOattrib(vaoid, 3, 3); // Bind attrib 
 
 
 	int matrix_loc = 4;
 
-	Graphics::VBO::bind(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
+	BufferNS::VBO::bindVBO(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
 
 	// Matrix requires n consecutive input locations, where N is the columns in a matrix
 	// So mat3x3 is 3 vertex attributes
 	for (int col = 0; col < 3; col++)
 	{
 		// Instancing offset array
-		Graphics::VAO::enableattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
+		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc + col); // Attrib 4 to 7
 		// Not sure what to put for last parameter of bind
 		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
 		glVertexAttribDivisor(matrix_loc + col, 1);
-		Graphics::VAO::setattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
-		Graphics::VAO::bindattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
+		BufferNS::VAO::setVAOattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
+		BufferNS::VAO::bindVAOattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
 	}
 
 	// Creating ebo
-	GLuint eboid = Graphics::EBO::init();
+	GLuint eboid = BufferNS::EBO::createEBO();
 	ebodata[0] = 0;
 	ebodata[1] = 1;
 	ebodata[2] = 2;
 	ebodata[3] = 2;
 	ebodata[4] = 3;
 	ebodata[5] = 0;
-	Graphics::EBO::store(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
+	BufferNS::EBO::createEBOstorage(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
 
-	Graphics::EBO::bind(vaoid, eboid);
+	BufferNS::EBO::bindEBO(vaoid, eboid);
 
 	//std::vector<Graphics::Texture> textures;
 	//for (int texids = 0; texids < 9; texids++)
@@ -101,6 +106,7 @@ void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int
 	//glBindTextureUnit(7, texobjs[7].getTexid()); // BG1
 	//glBindTextureUnit(8, texobjs[8].getTexid()); // BG2
 
+
 	glBindTextureUnit(0, texobjs.textureid);
 	//GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "ourTexture");
 	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
@@ -117,13 +123,20 @@ void RenderNS::InstancedRenderer::InstanceRender(Graphics::Texture& texobjs, int
 	GLboolean UniformTextures = glGetUniformLocation(instanceshader.GetHandle(), "texturebool");
 	glUniform1i(UniformTextures, GLApp::textures); // Texture bool temp
 
-	//std::cout << "Entity count " << entitycount << std::endl;
 	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	//glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
-	Graphics::VAO::unbind();
+	//instanceshader.UnUse();
 
+	//frameshader.Use();
+
+	GLuint tex2_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
+	glUniform1i(tex2_loc, 0);
+	//glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycount);
 	instanceshader.UnUse();
+	BufferNS::VAO::unbindVAO();
+	//frameshader.UnUse();
+
 	glDeleteBuffers(1, &headervboid);
 	glDeleteBuffers(1, &instancevboid);
 	glDeleteBuffers(1, &eboid);
@@ -141,9 +154,6 @@ void RenderNS::InstancedRenderer::InstanceDelete()
 	glDeleteBuffers(1, &vaoid);
 }
 
-
-
-
 RenderNS::BatchRenderer::BatchRenderer()
 {
 	//Model batchmodel{};
@@ -160,43 +170,43 @@ RenderNS::BatchRenderer::BatchRenderer()
 	eboid = 0;
 }
 
-void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobjs)
+void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texobjs)
 {
 	batchshader.Use();
 	glBindVertexArray(vaoid);
 
-	vboid = Graphics::VBO::init();
-	Graphics::VBO::store(vboid, sizeof(Graphics::vertexData) * totalsize, batchdata);
+	vboid = BufferNS::VBO::createVBO();
+	BufferNS::VBO::createVBOstorage(vboid, sizeof(ModelNS::modelVtxData) * totalsize, batchdata);
 
 	// Position
-	Graphics::VAO::enableattrib(vaoid, 0); // Attrib 0
-	Graphics::VBO::bind(vaoid, 0, vboid, 0, sizeof(float) * 8); // Set buffer binding point 
-	Graphics::VAO::setattrib(vboid, 0, 2); // Attrib format
-	Graphics::VAO::bindattrib(vaoid, 0, 0); // Bind attrib
+	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
+	BufferNS::VBO::bindVBO(vaoid, 0, vboid, 0, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::setVAOattrib(vboid, 0, 2); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vaoid, 0, 0); // Bind attrib
 
 	// Colour
-	Graphics::VAO::enableattrib(vaoid, 1); // Attrib 1
-	Graphics::VBO::bind(vaoid, 1, vboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
-	Graphics::VAO::setattrib(vaoid, 1, 3); // Attrib format
-	Graphics::VAO::bindattrib(vaoid, 1, 1); // Bind attrib
+	BufferNS::VAO::enableVAOattrib(vaoid, 1); // Attrib 1
+	BufferNS::VBO::bindVBO(vaoid, 1, vboid, sizeof(float) * 2, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::setVAOattrib(vaoid, 1, 3); // Attrib format
+	BufferNS::VAO::bindVAOattrib(vaoid, 1, 1); // Bind attrib
 
 	// Texture Position (U/V)
-	Graphics::VAO::enableattrib(vaoid, 2); // Attrib 2
-	Graphics::VBO::bind(vaoid, 2, vboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
-	Graphics::VAO::setattrib(vaoid, 2, 2); // Attrib format 
-	Graphics::VAO::bindattrib(vaoid, 2, 2); // Bind attrib 
+	BufferNS::VAO::enableVAOattrib(vaoid, 2); // Attrib 2
+	BufferNS::VBO::bindVBO(vaoid, 2, vboid, sizeof(float) * 5, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::setVAOattrib(vaoid, 2, 2); // Attrib format 
+	BufferNS::VAO::bindVAOattrib(vaoid, 2, 2); // Bind attrib 
 
 	// Texture Index
-	Graphics::VAO::enableattrib(vaoid, 3); // Attrib 3
-	Graphics::VBO::bind(vaoid, 3, vboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
-	Graphics::VAO::setattrib(vaoid, 3, 1); // Attrib format 
-	Graphics::VAO::bindattrib(vaoid, 3, 3); // Bind attrib 
+	BufferNS::VAO::enableVAOattrib(vaoid, 3); // Attrib 3
+	BufferNS::VBO::bindVBO(vaoid, 3, vboid, sizeof(float) * 7, sizeof(float) * 8); // Set buffer binding point 
+	BufferNS::VAO::setVAOattrib(vaoid, 3, 1); // Attrib format 
+	BufferNS::VAO::bindVAOattrib(vaoid, 3, 3); // Bind attrib 
 
-	eboid = Graphics::EBO::init();
+	eboid = BufferNS::EBO::createEBO();
 	int offset = 0;
 	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		for (int i = 0; i < (totalindicesize-5); i += 6)
+		for (int i = 0; i < (totalindicesize - 5); i += 6)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;
@@ -208,10 +218,10 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobj
 			offset += 4;
 		}
 	}
-	
+
 	else if (primtype == GL_POINTS || primtype == GL_LINES || primtype == GL_LINE_LOOP || primtype == GL_LINE_STRIP)
 	{
-		for (int i = 0; i < (totalindicesize-1); i += 2)
+		for (int i = 0; i < (totalindicesize - 1); i += 2)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;
@@ -219,9 +229,9 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobj
 		}
 	}
 
-	Graphics::EBO::store(eboid, sizeof(GLushort) * totalindicesize, ebodata);
+	BufferNS::EBO::createEBOstorage(eboid, sizeof(GLushort) * totalindicesize, ebodata);
 
-	Graphics::EBO::bind(vaoid, eboid);
+	BufferNS::EBO::bindEBO(vaoid, eboid);
 
 	//std::cout << "Texture units " << texobjs.size() << std::endl;
 
@@ -248,10 +258,9 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<Graphics::Texture>& texobj
 
 	glDrawElements(primtype, totaldrawcnt, GL_UNSIGNED_SHORT, NULL);
 
-	Graphics::VAO::unbind();
+	BufferNS::VAO::unbindVAO();
 
 	batchshader.UnUse();
-
 }
 
 void RenderNS::BatchRenderer::BatchClear()

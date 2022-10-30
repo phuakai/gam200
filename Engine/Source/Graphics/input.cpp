@@ -34,7 +34,7 @@ GLboolean Graphics::Input::keystateZ;  // Zoom
 
 GLboolean Graphics::Input::keystateC;  // Collision
 
-//GLboolean Graphics::Input::keystateI;  // Player forward
+GLboolean Graphics::Input::keystateI;  // ImGui
 //GLboolean Graphics::Input::keystateK;  // Player backward
 //GLboolean Graphics::Input::keystateJ;  // Player left
 //GLboolean Graphics::Input::keystateL;  // Player right
@@ -56,6 +56,7 @@ GLboolean Graphics::Input::keystateSquareBracketLeft; // Object rotation
 GLboolean Graphics::Input::keystateSquareBracketRight; // Object rotation
 
 GLboolean Graphics::Input::mousestateLeft = GL_FALSE;
+GLboolean Graphics::Input::mousestateRight = GL_FALSE;
 
 
 bool Graphics::Input::init(GLint w, GLint h, std::string t)
@@ -72,6 +73,7 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 	Graphics::Input::keystateZ = false;  // Zoom
 
 	Graphics::Input::keystateC = false;  // Collision
+	Graphics::Input::keystateI = false;  // Collision
 
 	Graphics::Input::keystateP = false;  // Pause game
 	Graphics::Input::keystateE = false;  // Add new square
@@ -191,6 +193,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 			keystateC = GL_TRUE;
 		}
 
+		if (key == GLFW_KEY_I) // Collision
+		{
+			keystateI= GL_TRUE;
+		}
+
 		if (key == GLFW_KEY_P) // Pause
 		{
 			keystateP = GL_TRUE;
@@ -273,6 +280,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 		if (key == GLFW_KEY_C) // Collision
 		{
 			keystateC = GL_FALSE; // Collision not a toggle
+		}
+
+		if (key == GLFW_KEY_I) // Collision
+		{
+			keystateI = GL_FALSE; // Collision not a toggle
 		}
 
 		if (key == GLFW_KEY_P) // Pause
@@ -432,6 +444,18 @@ void Graphics::Input::mousebutton_callback(GLFWwindow* pwin, int button, int act
 		{
 			mousestateLeft = GL_FALSE; // Disable mouse left state on release
 			std::cout << "mouse released\n";
+		}
+	}
+
+	if (GLFW_MOUSE_BUTTON_RIGHT == button)
+	{
+		if (GLFW_PRESS == action)
+		{
+			mousestateRight = GL_TRUE; // Enable mouse left state on click
+		}
+		if (GLFW_RELEASE == action)
+		{
+			mousestateRight = GL_FALSE; // Disable mouse left state on release
 		}
 	}
 }

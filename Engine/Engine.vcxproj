@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -124,7 +124,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -139,7 +139,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -166,6 +166,7 @@
     <ClCompile Include="Source\Graphics\buffer.cpp" />
     <ClCompile Include="Source\Graphics\camera.cpp" />
     <ClCompile Include="Source\Graphics\collisiondebug.cpp" />
+    <ClCompile Include="Source\Graphics\framebuffer.cpp" />
     <ClCompile Include="Source\Graphics\glad.c" />
     <ClCompile Include="Source\Graphics\glslshader.cpp" />
     <ClCompile Include="Source\Graphics\graphics.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="Include\Graphics\buffer.h" />
     <ClInclude Include="Include\Graphics\camera.h" />
     <ClInclude Include="Include\Graphics\collisiondebug.h" />
+    <ClInclude Include="Include\Graphics\framebuffer.h" />
     <ClInclude Include="Include\Graphics\glslshader.h" />
     <ClInclude Include="Include\Graphics\graphics.h" />
     <ClInclude Include="Include\Graphics\input.h" />

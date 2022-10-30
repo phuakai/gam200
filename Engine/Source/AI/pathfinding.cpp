@@ -7,22 +7,14 @@ This file includes the function definitions for pathfinding functions.
 
 *//*__________________________________________________________________________*/
 
+#include "../mainHeader.h"
 #include "pathfinding.h"
 #include <input.h>
 #include <iostream>
 #include <iomanip>
 #include <math.h>
 
-// make these parameters instead of global (pointers)
-int dijkstraField[MAX_GRID_Y][MAX_GRID_X];
-// empty grid of vectors
-vector2D::vec2D flowField[MAX_GRID_Y][MAX_GRID_X];
-// line of sight grid
-int LOSgrid[MAX_GRID_Y][MAX_GRID_X];
-
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
-
-extern std::vector<FormationManager> formationManagers;
 
 // MAIN FUNCTIONS ========================================================================
 
@@ -41,8 +33,8 @@ bool pathfindingCalculation(EntityID& id)
 	//}
 
 	// if the agent is in range of the target
-	if ((baseInfo->position.x >= physics->target.x - 10 && baseInfo->position.x <= physics->target.x + 10) &&
-		(baseInfo->position.y >= physics->target.y - 10 && baseInfo->position.y <= physics->target.y + 10) || formationManagers[physics->formationManagerID].reached)
+	if ((baseInfo->position.x >= physics->target.x - 5 && baseInfo->position.x <= physics->target.x + 5) &&
+		(baseInfo->position.y >= physics->target.y - 5 && baseInfo->position.y <= physics->target.y + 5) || formationManagers[physics->formationManagerID].reached)
 	{
 		// last update of the formation position
 		if (!physics->reached)
@@ -58,7 +50,7 @@ bool pathfindingCalculation(EntityID& id)
 			changedVelocity = physics->formationTarget - baseInfo->position;
 		}
 	}
-	// target continues to pathfind and flock
+	// target continues pathfinding and flocking
 	else
 	{
 		physics->reached = false;
@@ -71,26 +63,19 @@ bool pathfindingCalculation(EntityID& id)
 		}
 		else
 		{
-			changedVelocity = flowField[(int)nodePosition.y][(int)nodePosition.x] + offsetVector;
+			changedVelocity = formationManagers[physics->formationManagerID].flowField[(int)nodePosition.y][(int)nodePosition.x].direction + offsetVector;
 		}
 
-		//vector2D::Vector2DNormalize(physics->formationTarget, physics->formationTarget);
+		changedVelocity += (physics->formationTarget - baseInfo->position) * 0.2;
 
-		///changedVelocity += (physics->formationTarget - baseInfo->position) * 0.1;
-		changedVelocity += (physics->formationTarget - baseInfo->position) * 0.01;
+		changedVelocity += (physics->target - baseInfo->position) * 0.7;
 
 		std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
 
-		//movementFlocking(id, allVelocity);
+		formationManagers[physics->formationManagerID].movementFlocking(id, allVelocity);
 
-		changedVelocity += (allVelocity[0] * 10 + (allVelocity[1] * 0.1f) + allVelocity[2] * 0.2f); // *flockingModifier;
+		changedVelocity += (allVelocity[0] * 6 + (allVelocity[1] * 0.1f) + allVelocity[2] * 0.2f) * 2; // *flockingModifier;
 	}
-
-	//if (!((baseInfo->position.x >= physics->target.x - 5 && baseInfo->position.x <= physics->target.x + 5) &&
-	//	(baseInfo->position.y >= physics->target.y - 5 && baseInfo->position.y <= physics->target.y + 5) || formationManagers[physics->formationManagerID].reached))
-	//{
-	//	changedVelocity = physics->formationTarget - baseInfo->position;
-	//}
 
 	vector2D::Vector2DNormalize(changedVelocity, changedVelocity);
 
@@ -101,11 +86,7 @@ bool pathfindingCalculation(EntityID& id)
 	}
 	changedVelocity *= physics->speed;
 
-	///baseInfo->position += changedVelocity * (static_cast<float>(Graphics::Input::delta_time) > 1 / 60.f ? 1 / 60.f : static_cast<float>(Graphics::Input::delta_time)) * 100;
-
 	physics->velocity = changedVelocity;
-
-	///mainTree.updatePoint(id, oldPosition, baseInfo->position, mainTree);
 
 	return true;
 }
@@ -123,7 +104,7 @@ bool pathfindingCalculation(EntityID& id)
 This function calculates the 3 vectors that allows the units to have a
 flocking behaviour with the surrounding units.
 */
-void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
+void FormationManager::movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, quadTree& maintree)
 {
 	Physics* movement = ecs.GetComponent<Physics>(id);
 	BaseInfo* entity = ecs.GetComponent<BaseInfo>(id);
@@ -152,6 +133,21 @@ void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, qu
 		// skip if it is the input agent
 		if ((**obj2) == id)
 			continue;
+
+		// Checking if it is in the same formation manager
+		bool check = true;
+		for (int i = 0; i < slotAssignment.size(); ++i)
+		{
+			if ((**obj2) == slotAssignment[i])
+			{
+				check = false;
+				break;
+			}
+		}
+		if (check)
+		{
+			continue;
+		}
 
 		BaseInfo* agentPosition = ecs.GetComponent<BaseInfo>((**obj2));
 		Physics* agentMovement = ecs.GetComponent<Physics>((**obj2));
@@ -240,18 +236,16 @@ void movementFlocking(EntityID id, std::vector<vector2D::vec2D>& allVelocity, qu
 This function calculates the 2D array of the dijkstra grid, calculating the
 shortest part of all the nodes to the target position.
 */
-void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& walls)
+void FormationManager::generateDijkstraCost(std::vector<Entity>& walls)
 {
-	//while (directionToCheck != NULL)
-	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-	std::cout << endingNode.x << ", " << endingNode.y << std::endl;
+	vector2D::vec2D endingNode = (target - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
 	for (int i = 0; i < MAX_GRID_Y; ++i)
 	{
 		for (int j = 0; j < MAX_GRID_X; ++j)
 		{
-			dijkstraField[i][j] = -1;
-			LOSgrid[i][j] = -1;
+			flowField[i][j].cost = -1;
+			flowField[i][j].lineOfSight = -1;
 		}
 	}
 
@@ -260,13 +254,13 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 		BaseInfo* pointer = ecs.GetComponent<BaseInfo>(walls[i].GetID());
 		vector2D::vec2D wallNode = (pointer->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-		dijkstraField[(int)wallNode.y][(int)wallNode.x] = WALL;
-		LOSgrid[(int)wallNode.y][(int)wallNode.x] = 0;
+		flowField[(int)wallNode.y][(int)wallNode.x].cost = WALL;
+		flowField[(int)wallNode.y][(int)wallNode.x].lineOfSight = 0;
 	}
 
 	// setting ending node to 0
-	dijkstraField[(int)endingNode.y][(int)endingNode.x] = 0;
-	LOSgrid[(int)endingNode.y][(int)endingNode.x] = true;
+	flowField[(int)endingNode.y][(int)endingNode.x].cost = 0;
+	flowField[(int)endingNode.y][(int)endingNode.x].lineOfSight = true;
 
 	// array to store nodes that needs to be calculated
 	std::vector<vector2D::vec2D> toCalculate = { endingNode };
@@ -276,7 +270,7 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 		if (toCalculate[i].x != endingNode.x || toCalculate[i].y != endingNode.y)
 		{
 			vector2D::vec2D startingNode = toCalculate[i];
-			calculateLOS(startingNode, endingPosition);
+			calculateLOS(startingNode, target);
 		}
 
 		// for each neighbour
@@ -289,10 +283,10 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 
 			if ((neighbour.x >= 0 && neighbour.x < MAX_GRID_X &&					// checking if neighbour is in the grid
 				neighbour.y >= 0 && neighbour.y < MAX_GRID_Y) &&
-				dijkstraField[(int)neighbour.y][(int)neighbour.x] == -1)		// finding nodes that are not calculated yet
+				flowField[(int)neighbour.y][(int)neighbour.x].cost == -1)		// finding nodes that are not calculated yet
 			{
 				// setting neighbour node to current toCalculate node + 1
-				dijkstraField[(int)neighbour.y][(int)neighbour.x] = dijkstraField[(int)toCalculate[i].y][(int)toCalculate[i].x] + 1;
+				flowField[(int)neighbour.y][(int)neighbour.x].cost = flowField[(int)toCalculate[i].y][(int)toCalculate[i].x].cost + 1;
 				toCalculate.push_back(neighbour);
 			}
 
@@ -310,7 +304,7 @@ void generateDijkstraCost(vector2D::vec2D& endingPosition, std::vector<Entity>& 
 This function calculates whether the stating position has line of sight to
 the target position.
 */
-void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition)
+void FormationManager::calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition)
 {
 	vector2D::vec2D startingPosition = startingNode * (1000 / MAX_GRID_X) + vector2D::vec2D(-500, -500);
 	vector2D::Vec2 difference = endingPosition - startingPosition;
@@ -326,27 +320,27 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 
 	if (differenceAbsX >= differenceAbsY)
 	{
-		if (LOSgrid[(int)(startingNode.y)][(int)(startingNode.x + differenceSignX)]) {
+		if (flowField[(int)(startingNode.y)][(int)(startingNode.x + differenceSignX)].lineOfSight) {
 			haveLos = true;
 		}
 	}
 	//Check in the y direction
 	else if (differenceAbsX < differenceAbsY)
 	{
-		if (LOSgrid[(int)(startingNode.y + differenceSignY)][(int)(startingNode.x)]) {
+		if (flowField[(int)(startingNode.y + differenceSignY)][(int)(startingNode.x)].lineOfSight) {
 			haveLos = true;
 		}
 	}
 
 	if (differenceAbsX > 0 && differenceAbsY > 0) {
-		if (!LOSgrid[(int)(startingNode.y + differenceSignY)][(int)(startingNode.x + differenceSignX)])
+		if (!flowField[(int)(startingNode.y + differenceSignY)][(int)(startingNode.x + differenceSignX)].lineOfSight)
 		{
 			haveLos = false;
 		}
 		else if (differenceSignX == differenceSignY)
 		{
-			if (dijkstraField[(int)startingNode.y][(int)(startingNode.x + differenceSignX)] == WALL ||
-				dijkstraField[(int)(startingNode.y + differenceSignY)][(int)startingNode.x] == WALL)
+			if (flowField[(int)startingNode.y][(int)(startingNode.x + differenceSignX)].cost == WALL ||
+				flowField[(int)(startingNode.y + differenceSignY)][(int)startingNode.x].cost == WALL)
 			{
 				haveLos = false;
 			}
@@ -354,7 +348,7 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 
 	}
 
-	LOSgrid[(int)(startingNode.y)][(int)(startingNode.x)] = haveLos;
+	flowField[(int)(startingNode.y)][(int)(startingNode.x)].lineOfSight = haveLos;
 }
 
 /*  _________________________________________________________________________*/
@@ -366,9 +360,9 @@ void calculateLOS(vector2D::vec2D& startingNode, vector2D::vec2D& endingPosition
 This function calculates the flow field array based on the dijkstra array
 and the line of sight array.
 */
-void generateFlowField(vector2D::vec2D& endingPosition)
+void FormationManager::generateFlowField()
 {
-	vector2D::vec2D endingNode = (endingPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+	vector2D::vec2D endingNode = (target - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 	//std::cout << endingNode.x << endingNode.y << std::endl;
 	//generateDijkstraCost(endingNode);
 
@@ -377,7 +371,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 	{
 		for (int j = 0; j < MAX_GRID_X; ++j)
 		{
-			flowField[i][j] = { 0 , 0 };
+			flowField[i][j].direction = { 0 , 0 };
 		}
 	}
 
@@ -387,18 +381,14 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 		for (int j = 0; j < MAX_GRID_X; ++j)
 		{
 			// continue if node is a wall
-			if (dijkstraField[i][j] == MAX_GRID_X * MAX_GRID_Y)
+			if (flowField[i][j].cost == MAX_GRID_X * MAX_GRID_Y)
 				continue;
 
 			// checking if there is line of sight
-			if (LOSgrid[i][j])
+			if (flowField[i][j].lineOfSight)
 			{
 				// line of sight = true
-				Vector2DNormalize(flowField[i][j], endingPosition - vector2D::vec2D(j * (1000.f / MAX_GRID_Y) - 500 + (1000.f / MAX_GRID_Y / 2), i * (1000.f / MAX_GRID_X) - 500 + (1000.f / MAX_GRID_X / 2)));
-				
-				if (i == (int)endingNode.y && j == (int)endingNode.x)
-					std::cout << flowField[i][j].x << "\t" << flowField[i][j].y << std::endl;
-				
+				Vector2DNormalize(flowField[i][j].direction, target - vector2D::vec2D(j * (1000.f / MAX_GRID_Y) - 500 + (1000.f / MAX_GRID_Y / 2), i * (1000.f / MAX_GRID_X) - 500 + (1000.f / MAX_GRID_X / 2)));
 				continue;
 			}
 
@@ -418,7 +408,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 						neighbour.y >= 0 && neighbour.y < MAX_GRID_Y)
 					{
 						// distance of neighbour node
-						int distance = dijkstraField[(int)neighbour.y][(int)neighbour.x];
+						int distance = flowField[(int)neighbour.y][(int)neighbour.x].cost;
 
 						// finding the lowest distance among the neighbours
 						if (minimumDistance > distance)
@@ -426,7 +416,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 							// if digonal
 							if (k != 0 && l != 0)
 							{
-								if (dijkstraField[i + k][j] == WALL || dijkstraField[i][j + l] == WALL)
+								if (flowField[i + k][j].cost == WALL || flowField[i][j + l].cost == WALL)
 								{
 									continue;
 								}
@@ -443,7 +433,7 @@ void generateFlowField(vector2D::vec2D& endingPosition)
 			if (targetPosition.x != MAX_GRID_X || targetPosition.y != MAX_GRID_Y)
 			{
 				// direction vector of the node
-				Vector2DNormalize(flowField[i][j], targetPosition - vector2D::vec2D((float)j, (float)i));
+				Vector2DNormalize(flowField[i][j].direction, targetPosition - vector2D::vec2D((float)j, (float)i));
 			}
 		}
 	}
@@ -505,14 +495,14 @@ void FormationManager::updateAnchorPosition()
 		totalPositions += ecs.GetComponent<BaseInfo>(slotAssignment[i])->position;
 	}
 
-	anchorPosition = totalPositions / slotAssignment.size();
+	if (slotAssignment.size() != 0)
+	{
+		anchorPosition = totalPositions / slotAssignment.size();
+	}
 
 	vector2D::vec2D anchorNode = (anchorPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-	anchorPosition += flowField[(int)anchorNode.y][(int)anchorNode.x] * 5;
-
-	// For checking
-	// ecs.GetComponent<Render>(enemyManagerEntity.GetID())->position = anchorPosition;
+	//anchorPosition += flowField[(int)anchorNode.y][(int)anchorNode.x].direction * 5;
 }
 
 //void FormationManager::updateAnchorOrientation()
@@ -544,7 +534,6 @@ void FormationManager::updateOffsetPosition()
 
 vector2D::vec2D FormationManager::formationPosition(int index)
 {
-	++index;
 	vector2D::vec2D slotRelativePosition;
 	int rows = (int)round(sqrt(slotAssignment.size()));
 	int columns;
@@ -557,10 +546,10 @@ vector2D::vec2D FormationManager::formationPosition(int index)
 		columns = (int)round(slotAssignment.size() / rows) == (int)round(slotAssignment.size() / rows) + 1 ? (int)round(slotAssignment.size() / rows) : (int)round(slotAssignment.size() / rows) + 1;
 	}
 	
-	slotRelativePosition.x = (columns | 1) ? (columns - 1) / 2.f - index % columns : (columns + 1) / 2.f - index % columns;
-	slotRelativePosition.y = (rows | 1) ? (rows - 1) / 2.f - index / rows : (rows + 1) / 2.f - index / rows;
+	slotRelativePosition.x = (index % columns) - (columns - 1) / 2.f;
+	slotRelativePosition.y = (index / rows) - (rows - 1) / 2.f;
 
-	slotRelativePosition *= ecs.GetComponent<Physics>(slotAssignment[index - 1])->radius;
+	slotRelativePosition *= ecs.GetComponent<Physics>(slotAssignment[index])->radius;
 
 	return slotRelativePosition;
 }
@@ -601,4 +590,9 @@ void FormationManager::updateReached()
 	}
 	flocking = true;
 	reached = false;
+}
+
+int FormationManager::getNumberOfEntities()
+{
+	return slotAssignment.size();
 }

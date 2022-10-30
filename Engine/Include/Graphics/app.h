@@ -20,7 +20,6 @@ and transformations (in later labs).
 /*                                                             
 ----------------------------------------------------------------------------- */
 #include <input.h>
-#include <glslshader.h>
 #include <list> 
 #include <random>
 #include <map>
@@ -30,6 +29,8 @@ and transformations (in later labs).
 #include <graphics.h>
 #include <model.h>
 #include <physicsRigidBody.h>
+#include <graphics.h>
+#include "input.h"
 
 
 struct GLApp {
@@ -84,7 +85,7 @@ struct GLApp {
 		//added for physics testing (collision response)
 		//glm::mat3 worldToMdlXform{};
 
-		std::map<std::string, Graphics::Model>::iterator mdl_ref{};
+		std::map<std::string, ModelNS::Model>::iterator mdl_ref{};
 		std::map<std::string, GLSLShader>::iterator shd_ref{};
 
 		//added for physics testing
