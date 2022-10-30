@@ -16,6 +16,7 @@ This file handles the batch rendering of the game
 #include "camera.h"
 
 #include "stb_image.h"
+#include "mat4x4.h"
 
 extern FrameBufferNS::frameBuffer mainFrame;
 extern CameraNS::Camera2D camera2d;
@@ -32,7 +33,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(instancevboid, sizeof(matrix3x3::mat3x3) * instancedata.size(), instancedata); // Data passed in
+	BufferNS::VBO::createVBOstorage(instancevboid, sizeof(matrix4x4::mat4x4) * instancedata.size(), instancedata); // Data passed in
 
 	// Position
 	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
@@ -62,18 +63,18 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	BufferNS::VAO::setVAOattrib(vaoid, 3, 1); // Attrib format 
 	BufferNS::VAO::bindVAOattrib(vaoid, 3, 3); // Bind attrib 
 
-	BufferNS::VBO::bindVBO(vaoid, 4, instancevboid, 0, sizeof(matrix3x3::mat3x3)); // Set buffer binding point 
+	BufferNS::VBO::bindVBO(vaoid, 4, instancevboid, 0, sizeof(matrix4x4::mat4x4)); // Set buffer binding point 
 	// Matrix requires n consecutive input locations, where N is the columns in a matrix
 	// So mat3x3 is 3 vertex attributes
 	int matrix_loc = 4;
-	for (int col = 0; col < 3; col++)
+	for (int col = 0; col < 4; col++)
 	{
 		// Instancing offset array
 		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
 		// Not sure what to put for last parameter of bind
 		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
 		glVertexAttribDivisor(matrix_loc + col, 1);
-		BufferNS::VAO::setVAOattrib(vaoid, matrix_loc + col, 3, sizeof(float) * 3 * col); // Attrib format 
+		BufferNS::VAO::setVAOattrib(vaoid, matrix_loc + col, 4, sizeof(float) * 4 * col); // Attrib format 
 		BufferNS::VAO::bindVAOattrib(vaoid, matrix_loc + col, 4); // Bind attrib 
 	}
 	// Creating ebo
@@ -284,7 +285,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 		ModelNS::modelVtxData tmpHeaderData;
 		std::vector<ModelNS::modelVtxData> vertexData;
-		std::vector<matrix3x3::mat3x3> testdata;
+		std::vector<matrix4x4::mat4x4> testdata;
 
 		std::vector<vector2D::vec2D> poscoord; // CALCULATE POSITION FROM CENTER
 		float halfwidth = curobjBaseInfo->dimension.x / 2.f;
@@ -328,15 +329,26 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
 
-		matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
+		//matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
+		//(
+		//	//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
+		//	//model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+		//	//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+		//	model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
+		//	curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
+		//	model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid + (curobjTexture->spriteStep - 1)
+
+		//);
+
+		matrix4x4::mat4x4 model_to_ndc_xform = matrix4x4::mat4x4
 		(
 			//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
 			//model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
 			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
-			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
-			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid + (curobjTexture->spriteStep - 1)
-
+			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6], curobj->color.r,
+			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7], curobj->color.g,
+			0							 , 0							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0							   , texid + (curobjTexture->spriteStep - 1)
 		);
 
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation

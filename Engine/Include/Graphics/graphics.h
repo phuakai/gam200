@@ -14,6 +14,7 @@ This file handles the batch rendering of the game
 #include <vec2D.h>
 #include <vec3D.h>
 #include <mat3x3.h>
+#include <mat4x4.h>
 #include <model.h>
 #include <texture.h>
 #include "framebuffer.h"
@@ -28,7 +29,7 @@ namespace RenderNS
 		GLSLShader instanceshader{}; // Shader of all objects in instance
 		GLSLShader frameshader{}; // Shader of all objects in instance
 		std::vector<ModelNS::modelVtxData> headerdata{}; // Main (control) object in instance
-		std::vector<matrix3x3::mat3x3> instancedata{}; // All transformations for different instances
+		std::vector<matrix4x4::mat4x4> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
 		GLuint vaoid{};
 
