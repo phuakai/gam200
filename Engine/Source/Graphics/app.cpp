@@ -101,11 +101,10 @@ void App::init()
 
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);	// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
-
-	TextureNS::Texture::CreateandLoadTexture(TextureNS::textureobjects); // Create and load textures
+	std::vector<std::string> tmp{};
+	TextureNS::Texture::CreateandLoadTexture(TextureNS::textureobjects, tmp); // Create and load textures
 
 	camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0)); // Initialize camera
-
 
 	insertallshdrs(shdrpgms);
 	mainFrame.frameshader = shdrpgms["framebuffershader"];
@@ -273,6 +272,8 @@ void App::update()
 		generateDijkstraCost(player->position, walls);
 		generateFlowField(player->position);
 	}
+	//std::cout << "Window dimension " << camera2d.getWinHeight() << ", " << camera2d.getWinWidth() << std::endl;
+	//std::cout << "Camera dimension " << camera2d.getHeight() << ", " << camera2d.getWidth() << std::endl;
 }
 
 /*  _________________________________________________________________________*/

@@ -254,6 +254,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		if (ecs.GetComponent<Texture>(entities[i]) != nullptr)
 		{
 			texid = curobjTexture->textureID;
+			//std::cout << "Sprite step " << curobjTexture->spriteStep << std::endl;
 		}
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 
@@ -268,6 +269,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
 		texcoord.emplace_back(vector2D::Vec2(1.f, 1.f)); // Top right
 		texcoord.emplace_back(vector2D::Vec2(0.f, 1.f)); // Top left
+		// 
+		//texcoord.emplace_back(vector2D::Vec2(((float)(curobjTexture->spriteStep - 1) / curobjTexture->numberOfSprites), 0.f)); // Bottom left
+		//texcoord.emplace_back(vector2D::Vec2(((float)(curobjTexture->spriteStep) / curobjTexture->numberOfSprites), 0.f)); // Bottom right
+		//texcoord.emplace_back(vector2D::Vec2(((float)(curobjTexture->spriteStep) / curobjTexture->numberOfSprites), 1.f)); // Top right
+		//texcoord.emplace_back(vector2D::Vec2(((float)(curobjTexture->spriteStep - 1) / curobjTexture->numberOfSprites), 1.f)); // Top left
+
 
 		ModelNS::modelVtxData tmpHeaderData;
 		std::vector<ModelNS::modelVtxData> vertexData;
@@ -296,7 +303,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			tmpVtxData.clrVtx = clr_vtx[j];
 			tmpVtxData.posVtx = models["square"].model_coords[j];
 			tmpVtxData.txtVtx = texcoord[j];
-			tmpVtxData.txtIndex = texid;
+			tmpVtxData.txtIndex = texid; // To be removed
 			vertexData.emplace_back(tmpVtxData);
 		}
 
@@ -318,7 +325,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 			model_to_ndc_xformnotglm.m[0], curobj->color.r, curobj->color.g,
 			curobj->color.b, model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7],
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid + (curobjTexture->spriteStep - 1)
 
 		);
 

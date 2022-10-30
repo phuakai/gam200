@@ -24,7 +24,7 @@ namespace TextureNS
 		/******************************************************************************/
 		Texture();
 
-		static void createTexturePath(const char* path, Texture& textureobj);
+		static void createTexturePath(std::string path, Texture& textureobj);
 		/******************************************************************************/
 		/*!
 			This function loads the texture object
@@ -33,7 +33,7 @@ namespace TextureNS
 		static void loadTexture(Texture& textureobj);
 		//static void loadTexture(const char* path);
 
-		static void CreateandLoadTexture(Texture& textureobj);
+		static void CreateandLoadTexture(Texture& textureobj, std::vector<std::string>& paths);
 
 		/******************************************************************************/
 		/*!
@@ -56,7 +56,7 @@ namespace TextureNS
 		int getTexid();
 	public:
 		GLenum target;
-		std::vector<const char*> paths;
+		std::vector<std::string> paths;
 		//std::vector<char> 
 		//std::vector<unsigned int> textures;
 		unsigned int textureid;
