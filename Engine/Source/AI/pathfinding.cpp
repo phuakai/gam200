@@ -7,6 +7,7 @@ This file includes the function definitions for pathfinding functions.
 
 *//*__________________________________________________________________________*/
 
+#include "../mainHeader.h"
 #include "pathfinding.h"
 #include <input.h>
 #include <iostream>
@@ -14,8 +15,6 @@ This file includes the function definitions for pathfinding functions.
 #include <math.h>
 
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
-
-extern std::vector<FormationManager> formationManagers;
 
 // MAIN FUNCTIONS ========================================================================
 

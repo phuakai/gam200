@@ -7,7 +7,6 @@ This file includes the function declarations for pathfinding functions.
 
 *//*__________________________________________________________________________*/
 
-#include "../mainHeader.h"
 #include "ECS.h"
 #include "physicsPartition.h"
 
@@ -104,8 +103,8 @@ private:
 	//vector2D::vec2D offsetOrientation;			// Formation orientation
 };
 
-// =============================================================================
-
 extern std::vector<FormationManager> formationManagers;
+
+// =============================================================================
 
 bool pathfindingCalculation(EntityID& id);

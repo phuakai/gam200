@@ -26,6 +26,8 @@ declaration.
 #include <registration_friend>
 //#include <instance.h>
 #include <type>
+#include "vec2D.h"
+#include "vec3D.h"
 
 //hang me https://indiegamedev.net/2020/05/19/an-entity-component-system-with-data-locality-in-cpp/
 

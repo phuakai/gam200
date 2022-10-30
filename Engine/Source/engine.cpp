@@ -31,14 +31,6 @@ RTTR_REGISTRATION{
 		.property("g", &vector3D::vec3D::g)
 		.property("b", &vector3D::vec3D::b);
 
-	rttr::registration::class_<EntityID>("EntityID")
-		.property("type", &Render::type)
-		.property("color", &Render::color)
-		.property("vaoID", &Render::vaoID)
-		.property("vboID", &Render::vboID)
-		.property("eboID", &Render::eboID)
-		.property("shaderName", &Render::shaderName);
-
 	rttr::registration::class_<Render>("Render")
 		.property("type", &Render::type)
 		.property("color", &Render::color)
@@ -49,6 +41,7 @@ RTTR_REGISTRATION{
 		.property("name", &Render::render);
 
 	rttr::registration::class_<BaseInfo>("BaseInfo")
+		.property("type", &BaseInfo::type)
 		.property("name", &BaseInfo::name)
 		.property("position", &BaseInfo::position)
 		.property("dimension", &BaseInfo::dimension);
@@ -131,8 +124,6 @@ void engineInit()
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Physics>("Physics");
-	//ecs.RegisterComponent<Sprite>("Sprite");
-	ecs.RegisterComponent<Stats>("Stats");
 	ecs.RegisterComponent<Render>("Render");
 
 	// ======================================================================================================================================
@@ -164,7 +155,7 @@ void engineInit()
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
 	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	player1.Add<BaseInfo>("", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
+	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
 	// velocity, target, force, speed
 	player1.Add<Texture>(0, 1, 1, "none");
 	//player1.Add<Stats>(100);
@@ -203,7 +194,7 @@ void engineInit()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
 		//enemyUnits[i].Add<Stats>(100);
@@ -238,8 +229,7 @@ void engineInit()
 
 	system1.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, BaseInfo* p, Physics* m)
 	{
-		int j = 0;
-		for (auto i : entities)
+		for (int i = 0; i < entities.size(); ++i)
 		{
 			//if (i == enemyManagerEntity.GetID())
 			//{
@@ -250,18 +240,17 @@ void engineInit()
 			//	continue;
 			//}
 
-			if (p[j].type == "Prefab")
+			if (p[i].type == "Prefab")
 			{
 				continue;
 			}
 
 			MoveEvent entityToMove;
 
-			entityToMove.id = i;
+			entityToMove.id = entities[i];
 			entityToMove.message = (1UL << Systems::Physics);
 
 			eventManager.post(entityToMove);
-			++j;
 		}
 		fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
@@ -449,7 +438,7 @@ void engineUpdate()
 
 				for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 				{
-					if ((**obj2) == player1.GetID()  /* || (**obj2) == enemyManagerEntity.GetID() */ || (**obj2) == formationManager.GetID())
+					if ((**obj2) == player1.GetID()  /* || (**obj2) == enemyManagerEntity.GetID() */ || (**obj2) == formationManager.GetID() || ecs.GetComponent<Physics>((**obj2)) == nullptr)
 					{
 						continue;
 					}
@@ -462,10 +451,12 @@ void engineUpdate()
 
 						if (initialFormationManagerSlot == formationManagers[formationManagerID].slotAssignment.end())
 						{
-							std::cout << "what how huh\t" << formationManagerID << std::endl;
+							formationManagerID = -1;
 						}
-
-						formationManagers[formationManagerID].slotAssignment.erase(initialFormationManagerSlot);
+						else
+						{
+							formationManagers[formationManagerID].slotAssignment.erase(initialFormationManagerSlot);
+						}
 					}
 
 					newManager.addCharacter((**obj2));

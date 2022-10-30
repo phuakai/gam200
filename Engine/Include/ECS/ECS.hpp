@@ -158,7 +158,7 @@ inline void ECS::RegisterEntity(const EntityID entityId)
 }
 
 template<typename C, typename... Args>
-inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args) 
+inline C* ECS::AddComponent(const EntityID& entityID, Args&&... args) 
 {
 
     // no safety checks
@@ -169,7 +169,7 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args)
 
 
     // this ensures the entity is added to dummy archetype if needed
-    Record& record = m_entityArchetypeMap[entityId];
+    Record& record = m_entityArchetypeMap[entityID];
     Archetype* oldArchetype = record.archetype;
 
     C* newComponent = nullptr; // will be returned
@@ -178,16 +178,6 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args)
 
     if (oldArchetype)
     {
-        ///if (std::find(oldArchetype->type.begin(),
-        ///    oldArchetype->type.end(),
-        ///    newCompTypeId)
-        ///    != oldArchetype->type.end())
-        ///{
-        ///    // this entity already contains this component, we can't have
-        ///    // multiple so just exit
-        ///    return nullptr;
-        ///}
-        /// 
         if (oldArchetype->type[newCompTypeId])
         {
             return nullptr;
@@ -309,7 +299,7 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args)
         std::vector<EntityID>::iterator willBeRemoved
             = std::find(oldArchetype->entityIds.begin(),
                 oldArchetype->entityIds.end(),
-                entityId);
+                entityID);
 
         std::for_each(willBeRemoved, oldArchetype->entityIds.end(),
             [this, &oldArchetype](const EntityID& eid)
@@ -354,7 +344,7 @@ inline C* ECS::AddComponent(const EntityID& entityId, Args&&... args)
             C(std::forward<Args>(args)...);
     }
 
-    newArchetype->entityIds.push_back(entityId);
+    newArchetype->entityIds.push_back(entityID);
     record.index = newArchetype->entityIds.size() - 1;
     record.archetype = newArchetype;
 

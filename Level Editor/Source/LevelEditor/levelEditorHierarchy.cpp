@@ -45,6 +45,8 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		if (ImGui::Selectable("New Entity"))
 		{
 			selected = ecs.GetNewID();
+			ecs.AddComponent<BaseInfo>(selected);
+			ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
 			hierarchyList[std::make_pair(100000, 1)].push_back(selected);
 		}
 		for (int i = 0; i < prefabs.size(); i++)
@@ -56,6 +58,14 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				{
 					rttr::type component = rttr::type::get_by_name(j);
 					addComponentByName(component, selected);
+					if (j == "Physics")
+					{
+						ecs.GetComponent<Physics>(selected)->formationManagerID = -1;
+					}
+					if (j == "BaseInfo")
+					{
+						ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
+					}
 				}
 				hierarchyList[std::make_pair(100000, 1)].push_back(selected);
 			}
@@ -251,12 +261,6 @@ void levelEditorHierarchy::ImGuiHierarchy()
 						hierarchyList.insert(std::move(childFolder));
 					}
 				}
-				//int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
-				//int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
-				//int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
-				//EntityID tmp = listOfEntities[i][moveFrom];
-				//memmove(&listOfEntities[i][copy_dst], &listOfEntities[i][copy_src], (size_t)copy_count * sizeof(EntityID));
-				//listOfEntities[i][moveTo] = tmp;
 			}
 			else // dragTypeFrom == "Entity"
 			{
@@ -330,144 +334,6 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		++i;
 	}
 	// Drawing folders & entities end =======================================================================
-
-
-	// button to create entity
-	static int counter = 0;
-	static char name[100]{ '\0' };
-	static EntityID temp;
-	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
-
-	if (ImGui::Button("Create Entity"))
-	{
-		if (counter & 1)
-		{
-			bool check = false;
-			for (int i = 0; i < componentCheck.size(); ++i)
-			{
-				if (componentCheck[i])
-				{
-					check = true;
-					break;
-				}
-			}
-
-			if (check)
-			{
-				///std::string nameToString(name);
-				///render->name = nameToString;
-				///ecs.setEntityName(temp, nameToString);
-
-				for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
-					componentCheck[i] = 0;
-
-				memset(name, 0, sizeof(name));
-				counter++;
-				hierarchyList[std::make_pair(0, 1)].push_back(temp);
-			}
-		}
-
-		else
-		{
-			temp = ecs.GetNewID();
-			ecs.RegisterEntity(temp);
-			std::cout << temp;
-			counter++;
-		}
-	}
-
-	if (counter & 1)
-	{
-		for (int i = 0; i < ecs.getAllRegisteredComponents().size(); ++i)
-		{
-			std::string componentName = ecs.getAllRegisteredComponents()[i];
-			bool check = componentCheck[i];
-			ImGui::Checkbox(ecs.getAllRegisteredComponents()[i].c_str(), &check);
-
-			if (check)
-			{
-				if (!componentCheck[i])
-				{
-					if (componentName == "Render")
-						ecs.AddComponent<Render>(temp);
-					else if (componentName == "BaseInfo")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Texture")
-						ecs.AddComponent<Texture>(temp);
-					else if (componentName == "Physics")
-						ecs.AddComponent<Physics>(temp);
-					//else if (componentName == "Stats")
-					//	ecs.AddComponent<Stats>(temp);
-
-					componentCheck[i] = 1;
-				}
-
-				rttr::type component = rttr::type::get_by_name(componentName);
-				rttr::instance componentInstance = GetComponentByName(component, temp);
-
-				for (rttr::property property : component.get_properties())
-				{
-					if (property.get_type() == rttr::type::get<int>())
-					{
-						int temp = property.get_value(componentInstance).to_int();
-						ImGui::DragInt(property.get_name().data(), &temp, 1.f, 0, 0);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector2D::vec2D>())
-					{
-						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
-						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())
-					{
-						vector3D::vec3D temp = property.get_value(componentInstance).get_value<vector3D::vec3D>();
-						ImGui::DragFloat3(property.get_name().data(), temp.m, 0.01f, 0.0f, 1.0f);
-						property.set_value(componentInstance, temp);
-					}
-
-					else if (property.get_type() == rttr::type::get<std::string>())
-					{
-						char tempChar[100];
-						std::string temp = property.get_value(componentInstance).to_string();
-
-						strcpy_s(tempChar, temp.c_str());
-
-						ImGui::InputText(property.get_name().data(), tempChar, 100);
-						property.set_value(componentInstance, std::string(tempChar));
-					}
-				}
-
-				if (ecs.GetComponent<BaseInfo>(temp) != nullptr)
-					std::cout << ecs.GetComponent<BaseInfo>(temp)->name << std::endl;
-			}
-
-			else if (componentCheck[i])
-			{
-				if (componentName == "Render")
-					ecs.RemoveComponent<Render>(temp);
-				else if (componentName == "BaseInfo")
-					ecs.AddComponent<Texture>(temp);
-				else if (componentName == "Texture")
-					ecs.RemoveComponent<Texture>(temp);
-				else if (componentName == "Physics")
-					ecs.RemoveComponent<Physics>(temp);
-				//else if (componentName == "Stats")
-				//	ecs.RemoveComponent<Stats>(temp);
-
-				componentCheck[i] = 0;
-			}
-		}
-
-		if (ImGui::Button("Cancel"))
-		{
-			ecs.RemoveEntity(temp);
-			memset(name, 0, sizeof(name));
-			counter++;
-		}
-	}
 }
 
 int levelEditorHierarchy::getSelected()

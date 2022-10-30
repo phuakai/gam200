@@ -18,5 +18,4 @@ private:
 
 	std::map<std::pair<int, int>, std::vector<EntityID>> hierarchyList;
 	int selected;
-	int selectedPrefab;
 };
