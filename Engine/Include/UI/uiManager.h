@@ -25,27 +25,49 @@ namespace UI
 
 	struct UIManager
 	{
+		// Constructor
+										UIManager();
 		// Creator
 		void							createGroupList();
 
 		// Adders
-		void							addUiToGroup(uiObj const& obj, groupName grp);
-		void							addGroupToDisplay(UIGroup* grp);
+		void							addUiToActionGroup(uiObj const& obj, groupName const& grp);
+		void							addActionGroupToDisplay(UIGroup* grp);
+		void							addUiToInfoList(uiObj obj, groupName const& grp);
+		void							addInfoDisplay(uiObj* obj);
 
 		// Removers
-		void							removeGroupFromDisplay(UIGroup * grp);
-
+		void							removeActionGroupFromDisplay(UIGroup * grp);
+		void							removeUiFromInfoList(uiObj obj);	// to be used when units "die"
+		void							removeInfoFromDisplay();
 
 		void							UIUpdate();
 		void							destroyUI();
 
 		//Getters
-		std::vector<UIGroup>&			getUiGroupList();
-		std::vector<UIGroup*>			getUiListDisplay();
+		std::vector<UIGroup>&			getUiActionGroupList();
+		std::vector<UIGroup*>			getUiActionDisplayList();
+		std::vector<uiObj>&				getUiInfoList();
+		std::vector<uiObj*>				getUiInfoDisplayList();
 
 	private:
-		std::vector<UIGroup>			uiGroupList;
-		std::vector<UIGroup*>			uiListDisplay;
+		// Action Group (bottom right panel)
+		std::vector<UIGroup>			uiActionGroupList;
+		std::vector<UIGroup*>			uiActionDisplayList;
+		vector2D::vec2D					actionDisplayDims;
+		vector2D::vec2D					actionDisplayStartPos;
+		//int								actionDisplayWidth;
+		//int								actionDisplayHeight;
+		
+		// Info (bottom center)
+		std::vector<uiObj>				uiInfoList;
+		std::vector<uiObj*>				uiInfoDisplayList;
+		vector2D::vec2D					infoDisplayDims;
+		vector2D::vec2D					infoDisplayStartPos;
+		vector2D::vec2D					infoDisplayGridDims;
+		int								infoDisplayWidth;
+		int								infoDisplayHeight;
+
 	};
 
 	static UIManager UIMgr;

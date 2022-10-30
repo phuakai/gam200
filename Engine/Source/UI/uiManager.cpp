@@ -6,26 +6,97 @@
 
 namespace UI
 {
+	UIManager::UIManager()
+	{
+		//actionDisplayWidth = 5;
+		//actionDisplayHeight = 5;
+		actionDisplayDims = { 5.f, 5.f };
+		actionDisplayStartPos = { 0.f, 0.f };
+
+		infoDisplayWidth = 15;
+		infoDisplayHeight = 5;
+		infoDisplayDims = { 900, 900 / 6.f };
+		infoDisplayGridDims = { infoDisplayDims.x / static_cast<float>(infoDisplayWidth), infoDisplayDims.y / static_cast<float>(infoDisplayHeight) };
+		//infoDisplayDims = { static_cast<float>(Graphics::Input::screenwidth), static_cast<float>(Graphics::Input::screenheight / 6.f) };
+		infoDisplayStartPos = { - infoDisplayDims.x / 2.f,
+								(-900 / 2.f + 900 / 5.f) + infoDisplayGridDims.y / 2.f };
+		//std::cout << "what is the initialized pos: " << infoDisplayStartPos.x << ", " << infoDisplayStartPos.y << std::endl;
+	}
+
 	void UIManager::createGroupList()
 	{
-		uiGroupList.resize(3);
+		uiActionGroupList.resize(3);
 	}
 
-	void UIManager::addUiToGroup(uiObj const& obj, groupName grp)
+	void UIManager::addUiToActionGroup(uiObj const& obj, groupName const& grp)
 	{
-		uiGroupList[grp].uiList.emplace_back(obj);
+		uiActionGroupList[grp].uiList.emplace_back(obj);
 	}
 
-	void UIManager::addGroupToDisplay(UIGroup * grp)
+	void UIManager::addActionGroupToDisplay(UIGroup * grp)
 	{
-		uiListDisplay.emplace_back(grp);
+		uiActionDisplayList.emplace_back(grp);
+		for (auto& stateUpdater : uiActionGroupList[unit1].uiList)
+		{
+			ecs.GetComponent<Render>(stateUpdater.getId())->render = true;
+		}
+
 	}
 
-	void UIManager::removeGroupFromDisplay(UIGroup* grp)
+	void UIManager::addUiToInfoList(uiObj obj, groupName const& grp)
 	{
-		auto removeGrp = std::find(uiListDisplay.begin(), uiListDisplay.end(), grp);
-		if (removeGrp != uiListDisplay.end())
-			uiListDisplay.erase(removeGrp);
+		uiInfoList.emplace_back(obj);
+	}
+
+	void UIManager::addInfoDisplay(uiObj* obj)
+	{
+		std::cout << "what is this id: " << obj->getId() << std::endl;
+
+		// Translate pos of info icon
+		int currWidth{}, currHeight{};
+		currHeight = static_cast<int>(uiInfoDisplayList.size() / infoDisplayWidth);
+		std::cout << "is height 0? " << uiInfoDisplayList.size() << ", " << infoDisplayGridDims.x << std::endl;
+		currWidth = uiInfoDisplayList.size() - infoDisplayWidth * currHeight;
+		vector2D::vec2D pos{ infoDisplayStartPos.x + currWidth * infoDisplayGridDims.x, infoDisplayStartPos.y - currHeight * infoDisplayGridDims.y };
+
+		//std::cout << "whats this dims? " << currHeight << ", " << currWidth << std::endl;
+		std::cout << "whats this pos? " << pos.x << ", " << pos.y << std::endl;
+		//std::cout << "whats this display pos? " << infoDisplayStartPos.x << ", " << infoDisplayStartPos.y << std::endl;
+		
+		uiInfoDisplayList.emplace_back(obj);
+		ecs.GetComponent<Render>(obj->getId())->render = true;
+		ecs.GetComponent<BaseInfo>(obj->getId())->position = pos;
+	}
+
+	void UIManager::removeActionGroupFromDisplay(UIGroup* grp)
+	{
+		auto removeGrp = std::find(uiActionDisplayList.begin(), uiActionDisplayList.end(), grp);
+		if (removeGrp != uiActionDisplayList.end())
+		{
+			for (auto& stateUpdater : uiActionGroupList[unit1].uiList)
+			{
+				ecs.GetComponent<Render>(stateUpdater.getId())->render = false;
+			}
+
+			uiActionDisplayList.erase(removeGrp);
+		}
+	}
+
+	void UIManager::removeUiFromInfoList(uiObj obj)
+	{
+		//uiObj removeGrp = std::find(uiInfoList.begin(), uiInfoList.end(), obj);
+		//if (removeGrp != uiInfoList.end())
+		//	uiInfoList.erase(removeGrp);
+	}
+
+	void UIManager::removeInfoFromDisplay()
+	{
+		for (auto& stateUpdater : uiInfoDisplayList)
+		{
+			ecs.GetComponent<Render>(stateUpdater->getId())->render = false;
+		}
+
+		uiInfoDisplayList.clear();
 	}
 
 	void UIManager::UIUpdate()
@@ -33,47 +104,29 @@ namespace UI
 		static vector2D::vec2D currMousePos{};
 		Graphics::Input::getCursorPos(&currMousePos);
 
-		if (Graphics::Input::keystateC)
-		{
-			//std::cout << "this is group list size before add: " << uiListDisplay.size() << std::endl;
-			addGroupToDisplay(&getUiGroupList()[unit1]);
-			for (auto& stateUpdater : uiGroupList[unit1].uiList)
-			{
-				ecs.GetComponent<Render>(stateUpdater.getId())->render = true;
-			}
-			//std::cout << "this is group list size after add: " << uiListDisplay.size() << std::endl;
-		}
+		//if (Graphics::Input::keystateC)
+		//{
+		//	addActionGroupToDisplay(&getUiActionGroupList()[unit1]);
+		//}
+		//if (Graphics::Input::keystateP)
+		//{
+		//	removeActionGroupFromDisplay(&getUiActionGroupList()[unit1]);
+		//	addActionGroupToDisplay(&getUiActionGroupList()[building1]);
+		//}
 
-		if (Graphics::Input::keystateP)
-		{
-			//std::cout << "this is group list size before remove: " << uiListDisplay.size() << std::endl;
-			for (auto& stateUpdater : uiGroupList[unit1].uiList)
-			{
-				ecs.GetComponent<Render>(stateUpdater.getId())->render = false;
-			}
-			removeGroupFromDisplay(&getUiGroupList()[unit1]);
-			//std::cout << "this is group list size after remove: " << uiListDisplay.size() << std::endl;
 
-			//std::cout << "this is group list size before add: " << uiListDisplay.size() << std::endl;
-			addGroupToDisplay(&getUiGroupList()[building1]);
-			for (auto& stateUpdater : uiGroupList[building1].uiList)
-			{
-				ecs.GetComponent<Render>(stateUpdater.getId())->render = true;
-			}
-			//std::cout << "this is group list size after add: " << uiListDisplay.size() << std::endl;
-		}
 
 		// check for collision btn mouse and ui
-		if (uiListDisplay.size() > 1)
+		if (uiActionDisplayList.size() > 1)
 		{
-			for (size_t i = 1 ; i < uiListDisplay.size() ; ++i)
+			for (size_t i = 1 ; i < uiActionDisplayList.size() ; ++i)
 			{
 				// ui does not respond to inputs
 				//if (uiListDisplay[i].uiList)
 				//	continue;
 
 				// ui responds to selection
-				for (auto & obj : uiListDisplay[i]->uiList)
+				for (auto & obj : uiActionDisplayList[i]->uiList)
 				{
 					if (physics::CollisionDetectionCirclePolygon(vector2D::vec2D (static_cast<float>(currMousePos.x), 
 																static_cast<float>(currMousePos.y)), 
@@ -81,7 +134,6 @@ namespace UI
 																obj.getVtx()))
 					{
 						// mouse collided with ui, action required
-						//std::cout << "this is mouse state: " << int(Graphics::Input::mousestateLeft) << std::endl;
 						if (Graphics::Input::mousestateLeft)
 						{
 							obj.updateState(uiState::trigger);
@@ -114,18 +166,30 @@ namespace UI
 
 	void UIManager::destroyUI()
 	{
-		uiGroupList.clear();
-		uiListDisplay.clear();
+		uiActionGroupList.clear();
+		uiActionDisplayList.clear();
+		uiInfoList.clear();
+		uiInfoDisplayList.clear();
 	}
 
-	std::vector<UIGroup>& UIManager::getUiGroupList()
+	std::vector<UIGroup>& UIManager::getUiActionGroupList()
 	{
-		return uiGroupList;
+		return uiActionGroupList;
 	}
 
-	std::vector<UIGroup*> UIManager::getUiListDisplay()
+	std::vector<UIGroup*> UIManager::getUiActionDisplayList()
 	{
-		return uiListDisplay;
+		return uiActionDisplayList;
+	}
+
+	std::vector<uiObj>& UIManager::getUiInfoList()
+	{
+		return uiInfoList;
+	}
+
+	std::vector<uiObj*> UIManager::getUiInfoDisplayList()
+	{
+		return uiInfoDisplayList;
 	}
 
 }
