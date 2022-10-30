@@ -265,24 +265,24 @@ void App::update()
 	//	}
 	//}
 
-	bool test{ true };
+	//bool test{ true };
 
-		if (obj->first != "Camera")
-		{
-			obj->second.update(Graphics::Input::delta_time);
+	//	if (obj->first != "Camera")
+	//	{
+	//		obj->second.update(Graphics::Input::delta_time);
 
-			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
-			{
+	//		for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
+	//		{
 
-				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
-			}
-		}
-	}	
+	//			obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
+	//		}
+	//	}
+	//}	
 
 
-	if (mouseClick)
-	{
-		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
+	//if (mouseClick)
+	//{
+	//	player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 
 	//	for (int i = 0; i < formationManagers.size(); ++i)
 	//	{

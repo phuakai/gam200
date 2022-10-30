@@ -262,7 +262,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
 
-		if (curobjTexture->textureName == "Background") // Background that moves with camera
+		if (curobjBaseInfo->type == "Background") // Background that moves with camera
 		{
 			curobjBaseInfo->dimension = vector2D::Vec2(camera2d.getWidth(), camera2d.getHeight());
 			curobjBaseInfo->position = camera2d.getCamPosition();
@@ -313,10 +313,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
 		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
+
 		if (curobjTexture->textureName == "Cloud")
 		{
 			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		}
+
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
@@ -347,7 +349,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			0							 , 0							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0							   , texid + (curobjTexture->spriteStep - 1)
 		);
-
+		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		instanceobj.headerdata.clear();
