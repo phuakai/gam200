@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <vector>
@@ -7,6 +6,7 @@
 #include "vec3D.h"
 #include "mat3x3.h"
 #include <rttr/type>
+#include "ECS.h"
 
 #define MAX_GRID_X 25
 #define MAX_GRID_Y 25
@@ -27,6 +27,7 @@ struct Render // Sprite
 
 struct BaseInfo
 {
+	std::string type;
 	std::string name;
 	vector2D::vec2D position{ 0 , 0 };
 	vector2D::vec2D dimension{ 0 , 0 };
@@ -63,8 +64,17 @@ private:
 	int health;
 };
 
+rttr::instance addComponentByName(rttr::type& componentName, const EntityID& entityID);
+rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID);
+
 void engineInit();
 void engineUpdate();
 void engineDraw();
 void engineFree();
 void swapBuffer();
+
+extern bool imguiShow;
+extern double imguiMouseX;
+extern double imguiMouseY;
+
+extern std::vector<EntityID> prefabs;

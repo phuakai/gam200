@@ -70,7 +70,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	for (int col = 0; col < 4; col++)
 	{
 		// Instancing offset array
-		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc+col); // Attrib 4 to 7
+		BufferNS::VAO::enableVAOattrib(vaoid, matrix_loc + col); // Attrib 4 to 7
 		// Not sure what to put for last parameter of bind
 		//glVertexArrayBindingDivisor(vaoid, matrix_loc + col, 1); // Same as below
 		glVertexAttribDivisor(matrix_loc + col, 1);
@@ -113,9 +113,6 @@ void RenderNS::InstancedRenderer::InstanceDelete()
 {
 	glDeleteBuffers(1, &vaoid);
 }
-
-
-
 
 RenderNS::BatchRenderer::BatchRenderer()
 {
@@ -169,7 +166,7 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	int offset = 0;
 	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		for (int i = 0; i < (totalindicesize-5); i += 6)
+		for (int i = 0; i < (totalindicesize - 5); i += 6)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;
@@ -182,7 +179,7 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	}
 	else if (primtype == GL_POINTS || primtype == GL_LINES || primtype == GL_LINE_LOOP || primtype == GL_LINE_STRIP)
 	{
-		for (int i = 0; i < (totalindicesize-1); i += 2)
+		for (int i = 0; i < (totalindicesize - 1); i += 2)
 		{
 			ebodata[i + 0] = 0 + offset;
 			ebodata[i + 1] = 1 + offset;

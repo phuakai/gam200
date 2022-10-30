@@ -580,7 +580,7 @@ namespace physics
 		if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
 			return false;
 
-		std::cout << "there is circle polygon collision detection\n";
+		//std::cout << "there is circle polygon collision detection\n";
 
 		return true;
 	}
@@ -646,7 +646,7 @@ namespace physics
 		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
 			norm = -norm;
 
-		std::cout << "there is circle polygon collision\n";
+		//std::cout << "there is circle polygon collision\n";
 
 		return true;
 	}

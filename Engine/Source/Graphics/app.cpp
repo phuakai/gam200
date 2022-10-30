@@ -150,7 +150,7 @@ void App::update()
 	bool mouseClick = false;
 	if (Graphics::Input::mousestateLeft)
 	{
-		Graphics::Input::mousestateLeft = false;
+		//Graphics::Input::mousestateLeft = false;
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		mouseClick = true;
 	}
@@ -267,21 +267,32 @@ void App::update()
 
 	bool test{ true };
 
+		if (obj->first != "Camera")
+		{
+			obj->second.update(Graphics::Input::delta_time);
+
+			for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
+			{
+
+				obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
+			}
+		}
+	}	
+
+
 	if (mouseClick)
 	{
 		player->position = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 
-		for (int i = 0; i < formationManagers.size(); ++i)
-		{
-			formationManagers[i].target = player->position;
-			formationManagers[i].updateReached();
-		}
+	//	for (int i = 0; i < formationManagers.size(); ++i)
+	//	{
+	//		formationManagers[i].target = player->position;
+	//		formationManagers[i].updateReached();
+	//	}
 
-		generateDijkstraCost(player->position, walls);
-		generateFlowField(player->position);
-	}
-	//std::cout << "Window dimension " << camera2d.getWinHeight() << ", " << camera2d.getWinWidth() << std::endl;
-	//std::cout << "Camera dimension " << camera2d.getHeight() << ", " << camera2d.getWidth() << std::endl;
+	//	generateDijkstraxCost(player->position, walls);
+	//	generateFlowField(player->position);
+	//}
 }
 
 /*  _________________________________________________________________________*/

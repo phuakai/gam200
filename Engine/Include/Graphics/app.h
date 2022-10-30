@@ -17,7 +17,6 @@ vertex shaders,
 /*                                                             
 ----------------------------------------------------------------------------- */
 #include <input.h>
-#include <glslshader.h>
 #include <list> 
 #include <random>
 #include <map>
@@ -27,6 +26,8 @@ vertex shaders,
 #include <graphics.h>
 #include <model.h>
 #include <physicsRigidBody.h>
+#include <graphics.h>
+#include "input.h"
 
 
 struct App 

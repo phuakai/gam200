@@ -1,8 +1,8 @@
 
 #pragma once
 
-#ifndef FOWMAP_H
-#define FOWMAP_H
+//#ifndef FOWMAP_H
+//#define FOWMAP_H
 
 #include "fowMap.h"
 
@@ -27,12 +27,12 @@ namespace fow
 
 	vector2D::vec2D fogOfWarMap::worldToMap(vector2D::vec2D const& worldPos)
 	{
-		return vector2D::vec2D((worldPos.x + width/2) / width * col, (worldPos.y + height/2) / height * row);
+		return { (worldPos.x + width / 2) / width * col, (worldPos.y + height / 2) / height * row };
 	}
 
 	vector2D::vec2D fogOfWarMap::mapToWorld(vector2D::vec2D const& mapPos)
 	{
-		return vector2D::vec2D(worldPos.x / col * width + width / 2, worldPos.y / row * height + height /2);
+		return { worldPos.x / col * width + width / 2, worldPos.y / row * height + height / 2 };
 	}
 
 	fogOfWarMap::~fogOfWarMap() {}
@@ -138,7 +138,6 @@ namespace fow
 				(ecs.GetComponent<Render>((*it2).getid()))->render = false;
 			}
 		}
-
 	}
 
 	void fogOfWarMap::drawFow()
@@ -193,6 +192,6 @@ namespace fow
 	}
 }
 
-#endif
+//#endif
 
 //#endif

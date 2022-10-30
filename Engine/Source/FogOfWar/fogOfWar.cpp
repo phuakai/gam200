@@ -152,10 +152,10 @@ namespace fow
 		LOS.clear();
 
 		// floor the map pos
-		int W{ static_cast<int>(currMapPos.x) - visionRad },
-			E{ static_cast<int>(currMapPos.x) + visionRad }, 
-			S{ static_cast<int>(currMapPos.y) - visionRad },
-			N{ static_cast<int>(currMapPos.y) + visionRad };
+		float	W{ static_cast<float>(static_cast<int>(currMapPos.x) - visionRad) },
+				E{ static_cast<float>(static_cast<int>(currMapPos.x) + visionRad) }, 
+				S{ static_cast<float>(static_cast<int>(currMapPos.y) - visionRad) },
+				N{ static_cast<float>(static_cast<int>(currMapPos.y) + visionRad) };
 
 		if (mapPos.x < visionRad)
 		{
@@ -175,28 +175,28 @@ namespace fow
 		}
 
 		// top row
-		for (int c = W; c <= E; ++c)
+		for (float c = W; c <= E; ++c)
 		{
 			frontier.emplace_back(vector2D::vec2D(c, N));
 		}
-		for (int r = N; r >= S; --r)
+		for (float r = N; r >= S; --r)
 		{
 			frontier.emplace_back(vector2D::vec2D(E, r));
 		}
 		// bottom row
-		for (int c = E; c >= W; --c)
+		for (float c = E; c >= W; --c)
 		{
 			frontier.emplace_back(vector2D::vec2D(c, S));
 		}
 		// left column
-		for (int r = S; r <= N; ++r)
+		for (float r = S; r <= N; ++r)
 		{
 			frontier.emplace_back(vector2D::vec2D(W, r));
 		}
 
-		for (int r = S + 1; r <= N - 1; ++r)
+		for (float r = S + 1; r <= N - 1; ++r)
 		{
-			for (int c = W + 1; c <= E - 1; ++c)
+			for (float c = W + 1; c <= E - 1; ++c)
 			{
 				LOS.emplace_back(vector2D::vec2D(c, r));
 			}
