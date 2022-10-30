@@ -94,7 +94,6 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 		std::cout << "GLFW init has failed - Aborting program!!!" << std::endl;
 		return false;
 	}
-
 	glfwSetErrorCallback(Graphics::Input::error_callback); // Error callback if a glfw function fails
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Set major OPENGL version to 4

@@ -1,20 +1,17 @@
 #include "uiManager.h"
 #include "input.h"
 #include <iterator>
+#include <algorithm>
 #include "../Physics/collision.h"
 
 namespace UI
 {
-	//void UIManager::addUI(uiObj const& obj)
-	//{
-	//	UIMgr.uiListDisplay.emplace_back(obj);
-	//}
 	void UIManager::createGroupList()
 	{
 		uiGroupList.resize(3);
 	}
 
-	void UIManager::addUiToGroup(uiObj const& obj, UI::groupName grp)
+	void UIManager::addUiToGroup(uiObj const& obj, groupName grp)
 	{
 		uiGroupList[grp].uiList.emplace_back(obj);
 	}
@@ -24,6 +21,13 @@ namespace UI
 		uiListDisplay.emplace_back(grp);
 	}
 
+	void UIManager::removeGroupFromDisplay(UIGroup* grp)
+	{
+		auto removeGrp = std::find(uiListDisplay.begin(), uiListDisplay.end(), grp);
+		if (removeGrp != uiListDisplay.end())
+			uiListDisplay.erase(removeGrp);
+	}
+
 	void UIManager::UIUpdate()
 	{
 		static vector2D::vec2D currMousePos{};
@@ -31,11 +35,32 @@ namespace UI
 
 		if (Graphics::Input::keystateC)
 		{
-			addGroupToDisplay(&getUiGroupList()[groupName::unit1]);
-			for (auto& stateUpdater : uiListDisplay[unit1]->uiList)
+			//std::cout << "this is group list size before add: " << uiListDisplay.size() << std::endl;
+			addGroupToDisplay(&getUiGroupList()[unit1]);
+			for (auto& stateUpdater : uiGroupList[unit1].uiList)
 			{
 				ecs.GetComponent<Render>(stateUpdater.getId())->render = true;
 			}
+			//std::cout << "this is group list size after add: " << uiListDisplay.size() << std::endl;
+		}
+
+		if (Graphics::Input::keystateP)
+		{
+			//std::cout << "this is group list size before remove: " << uiListDisplay.size() << std::endl;
+			for (auto& stateUpdater : uiGroupList[unit1].uiList)
+			{
+				ecs.GetComponent<Render>(stateUpdater.getId())->render = false;
+			}
+			removeGroupFromDisplay(&getUiGroupList()[unit1]);
+			//std::cout << "this is group list size after remove: " << uiListDisplay.size() << std::endl;
+
+			//std::cout << "this is group list size before add: " << uiListDisplay.size() << std::endl;
+			addGroupToDisplay(&getUiGroupList()[building1]);
+			for (auto& stateUpdater : uiGroupList[building1].uiList)
+			{
+				ecs.GetComponent<Render>(stateUpdater.getId())->render = true;
+			}
+			//std::cout << "this is group list size after add: " << uiListDisplay.size() << std::endl;
 		}
 
 		// check for collision btn mouse and ui
@@ -74,21 +99,14 @@ namespace UI
 						else
 						{
 							obj.updateState(uiState::hover);
-							std::cout << "change texture here\n";
+							//std::cout << "change texture here\n";
 						}
 					}
 					else
 					{
 						obj.updateState(uiState::release);
 					}
-					//	std::cout << "fix it!\n";
-
-					//if ()
-					//{
-
-					//}
 				}
-
 			}
 		}
 
@@ -103,6 +121,11 @@ namespace UI
 	std::vector<UIGroup>& UIManager::getUiGroupList()
 	{
 		return uiGroupList;
+	}
+
+	std::vector<UIGroup*> UIManager::getUiListDisplay()
+	{
+		return uiListDisplay;
 	}
 
 }

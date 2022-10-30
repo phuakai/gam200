@@ -1,5 +1,6 @@
 
 #include "mainHeader.h"
+#include <window.h>
 #include "ECS.h"
 #include "eventManager.h"
 #include "physicsPartition.h"
@@ -9,7 +10,6 @@
 #include "vec2D.h"
 #include "vec3D.h"
 #include <app.h>
-#include <collision.h>
 #include <fowMap.h>
 #include "UI/uiManager.h"
 
@@ -80,7 +80,7 @@ Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(100);
 //std::vector<Entity> cloud(fow::fowMap.getDims());
-std::vector<Entity> uiEntity(10);
+std::vector<Entity> uiEntity(13);
 
 // for checking
 Entity enemyManagerEntity;
@@ -105,7 +105,6 @@ quadTree mainTree;
 void engineInit()
 {
 	GLApp::init();
-
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
 	
 	// ======================================================================================================================================
@@ -158,19 +157,14 @@ void engineInit()
 	uiEntity[1].Add<Texture>(0, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::groupName::base);
 
-	// 2 = test button
-	uiEntity[2].Add<Render>("square", vector3D::vec3D(1.f, 0.f, 0.f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("uiEntity" + std::to_string(2), vector2D::vec2D(0.f, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position.y), vector2D::vec2D(100.f, 100.f));
-	uiEntity[2].Add<Texture>(0, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToGroup(UI::uiButton(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension, 2), UI::groupName::base);
 	UI::UIMgr.addGroupToDisplay(&UI::UIMgr.getUiGroupList()[UI::groupName::base]);
 
-	// 9 = clickable on bottom right
+	// 9 = buttons for unit1
 	BaseInfo* ptr = ecs.GetComponent<BaseInfo>(uiEntity[1].GetID());
 	vector2D::vec2D dimensions = ptr->dimension / 5.f;
 	vector2D::vec2D position = { ptr->position.x - ptr->dimension.x/2.f + dimensions.x / 2.f,
 									ptr->position.y + ptr->dimension.y / 2.f + dimensions.y / 2.f };
-	for (int i = 3, colTracker = 0; i < 10; ++i, ++colTracker)
+	for (int i = 2, colTracker = 0; i < 10; ++i, ++colTracker)
 	{
 		static vector2D::vec2D startingPos{ position };
 		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
@@ -180,6 +174,19 @@ void engineInit()
 		uiEntity[i].Add<Texture>(0, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
 	}
+
+	// 9 = buttons for building1
+	for (int i = 10, colTracker = 0; i < 13; ++i, ++colTracker)
+	{
+		static vector2D::vec2D startingPos{ position };
+		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
+		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
+		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
+		uiEntity[i].Add<BaseInfo>("uiEntity" + std::to_string(i), startingPos, dimensions);
+		uiEntity[i].Add<Texture>(0, 1, 1, "UIEntity");
+		UI::UIMgr.addUiToGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::building1);
+	}
+
 
 	FormationManager enemyManager;
 	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;

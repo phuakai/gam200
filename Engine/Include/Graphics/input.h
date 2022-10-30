@@ -16,12 +16,6 @@ This file controls the window inputs
 
 namespace Graphics
 {
-	enum class mouse
-	{
-		mouseButtonLeft,
-		mouseButtonMiddle,
-		mouseButtonRight
-	};
 
 	struct Input // Input class
 	{       

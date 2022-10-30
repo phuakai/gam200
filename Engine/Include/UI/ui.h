@@ -24,8 +24,9 @@ namespace UI
 	public:
 		// Constructors
 										uiObj();
-		//uiObj(EntityID _id, vector2D::vec2D pos, vector2D::vec2D dims);
 
+		void							updateState(uiState _state);
+		
 		// Getters
 		EntityID						getId();
 		vector2D::vec2D					getPos();
@@ -37,7 +38,6 @@ namespace UI
 		// Setters
 		void							setState(uiState _state);
 
-		void							updateState(uiState _state);
 	protected:
 		EntityID						id;
 		vector2D::vec2D					relPos;							//screen space coords, (0, 0) located at top left
@@ -53,7 +53,6 @@ namespace UI
 		// Constructors
 										uiBg(EntityID _id, vector2D::vec2D pos, vector2D::vec2D dims);
 
-		void							clearBgList();
 	private:
 		std::list<uiObj>				uiBgList;
 	};

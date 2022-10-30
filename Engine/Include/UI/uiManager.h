@@ -25,18 +25,27 @@ namespace UI
 
 	struct UIManager
 	{
-		//void addUI(uiObj const& obj);
-		void createGroupList();
-		void addUiToGroup(uiObj const& obj, UI::groupName grp);
-		void addGroupToDisplay(UIGroup * grp);
-		void UIUpdate();
-		void destroyUI();
+		// Creator
+		void							createGroupList();
 
-		std::vector<UIGroup>& getUiGroupList();
+		// Adders
+		void							addUiToGroup(uiObj const& obj, groupName grp);
+		void							addGroupToDisplay(UIGroup* grp);
+
+		// Removers
+		void							removeGroupFromDisplay(UIGroup * grp);
+
+
+		void							UIUpdate();
+		void							destroyUI();
+
+		//Getters
+		std::vector<UIGroup>&			getUiGroupList();
+		std::vector<UIGroup*>			getUiListDisplay();
+
 	private:
-		//std::list<std::pair<groupName, UIGroup>> uiGroupList;
-		std::vector<UIGroup> uiGroupList;
-		std::vector<UIGroup*> uiListDisplay;
+		std::vector<UIGroup>			uiGroupList;
+		std::vector<UIGroup*>			uiListDisplay;
 	};
 
 	static UIManager UIMgr;
