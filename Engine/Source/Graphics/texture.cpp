@@ -70,17 +70,17 @@ namespace TextureNS
 
 	void Texture::CreateandLoadTexture(Texture& textureobj, std::vector<std::string>& paths)
 	{
-		paths.emplace_back("Transcloud.png"); // 1 - Translucent cloud 
-		paths.emplace_back("basecloud.png"); // 2 - Normal cloud
-		paths.emplace_back("Tank.png"); // 3 - Enemy
-		paths.emplace_back("ActionBG.png"); // 4 - Actions Panel Background
-		paths.emplace_back("ActionButton.png"); // 5 - Actions buttons
-		paths.emplace_back("MiniMapFrame.png"); // 6 - Minimap
-		paths.emplace_back("tile000.png"); // 7 - Sprite Test
-		paths.emplace_back("tile001.png"); // 8 - Sprite Test
-		paths.emplace_back("tile002.png"); // 9 - Sprite Test
-		paths.emplace_back("tile003.png"); // 10 - Sprite Test
-
+		paths.emplace_back("BG256x256.png"); // 1 - Background
+		paths.emplace_back("Transcloud.png"); // 2 - Translucent cloud 
+		paths.emplace_back("basecloud.png"); // 3 - Normal cloud
+		paths.emplace_back("Tank.png"); // 4 - Enemy
+		paths.emplace_back("ActionBG.png"); // 5 - Actions Panel Background
+		paths.emplace_back("ActionButton.png"); // 6 - Actions buttons
+		paths.emplace_back("MiniMapFrame.png"); // 7 - Minimap
+		paths.emplace_back("tile000.png"); // 8 - Sprite Test
+		paths.emplace_back("tile001.png"); // 9 - Sprite Test
+		paths.emplace_back("tile002.png"); // 10 - Sprite Test
+		paths.emplace_back("tile003.png"); // 11 - Sprite Test
 		//Texture::createTexturePath("../asset/Transcloud.png", textureobj);
 		//Texture::createTexturePath("../asset/basecloud.png", textureobj);
 		//Texture::createTexturePath("../asset/Tank.png", textureobj);

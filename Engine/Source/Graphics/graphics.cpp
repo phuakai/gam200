@@ -264,6 +264,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
 
+		if (curobjTexture->textureName == "Background") // Background that moves with camera
+		{
+			curobjBaseInfo->dimension = vector2D::Vec2(camera2d.getWidth(), camera2d.getHeight());
+			curobjBaseInfo->position = camera2d.getCamPosition();
+			//std::cout << "I am bg " << curobjBaseInfo->dimension.x << ", " << curobjBaseInfo->dimension.y << std::endl;
+		}
 		std::vector<vector2D::Vec2> texcoord;
 		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
 		texcoord.emplace_back(vector2D::Vec2(1.f, 0.f)); // Bottom right
@@ -308,7 +314,11 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		}
 
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
-		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
+		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
+		if (curobjTexture->textureName == "Cloud")
+		{
+			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
+		}
 		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
