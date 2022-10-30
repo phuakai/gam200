@@ -6,7 +6,7 @@ levelEditorProperties& levelEditorProperties::getInstance()
 	return instance;
 }
 
-void levelEditorProperties::ImGuiProperties(EntityID id)
+void levelEditorProperties::ImGuiProperties(const EntityID& id)
 {
 	static int selectedNode = -1;
 	static bool check = true;
@@ -15,7 +15,12 @@ void levelEditorProperties::ImGuiProperties(EntityID id)
 		std::vector<std::string>componentNames = ecs.getEntityComponents(id);
 		for (int i = 0; i < componentNames.size(); ++i)
 		{
-			if (ImGui::TreeNode(componentNames[i].c_str()))
+			ImGuiTreeNodeFlags nodeFlags =
+				ImGuiTreeNodeFlags_DefaultOpen |
+				ImGuiTreeNodeFlags_FramePadding |
+				ImGuiTreeNodeFlags_SpanAvailWidth;
+
+			if (ImGui::TreeNodeEx((void*)(intptr_t)i, nodeFlags, componentNames[i].c_str()))
 			{
 				auto component = rttr::type::get_by_name(componentNames[i]);
 				rttr::instance componentInstance = GetComponentByName(component, id);

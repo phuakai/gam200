@@ -28,7 +28,7 @@ This file includes the serialisation function definitions.
 using namespace rapidjson;
 using namespace rttr;
 
-instance addComponentByName(rttr::type& componentName, const EntityID& entityID)
+instance addComponentByName(type& componentName, const EntityID& entityID)
 {
     if (componentName == type::get<Render>())
         return *(ecs.AddComponent<Render>(entityID));

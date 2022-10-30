@@ -31,6 +31,10 @@ static void update();
 static void init();
 static void cleanup();
 
+bool imguiShow;
+double imguiMouseX;
+double imguiMouseY;
+
 /*                                                      function definitions
 ----------------------------------------------------------------------------- */
 /*  _________________________________________________________________________ */
@@ -85,7 +89,17 @@ mouse movement, and mouse scroller events to be processed.
 static void update() 
 {
     engineUpdate();
-    imguiUpdate();
+
+    if (Graphics::Input::keystateI)
+    {
+        imguiShow = imguiShow ? false : true;
+        Graphics::Input::keystateI = false;
+    }
+
+    if (imguiShow)
+    {
+        imguiUpdate();
+    }
 }
 
 /*  _________________________________________________________________________ */
@@ -99,7 +113,12 @@ Uses Graphics::Input::GLFWWindow* to get handle to OpenGL context.
 static void draw() 
 {
     engineDraw();
-    imguiDraw();
+
+    if (imguiShow)
+    {
+        imguiDraw();
+    }
+
     swapBuffer();
 }
 

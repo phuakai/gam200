@@ -4,7 +4,7 @@ class levelEditorProperties
 {
 public:
 	static levelEditorProperties& getInstance();
-	void ImGuiProperties(EntityID id);
+	void ImGuiProperties(const EntityID& id);
 
 private:
 	levelEditorProperties() { }

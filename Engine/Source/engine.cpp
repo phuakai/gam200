@@ -126,8 +126,6 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 
 void engineInit()
 {
-	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
-	
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
@@ -137,10 +135,36 @@ void engineInit()
 	ecs.RegisterComponent<Stats>("Stats");
 	ecs.RegisterComponent<Render>("Render");
 
+	// ======================================================================================================================================
+	// PREFABS
+	const EntityID& enemyPrefab = ecs.GetNewID();
+	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<Render>(enemyPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
+	ecs.AddComponent<Texture>(enemyPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	prefabs.push_back(enemyPrefab);
+
+	const EntityID& playerPrefab = ecs.GetNewID();
+	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<Render>(playerPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
+	ecs.AddComponent<Texture>(playerPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	prefabs.push_back(playerPrefab);
+
+	const EntityID& buildingPrefab = ecs.GetNewID();
+	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<Render>(buildingPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
+	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
+	prefabs.push_back(buildingPrefab);
+	
+	// ======================================================================================================================================
+
+	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
+
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
 	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	player1.Add<BaseInfo>("player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
+	player1.Add<BaseInfo>("", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
 	// velocity, target, force, speed
 	player1.Add<Texture>(0, 1, 1, "none");
 	//player1.Add<Stats>(100);
@@ -179,7 +203,7 @@ void engineInit()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<BaseInfo>("", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
 		enemyUnits[i].Add<Texture>(6, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
 		//enemyUnits[i].Add<Stats>(100);
@@ -199,7 +223,7 @@ void engineInit()
 	//ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
 	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
-	formationManager.Add<BaseInfo>("formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
+	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
 	ecs.setEntityName(formationManager.GetID(), "formationManager");
 
 	timer = 4;
@@ -214,6 +238,7 @@ void engineInit()
 
 	system1.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, BaseInfo* p, Physics* m)
 	{
+		int j = 0;
 		for (auto i : entities)
 		{
 			//if (i == enemyManagerEntity.GetID())
@@ -225,12 +250,18 @@ void engineInit()
 			//	continue;
 			//}
 
+			if (p[j].type == "Prefab")
+			{
+				continue;
+			}
+
 			MoveEvent entityToMove;
 
 			entityToMove.id = i;
 			entityToMove.message = (1UL << Systems::Physics);
 
 			eventManager.post(entityToMove);
+			++j;
 		}
 		fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
@@ -313,13 +344,27 @@ void engineInit()
 	
 	//toJsonECS(enemyUnitsID, "data.json", true);
 
+	imguiShow = true;
+
+	imguiMouseX = 0.0;
+	imguiMouseY = 0.0;
+
 	GLApp::init();
 }
 
 void engineUpdate()
 {
-	double mousePosX, mousePosY;
-	Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+	double mousePosX = 0.0, mousePosY = 0.0;
+
+	if (imguiShow)
+	{
+		mousePosX = imguiMouseX;
+		mousePosY = imguiMouseY;
+	}
+	else
+	{
+		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+	}
 
 	if (Graphics::Input::mousestateLeft) // just clicked
 	{
@@ -432,7 +477,6 @@ void engineUpdate()
 						break;
 					}
 				}
-				std::cout << newManager.slotAssignment.size() << std::endl;
 
 				newManager.generateDijkstraCost(walls);
 				newManager.generateFlowField();

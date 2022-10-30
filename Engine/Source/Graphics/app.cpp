@@ -721,7 +721,13 @@ void GLApp::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	basicinstance.InstanceRender(TextureNS::textureobjects, entitycounter);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//mainFrame.drawFrameBuffer();
+
+	// If Imgui is closed
+	if (!imguiShow)
+	{
+		mainFrame.drawFrameBuffer();
+	}
+
 	basicinstance.InstanceClear();
 	entitycounter = 0;
 	//basicbatch.BatchRender(Graphics::textureobjects); // Renders all objects at once

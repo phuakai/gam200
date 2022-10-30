@@ -36,7 +36,7 @@ namespace Graphics
 		//static GLboolean keystateV;  // View
 
 		static GLboolean keystateC;  // Collision
-		//static GLboolean keystateI;  // Player forward
+		static GLboolean keystateI;  // ImGui
 		//static GLboolean keystateK;  // Player backward
 		//static GLboolean keystateJ;  // Player left
 		//static GLboolean keystateL;  // Player right

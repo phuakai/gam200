@@ -240,7 +240,6 @@ shortest part of all the nodes to the target position.
 void FormationManager::generateDijkstraCost(std::vector<Entity>& walls)
 {
 	vector2D::vec2D endingNode = (target - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-	std::cout << endingNode.x << ", " << endingNode.y << std::endl;
 
 	for (int i = 0; i < MAX_GRID_Y; ++i)
 	{
@@ -490,7 +489,6 @@ void FormationManager::updateSlots()
 
 void FormationManager::updateAnchorPosition()
 {
-	std::cout << slotAssignment.size() << std::endl;
 	vector2D::vec2D totalPositions { 0 , 0 };
 
 	for (int i = 0; i < slotAssignment.size(); ++i)

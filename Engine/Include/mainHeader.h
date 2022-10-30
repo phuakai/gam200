@@ -27,6 +27,7 @@ struct Render // Sprite
 
 struct BaseInfo
 {
+	std::string type;
 	std::string name;
 	vector2D::vec2D position{ 0 , 0 };
 	vector2D::vec2D dimension{ 0 , 0 };
@@ -63,6 +64,7 @@ private:
 	int health;
 };
 
+rttr::instance addComponentByName(rttr::type& componentName, const EntityID& entityID);
 rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID);
 
 void engineInit();
@@ -70,3 +72,9 @@ void engineUpdate();
 void engineDraw();
 void engineFree();
 void swapBuffer();
+
+extern bool imguiShow;
+extern double imguiMouseX;
+extern double imguiMouseY;
+
+extern std::vector<EntityID> prefabs;

@@ -34,7 +34,7 @@ GLboolean Graphics::Input::keystateZ;  // Zoom
 
 GLboolean Graphics::Input::keystateC;  // Collision
 
-//GLboolean Graphics::Input::keystateI;  // Player forward
+GLboolean Graphics::Input::keystateI;  // ImGui
 //GLboolean Graphics::Input::keystateK;  // Player backward
 //GLboolean Graphics::Input::keystateJ;  // Player left
 //GLboolean Graphics::Input::keystateL;  // Player right
@@ -73,6 +73,7 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 	Graphics::Input::keystateZ = false;  // Zoom
 
 	Graphics::Input::keystateC = false;  // Collision
+	Graphics::Input::keystateI = false;  // Collision
 
 	Graphics::Input::keystateP = false;  // Pause game
 	Graphics::Input::keystateE = false;  // Add new square
@@ -193,6 +194,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 			keystateC = GL_TRUE;
 		}
 
+		if (key == GLFW_KEY_I) // Collision
+		{
+			keystateI= GL_TRUE;
+		}
+
 		if (key == GLFW_KEY_P) // Pause
 		{
 			keystateP = GL_TRUE;
@@ -275,6 +281,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 		if (key == GLFW_KEY_C) // Collision
 		{
 			keystateC = GL_FALSE; // Collision not a toggle
+		}
+
+		if (key == GLFW_KEY_I) // Collision
+		{
+			keystateI = GL_FALSE; // Collision not a toggle
 		}
 
 		if (key == GLFW_KEY_P) // Pause

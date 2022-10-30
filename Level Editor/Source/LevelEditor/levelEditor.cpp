@@ -1,4 +1,5 @@
 #include "app.h"
+#include "mainHeader.h"
 #include "levelEditor.h"
 #include "levelEditorHierarchy.h"
 #include "levelEditorProperties.h"
@@ -36,19 +37,42 @@ void imguiUpdate()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	//ImGui::DockSpaceOverViewport();
+	ImGui::DockSpaceOverViewport();
+
 	//ImGuiViewport* viewportID = ImGui::FindViewportByPlatformHandle(Graphics::Input::ptr_to_window);
 	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
 	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
 	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
 	 
-	ImGui::Begin("Camera");
-	ImVec2 size;
-	size.x = ImGui::GetWindowWidth();
-	size.y = ImGui::GetWindowHeight();
-	auto tex = mainFrame.framebuffer;
-	ImGui::Image((void*)tex, size);
-	ImGui::End();
+	if (ImGui::Begin("Camera", (bool*)0, ImGuiWindowFlags_NoScrollbar))
+	{
+		auto tex = mainFrame.framebuffer;
+		ImVec2 size = ImGui::GetWindowSize();
+		ImGui::Image((ImTextureID)tex, size, ImVec2(0, 1), ImVec2(1, 0));
+
+
+		double mousePosX = 0.0, mousePosY = 0.0;
+		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+
+		double screenHeight = (double)Graphics::Input::screenheight;
+		double screenWidth = (double)Graphics::Input::screenwidth;
+
+		// Bottom left of the imgui window 
+		ImVec2 imguiWindowPosition = ImGui::GetCursorScreenPos();
+		// Size of the imgui window
+		ImVec2 imguiWindowSize = ImGui::GetWindowSize();
+
+		imguiMouseX = mousePosX;
+		imguiMouseY = mousePosY;
+
+		imguiMouseX -= (double)imguiWindowPosition.x - (screenWidth / 2 - (double)imguiWindowSize.x / 2);
+		imguiMouseY += (double)imguiWindowPosition.y - (screenHeight / 2 + (double)imguiWindowSize.y / 2);
+
+		imguiMouseX *= screenWidth / (double)imguiWindowSize.x;
+		imguiMouseY *= screenHeight / (double)imguiWindowSize.y;
+
+		ImGui::End();
+	}
 
 	//static bool inputs_step = true;
 	//static float f32_v = 0.123f;
