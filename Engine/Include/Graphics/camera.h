@@ -11,7 +11,9 @@ This file controls the camera of the game
 #include <vector>
 #include <vec2D.h>
 #include <mat3x3.h>
-#include <app.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+//#include <app.h>
 
 namespace CameraNS
 {

@@ -9,10 +9,12 @@ This file controls the camera of the game
 #include <camera.h>
 #define _USE_MATH_DEFINES //for pi
 #include <math.h>
+#include <input.h>
 #include <iostream>
 
 namespace CameraNS
 {
+	bool FirstClick = true;
 	Camera2D::Camera2D()
 	{
 		right = { 0, 0 };
@@ -55,6 +57,7 @@ namespace CameraNS
 	*/
 	void Camera2D::init(GLFWwindow* pWindow, vector2D::Vec2 pos, vector2D::Vec2 orient)
 	{
+		FirstClick = true;
 		orientation = orient;
 		position = pos;
 		orientation.y = 2.f * float(M_PI / 180); // Rotation amount
@@ -147,7 +150,55 @@ namespace CameraNS
 			}
 			height += height_chg_val * height_chg_dir;
 		}
+		static vector2D::vec2D oldpos{};
+		vector2D::vec2D newpos{};
+		if (Graphics::Input::mousestateMiddle == GL_TRUE)
+		{
+			double xpos{};
+			double ypos{};
+			Graphics::Input::getCursorPos(&xpos, &ypos);
+			if (FirstClick == true)
+			{
+				oldpos = vector2D::vec2D(xpos - position.x, ypos - position.y);
+				//std::cout << "FIRST CLICK " << oldpos.x << ", " << oldpos.y << std::endl;
+				FirstClick = false;
+			}
+			else
+			{
+				newpos = vector2D::vec2D(xpos - position.x, ypos - position.y);
+				vector2D::vec2D change = oldpos - newpos;
+				position.x += change.x;
+				position.y += change.y;
+				//std::cout << "Right " << xpos << ", " << ypos << std::endl;
+				//std::cout << "Cam " << position.x << ", " << position.y << std::endl;
+				//std::cout << "Old pos " << oldpos.x << ", " << oldpos.y << std::endl;
+				//std::cout << "New pos " << newpos.x << ", " << newpos.y << std::endl;
+				//std::cout << "Change is movement " << change.x << ", " << change.y << std::endl << std::endl;
+				oldpos = newpos;
+			}
+			// Save distance of previous frame
+			// When moving mouse, save new distance. New distance - old distance = Change
+			// If old is let's say x=500, new is x=550, change will be 50
+			// Since we are dragging towards Right side, since change is positive, move the position -50 to the left
+			//double xpos{};
+			//double ypos{};
+			//Graphics::Input::getCursorPos(&xpos, &ypos);
+			//std::cout << "Right " << xpos << ", " << ypos << std::endl;
+			//std::cout << "Cam " << position.x << ", " << position.y << std::endl;
+			//vector2D::vec2D distance = vector2D::vec2D(xpos - position.x, ypos - position.y);
+			//vector2D::vec2D newdistance = vector2D::vec2D(xpos - position.x, ypos - position.y);
 
+			//vector2D::vec2D change = distance - newdistance;
+			//distance = newdistance;
+			//position.x += change.x;
+			//position.y += change.y;
+			//std::cout << "Change is movement " << change.x << ", " << change.y << std::endl;
+		}
+		if (Graphics::Input::mousestateMiddle == GL_FALSE && FirstClick == false)
+		{
+			FirstClick = true;
+		}
+		
 		if (camtype_flag == GL_FALSE)
 		{
 			view_xform = matrix3x3::mat3x3
