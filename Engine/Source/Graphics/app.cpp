@@ -187,6 +187,7 @@ void App::update()
 		graphicsmode = !graphicsmode;
 		Graphics::Input::keystateG = GL_FALSE;
 	}
+	BaseInfo* player = ecs.GetComponent<BaseInfo>(player1.GetID());
 	if (graphicsmode)
 	{
 		if (Graphics::Input::keystateX)
@@ -201,10 +202,18 @@ void App::update()
 		}
 		if (Graphics::Input::keystatePlus)
 		{
+			if (player->dimension.x <= 150.f && player->dimension.y <= 150.f)
+			{
+				player->dimension += vector2D::vec2D(5.f, 5.f);
+			}
 			std::cout << "INCREASING" << std::endl;
 		}
 		if (Graphics::Input::keystateMinus)
 		{
+			if (player->dimension.x >= 20.f && player->dimension.y >= 20.f)
+			{
+				player->dimension -= vector2D::vec2D(5.f, 5.f);
+			}
 			std::cout << "DECREASING" << std::endl;
 		}
 		if (Graphics::Input::keystateSquareBracketLeft)
@@ -255,7 +264,6 @@ void App::update()
 	//		obj1->second.modelCenterPos = obj1->second.body.getPos();
 	//	}
 	//}
-	BaseInfo* player = ecs.GetComponent<BaseInfo>(player1.GetID());
 
 	bool test{ true };
 
