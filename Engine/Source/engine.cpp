@@ -162,7 +162,7 @@ void engineInit()
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), Graphics::Input::screenwidth, Graphics::Input::screenheight, nullptr);
 
 	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
-	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight));
+	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight));
 	// velocity, target, force, speed
 	bg.Add<Texture>(1, 1, 1, "Background");
 

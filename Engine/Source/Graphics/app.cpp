@@ -58,7 +58,7 @@ std::map<std::string, ModelNS::Model> models; // define models
 
 std::unordered_map<App::collisionType, std::string> App::collisionInfo;
 
-RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
+std::vector<RenderNS::InstancedRenderer> InstanceContainer; // Instance render object for collision debug
 
 FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
@@ -86,6 +86,7 @@ glClearColor and glViewport to initialize the app
 
 void App::init()
 {
+	InstanceContainer.resize(1);
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
 	if (!Graphics::Input::init((GLint)screensize.x, (GLint)screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
@@ -325,7 +326,7 @@ void App::draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	RenderNS::DrawFunc(basicinstance, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
+	RenderNS::DrawFunc(InstanceContainer[0], mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
 
 	glDisable(GL_BLEND);
 }
