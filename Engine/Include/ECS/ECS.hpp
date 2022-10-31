@@ -534,15 +534,6 @@ inline C* ECS::GetComponent(const EntityID& entityId)
     if (!record.archetype->type[compTypeId])
         return nullptr; // this entity doesn't have this component
 
-    ///auto found = std::find(record.archetype->type.begin(), record.archetype->type.end(), compTypeId);
-    ///if (found == record.archetype->type.end())
-    ///{
-    ///    // this entity doesn't have this component
-    ///    return nullptr;
-    ///}
-
-    ///int foundComponent = (int)std::distance(record.archetype->type.begin(), found);
-
     return reinterpret_cast<C*>(record.archetype->componentData[compTypeId] + record.index * sizeof(C));
 }
 

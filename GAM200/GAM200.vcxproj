@@ -28,6 +28,7 @@
     <None Include="..\shaders\gam200.vert" />
     <None Include="..\shaders\instancing.frag" />
     <None Include="..\shaders\instancing.vert" />
+    <None Include="data.json" />
     <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
@@ -104,28 +105,44 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
     <LibraryPath>$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\lib-vc2019;$(SolutionDir)lib\glew-2.2.0\lib\Release\x64;$(SolutionDir)lib\rttr;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
+    <IncludePath>$(ProjectDir)Include;$(SolutionDir)lib;$(SolutionDir)lib\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)lib\glad\include;$(SolutionDir)lib\glew-2.2.0\include;$(SolutionDir)lib\glm-0.9.9.8;$(SolutionDir)lib\stb-master;$(SolutionDir)Level Editor\Include\LevelEditor</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +160,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,6 +177,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,7 +199,8 @@ copy "$(SolutionDir)lib\glew-2.2.0\bin\Release\x64\glew32.dll" "$(TargetDir)glew
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\FogOfWar;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include\UI;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\FogOfWar;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

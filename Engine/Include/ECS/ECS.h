@@ -67,8 +67,8 @@ struct Archetype
     // archtype ID is just a vector of all components in it
     ArchetypeID type;
     std::vector<ComponentData> componentData;
-    std::vector<EntityID> entityIds;
     std::vector<std::size_t> componentDataSize;
+    std::vector<EntityID> entityIds;
 };
 
 

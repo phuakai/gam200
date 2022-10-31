@@ -62,6 +62,6 @@ namespace TextureNS
 		unsigned int textureid;
 	};
 
-	static Texture textureobjects; // Texture obj
-
 }
+
+extern TextureNS::Texture textureobjects; // Texture obj

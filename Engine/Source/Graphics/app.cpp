@@ -45,6 +45,7 @@ to OpenGL implementations.
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
+#include "Font.h";
 
 extern std::vector<FormationManager> formationManagers;
 extern Entity player1;
@@ -275,17 +276,15 @@ void App::update()
 
 	//bool test{ true };
 
-	//	if (obj->first != "Camera")
-	//	{
-	//		obj->second.update(Graphics::Input::delta_time);
+		//	for (int i = 0; i < formationManagers.size(); ++i)
+		//	{
+		//		formationManagers[i].target = player->position;
+		//		formationManagers[i].updateReached();
+		//	}
 
-	//		for (GLuint i = 0; i < obj->second.mdl_ref->second.getPosvtxCnt(); i++)
-	//		{
-
-	//			obj->second.ndc_coords[i] = obj->second.world_to_ndc_xform * obj->second.worldVertices[i], 1.f;
-	//		}
-	//	}
-	//}	
+		//	generateDijkstraCost(player->position, walls);
+		//	generateFlowField(player->position);
+		//}
 
 
 	//if (mouseClick)
@@ -363,7 +362,7 @@ This function is empty for now
 void App::cleanup()
 {
 	mainFrame.delFrameBuffer();
-	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
+	TextureNS::Texture::deleteTexture(textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 }
 

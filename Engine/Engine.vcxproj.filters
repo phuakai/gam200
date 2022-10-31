@@ -183,6 +183,15 @@
     <Filter Include="Header Files\FogOfWar">
       <UniqueIdentifier>{566f6bbc-526f-4809-990d-08e9daab6c19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Font">
+      <UniqueIdentifier>{4945c170-b42d-4f09-8800-3fc3635881a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Font\Freetype">
+      <UniqueIdentifier>{17b3691d-7a70-4011-9eec-b53eab2d2eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Font">
+      <UniqueIdentifier>{647cf34b-0801-4498-96c8-3754a7e8405d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{28bd1754-9881-49e8-8fe0-4a55c47dc67c}</UniqueIdentifier>
     </Filter>
@@ -367,6 +376,12 @@
     </ClCompile>
     <ClCompile Include="Source\Graphics\framebuffer.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AudioEngine\AudioEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FontSystem\Font.cpp">
+      <Filter>Source Files\Font</Filter>
     </ClCompile>
     <ClCompile Include="Source\Graphics\window.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -975,6 +990,177 @@
     </ClInclude>
     <ClInclude Include="Include\Graphics\window.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\AudioEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\Font.h">
+      <Filter>Header Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\ft2build.h">
+      <Filter>Header Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftadvanc.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftbbox.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftbdf.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftbitmap.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftbzip2.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftcache.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftchapters.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftcid.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftcolor.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftconfig.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftdriver.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\fterrdef.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\fterrors.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftfntfmt.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftgasp.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftglyph.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftgxval.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftgzip.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftheader.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftimage.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftincrem.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftlcdfil.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftlist.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftlogging.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftlzw.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftmac.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftmm.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftmodapi.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftmoderr.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftmodule.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftoption.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftotval.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftoutln.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftparams.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftpfr.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftrender.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftsizes.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftsnames.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftstdlib.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftstroke.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftsynth.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftsystem.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\fttrigon.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\fttypes.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ftwinfnt.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\integer-types.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\mac-support.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\otsvg.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\public-macros.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\t1tables.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\ttnameid.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\tttables.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\tttags.h">
+      <Filter>Header Files\Font\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\freetype.h">
+      <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
     <ClInclude Include="Include\Graphics\inputSystem.h">
       <Filter>Header Files\Graphics</Filter>

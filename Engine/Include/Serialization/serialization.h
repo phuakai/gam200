@@ -1,6 +1,6 @@
 /*!
 @file    serialization.h
-@author  p.jiankai@digipen.edu, ruoyan.go@digipen.edu
+@author  p.jiankai@digipen.edu, ruoyan.go@digipen.edu, tundagh.pang@digipen.edu
 @date    10/9/2022
 
 This file includes the serialisation function declarations.

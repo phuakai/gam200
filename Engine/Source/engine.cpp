@@ -9,10 +9,13 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
+#include "Font.h"
+#include "AudioEngine.h"
 #include "camera.h"
 #include <app.h>
 #include <fowMap.h>
 #include "UI/uiManager.h"
+#include <collision.h>
 
 #include <random>
 
@@ -40,7 +43,7 @@ RTTR_REGISTRATION{
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
 		.property("shaderName", &Render::shaderName)
-		.property("name", &Render::render);
+		.property("render", &Render::render);
 
 	rttr::registration::class_<BaseInfo>("BaseInfo")
 		.property("type", &BaseInfo::type)
@@ -104,6 +107,8 @@ extern CameraNS::Camera2D camera2d;
 
 quadTree mainTree;
 
+spooky::CAudioEngine audioEngine;
+
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
 int selected;
@@ -153,7 +158,7 @@ void engineInit()
 	prefabs.push_back(playerPrefab);
 
 	const EntityID& buildingPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(buildingPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
 	prefabs.push_back(buildingPrefab);
@@ -322,7 +327,7 @@ void engineInit()
 			//	continue;
 			//}
 
-			if (p[i].type == "Prefab")
+			if (p[i].type == "Prefab" || m[i].formationManagerID == -1)
 			{
 				continue;
 			}
@@ -334,7 +339,7 @@ void engineInit()
 
 			eventManager.post(entityToMove);
 		}
-
+		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
 
 		// Check with walls
@@ -420,6 +425,27 @@ void engineInit()
 	imguiMouseX = 0.0;
 	imguiMouseY = 0.0;
 
+
+	//spooky::CAudioEngine audioEngine;
+	audioEngine.Init();
+
+	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
+	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+
+	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}*/
+
+	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	Font::init();
 }
 
 void engineUpdate()
@@ -460,7 +486,7 @@ void engineUpdate()
 			formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
 			formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
 
-			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+			formationManagerInfo->position = (dragSelectEndPosition + dragSelectStartPosition) / 2 + dragSelectStartPosition;
 		}
 	}
 	else if (drag) // released
