@@ -76,57 +76,63 @@ namespace fow
 	struct fowTile
 	{
 	public:
-		fowTile();
-		fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
-		void createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
-		void removeFromTile(EntityID id, vector2D::vec2D oldMapPos);
-		void addToTile(EntityID id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
-		void updateTileStateToFog();
-		void updateTileStateToVisible();
+		// Constructor
+										fowTile();
+										fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
+		
+		void							createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
+		void							removeFromTile(EntityID _id, vector2D::vec2D oldMapPos);
+		void							addToTile(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
+		void							updateTileStateToFog();
+		void							updateTileStateToVisible();
 
-		EntityID getid();
-		int getWdith();
-		int getHeight();
-		vector2D::vec2D getWorldPos();
-		vector2D::vec2D getGridPos();
-		fowTileState getTileState();
-		std::list<EntityID> getEntitiesOnTile();
-		void setid(EntityID _id);
+		// Getter
+		EntityID						getid();
+		int 							getWdith();
+		int 							getHeight();
+		vector2D::vec2D					getWorldPos();
+		vector2D::vec2D					getGridPos();
+		fowTileState					getTileState();
+		std::list<EntityID>				getEntitiesOnTile();
+
+		// Setter
+		void							setid(EntityID _id);
 
 	private:
-		EntityID id;
-		int width;
-		int height;
-		vector2D::vec2D worldPos;
-		vector2D::vec2D gridPos;
-		fowTileState state;
-		std::list<EntityID> entitiesOnTile;
+		EntityID						id;
+		int								width;
+		int								height;
+		vector2D::vec2D					worldPos;
+		vector2D::vec2D					gridPos;
+		fowTileState					state;
+		std::list<EntityID>				entitiesOnTile;
 	};
 
 	struct fowObj
 	{
 	public:
-		fowObj();
-		fowObj(EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row);
-		void fowObjUpdate(vector2D::vec2D const& newWorldPos, vector2D::vec2D const& newMapPos, int col, int row);
-		void updateTilePos(vector2D::vec2D const& currMapPos, int col, int row);
+		// Constructor
+										fowObj();
+										fowObj(EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row);
+		
+		void							fowObjUpdate(vector2D::vec2D const& newWorldPos, vector2D::vec2D const& newMapPos, int col, int row);
+		void							updateTilePos(vector2D::vec2D const& currMapPos, int col, int row);
 
-		EntityID getid();
-		vector2D::vec2D getWorldPos();
-		vector2D::vec2D getMapPos();
-		std::list<vector2D::vec2D> getFrontier();
-		std::list<vector2D::vec2D> getLOS();
+		// Getter
+		EntityID						getid();
+		vector2D::vec2D					getWorldPos();
+		vector2D::vec2D					getMapPos();
+		std::list<vector2D::vec2D>		getFrontier();
+		std::list<vector2D::vec2D>		getLOS();
 
 	private:
-		EntityID id;
-		vector2D::vec2D worldPos;
-		vector2D::vec2D mapPos;
-		std::list<vector2D::vec2D> frontier;			// grid space
-		std::list<vector2D::vec2D> LOS;					// grid space
+		EntityID						id;
+		vector2D::vec2D					worldPos;
+		vector2D::vec2D					mapPos;
+		std::list<vector2D::vec2D>		frontier;			// grid space
+		std::list<vector2D::vec2D>		LOS;					// grid space
 	};
 
-	#if false
-	#endif
 }
 
 #endif

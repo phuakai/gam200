@@ -49,16 +49,16 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 
-	void fowTile::removeFromTile(EntityID id, vector2D::vec2D oldMapPos)
+	void fowTile::removeFromTile(EntityID _id, vector2D::vec2D oldMapPos)
 	{
 		//remove entity from tile
-		entitiesOnTile.remove(id);
+		entitiesOnTile.remove(_id);
 	}
 
-	void fowTile::addToTile(EntityID id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos)
+	void fowTile::addToTile(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos)
 	{
 		//add entity to tile
-		entitiesOnTile.emplace_back(id);
+		entitiesOnTile.emplace_back(_id);
 		//update states of surrounding tile
 		state = fowTileState::visible;
 	}
@@ -159,19 +159,19 @@ namespace fow
 
 		if (mapPos.x < visionRad)
 		{
-			W = 0;
+			W = 0.f;
 		}
 		else if (mapPos.x >= col - visionRad)
 		{
-			E = col - 1;
+			E = static_cast<float>(col) - 1.f;
 		}
 		if (mapPos.y < visionRad)
 		{
-			S = 0;
+			S = 0.f;
 		}
 		else if (mapPos.y >= row - visionRad)
 		{
-			N = row - 1;
+			N = static_cast<float>(row) - 1.f;
 		}
 
 		// top row

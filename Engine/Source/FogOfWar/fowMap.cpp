@@ -25,14 +25,14 @@ namespace fow
 		worldPos = _worldPos;
 	}
 
-	vector2D::vec2D fogOfWarMap::worldToMap(vector2D::vec2D const& worldPos)
+	vector2D::vec2D fogOfWarMap::worldToMap(vector2D::vec2D const& _worldPos)
 	{
-		return { (worldPos.x + width / 2) / width * col, (worldPos.y + height / 2) / height * row };
+		return { (_worldPos.x + width / 2) / width * col, (_worldPos.y + height / 2) / height * row };
 	}
 
-	vector2D::vec2D fogOfWarMap::mapToWorld(vector2D::vec2D const& mapPos)
+	vector2D::vec2D fogOfWarMap::mapToWorld(vector2D::vec2D const& _mapPos)
 	{
-		return { worldPos.x / col * width + width / 2, worldPos.y / row * height + height / 2 };
+		return { _mapPos.x / col * width + width / 2, _mapPos.y / row * height + height / 2 };
 	}
 
 	fogOfWarMap::~fogOfWarMap() {}

@@ -26,7 +26,7 @@ namespace UI
 		uiActionGroupList.resize(3);
 	}
 
-	void UIManager::addUiToActionGroup(uiObj const& obj, groupName const& grp)
+	void UIManager::addUiToActionGroup(uiObj const& obj, UI::groupName const& grp)
 	{
 		uiActionGroupList[grp].uiList.emplace_back(obj);
 	}
@@ -51,14 +51,9 @@ namespace UI
 		// Translate pos of info icon
 		int currWidth{}, currHeight{};
 		currHeight = static_cast<int>(uiInfoDisplayList.size() / infoDisplayWidth);
-		std::cout << "is height 0? " << uiInfoDisplayList.size() << ", " << infoDisplayGridDims.x << std::endl;
-		currWidth = uiInfoDisplayList.size() - infoDisplayWidth * currHeight;
+		currWidth = static_cast<int>(uiInfoDisplayList.size()) - infoDisplayWidth * currHeight;
 		vector2D::vec2D pos{ infoDisplayStartPos.x + currWidth * infoDisplayGridDims.x, infoDisplayStartPos.y - currHeight * infoDisplayGridDims.y };
 
-		//std::cout << "whats this dims? " << currHeight << ", " << currWidth << std::endl;
-		std::cout << "whats this pos? " << pos.x << ", " << pos.y << std::endl;
-		//std::cout << "whats this display pos? " << infoDisplayStartPos.x << ", " << infoDisplayStartPos.y << std::endl;
-		
 		uiInfoDisplayList.emplace_back(obj);
 		ecs.GetComponent<Render>(obj->getId())->render = true;
 		ecs.GetComponent<BaseInfo>(obj->getId())->position = pos;

@@ -31,7 +31,7 @@ namespace UI
 		void							createGroupList();
 
 		// Adders
-		void							addUiToActionGroup(uiObj const& obj, groupName const& grp);
+		void							addUiToActionGroup(uiObj const& obj, UI::groupName const& grp);
 		void							addActionGroupToDisplay(UIGroup* grp);
 		void							addUiToInfoList(uiObj obj, groupName const& grp);
 		void							addInfoDisplay(uiObj* obj);

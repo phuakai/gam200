@@ -549,7 +549,6 @@ namespace physics
 	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx)
 	{
 		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };
-		float axisDepth{ 0.f };
 
 		for (size_t i{ 0 }; i < boxVtx.size(); ++i)
 		{

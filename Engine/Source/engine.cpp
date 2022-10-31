@@ -159,7 +159,7 @@ void engineInit()
 	
 	// ======================================================================================================================================
 
-	mainTree.createQuadTree(vector2D::vec2D(0, 0), Graphics::Input::screenwidth, Graphics::Input::screenheight, nullptr);
+	mainTree.createQuadTree(vector2D::vec2D(0, 0), static_cast<float>(camera2d.getWidth()), static_cast<float>(camera2d.getHeight()), nullptr);
 
 	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
 	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight));
@@ -222,7 +222,6 @@ void engineInit()
 	//vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x. / 2.f,
 	//						 ptr->position.y + ptr->dimension.y / 2.f + dimensions.y / 2.f };
 
-	
 	for (int i = 3, colTracker = 0; i < 10; ++i, ++colTracker)
 	{
 		static vector2D::vec2D startingPos{ position };
