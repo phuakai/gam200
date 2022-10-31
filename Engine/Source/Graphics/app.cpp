@@ -187,17 +187,6 @@ void GLApp::init()
 	//EntityID playerID = player1.GetID();
 	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
 
-	/*Font::init();
-	Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
-	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
-	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
-	{
-		assert("ERROR: Unable to link shaders!");
-	}
-	if (false == Font::shader.Validate() || false == Font::shader.Validate())
-	{
-		assert("ERROR: Unable to validate shaders!");
-	}*/
 }
 
 
@@ -212,7 +201,6 @@ This function is called once per frame to update an object's scale, rotation and
 */
 void GLApp::GLObject::update(GLdouble delta_time)
 {
-
 	matrix3x3::mat3x3 scale
 	(scaling.x, 0, 0,
 		0, scaling.y, 0,

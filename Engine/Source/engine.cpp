@@ -346,21 +346,11 @@ void engineInit()
 
 	//spooky::CAudioEngine audioEngine;
 	audioEngine.Init();
-
-	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
-	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	
+	audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
+	audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
+	audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
 	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
-
-	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
-	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
-	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
-	{
-		assert("ERROR: Unable to link shaders!");
-	}
-	if (false == Font::shader.Validate() || false == Font::shader.Validate())
-	{
-		assert("ERROR: Unable to validate shaders!");
-	}*/
 
 	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
 	Font::init();
@@ -558,7 +548,7 @@ void engineUpdate()
 
 	GLApp::update();						// graphics system
 
-	if (Graphics::Input::mousestateLeft)
+	if (glfwGetKey(Graphics::Input::ptr_to_window, GLFW_KEY_F)) //(Graphics::Input::mousestateLeft)
 	{
 		audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 	}
@@ -569,6 +559,7 @@ void engineDraw()
 	GLApp::draw();
 	GLApp::shdrpgms.find("font");
 	Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+	Font::RenderFont(GLApp::shdrpgms.find("font")->second, "The Quick Brown Fox Jumps Over The Fence", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight(), 1.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineFree()
