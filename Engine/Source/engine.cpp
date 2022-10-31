@@ -46,7 +46,8 @@ RTTR_REGISTRATION{
 		.property("type", &BaseInfo::type)
 		.property("name", &BaseInfo::name)
 		.property("position", &BaseInfo::position)
-		.property("dimension", &BaseInfo::dimension);
+		.property("dimension", &BaseInfo::dimension)
+		.property("orientation", &BaseInfo::orientation);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -138,14 +139,14 @@ void engineInit()
 	// ======================================================================================================================================
 	// PREFABS
 	const EntityID& enemyPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(enemyPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	prefabs.push_back(enemyPrefab);
 
 	const EntityID& playerPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(playerPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(playerPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
@@ -162,14 +163,14 @@ void engineInit()
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), Graphics::Input::screenwidth, Graphics::Input::screenheight, nullptr);
 
 	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
-	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight));
+	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight), vector2D::vec2D(0.f, 0.f));
 	// velocity, target, force, speed
 	bg.Add<Texture>(1, 1, 1, "Background");
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
 	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
+	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f)), vector2D::vec2D(0.f, 0.f);
 	// velocity, target, force, speed
 	player1.Add<Texture>(0, 1, 1, "none");
 	//player1.Add<Stats>(100);
@@ -186,7 +187,7 @@ void engineInit()
 	//	//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	//	//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
 	//	cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	//	cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
+	//	cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()), vector2D::vec2D(0.f, 0.f));
 	//	cloud[inc].Add<Texture>(2, 1, 1, "Cloud");
 	//	it->setid(cloud[inc].GetID());
 	//	//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
@@ -196,19 +197,19 @@ void engineInit()
 	UI::UIMgr.createGroupList();
 	// 0 = base hud
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(0.f, ( -Graphics::Input::screenheight + Graphics::Input::screenheight / 4.f) / 2.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight/4.f));
+	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(0.f, ( -Graphics::Input::screenheight + Graphics::Input::screenheight / 4.f) / 2.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight/4.f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[0].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f));
+	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::groupName::base);
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f));
+	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[2].Add<Texture>(7, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::groupName::base);
 
@@ -225,7 +226,7 @@ void engineInit()
 		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
 		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions);
+		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
 	}
@@ -237,7 +238,7 @@ void engineInit()
 		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
 		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions);
+		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::building1);
 	}
@@ -246,7 +247,7 @@ void engineInit()
 	for (int i = 13, colTracker = 0; i < 113; ++i, ++colTracker)
 	{
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), position, dimensions);
+		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
 	}
@@ -267,7 +268,7 @@ void engineInit()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
+		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
 		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
 		//enemyUnits[i].Add<Stats>(100);
@@ -282,13 +283,13 @@ void engineInit()
 	formationManagers.push_back(enemyManager);
 
 	//enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
-	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
+	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20), vector2D::vec2D(0.f, 0.f));
 	//enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
 	//enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
 	//ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
 	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
-	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
+	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
 	formationManager.Add<Texture>(0, 1, 1, "FM");
 	ecs.setEntityName(formationManager.GetID(), "formationManager");
 

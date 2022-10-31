@@ -93,7 +93,6 @@ void App::init()
 		std::cout << "Unable to create OpenGL context" << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-
 	mainFrame.createFrameBuffer(); // Create frame buffer
 
 	ModelNS::initModels(models); // Initialize line and square models
@@ -219,10 +218,18 @@ void App::update()
 		}
 		if (Graphics::Input::keystateSquareBracketLeft)
 		{
+			//if (player->orientation.y <= (5.f * Graphics::Input::delta_time)) // Uncomment to set limit
+			{
+				player->orientation.y -= (120.f * Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+			}
 			std::cout << "ROT LEFT" << std::endl;
 		}
 		if (Graphics::Input::keystateSquareBracketRight)
 		{
+			//if (player->orientation.y >= (-5.f * Graphics::Input::delta_time)) // Uncomment to set limit
+			{
+				player->orientation.y += (120.f * Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+			}
 			std::cout << "ROT RIGHT" << std::endl;
 		}
 	}

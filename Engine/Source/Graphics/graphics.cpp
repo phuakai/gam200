@@ -319,7 +319,13 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		}
 
-		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
+		curobjBaseInfo->orientation.x += curobjBaseInfo->orientation.y;
+		if (curobjBaseInfo->orientation.x >= 360.f || curobjBaseInfo->orientation.x <= -360.f)
+		{
+			curobjBaseInfo->orientation.x = 0.f;
+		}
+
+		matrix3x3::mat3x3 rot = Transform::createRotationMat(curobjBaseInfo->orientation.y); // Change to orientation.x for constant rotation, y for fixed
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
 
