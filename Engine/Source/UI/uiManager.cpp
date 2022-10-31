@@ -116,7 +116,7 @@ namespace UI
 	void UIManager::UIUpdate()
 	{
 		static vector2D::vec2D currMousePos{};
-		Graphics::Input::getCursorPos(&currMousePos);
+		Graphics::Input::getCursorScreenPos(&currMousePos);
 
 		// check for collision btn mouse and ui
 		if (uiActionDisplayList.size() > 1)

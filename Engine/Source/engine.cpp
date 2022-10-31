@@ -201,21 +201,18 @@ void engineInit()
 	// 0 = base hud
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[0].Add<BaseInfo>("UI", "uiEntity" + std::to_string(0), vector2D::vec2D(camPos.x, (-camHeight + camHeight / 4.f) / 2.f), vector2D::vec2D(camWidth * hudRatio, camHeight / 4.f));
-	//uiEntity[0].Add<BaseInfo>("", "uiEntity" + std::to_string(0), vector2D::vec2D(0.f, ( -Graphics::Input::screenheight + Graphics::Input::screenheight / 4.f) / 2.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight/4.f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::UIManager::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[1].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(camWidth / 2.f * (1.f - infoRatio), -camHeight / 2.f + camWidth / 2.f * infoRatio), vector2D::vec2D(camWidth * infoRatio, camWidth * infoRatio));
-	//uiEntity[1].Add<BaseInfo>("", "uiEntity" + std::to_string(1), vector2D::vec2D(Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::UIManager::groupName::base);
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
-	//uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(-Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::UIManager::groupName::base);
 
