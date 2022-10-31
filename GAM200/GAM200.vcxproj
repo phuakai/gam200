@@ -24,8 +24,6 @@
   <ItemGroup>
     <None Include="..\shaders\framebuffer.frag" />
     <None Include="..\shaders\framebuffer.vert" />
-    <None Include="..\shaders\gam200.frag" />
-    <None Include="..\shaders\gam200.vert" />
     <None Include="..\shaders\instancing.frag" />
     <None Include="..\shaders\instancing.vert" />
     <None Include="data.json" />
