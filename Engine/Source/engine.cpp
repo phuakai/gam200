@@ -374,7 +374,7 @@ void engineUpdate()
 			formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
 			formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
 
-			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+			formationManagerInfo->position = (dragSelectEndPosition + dragSelectStartPosition) / 2 + dragSelectStartPosition;
 		}
 	}
 	else if (drag) // released

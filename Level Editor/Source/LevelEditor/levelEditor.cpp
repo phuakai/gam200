@@ -1,6 +1,5 @@
 #include "app.h"
 #include "mainHeader.h"
-#include "levelEditor.h"
 #include "levelEditorHierarchy.h"
 #include "levelEditorProperties.h"
 #include "levelEditorContentBrowser.h"
@@ -13,6 +12,109 @@ bool show_another_window;
 ImVec4 clear_color;
 
 extern FrameBufferNS::frameBuffer mainFrame; // This is the externed mainFrame variable to read framebuffer id from
+
+static std::filesystem::path saveLocation = std::filesystem::current_path();
+
+void menu()
+{
+	if (ImGui::Button("New"))
+	{
+		ImGui::OpenPopup("my_file_popup");
+	}
+	if (ImGui::BeginPopupModal("my_file_popup", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
+		ImGui::Separator();
+
+		static bool dont_ask_me_next_time = false;
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
+		ImGui::PopStyleVar();
+
+		if (ImGui::BeginTabBar("File Browser"))
+		{
+			for (auto& p : std::filesystem::directory_iterator(saveLocation))
+			{
+				auto relativePath = std::filesystem::relative(p.path(), saveLocation);
+				std::string path = relativePath.string();
+
+				if (p.is_directory())
+				{
+					if (ImGui::Button(path.c_str()))
+					{
+						saveLocation /= p.path().filename();
+					}
+				}
+				else
+				{
+					ImGui::Button(path.c_str());
+				}
+
+				ImGui::NextColumn();
+			}
+
+			ImGui::EndTabBar();
+		}	
+
+		if (ImGui::BeginTabBar("File Browser"))
+		{
+			if (ImGui::Button("OK", ImVec2(120, 0))) 
+			{ 
+				ImGui::CloseCurrentPopup(); 
+			}
+			
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0))) 
+			{ 
+				ImGui::CloseCurrentPopup(); 
+			}
+
+			ImGui::EndTabBar();
+		}
+		ImGui::EndPopup();
+	}
+
+
+	if (ImGui::Button("Open"))
+	{
+
+	}
+	if (ImGui::Button("Save"))
+	{
+
+	}
+	if (ImGui::Button("Save As..."))
+	{
+
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::Button("Quit"))
+	{
+		exit(1);
+	}
+	//if (ImGui::BeginMenu("Open Recent"))
+	//{
+	//	ImGui::MenuItem("fish_hat.c");
+	//	ImGui::MenuItem("fish_hat.inl");
+	//	ImGui::MenuItem("fish_hat.h");
+	//	if (ImGui::BeginMenu("More.."))
+	//	{
+	//		ImGui::MenuItem("Hello");
+	//		ImGui::MenuItem("Sailor");
+	//		if (ImGui::BeginMenu("Recurse.."))
+	//		{
+	//			ShowExampleMenuFile();
+	//			ImGui::EndMenu();
+	//		}
+	//		ImGui::EndMenu();
+	//	}
+	//	ImGui::EndMenu();
+	//}
+}
 
 void imguiInit()
 {
@@ -43,7 +145,7 @@ void imguiUpdate()
 	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
 	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
 	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
-	 
+		 
 	if (ImGui::Begin("Camera", (bool*)0, ImGuiWindowFlags_NoScrollbar))
 	{
 		auto tex = mainFrame.framebuffer;
@@ -84,39 +186,43 @@ void imguiUpdate()
 	ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 	
 	// "Entities" tab =========================================================================================
-	ImGui::Begin("Entities");
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar
+		| ImGuiWindowFlags_NoScrollbar
+		| ImGuiWindowFlags_MenuBar;
 
-	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+	if (ImGui::Begin("ImGui", (bool*)0, windowFlags))
 	{
-		if (ImGui::BeginTabItem("Hierarchy"))
+		static bool show_app_main_menu_bar = false;
+		
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("Menu"))
+			{
+				menu();
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		if (ImGui::BeginTabBar("Hierarchy", tab_bar_flags))
 		{
 			hierarchy.ImGuiHierarchy();
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Not Sure, Not Done"))
-		{
-			ImGui::EndTabItem();
-		}
-		ImGui::EndTabBar();
-	}
 
-	ImGui::End();
+			ImGui::EndTabBar();
+		}
+
+		ImGui::End();
+	}
 	// ========================================================================================================
 
 	// "Details" tab ==========================================================================================
 	ImGui::Begin("Details");
 
-	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+	if (ImGui::BeginTabBar("Properties", tab_bar_flags))
 	{
-		if (ImGui::BeginTabItem("Properties"))
-		{
-			properties.ImGuiProperties(hierarchy.getSelected());
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Not Sure, Not Done"))
-		{
-			ImGui::EndTabItem();
-		}
+		properties.ImGuiProperties(hierarchy.getSelected());
+
 		ImGui::EndTabBar();
 	}
 
@@ -126,17 +232,10 @@ void imguiUpdate()
 	// "Prefabs" tab ==========================================================================================
 	ImGui::Begin("Content Browser");
 
-	if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
+	if (ImGui::BeginTabBar("File Browser", tab_bar_flags))
 	{
-		if (ImGui::BeginTabItem("File Browser"))
-		{
-			contentBrowser.ImGuiContentBrowser();
-			ImGui::EndTabItem();
-		}
-		if (ImGui::BeginTabItem("Not Sure, Not Done"))
-		{
-			ImGui::EndTabItem();
-		}
+		contentBrowser.ImGuiContentBrowser(hierarchy.getSelected());
+
 		ImGui::EndTabBar();
 	}
 

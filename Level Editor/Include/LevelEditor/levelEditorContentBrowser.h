@@ -1,11 +1,10 @@
 #include "levelEditor.h"
-#include <filesystem>
 
 class levelEditorContentBrowser
 {
 public:
 	static levelEditorContentBrowser& getInstance();
-	void ImGuiContentBrowser();
+	void ImGuiContentBrowser(const EntityID& id);
 
 private:
 	levelEditorContentBrowser();

@@ -71,6 +71,7 @@ FrameBufferNS::frameBuffer mainFrame; // Texture obj
 //Graphics::Texture texobj;
 
 //std::vector<Graphics::Texture> Graphics::textureobjects;
+TextureNS::Texture textureobjects; // Texture obj
 
 Graphics::Camera2D camera2d;
 
@@ -139,10 +140,10 @@ void GLApp::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);						// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 
-	TextureNS::Texture::createTexturePath("../asset/cloud2_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../asset/cloud3_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", TextureNS::textureobjects);
-	TextureNS::Texture::loadTexture(TextureNS::textureobjects); // Load all textures
+	TextureNS::Texture::createTexturePath("../asset/cloud2_256x256.png", textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/cloud3_256x256.png", textureobjects);
+	TextureNS::Texture::createTexturePath("../asset/Unit_tank_front_256x256.png", textureobjects);
+	TextureNS::Texture::loadTexture(textureobjects); // Load all textures
 	//Graphics::Texture::loadTexture("../images/BaseTree.png", Graphics::textureobjects); // 
 	//Graphics::Texture::loadTexture("../images/GrassMap.png", Graphics::textureobjects); // Grass map
 	//Graphics::Texture::loadTexture("../images/BlueCircle.png", Graphics::textureobjects); // Blue Circle
@@ -719,7 +720,7 @@ void GLApp::draw()
 	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
 	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	basicinstance.InstanceRender(TextureNS::textureobjects, entitycounter);
+	basicinstance.InstanceRender(textureobjects, entitycounter);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// If Imgui is closed
@@ -754,7 +755,7 @@ This function is empty for now
 void GLApp::cleanup()
 {
 	mainFrame.delFrameBuffer();
-	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);
+	TextureNS::Texture::deleteTexture(textureobjects);
 	//Graphics::Texture::deleteTexture(Graphics::textureobjects[1]);
 }
 
