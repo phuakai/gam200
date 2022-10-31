@@ -86,7 +86,7 @@ glClearColor and glViewport to initialize the app
 
 void App::init()
 {
-	InstanceContainer.resize(1);
+	InstanceContainer.resize(2);
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
 	if (!Graphics::Input::init((GLint)screensize.x, (GLint)screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
@@ -220,7 +220,7 @@ void App::update()
 		{
 			//if (player->orientation.y <= (5.f * Graphics::Input::delta_time)) // Uncomment to set limit
 			{
-				player->orientation.y -= (120.f * Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+				player->orientation.y -= (120.f * (float)Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
 			}
 			std::cout << "ROT LEFT" << std::endl;
 		}
@@ -228,7 +228,7 @@ void App::update()
 		{
 			//if (player->orientation.y >= (-5.f * Graphics::Input::delta_time)) // Uncomment to set limit
 			{
-				player->orientation.y += (120.f * Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+				player->orientation.y += (120.f * (float)Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
 			}
 			std::cout << "ROT RIGHT" << std::endl;
 		}
@@ -333,7 +333,22 @@ void App::draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	RenderNS::DrawFunc(InstanceContainer[0], mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
+	std::vector<GLenum> primtypestorage;
+	primtypestorage.emplace_back(GL_TRIANGLES);
+	if (coldebug == true)
+	{
+		primtypestorage.emplace_back(GL_LINE_STRIP);
+	}
+
+	RenderNS::DrawFunc(InstanceContainer, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, primtypestorage);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	//RenderNS::DrawFunc(InstanceContainer[1], mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, GL_LINE_STRIP);
 
 	glDisable(GL_BLEND);
 }

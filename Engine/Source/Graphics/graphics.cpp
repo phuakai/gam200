@@ -91,9 +91,9 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	glBindTextureUnit(0, texobjs.textureid);
 	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
 	glUniform1i(tex_loc, 0);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
 
-	mainFrame.drawFrameBuffer();
+	glDrawElementsInstanced(primtype, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
+
 	GLuint tex2_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
 	glUniform1i(tex2_loc, 0);
 	instanceshader.UnUse();
@@ -214,22 +214,30 @@ void RenderNS::BatchRenderer::BatchDelete()
 	glDeleteBuffers(1, &vaoid);
 }
 
-void RenderNS::DrawFunc(RenderNS::InstancedRenderer& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj)
+void RenderNS::DrawFunc(std::vector<RenderNS::InstancedRenderer>& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj, std::vector<GLenum> primitive)
 {
-	instanceobj.instanceshader = shadertouse;
-	entitydraw(instanceobj, models);
+	for (int i = 0; i < primitive.size(); i++)
+	{
+		instanceobj[i].instanceshader = shadertouse;
+		instanceobj[i].primtype = primitive[i];
+		QueueEntity(instanceobj[i], models);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBindFramebuffer(GL_FRAMEBUFFER, frame.framebuffer);
-	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	instanceobj.InstanceRender(texobj);
+		instanceobj[i].InstanceRender(texobj);
+	}
+	//instanceobj.instanceshader = shadertouse;
+	//instanceobj.primtype = primitive;
+	//QueueEntity(instanceobj, models, primitive);
+
+	//instanceobj.InstanceRender(texobj);
 	frame.drawFrameBuffer();
-	instanceobj.InstanceClear();
+	for (int i = 0; i < primitive.size(); i++)
+	{
+		instanceobj[i].InstanceClear();
+	}
 
 }
 
-void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models)
+void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models)
 {
 	std::vector<EntityID> entities = ecs.getEntities();
 	for (int i = 0; i < entities.size(); i++)
@@ -256,12 +264,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		}
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 
+		
 		std::vector<vector3D::Vec3> clr_vtx
 		{
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
-
 		if (curobjBaseInfo->type == "Background") // Background that moves with camera
 		{
 			curobjBaseInfo->dimension = vector2D::Vec2((float)camera2d.getWidth(), (float)camera2d.getHeight());
@@ -355,7 +363,21 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			0.f							 , 0.f							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
 			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0.f						   , float(texid + (curobjTexture->spriteStep - 1.f))
 		);
-		
+		if (instanceobj.primtype == GL_TRIANGLES)
+		{
+			//std::cout << "Triangles " << std::endl;
+		}
+		if (instanceobj.primtype == GL_LINE_STRIP)
+		{
+			for (int setclr = 0; setclr < 3; setclr++)
+			{
+				model_to_ndc_xform.m2[setclr][3] = 1.f;
+			}
+			if (curobjBaseInfo->type == "Enemy" || curobjBaseInfo->type == "CollidableUI")
+			{
+				model_to_ndc_xform.m2[3][3] = 0.f;
+			}
+		}
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		instanceobj.headerdata.clear();

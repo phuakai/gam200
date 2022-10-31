@@ -226,7 +226,7 @@ void engineInit()
 		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
 		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
 	}
@@ -238,7 +238,7 @@ void engineInit()
 		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
 		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::building1);
 	}
@@ -247,7 +247,7 @@ void engineInit()
 	for (int i = 13, colTracker = 0; i < 113; ++i, ++colTracker)
 	{
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
 		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
 	}
