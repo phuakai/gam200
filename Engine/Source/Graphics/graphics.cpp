@@ -274,7 +274,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 		{
 			curobjBaseInfo->dimension = vector2D::Vec2((float)camera2d.getWidth(), (float)camera2d.getHeight());
 			curobjBaseInfo->position = camera2d.getCamPosition();
-			//std::cout << "I am bg " << curobjBaseInfo->dimension.x << ", " << curobjBaseInfo->dimension.y << std::endl;
+			//std::cout << "I am bg " << curobjBaseInfo->position.x << ", " << curobjBaseInfo->position.y << std::endl;
 		}
 		std::vector<vector2D::Vec2> texcoord;
 		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
@@ -318,11 +318,15 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 			tmpVtxData.txtIndex = texid; // To be removed
 			vertexData.emplace_back(tmpVtxData);
 		}
-
-		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
+		vector2D::vec2D temppos = curobjBaseInfo->position;
+		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
+		{
+			//temppos += camera2d.getCamPosition();	
+		}
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(temppos.x, temppos.y));
 		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
 
-		if (curobjTexture->textureName == "Cloud")
+		if (curobjBaseInfo->type == "Cloud")
 		{
 			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		}
@@ -340,8 +344,16 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 
 		matrix3x3::mat3x3 world_to_ndc_xform = camera2d.getWorldtoNDCxForm();
 
-		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+		matrix3x3::mat3x3 model_to_ndc_xformnotglm;// = world_to_ndc_xform * model_to_world;
 
+		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
+		{
+			model_to_ndc_xformnotglm = camera2d.getCamwintoNDCForm() * model_to_world;
+		}
+		else
+		{
+			model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+		}
 		//matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
 		//(
 		//	//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],

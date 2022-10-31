@@ -187,7 +187,7 @@ void engineInit()
 	//	//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	//	//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
 	//	cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	//	cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()), vector2D::vec2D(0.f, 0.f));
+	//	cloud[inc].Add<BaseInfo>("Cloud", "cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()), vector2D::vec2D(0.f, 0.f));
 	//	cloud[inc].Add<Texture>(2, 1, 1, "Cloud");
 	//	it->setid(cloud[inc].GetID());
 	//	//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
@@ -197,19 +197,19 @@ void engineInit()
 	UI::UIMgr.createGroupList();
 	// 0 = base hud
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(0.f, ( -Graphics::Input::screenheight + Graphics::Input::screenheight / 4.f) / 2.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight/4.f), vector2D::vec2D(0.f, 0.f));
+	uiEntity[0].Add<BaseInfo>("UI", "uiEntity" + std::to_string(0), vector2D::vec2D(0.f, ( -Graphics::Input::screenheight + Graphics::Input::screenheight / 4.f) / 2.f), vector2D::vec2D(Graphics::Input::screenwidth, Graphics::Input::screenheight/4.f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[0].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
+	uiEntity[1].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::groupName::base);
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
+	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(-Graphics::Input::screenwidth / 2.f * 0.85f /*15% screenwidth*/, -Graphics::Input::screenheight / 2.f + Graphics::Input::screenwidth / 2.f * 0.15f), vector2D::vec2D(Graphics::Input::screenwidth * 0.15f/*15% screenwidth*/, Graphics::Input::screenwidth * 0.15f), vector2D::vec2D(0.f, 0.f));
 	uiEntity[2].Add<Texture>(7, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::groupName::base);
 

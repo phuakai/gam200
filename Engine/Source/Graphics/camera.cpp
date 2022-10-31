@@ -104,6 +104,7 @@ namespace CameraNS
 		//height = fb_height;
 		aspectratio = static_cast<float>(fb_width) / fb_height;
 		width = int(aspectratio * height); // To recalculate width from height
+		//std::cout << "Width and height " << width << ", " << height << std::endl;
 
 		// compute camera's up and right vectors 
 		up = { -sin(orientation.x), cos(orientation.x) };
