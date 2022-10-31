@@ -63,8 +63,8 @@ matrix3x3::mat3x3 Transform::createWorldtoModel()
 
 matrix3x3::mat3x3 Transform::createWorldtoNDC()
 {
-	int height = Graphics::Input::screenheight;
-	int width = Graphics::Input::screenwidth;
+	int height = (int)Graphics::Input::screenheight;
+	int width = (int)Graphics::Input::screenwidth;
 	
 	
 	// at startup, the camera must be initialized to free camera ...

@@ -87,7 +87,7 @@ glClearColor and glViewport to initialize the app
 void App::init()
 {
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
-	if (!Graphics::Input::init(screensize.x, screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
+	if (!Graphics::Input::init((GLint)screensize.x, (GLint)screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
 		std::cout << "Unable to create OpenGL context" << std::endl;
 		std::exit(EXIT_FAILURE);
@@ -337,7 +337,7 @@ void App::draw()
 
 This function is empty for now
 */
-void App::cleanup() 
+void App::cleanup()
 {
 	mainFrame.delFrameBuffer();
 	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);

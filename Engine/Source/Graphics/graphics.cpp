@@ -28,12 +28,12 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	glBindVertexArray(vaoid);
 
 	GLuint headervboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(headervboid, sizeof(ModelNS::modelVtxData) * headerdata.size(), headerdata); // Data passed in
+	BufferNS::VBO::createVBOstorage(headervboid, int(sizeof(ModelNS::modelVtxData) * headerdata.size()), headerdata); // Data passed in
 	// Note that for instance, stored data is 1 position, 1 colour, 1 texture pos, 1 texture index (or texture array later on)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(instancevboid, sizeof(matrix4x4::mat4x4) * instancedata.size(), instancedata); // Data passed in
+	BufferNS::VBO::createVBOstorage(instancevboid, int(sizeof(matrix4x4::mat4x4) * instancedata.size()), instancedata); // Data passed in
 
 	// Position
 	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
@@ -85,7 +85,7 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	ebodata[3] = 2;
 	ebodata[4] = 3;
 	ebodata[5] = 0;
-	BufferNS::EBO::createEBOstorage(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
+	BufferNS::EBO::createEBOstorage(eboid, int(sizeof(GLushort) * ebodata.size()), ebodata);
 	BufferNS::EBO::bindEBO(vaoid, eboid);
 
 	glBindTextureUnit(0, texobjs.textureid);
@@ -166,14 +166,14 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	int offset = 0;
 	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		for (int i = 0; i < (totalindicesize - 5); i += 6)
+		for (int i = 0; i < (totalindicesize - 5); ++i)
 		{
-			ebodata[i + 0] = 0 + offset;
-			ebodata[i + 1] = 1 + offset;
-			ebodata[i + 2] = 2 + offset;
-			ebodata[i + 3] = 2 + offset;
-			ebodata[i + 4] = 3 + offset;
-			ebodata[i + 5] = 0 + offset;
+			ebodata[i] = 0 + offset;
+			ebodata[++i] = 1 + offset;
+			ebodata[++i] = 2 + offset;
+			ebodata[++i] = 2 + offset;
+			ebodata[++i] = 3 + offset;
+			ebodata[++i] = 0 + offset;
 			offset += 4;
 		}
 	}
@@ -264,7 +264,7 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 		if (curobjBaseInfo->type == "Background") // Background that moves with camera
 		{
-			curobjBaseInfo->dimension = vector2D::Vec2(camera2d.getWidth(), camera2d.getHeight());
+			curobjBaseInfo->dimension = vector2D::Vec2((float)camera2d.getWidth(), (float)camera2d.getHeight());
 			curobjBaseInfo->position = camera2d.getCamPosition();
 			//std::cout << "I am bg " << curobjBaseInfo->dimension.x << ", " << curobjBaseInfo->dimension.y << std::endl;
 		}
@@ -294,12 +294,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 
 		std::vector <vector2D::vec2D> ndccoord;
-		for (int i = 0; i < poscoord.size(); i++)
+		for (size_t j = 0; j < poscoord.size(); ++j)
 		{
-			ndccoord.emplace_back(poscoord[i]);
+			ndccoord.emplace_back(poscoord[j]);
 		}
 
-		for (int j = 0; j < ndccoord.size(); ++j)
+		for (size_t j = 0; j < ndccoord.size(); ++j)
 		{
 			ModelNS::modelVtxData tmpVtxData;
 			//tmpVtxData.posVtx = ndccoord[i];
@@ -346,8 +346,8 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6], curobj->color.r,
 			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7], curobj->color.g,
-			0							 , 0							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0							   , texid + (curobjTexture->spriteStep - 1)
+			0.f							 , 0.f							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0.f						   , float(texid + (curobjTexture->spriteStep - 1.f))
 		);
 		
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation

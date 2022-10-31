@@ -23,7 +23,7 @@ namespace CameraNS
 		position = { 0, 0 }; // Camera position
 		orientation = { 0, 0 }; // Orientation
 
-		camworld_to_ndc_xform = 
+		camworld_to_ndc_xform =
 		{ 0, 0, 0,
 		  0, 0, 0,
 		  0, 0, 0 };
@@ -76,13 +76,13 @@ namespace CameraNS
 		// at startup, the camera must be initialized to free camera 
 		view_xform = matrix3x3::mat3x3
 		(1, 0, -position.x,
-		 0, 1, -position.y,
-		 0, 0, 1);
+			0, 1, -position.y,
+			0, 0, 1);
 
 		camwin_to_ndc_xform = matrix3x3::mat3x3
-		(float(2 / width),	0,					0,
-		 0,					float(2 / height),	0,
-		 0,					0,					1);
+		(float(2 / width), 0, 0,
+			0, float(2 / height), 0,
+			0, 0, 1);
 		camworld_to_ndc_xform = camwin_to_ndc_xform * view_xform;
 	}
 
@@ -111,9 +111,9 @@ namespace CameraNS
 
 		// compute other matrices 
 		camwin_to_ndc_xform = matrix3x3::mat3x3
-		(2.f / (float)width, 0,					 0,
-		 0,					 2.f / (float)height,0,
-		 0,					 0,					 1);
+		(2.f / (float)width, 0, 0,
+			0, 2.f / (float)height, 0,
+			0, 0, 1);
 
 		if (Graphics::Input::keystateW == GL_TRUE)
 		{
@@ -159,13 +159,13 @@ namespace CameraNS
 			Graphics::Input::getCursorPos(&xpos, &ypos);
 			if (FirstClick == true)
 			{
-				oldpos = vector2D::vec2D(xpos - position.x, ypos - position.y);
+				oldpos = vector2D::vec2D((float)xpos - position.x, (float)ypos - position.y);
 				//std::cout << "FIRST CLICK " << oldpos.x << ", " << oldpos.y << std::endl;
 				FirstClick = false;
 			}
 			else
 			{
-				newpos = vector2D::vec2D(xpos - position.x, ypos - position.y);
+				newpos = vector2D::vec2D((float)xpos - position.x, (float)ypos - position.y);
 				vector2D::vec2D change = oldpos - newpos;
 				position.x += change.x;
 				position.y += change.y;
@@ -198,21 +198,21 @@ namespace CameraNS
 		{
 			FirstClick = true;
 		}
-		
+
 		if (camtype_flag == GL_FALSE)
 		{
 			view_xform = matrix3x3::mat3x3
 			(1, 0, -position.x,
-			 0, 1, -position.y,
-			 0, 0, 1);
+				0, 1, -position.y,
+				0, 0, 1);
 		}
 		else
 		{
 			//std::cout << "isit this\n";
 			view_xform = matrix3x3::mat3x3
-			(right.x,	right.y,	-(right.x * position.x + right.y * position.y),
-			 up.x,		up.y,		-(up.x * position.x + up.y * position.y),
-			 0,			0,			1);
+			(right.x, right.y, -(right.x * position.x + right.y * position.y),
+				up.x, up.y, -(up.x * position.x + up.y * position.y),
+				0, 0, 1);
 		}
 
 		camworld_to_ndc_xform = camwin_to_ndc_xform * view_xform;
@@ -238,7 +238,7 @@ namespace CameraNS
 	{
 		return position;
 	}
-	
+
 	vector2D::Vec2 Camera2D::getCamOrientation()
 	{
 		return orientation;
