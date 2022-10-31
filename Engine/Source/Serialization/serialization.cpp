@@ -382,7 +382,7 @@ static void write_array_recursively(variant_sequential_view& view, Value& json_a
 {
     view.set_size(json_array_value.Size());
 
-    const type array_value_type = view.get_rank_type(1);
+        const type array_value_type = view.get_rank_type(1);
 
        
     for (SizeType i = 0; i < json_array_value.Size(); ++i)

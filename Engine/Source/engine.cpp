@@ -8,9 +8,10 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
-#include "app.h"
-#include "collision.h"
-#include "fowMap.h"
+#include "Font.h"
+#include "AudioEngine.h"
+#include <app.h>
+#include <collision.h>
 
 #include <random>
 
@@ -37,8 +38,7 @@ RTTR_REGISTRATION{
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
-		.property("shaderName", &Render::shaderName)
-		.property("name", &Render::render);
+		.property("shaderName", &Render::shaderName);
 
 	rttr::registration::class_<BaseInfo>("BaseInfo")
 		.property("type", &BaseInfo::type)
@@ -96,6 +96,9 @@ float timer;
 
 quadTree mainTree;
 
+spooky::CAudioEngine audioEngine;
+
+void engineInit()
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
 int selected;
@@ -474,14 +477,29 @@ void engineUpdate()
 				newManager.generateFlowField();
 				newManager.updateReached();
 
-				if (newFormationManagerID != formationManagers.size())
-				{
-					formationManagers[newFormationManagerID] = newManager;
-				}
-				else
-				{
-					formationManagers.push_back(newManager);
-				}
+	GLApp::init();
+
+	//spooky::CAudioEngine audioEngine;
+	audioEngine.Init();
+	
+	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
+	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+
+	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}*/
+
+	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	Font::init();
+}
 
 				selected = 0;
 
@@ -533,11 +551,18 @@ void engineUpdate()
 	Graphics::Input::update_time(1.0);
 
 	GLApp::update();						// graphics system
+
+	if (Graphics::Input::mousestateLeft)
+	{
+		audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	}
 }
 
 void engineDraw()
 {
 	GLApp::draw();
+	GLApp::shdrpgms.find("font");
+	Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineFree()
