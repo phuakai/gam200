@@ -67,6 +67,7 @@ namespace Graphics
 		// Example usage : getCursorPos(&PositionX, &PositionY);
 		static bool getCursorPos(double* xpos, double* ypos); // Static allows function to be called without Input class object
 		static bool getCursorPos(vector2D::vec2D* mousePos);
+		static bool getCursorScreenPos(vector2D::vec2D* mousePos);
 
 		static bool init(GLint w, GLint h, std::string t);
 		static void cleanup();

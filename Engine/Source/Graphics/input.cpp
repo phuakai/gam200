@@ -622,3 +622,21 @@ bool Graphics::Input::getCursorPos(vector2D::vec2D * mousePos)
 		return true;
 	}
 }
+
+bool Graphics::Input::getCursorScreenPos(vector2D::vec2D* mousePos)
+{
+	double tmpx;
+	double tmpy;
+
+	//std::cout << "Other thingy when click " << Graphics::camera2d.getWorldtoNDCxForm().m[0] << std::endl;
+	glfwGetCursorPos(Graphics::Input::ptr_to_window, &tmpx, &tmpy);
+	if (tmpx == NULL || tmpy == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		*mousePos = vector2D::Vec2((float)tmpx - ((float)screenwidth/2.f), (float)-tmpy + ((float)screenheight / 2.f));
+		return true;
+	}
+}
