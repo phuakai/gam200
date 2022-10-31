@@ -444,7 +444,6 @@ void engineInit()
 		assert("ERROR: Unable to validate shaders!");
 	}*/
 
-	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
 	Font::init();
 }
 

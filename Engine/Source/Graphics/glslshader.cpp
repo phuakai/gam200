@@ -422,6 +422,7 @@ void insertallshdrs(std::map<std::string, GLSLShader>& shdrlist)
     std::vector<GLSLShader> shdrpgms;
     insert_shdrpgm(shdrnames, shdrpgms, "framebuffershader", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
     insert_shdrpgm(shdrnames, shdrpgms, "instanceshader", "../shaders/instancing.vert", "../shaders/instancing.frag");
+    insert_shdrpgm(shdrnames, shdrpgms, "font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
     for (size_t i = 0; i < shdrnames.size(); i++)
     {
         shdrlist[shdrnames[i]] = shdrpgms[i];
