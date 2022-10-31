@@ -31,14 +31,14 @@ void levelEditorContentBrowser::ImGuiContentBrowser()
 
 		if (p.is_directory())
 		{
-			if (ImGui::Button(path.c_str(), { 256, 256 }))
+			if (ImGui::Button(path.c_str(), { (ImGui::GetWindowSize().x - 10) / 5, (ImGui::GetWindowSize().x - 10) / 5 }))
 			{
 				currentPath /= p.path().filename();
 			}
 		}
 		else
 		{
-			ImGui::Button(path.c_str(), { 256, 256 });
+			ImGui::Button(path.c_str(), { (ImGui::GetWindowSize().x - 10) / 5, (ImGui::GetWindowSize().x - 10) / 5 });
 		}
 
 		ImGui::NextColumn();

@@ -8,9 +8,9 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
-#include <app.h>
-#include <collision.h>
-#include <fowMap.h>
+#include "app.h"
+#include "collision.h"
+#include "fowMap.h"
 
 #include <random>
 
@@ -240,7 +240,7 @@ void engineInit()
 			//	continue;
 			//}
 
-			if (p[i].type == "Prefab")
+			if (p[i].type == "Prefab" || m[i].formationManagerID == -1)
 			{
 				continue;
 			}

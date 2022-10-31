@@ -14,7 +14,7 @@
 
 struct Render // Sprite
 {
-	std::string type;					// still need this? Thought it is all squares?
+	std::string type;
 
 	vector3D::vec3D color{ 0 , 0 , 0 };
 

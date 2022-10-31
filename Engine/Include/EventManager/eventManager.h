@@ -7,7 +7,7 @@ namespace Systems
 {
 	enum Systems
 	{
-		Collision = 1,
+		Collision = 0,
 		Physics,
 		Graphics,
 		Sound
@@ -41,7 +41,6 @@ public:
 	std::vector<Event>& findQueue(int systemID);
 	// called in the systems to read the queue
 	Event dequeue(int systemID);
-
 
 private:
 	std::unordered_map<char, std::vector<Event>> masterQueue;

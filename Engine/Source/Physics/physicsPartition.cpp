@@ -49,41 +49,6 @@ bool AABB::withinBoundary(vector2D::vec2D const& pos)
 
 /******************************************************************************/
 /*!
-	Default constructor for quadtree object
-	Position is the center position of the object (circle/box)
-	Key is the objectID
-*/
-/******************************************************************************/
-//quadObj::quadObj()
-//{
-//	position.x = 0.f;
-//	position.y = 0.f;
-//	key = -1;
-//}
-
-/******************************************************************************/
-/*!
-	Cconstructor for quadtree object
-	Position is the center position of the object (circle/box)
-	Key is the objectID
-*/
-/******************************************************************************/
-//quadObj::quadObj(int id, vector2D::vec2D pos)
-//{
-//	position.x = pos.x;
-//	position.y = pos.y;
-//	key = id;
-//}
-
-/******************************************************************************/
-/*!
-	Default deconstructor for quadtree object
-*/
-/******************************************************************************/
-//quadObj::~quadObj(){}
-
-/******************************************************************************/
-/*!
 	Default constructor for the tree's node
 	Position is the center of the node
 	HalfWidth and halfHeight refers to the x and y distance between the center 
