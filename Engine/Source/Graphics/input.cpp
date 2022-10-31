@@ -443,12 +443,17 @@ void Graphics::Input::mousebutton_callback(GLFWwindow* pwin, int button, int act
 		if (GLFW_PRESS == action)
 		{
 			mousestateLeft = GL_TRUE; // Enable mouse left state on click
-			std::cout << " mouse clicked\n";
+			#ifdef _DEBUG
+			std::cout << "Mouse clicked\n";
+			#endif
 		}
 		else if (GLFW_RELEASE == action)
 		{
 			mousestateLeft = GL_FALSE; // Disable mouse left state on release
-			std::cout << "mouse released\n";
+			#ifdef _DEBUG
+			std::cout << "Mouse released\n";
+			#endif
+
 		}
 	}
 

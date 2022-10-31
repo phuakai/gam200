@@ -1,3 +1,19 @@
+/* Start Header ************************************************************************/
+/*!
+\file		ui.cpp
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 26, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
 #include "ui.h"
 
 namespace UI
@@ -84,5 +100,5 @@ namespace UI
 		vtx.emplace_back(vector2D::vec2D(pos.x - dims.x, pos.y + dims.y));
 	}
 
-}
+} // namespace UI
 

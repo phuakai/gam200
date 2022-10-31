@@ -1,7 +1,20 @@
-#pragma once
+/* Start Header ************************************************************************/
+/*!
+\file		fowOfWar.h
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 26, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
 
-#ifndef FOGOFWAR_H
-#define FOGOFWAR_H
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
+#pragma once
 
 #include "vec2D.h"
 #include <list>
@@ -18,7 +31,7 @@ namespace fow
 	{
 	//  0, 1,  2, 3,  4, 5,  6, 7
 		n, nw, w, sw, s, se, e, ne
-	};
+	}; // enum class direction
 
 	//prefix
 	direction& operator ++ (const direction& rhs);
@@ -71,32 +84,32 @@ namespace fow
 
 		// 48 - 51
 		losDeadEndNE, losDeadEndNW, losDeadEndSE, losDeadEndNSW
-	};
+	}; // enum class fowTileState
 
 	struct fowTile
 	{
 	public:
 		// Constructor
-										fowTile();
-										fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
+										fowTile						();
+										fowTile						(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
 		
-		void							createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
-		void							removeFromTile(EntityID _id, vector2D::vec2D oldMapPos);
-		void							addToTile(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
-		void							updateTileStateToFog();
-		void							updateTileStateToVisible();
+		void							createFowTile				(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos);
+		void							removeFromTile				(EntityID _id, vector2D::vec2D oldMapPos);
+		void							addToTile					(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos);
+		void							updateTileStateToFog		();
+		void							updateTileStateToVisible	();
 
 		// Getter
-		EntityID						getid();
-		int 							getWdith();
-		int 							getHeight();
-		vector2D::vec2D					getWorldPos();
-		vector2D::vec2D					getGridPos();
-		fowTileState					getTileState();
-		std::list<EntityID>				getEntitiesOnTile();
+		EntityID						getid						();
+		int 							getWdith					();
+		int 							getHeight					();
+		vector2D::vec2D					getWorldPos					();
+		vector2D::vec2D					getGridPos					();
+		fowTileState					getTileState				();
+		std::list<EntityID>				getEntitiesOnTile			();
 
 		// Setter
-		void							setid(EntityID _id);
+		void							setid						(EntityID _id);
 
 	private:
 		EntityID						id;
@@ -106,33 +119,32 @@ namespace fow
 		vector2D::vec2D					gridPos;
 		fowTileState					state;
 		std::list<EntityID>				entitiesOnTile;
-	};
+	}; // struct fowTile
 
 	struct fowObj
 	{
 	public:
 		// Constructor
-										fowObj();
-										fowObj(EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row);
+										fowObj						();
+										fowObj						(EntityID _id, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos, int col, int row);
 		
-		void							fowObjUpdate(vector2D::vec2D const& newWorldPos, vector2D::vec2D const& newMapPos, int col, int row);
-		void							updateTilePos(vector2D::vec2D const& currMapPos, int col, int row);
+		void							fowObjUpdate				(vector2D::vec2D const& newWorldPos, vector2D::vec2D const& newMapPos, int col, int row);
+		void							updateTilePos				(vector2D::vec2D const& currMapPos, int col, int row);
 
 		// Getter
-		EntityID						getid();
-		vector2D::vec2D					getWorldPos();
-		vector2D::vec2D					getMapPos();
-		std::list<vector2D::vec2D>		getFrontier();
-		std::list<vector2D::vec2D>		getLOS();
+		EntityID						getid						();
+		vector2D::vec2D					getWorldPos					();
+		vector2D::vec2D					getMapPos					();
+		std::list<vector2D::vec2D>		getFrontier					();
+		std::list<vector2D::vec2D>		getLOS						();
 
 	private:
 		EntityID						id;
 		vector2D::vec2D					worldPos;
 		vector2D::vec2D					mapPos;
-		std::list<vector2D::vec2D>		frontier;			// grid space
+		std::list<vector2D::vec2D>		frontier;				// grid space
 		std::list<vector2D::vec2D>		LOS;					// grid space
-	};
 
-}
+	}; // struct fowObj
 
-#endif
+} // namespace fow

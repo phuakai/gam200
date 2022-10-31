@@ -1,13 +1,29 @@
+/* Start Header ************************************************************************/
+/*!
+\file		fowOfWar.cpp
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 26, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
 #include "fogOfWar.h"
-//#include "collision.h"
 
 namespace fow
 {
-	/**************************************************
+	/************************************************************************************
 	*
 	*	FOG OF WAR TILE
 	*
-	**************************************************/
+	************************************************************************************/
+
 	direction& operator++(direction& dir) {
 		if (dir == direction::ne)
 			dir = direction::n;
@@ -23,6 +39,11 @@ namespace fow
 		return tmp;
 	}
 
+	/**************************************************************************/
+	/*!
+		Constructor for the fog of war tile
+	*/
+	/**************************************************************************/
 	fowTile::fowTile()
 	{
 		id = width = height = 0;
@@ -30,6 +51,11 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 	
+	/**************************************************************************/
+	/*!
+		Constructor for the fog of war tile
+	*/
+	/**************************************************************************/
 	fowTile::fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos)
 	{
 		id = 0;
@@ -40,6 +66,11 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 
+	/**************************************************************************/
+	/*!
+		Creator for the fog of war tile
+	*/
+	/**************************************************************************/
 	void fowTile::createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos)
 	{
 		width = _width;
@@ -49,12 +80,22 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 
+	/**************************************************************************/
+	/*!
+		This function removes endities from the fog of war tile
+	*/
+	/**************************************************************************/
 	void fowTile::removeFromTile(EntityID _id, vector2D::vec2D oldMapPos)
 	{
 		//remove entity from tile
 		entitiesOnTile.remove(_id);
 	}
 
+	/**************************************************************************/
+	/*!
+		This function adds endities to the fog of war tile
+	*/
+	/**************************************************************************/
 	void fowTile::addToTile(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos)
 	{
 		//add entity to tile
@@ -63,21 +104,41 @@ namespace fow
 		state = fowTileState::visible;
 	}
 
+	/**************************************************************************/
+	/*!
+		This function updates the state of the tile to fogged (second layer)
+	*/
+	/**************************************************************************/
 	void fowTile::updateTileStateToFog()
 	{
 		state = fowTileState::fogged;
 	}
 
+	/**************************************************************************/
+	/*!
+		This function updates the state of the tile to visible (first layer)
+	*/
+	/**************************************************************************/
 	void fowTile::updateTileStateToVisible()
 	{
 		state = fowTileState::visible;
 	}
 
+	/**************************************************************************/
+	/*!
+		Getter for entity id on the tile
+	*/
+	/**************************************************************************/
 	EntityID fowTile::getid()
 	{
 		return id;
 	}
 
+	/**************************************************************************/
+	/*!
+		Getter for tile width
+	*/
+	/**************************************************************************/
 	int fowTile::getWdith()
 	{
 		return width;
@@ -113,11 +174,11 @@ namespace fow
 		id = _id;
 	}
 
-	/**************************************************
+	/************************************************************************************
 	* 
 	*	FOG OF WAR OBJECT
 	* 
-	**************************************************/
+	************************************************************************************/
 	fowObj::fowObj()
 	{
 		id = 0;

@@ -193,26 +193,29 @@ void engineInit()
 	//}
 
 	// Create ui entity
-	UI::UIMgr.createGroupList();
+	float mapRatio{ 0.17f }/*17% screenwidth*/, hudRatio{ 0.7f }/*70% screenwidth*/, infoRatio{ 0.17 }/*17% screenwidth*/;
+	int camWidth{ camera2d.getWidth() }, camHeight{ camera2d.getHeight() };
+	vector2D::vec2D camPos{ camera2d.getCamPosition() };
+	UI::UIMgr.createUiManager(0.17f, 0.7f, 0.17f );
 	// 0 = base hud
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(camera2d.getCamPosition().x, ( -camera2d.getHeight() + camera2d.getHeight() / 4.f) / 2.f), vector2D::vec2D(camera2d.getWidth() * 0.7f, camera2d.getHeight() /4.f));
+	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(camPos.x, ( -camHeight + camHeight / 4.f) / 2.f), vector2D::vec2D(camWidth * hudRatio, camHeight /4.f));
 	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::groupName::base);
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::UIManager::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(camera2d.getWidth() / 2.f * 0.83f /*17% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.17f), vector2D::vec2D(camera2d.getWidth() * 0.17f/*17% screenwidth*/, camera2d.getWidth() * 0.17f));
+	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(camWidth / 2.f * (1.f - infoRatio), -camHeight / 2.f + camWidth / 2.f * infoRatio), vector2D::vec2D(camWidth * infoRatio, camWidth * infoRatio));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::groupName::base);
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::UIManager::groupName::base);
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-camera2d.getWidth() / 2.f * 0.83f /*17% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.17f), vector2D::vec2D(camera2d.getWidth() * 0.17f/*17% screenwidth*/, camera2d.getWidth() * 0.17f));
+	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
 	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::groupName::base);
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::UIManager::groupName::base);
 
-	UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[UI::groupName::base]);
+	UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::base)]);
 
 	// 3 - 9 = buttons for building1
 	BaseInfo* ptr = ecs.GetComponent<BaseInfo>(uiEntity[1].GetID());
@@ -230,7 +233,7 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions);
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::building1);
+		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::building1);
 	}
 
 	// 10 - 12 = buttons for unit1
@@ -242,7 +245,7 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), startingPos, dimensions);
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
+		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
 	}
 
 	// 13 - 112 = icons of enemy
@@ -251,7 +254,7 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(i), position, dimensions);
 		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::groupName::unit1);
+		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
 	}
 
 
@@ -444,7 +447,7 @@ void engineUpdate()
 			UI::UIMgr.removeInfoFromDisplay();
 
 			// Remove actions from panel
-			UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[UI::unit1]);
+			UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 		}
 		else // still dragging
 		{
@@ -556,7 +559,7 @@ void engineUpdate()
 				}
 
 				// Add actions to panel
-				UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[UI::unit1]);
+				UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 
 				newManager.generateDijkstraCost(walls);
 				newManager.generateFlowField();

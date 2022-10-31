@@ -1,12 +1,22 @@
+/* Start Header ************************************************************************/
+/*!
+\file		fowMap.cpp
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 19, 2022
+\brief		This file contains the function declarations for the implementation of a
+			fog of war manager
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
 
 #pragma once
 
-//#ifndef FOWMAP_H
-//#define FOWMAP_H
-
 #include "fowMap.h"
-
-//#if false
 
 namespace fow
 {
@@ -43,13 +53,11 @@ namespace fow
 		int tileHeight = height / row;
 		vector2D::vec2D startingPos = vector2D::vec2D(worldPos.x - width / 2 + tileWidth / 2, worldPos.y - height / 2 + tileHeight / 2);
 		vector2D::vec2D currPos = startingPos;
-		//vector2D::vec2D currMapPos = worldToMap(currPos);
 		fowTileMap.emplace_back(fowTile(tileWidth, tileHeight, currPos, worldToMap(currPos)));
 
 		for (int i = 1 ; i < dims ; ++i)
 		{
 			currPos = (i * tileWidth % width == 0) ? vector2D::vec2D(startingPos.x, currPos.y + tileHeight) : vector2D::vec2D(currPos.x + tileWidth, currPos.y);
-			//currMapPos = worldToMap(currPos);
 			fowTileMap.emplace_back(fowTile(tileWidth, tileHeight, currPos, worldToMap(currPos)));
 		}
 	}
@@ -65,12 +73,14 @@ namespace fow
 		for (std::list<fowObj>::iterator it = fowObjList.begin(); it != fowObjList.end(); ++it)
 		{
 			vector2D::vec2D objWorldPos{ ecs.GetComponent<BaseInfo>((*it).getid())->position };
+			
 			// Obj did not move, no action required
 			if ((*it).getWorldPos() == objWorldPos)
 				continue;
 
 			vector2D::vec2D currMapPos = worldToMap(objWorldPos);
 			vector2D::vec2D prevMapPos = (*it).getMapPos();
+			
 			// Obj moved, but did not change grid, no action required
 			if (prevMapPos == currMapPos)
 				continue;
@@ -140,11 +150,6 @@ namespace fow
 		}
 	}
 
-	void fogOfWarMap::drawFow()
-	{
-
-	}
-
 	void fogOfWarMap::destroyFow()
 	{
 		fowTileMap.clear();
@@ -190,8 +195,7 @@ namespace fow
 	{
 		return fowObjList;
 	}
-}
+}// namespace fow
 
 //#endif
 
-//#endif

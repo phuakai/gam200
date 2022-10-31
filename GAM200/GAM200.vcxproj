@@ -161,7 +161,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Include\AI;$(SolutionDir)Engine\Include\ECS;$(SolutionDir)Engine\Include\Graphics;$(SolutionDir)Engine\Include\Math;$(SolutionDir)Engine\Include\Physics;$(SolutionDir)Engine\Include\Serialization;$(SolutionDir)Engine\Include\Serialization\rapidjson;$(SolutionDir)Engine\Include\Serialization\rttr;$(SolutionDir)Engine\Include;$(SolutionDir)Level Editor\Include\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>

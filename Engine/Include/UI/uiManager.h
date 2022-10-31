@@ -1,3 +1,19 @@
+/* Start Header ************************************************************************/
+/*!
+\file		uiManager.h
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 26, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
 #pragma once
 
 #ifndef UI_H
@@ -6,17 +22,9 @@
 #include "ui.h"
 #include "../mainHeader.h"
 
-
 namespace UI
 {
 	#define mouseRad 1
-
-	enum groupName
-	{
-		base,
-		unit1,
-		building1
-	};
 
 	struct UIGroup
 	{
@@ -25,30 +33,122 @@ namespace UI
 
 	struct UIManager
 	{
-		// Constructor
-										UIManager();
-		// Creator
-		void							createGroupList();
+		enum class groupName : uint8_t
+		{
+			base,
+			unit1,
+			building1
+		};
 
-		// Adders
-		void							addUiToActionGroup(uiObj const& obj, UI::groupName const& grp);
-		void							addActionGroupToDisplay(UIGroup* grp);
-		void							addUiToInfoList(uiObj obj, groupName const& grp);
-		void							addInfoDisplay(uiObj* obj);
+		// CONSTRUCTOR
+		/******************************************************************************/
+		/*!
+			Constructor for the UI manager
+		*/
+		/******************************************************************************/
+										UIManager							();
+		// CREATOR
+		/******************************************************************************/
+		/*!
+			Creates the list of group consisting of all the different types of 
+			units/buildings
+		*/
+		/******************************************************************************/
+		void							createUiManager						(float minimapRatio, float infoPanelRatio, float actionPanelRatio);
 
-		// Removers
-		void							removeActionGroupFromDisplay(UIGroup * grp);
-		void							removeUiFromInfoList(uiObj obj);	// to be used when units "die"
-		void							removeInfoFromDisplay();
+		// ADDERS
+		/******************************************************************************/
+		/*!
+			Adds a ui object to a ui group
+		*/
+		/******************************************************************************/
+		void							addUiToActionGroup					(uiObj const& obj, groupName const& grp);
+		
+		/******************************************************************************/
+		/*!
+			Adds a group to the action panel to be displayed
+		*/
+		/******************************************************************************/
+		void							addActionGroupToDisplay				(UIGroup* grp);
+		
+		/******************************************************************************/
+		/*!
+			Adds a group to the action panel to be displayed
+		*/
+		/******************************************************************************/
+		void							addUiToInfoList						(uiObj obj, groupName const& grp);
+		
+		/******************************************************************************/
+		/*!
+			Adds a ui object to the info panel to be displayed
+		*/
+		/******************************************************************************/
+		void							addInfoDisplay						(uiObj* obj);
 
-		void							UIUpdate();
-		void							destroyUI();
+		// REMOVERS
+		/******************************************************************************/
+		/*!
+			Removes an action group from the action group display list
+		*/
+		/******************************************************************************/
+		void							removeActionGroupFromDisplay		(UIGroup * grp);
 
-		//Getters
-		std::vector<UIGroup>&			getUiActionGroupList();
-		std::vector<UIGroup*>			getUiActionDisplayList();
-		std::vector<uiObj>&				getUiInfoList();
-		std::vector<uiObj*>				getUiInfoDisplayList();
+		/******************************************************************************/
+		/*!
+			Removes an action group from the action display list
+		*/
+		/******************************************************************************/
+		void							removeUiFromInfoList				(uiObj obj);	// to be used when units "die"
+
+		/******************************************************************************/
+		/*!
+			Removes a ui object from the info display list
+		*/
+		/******************************************************************************/
+		void							removeInfoFromDisplay				();
+
+		/******************************************************************************/
+		/*!
+			Checks for collision detection between the mouse and the ui objects
+		*/
+		/******************************************************************************/
+		void							UIUpdate							();
+
+		/******************************************************************************/
+		/*!
+			Clears the containers containing the ui
+		*/
+		/******************************************************************************/
+		void							destroyUI							();
+
+		// GETTERS
+		/******************************************************************************/
+		/*!
+			Gets the list of groups in the ui action list
+		*/
+		/******************************************************************************/
+		std::vector<UIGroup>&			getUiActionGroupList				();
+
+		/******************************************************************************/
+		/*!
+			Gets the list of pointers to the displayed action group
+		*/
+		/******************************************************************************/
+		std::vector<UIGroup*>			getUiActionDisplayList				();
+
+		/******************************************************************************/
+		/*!
+			Gets the list of ui objects
+		*/
+		/******************************************************************************/
+		std::vector<uiObj>&				getUiInfoList						();
+
+		/******************************************************************************/
+		/*!
+			Gets the list of pointer to the ui objects displayed
+		*/
+		/******************************************************************************/
+		std::vector<uiObj*>				getUiInfoDisplayList				();
 
 	private:
 		// Action Group (bottom right panel)
@@ -56,17 +156,20 @@ namespace UI
 		std::vector<UIGroup*>			uiActionDisplayList;
 		vector2D::vec2D					actionDisplayDims;
 		vector2D::vec2D					actionDisplayStartPos;
-		//int								actionDisplayWidth;
-		//int								actionDisplayHeight;
+		vector2D::vec2D					actionDisplayGridDims;
+		int								actionDisplayCol;
+		int								actionDisplayRow;
 		
-		// Info (bottom center)
+		// Info (bottom center panel)
 		std::vector<uiObj>				uiInfoList;
 		std::vector<uiObj*>				uiInfoDisplayList;
 		vector2D::vec2D					infoDisplayDims;
 		vector2D::vec2D					infoDisplayStartPos;
 		vector2D::vec2D					infoDisplayGridDims;
-		int								infoDisplayWidth;
-		int								infoDisplayHeight;
+		int								infoDisplayCol;
+		int								infoDisplayRow;
+
+		// Minimap (bottom left panel)
 
 	};
 
