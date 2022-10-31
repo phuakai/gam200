@@ -197,19 +197,19 @@ void engineInit()
 	// 0 = base hud
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[0].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(0), vector2D::vec2D(camera2d.getCamPosition().x, ( -camera2d.getHeight() + camera2d.getHeight() / 4.f) / 2.f), vector2D::vec2D(camera2d.getWidth() * 0.7f, camera2d.getHeight() /4.f));
-	uiEntity[0].Add<Texture>(0, 1, 1, "UIEntity");
+	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(camera2d.getWidth() / 2.f * 0.85f /*15% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.15f), vector2D::vec2D(camera2d.getWidth() * 0.15f/*15% screenwidth*/, camera2d.getWidth() * 0.15f));
+	uiEntity[1].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(camera2d.getWidth() / 2.f * 0.83f /*17% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.17f), vector2D::vec2D(camera2d.getWidth() * 0.17f/*17% screenwidth*/, camera2d.getWidth() * 0.17f));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::groupName::base);
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-camera2d.getWidth() / 2.f * 0.85f /*15% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.15f), vector2D::vec2D(camera2d.getWidth() * 0.15f/*15% screenwidth*/, camera2d.getWidth() * 0.15f));
-	uiEntity[2].Add<Texture>(7, 1, 1, "UIEntity");
+	uiEntity[2].Add<BaseInfo>("Entity", "uiEntity" + std::to_string(1), vector2D::vec2D(-camera2d.getWidth() / 2.f * 0.83f /*17% screenwidth*/, -camera2d.getHeight() / 2.f + camera2d.getWidth() / 2.f * 0.17f), vector2D::vec2D(camera2d.getWidth() * 0.17f/*17% screenwidth*/, camera2d.getWidth() * 0.17f));
+	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
 	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::groupName::base);
 
 	UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[UI::groupName::base]);
