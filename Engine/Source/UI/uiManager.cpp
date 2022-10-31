@@ -15,12 +15,10 @@ namespace UI
 
 		infoDisplayWidth = 15;
 		infoDisplayHeight = 5;
-		infoDisplayDims = { 900, 900 / 6.f };
+		infoDisplayDims = { 1000, 800 / 6.f };
 		infoDisplayGridDims = { infoDisplayDims.x / static_cast<float>(infoDisplayWidth), infoDisplayDims.y / static_cast<float>(infoDisplayHeight) };
-		//infoDisplayDims = { static_cast<float>(Graphics::Input::screenwidth), static_cast<float>(Graphics::Input::screenheight / 6.f) };
 		infoDisplayStartPos = { - infoDisplayDims.x / 2.f,
 								(-900 / 2.f + 900 / 5.f) + infoDisplayGridDims.y / 2.f };
-		//std::cout << "what is the initialized pos: " << infoDisplayStartPos.x << ", " << infoDisplayStartPos.y << std::endl;
 	}
 
 	void UIManager::createGroupList()
@@ -50,8 +48,6 @@ namespace UI
 
 	void UIManager::addInfoDisplay(uiObj* obj)
 	{
-		std::cout << "what is this id: " << obj->getId() << std::endl;
-
 		// Translate pos of info icon
 		int currWidth{}, currHeight{};
 		currHeight = static_cast<int>(uiInfoDisplayList.size() / infoDisplayWidth);
