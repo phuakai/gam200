@@ -98,7 +98,6 @@ quadTree mainTree;
 
 spooky::CAudioEngine audioEngine;
 
-void engineInit()
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
 int selected;
@@ -256,7 +255,7 @@ void engineInit()
 
 			eventManager.post(entityToMove);
 		}
-		fow::fowMap.updateFow();
+		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
 
 		// Check with walls
@@ -342,7 +341,29 @@ void engineInit()
 	imguiMouseX = 0.0;
 	imguiMouseY = 0.0;
 
+
 	GLApp::init();
+
+	//spooky::CAudioEngine audioEngine;
+	audioEngine.Init();
+
+	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
+	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+
+	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}*/
+
+	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	Font::init();
 }
 
 void engineUpdate()
@@ -477,29 +498,14 @@ void engineUpdate()
 				newManager.generateFlowField();
 				newManager.updateReached();
 
-	GLApp::init();
-
-	//spooky::CAudioEngine audioEngine;
-	audioEngine.Init();
-	
-	//audioEngine.LoadSound("../asset/sounds/StarWars60.wav", false);
-	//audioEngine.PlaySound("../asset/sounds/StarWars60.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
-	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
-
-	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
-	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
-	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
-	{
-		assert("ERROR: Unable to link shaders!");
-	}
-	if (false == Font::shader.Validate() || false == Font::shader.Validate())
-	{
-		assert("ERROR: Unable to validate shaders!");
-	}*/
-
-	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
-	Font::init();
-}
+				if (newFormationManagerID != formationManagers.size())
+				{
+					formationManagers[newFormationManagerID] = newManager;
+				}
+				else
+				{
+					formationManagers.push_back(newManager);
+				}
 
 				selected = 0;
 
