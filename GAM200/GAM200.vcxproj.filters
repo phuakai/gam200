@@ -18,6 +18,7 @@
     <None Include="..\shaders\instancing.vert" />
     <None Include="..\shaders\framebuffer.frag" />
     <None Include="..\shaders\framebuffer.vert" />
+    <None Include="data.json" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />

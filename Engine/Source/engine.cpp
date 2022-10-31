@@ -558,10 +558,10 @@ void engineUpdate()
 
 	GLApp::update();						// graphics system
 
-	if (Graphics::Input::mousestateLeft)
-	{
-		audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
-	}
+	//if (Graphics::Input::mousestateLeft)
+	//{
+	//	audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	//}
 }
 
 void engineDraw()
