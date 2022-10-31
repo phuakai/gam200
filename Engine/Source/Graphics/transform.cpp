@@ -18,7 +18,6 @@ matrix3x3::mat3x3 Transform::createNDCtoViewport()
 {
 	int winWidth = camera2d.getWidth();
 	int winHeight = camera2d.getHeight();
-	std::cout << "what is width hegith: " << winWidth << ", " << winHeight << std::endl;
 	float halfWinWidth{ static_cast<float>(winWidth) / 2 };
 	float halfWinHeight{ static_cast<float>(winHeight) / 2 };
 	matrix3x3::mat3x3 ndc_to_viewport
