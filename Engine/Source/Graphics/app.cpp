@@ -63,6 +63,8 @@ std::vector<RenderNS::InstancedRenderer> InstanceContainer; // Instance render o
 
 FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
+TextureNS::Texture textureobjects;
+
 CameraNS::Camera2D camera2d;
 
 App::collisionType App::currentCollision;
@@ -103,7 +105,7 @@ void App::init()
 	glClearColor(0.2f, 1.f, 0.3f, 1.f);	// clear colorbuffer with RGBA value in glClearColor
 	glViewport(0, 0, Graphics::Input::screenwidth, Graphics::Input::screenheight);
 	std::vector<std::string> tmp{};
-	TextureNS::Texture::CreateandLoadTexture(TextureNS::textureobjects, tmp); // Create and load textures
+	TextureNS::Texture::CreateandLoadTexture(textureobjects, tmp); // Create and load textures
 
 	camera2d.init(Graphics::Input::ptr_to_window, vector2D::vec2D(0, 0), vector2D::vec2D(0, 0)); // Initialize camera
 
@@ -345,7 +347,7 @@ void App::draw()
 		primtypestorage.emplace_back(GL_LINE_STRIP);
 	}
 
-	RenderNS::DrawFunc(InstanceContainer, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, primtypestorage);
+	RenderNS::DrawFunc(InstanceContainer, mainFrame, shdrpgms["instanceshader"], models, textureobjects, primtypestorage);
 	//glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
 	//RenderNS::DrawFunc(InstanceContainer[1], mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, GL_LINE_STRIP);
 
