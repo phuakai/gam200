@@ -28,12 +28,12 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	glBindVertexArray(vaoid);
 
 	GLuint headervboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(headervboid, sizeof(ModelNS::modelVtxData) * headerdata.size(), headerdata); // Data passed in
+	BufferNS::VBO::createVBOstorage(headervboid, int(sizeof(ModelNS::modelVtxData) * headerdata.size()), headerdata); // Data passed in
 	// Note that for instance, stored data is 1 position, 1 colour, 1 texture pos, 1 texture index (or texture array later on)
 	// and an array consisting of the offsets for the different instance positions
 
 	GLuint instancevboid = BufferNS::VBO::createVBO();
-	BufferNS::VBO::createVBOstorage(instancevboid, sizeof(matrix4x4::mat4x4) * instancedata.size(), instancedata); // Data passed in
+	BufferNS::VBO::createVBOstorage(instancevboid, int(sizeof(matrix4x4::mat4x4) * instancedata.size()), instancedata); // Data passed in
 
 	// Position
 	BufferNS::VAO::enableVAOattrib(vaoid, 0); // Attrib 0
@@ -85,15 +85,15 @@ void RenderNS::InstancedRenderer::InstanceRender(TextureNS::Texture& texobjs)
 	ebodata[3] = 2;
 	ebodata[4] = 3;
 	ebodata[5] = 0;
-	BufferNS::EBO::createEBOstorage(eboid, sizeof(GLushort) * ebodata.size(), ebodata);
+	BufferNS::EBO::createEBOstorage(eboid, int(sizeof(GLushort) * ebodata.size()), ebodata);
 	BufferNS::EBO::bindEBO(vaoid, eboid);
 
 	glBindTextureUnit(0, texobjs.textureid);
 	GLuint tex_loc = glGetUniformLocation(instanceshader.GetHandle(), "arrayTexture");
 	glUniform1i(tex_loc, 0);
-	glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
 
-	mainFrame.drawFrameBuffer();
+	glDrawElementsInstanced(primtype, 6, GL_UNSIGNED_SHORT, NULL, entitycounter);
+
 	GLuint tex2_loc = glGetUniformLocation(frameshader.GetHandle(), "screenTexture");
 	glUniform1i(tex2_loc, 0);
 	instanceshader.UnUse();
@@ -166,14 +166,14 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	int offset = 0;
 	if (primtype == GL_TRIANGLES || primtype == GL_TRIANGLE_STRIP || primtype == GL_TRIANGLE_FAN)
 	{
-		for (int i = 0; i < (totalindicesize - 5); i += 6)
+		for (int i = 0; i < (totalindicesize - 5); ++i)
 		{
-			ebodata[i + 0] = 0 + offset;
-			ebodata[i + 1] = 1 + offset;
-			ebodata[i + 2] = 2 + offset;
-			ebodata[i + 3] = 2 + offset;
-			ebodata[i + 4] = 3 + offset;
-			ebodata[i + 5] = 0 + offset;
+			ebodata[i] = 0 + offset;
+			ebodata[++i] = 1 + offset;
+			ebodata[++i] = 2 + offset;
+			ebodata[++i] = 2 + offset;
+			ebodata[++i] = 3 + offset;
+			ebodata[++i] = 0 + offset;
 			offset += 4;
 		}
 	}
@@ -214,22 +214,30 @@ void RenderNS::BatchRenderer::BatchDelete()
 	glDeleteBuffers(1, &vaoid);
 }
 
-void RenderNS::DrawFunc(RenderNS::InstancedRenderer& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj)
+void RenderNS::DrawFunc(std::vector<RenderNS::InstancedRenderer>& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj, std::vector<GLenum> primitive)
 {
-	instanceobj.instanceshader = shadertouse;
-	entitydraw(instanceobj, models);
+	for (int i = 0; i < primitive.size(); i++)
+	{
+		instanceobj[i].instanceshader = shadertouse;
+		instanceobj[i].primtype = primitive[i];
+		QueueEntity(instanceobj[i], models);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBindFramebuffer(GL_FRAMEBUFFER, frame.framebuffer);
-	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	instanceobj.InstanceRender(texobj);
+		instanceobj[i].InstanceRender(texobj);
+	}
+	//instanceobj.instanceshader = shadertouse;
+	//instanceobj.primtype = primitive;
+	//QueueEntity(instanceobj, models, primitive);
+
+	//instanceobj.InstanceRender(texobj);
 	frame.drawFrameBuffer();
-	instanceobj.InstanceClear();
+	for (int i = 0; i < primitive.size(); i++)
+	{
+		instanceobj[i].InstanceClear();
+	}
 
 }
 
-void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models)
+void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models)
 {
 	std::vector<EntityID> entities = ecs.getEntities();
 	for (int i = 0; i < entities.size(); i++)
@@ -256,17 +264,17 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 		}
 		Render* curobj = ecs.GetComponent<Render>(entities[i]);
 
+		
 		std::vector<vector3D::Vec3> clr_vtx
 		{
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
-
 		if (curobjBaseInfo->type == "Background") // Background that moves with camera
 		{
-			curobjBaseInfo->dimension = vector2D::Vec2(camera2d.getWidth(), camera2d.getHeight());
+			curobjBaseInfo->dimension = vector2D::Vec2((float)camera2d.getWidth(), (float)camera2d.getHeight());
 			curobjBaseInfo->position = camera2d.getCamPosition();
-			//std::cout << "I am bg " << curobjBaseInfo->dimension.x << ", " << curobjBaseInfo->dimension.y << std::endl;
+			//std::cout << "I am bg " << curobjBaseInfo->position.x << ", " << curobjBaseInfo->position.y << std::endl;
 		}
 		std::vector<vector2D::Vec2> texcoord;
 		texcoord.emplace_back(vector2D::Vec2(0.f, 0.f)); // Bottom left
@@ -294,12 +302,12 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 
 
 		std::vector <vector2D::vec2D> ndccoord;
-		for (int i = 0; i < poscoord.size(); i++)
+		for (size_t j = 0; j < poscoord.size(); ++j)
 		{
-			ndccoord.emplace_back(poscoord[i]);
+			ndccoord.emplace_back(poscoord[j]);
 		}
 
-		for (int j = 0; j < ndccoord.size(); ++j)
+		for (size_t j = 0; j < ndccoord.size(); ++j)
 		{
 			ModelNS::modelVtxData tmpVtxData;
 			//tmpVtxData.posVtx = ndccoord[i];
@@ -310,24 +318,42 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			tmpVtxData.txtIndex = texid; // To be removed
 			vertexData.emplace_back(tmpVtxData);
 		}
-
-		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(curobjBaseInfo->position.x, curobjBaseInfo->position.y));
+		vector2D::vec2D temppos = curobjBaseInfo->position;
+		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
+		{
+			//temppos += camera2d.getCamPosition();	
+		}
+		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(temppos.x, temppos.y));
 		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
 
-		if (curobjTexture->textureName == "Cloud")
+		if (curobjBaseInfo->type == "Cloud")
 		{
 			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		}
 
-		matrix3x3::mat3x3 rot = Transform::createRotationMat(0.f);
+		curobjBaseInfo->orientation.x += curobjBaseInfo->orientation.y;
+		if (curobjBaseInfo->orientation.x >= 360.f || curobjBaseInfo->orientation.x <= -360.f)
+		{
+			curobjBaseInfo->orientation.x = 0.f;
+		}
+
+		matrix3x3::mat3x3 rot = Transform::createRotationMat(curobjBaseInfo->orientation.y); // Change to orientation.x for constant rotation, y for fixed
 
 		matrix3x3::mat3x3 model_to_world = translate * rot * scale;
 
 
 		matrix3x3::mat3x3 world_to_ndc_xform = camera2d.getWorldtoNDCxForm();
 
-		matrix3x3::mat3x3 model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+		matrix3x3::mat3x3 model_to_ndc_xformnotglm;// = world_to_ndc_xform * model_to_world;
 
+		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
+		{
+			model_to_ndc_xformnotglm = camera2d.getCamwintoNDCForm() * model_to_world;
+		}
+		else
+		{
+			model_to_ndc_xformnotglm = world_to_ndc_xform * model_to_world;
+		}
 		//matrix3x3::mat3x3 model_to_ndc_xform = matrix3x3::mat3x3
 		//(
 		//	//model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6],
@@ -346,10 +372,24 @@ void RenderNS::entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std
 			//model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], texid
 			model_to_ndc_xformnotglm.m[0], model_to_ndc_xformnotglm.m[3], model_to_ndc_xformnotglm.m[6], curobj->color.r,
 			model_to_ndc_xformnotglm.m[1], model_to_ndc_xformnotglm.m[4], model_to_ndc_xformnotglm.m[7], curobj->color.g,
-			0							 , 0							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
-			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0							   , texid + (curobjTexture->spriteStep - 1)
+			0.f							 , 0.f							, model_to_ndc_xformnotglm.m[8], curobj->color.b,
+			model_to_ndc_xformnotglm.m[2], model_to_ndc_xformnotglm.m[5], 0.f						   , float(texid + (curobjTexture->spriteStep - 1.f))
 		);
-		
+		if (instanceobj.primtype == GL_TRIANGLES)
+		{
+			//std::cout << "Triangles " << std::endl;
+		}
+		if (instanceobj.primtype == GL_LINE_STRIP)
+		{
+			for (int setclr = 0; setclr < 3; setclr++)
+			{
+				model_to_ndc_xform.m2[setclr][3] = 1.f;
+			}
+			if (curobjBaseInfo->type == "Enemy" || curobjBaseInfo->type == "CollidableUI")
+			{
+				model_to_ndc_xform.m2[3][3] = 0.f;
+			}
+		}
 		testdata.emplace_back(model_to_ndc_xform); // Emplace back a base 1, 1 translation
 
 		instanceobj.headerdata.clear();

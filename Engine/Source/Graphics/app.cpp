@@ -58,7 +58,7 @@ std::map<std::string, ModelNS::Model> models; // define models
 
 std::unordered_map<App::collisionType, std::string> App::collisionInfo;
 
-RenderNS::InstancedRenderer basicinstance; // Instance render object for collision debug
+std::vector<RenderNS::InstancedRenderer> InstanceContainer; // Instance render object for collision debug
 
 FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
@@ -86,13 +86,13 @@ glClearColor and glViewport to initialize the app
 
 void App::init()
 {
+	InstanceContainer.resize(2);
 	vector2D::vec2D screensize = readConfig("config.xml");  // Read from config
-	if (!Graphics::Input::init(screensize.x, screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
+	if (!Graphics::Input::init((GLint)screensize.x, (GLint)screensize.y, "Bloom")) // Screensize.x is width, Screensize.y is height
 	{
 		std::cout << "Unable to create OpenGL context" << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
-
 	mainFrame.createFrameBuffer(); // Create frame buffer
 
 	ModelNS::initModels(models); // Initialize line and square models
@@ -218,10 +218,18 @@ void App::update()
 		}
 		if (Graphics::Input::keystateSquareBracketLeft)
 		{
+			//if (player->orientation.y <= (5.f * Graphics::Input::delta_time)) // Uncomment to set limit
+			{
+				player->orientation.y -= (120.f * (float)Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+			}
 			std::cout << "ROT LEFT" << std::endl;
 		}
 		if (Graphics::Input::keystateSquareBracketRight)
 		{
+			//if (player->orientation.y >= (-5.f * Graphics::Input::delta_time)) // Uncomment to set limit
+			{
+				player->orientation.y += (120.f * (float)Graphics::Input::delta_time); // 1.f * dt for constant rotation, 120.f * dt for fixed
+			}
 			std::cout << "ROT RIGHT" << std::endl;
 		}
 	}
@@ -325,7 +333,22 @@ void App::draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	RenderNS::DrawFunc(basicinstance, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
+	std::vector<GLenum> primtypestorage;
+	primtypestorage.emplace_back(GL_TRIANGLES);
+	if (coldebug == true)
+	{
+		primtypestorage.emplace_back(GL_LINE_STRIP);
+	}
+
+	RenderNS::DrawFunc(InstanceContainer, mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, primtypestorage);
+	//glBindFramebuffer(GL_FRAMEBUFFER, mainFrame.framebuffer);
+	//RenderNS::DrawFunc(InstanceContainer[1], mainFrame, shdrpgms["instanceshader"], models, TextureNS::textureobjects, GL_LINE_STRIP);
 
 	glDisable(GL_BLEND);
 }
@@ -337,7 +360,7 @@ void App::draw()
 
 This function is empty for now
 */
-void App::cleanup() 
+void App::cleanup()
 {
 	mainFrame.delFrameBuffer();
 	TextureNS::Texture::deleteTexture(TextureNS::textureobjects);

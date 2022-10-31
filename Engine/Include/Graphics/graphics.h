@@ -31,6 +31,8 @@ namespace RenderNS
 		std::vector<ModelNS::modelVtxData> headerdata{}; // Main (control) object in instance
 		std::vector<matrix4x4::mat4x4> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
+
+		GLenum primtype{};
 		GLuint vaoid{};
 
 		/******************************************************************************/
@@ -105,8 +107,7 @@ namespace RenderNS
 	};
 
 	//static BatchRenderer basicbatch;
-	void DrawFunc(RenderNS::InstancedRenderer& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj);
-
-	void entitydraw(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models);
+	void DrawFunc(std::vector<RenderNS::InstancedRenderer>& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj, std::vector<GLenum> primitive);
+	void QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models);
 
 }

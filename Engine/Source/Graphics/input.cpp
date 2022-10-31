@@ -618,7 +618,7 @@ bool Graphics::Input::getCursorPos(vector2D::vec2D * mousePos)
 		matrix3x3::mat3x3 ndc_to_world = transform.createNDCtoWorld();
 
 		*mousePos = ndc_to_world * viewport_to_ndc * vector2D::Vec2((float)tmpx, (float)-tmpy);
-		//std::cout << "Position in input " << xpos << ", " << ypos << std::endl;
+		//std::cout << "Position in input " << mousePos->x << ", " << mousePos->y << std::endl;
 		return true;
 	}
 }
