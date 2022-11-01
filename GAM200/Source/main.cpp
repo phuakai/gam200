@@ -18,6 +18,11 @@ an OpenGL context and implement a game loop.
 #include "mainHeader.h"
 #include "levelEditor.h"
 
+//BehaviourTree behaviorTree;
+extern BehaviourTree behaviorTree;
+AIStats testStats;
+//extern AIStats testStats;
+
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
 
@@ -72,9 +77,12 @@ abstracted away in GLApp::init
 */
 static void init() 
 {
-   
     engineInit();
     imguiInit();
+    gameStatsInit();
+    behaviorTreeInit();
+
+
 }
 
 /*  _________________________________________________________________________ */

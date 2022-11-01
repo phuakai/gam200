@@ -4,9 +4,27 @@
     <ClCompile Include="Source\main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scripts.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\behaviourTree.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="gameStats.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\main.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\gameStats.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scripts.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\behaviourTree.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

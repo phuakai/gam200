@@ -19,7 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="gameStats.cpp" />
+    <ClCompile Include="Source\behaviourTree.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Scripts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\framebuffer.frag" />
@@ -31,7 +34,10 @@
     <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\behaviourTree.h" />
+    <ClInclude Include="Include\gameStats.h" />
     <ClInclude Include="Include\main.h" />
+    <ClInclude Include="Include\Scripts.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\rttr\CMakeLists.txt" />

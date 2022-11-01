@@ -11,7 +11,9 @@
 #include "app.h"
 #include "collision.h"
 #include "fowMap.h"
-
+#include <ctime>
+#include <ratio>
+#include <chrono>
 #include <random>
 
 RTTR_REGISTRATION{
@@ -66,8 +68,17 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::getHealth, &Stats::setHealth);
-}
 
+
+	rttr::registration::class_<Building>("Building")
+		.property("buildTime", &Building::buildTime)
+		.property("buildingType", &Building::buildingType);
+
+	rttr::registration::class_<Unit>("Unit")
+		.property("faction", &Unit::faction)
+		.property("type", &Unit::type)
+		.property("aiTree", &Unit::aiTree);
+}
 ECS ecs;
 
 extern Entity player1;
@@ -96,6 +107,16 @@ float timer;
 
 quadTree mainTree;
 
+//-------------profiler test
+std::chrono::steady_clock::time_point t1;
+std::chrono::steady_clock::time_point t2;
+std::chrono::duration <double> engineDrawTime;
+std::chrono::duration <double> physicsTime;
+std::chrono::duration <double> ecsSystemsTime;
+
+std::chrono::duration <double> totalTime;
+//------------------------
+
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
 int selected;
@@ -115,6 +136,10 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<Texture>(entityID));
 	else if (componentName == rttr::type::get<Physics>())
 		return *(ecs.GetComponent<Physics>(entityID));
+	else if (componentName == rttr::type::get<Building>())
+		return *(ecs.GetComponent<Building>(entityID));
+	else if (componentName == rttr::type::get<Unit>())
+		return *(ecs.GetComponent<Unit>(entityID));
 }
 
 void engineInit()
@@ -125,6 +150,8 @@ void engineInit()
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Physics>("Physics");
 	ecs.RegisterComponent<Render>("Render");
+	ecs.RegisterComponent<Building>("Building");
+	ecs.RegisterComponent<Unit>("Unit");
 
 	// ======================================================================================================================================
 	// PREFABS
@@ -133,6 +160,7 @@ void engineInit()
 	ecs.AddComponent<Render>(enemyPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
 	const EntityID& playerPrefab = ecs.GetNewID();
@@ -146,6 +174,7 @@ void engineInit()
 	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(buildingPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Building>(buildingPrefab, 0, "");
 	prefabs.push_back(buildingPrefab);
 	
 	// ======================================================================================================================================
@@ -197,6 +226,7 @@ void engineInit()
 		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
 		enemyUnits[i].Add<Texture>(3, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+		enemyUnits[i].Add<Unit>(0, 0);
 		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
@@ -344,6 +374,8 @@ void engineInit()
 
 void engineUpdate()
 {
+	t1 = std::chrono::steady_clock::now();
+
 	double mousePosX = 0.0, mousePosY = 0.0;
 
 	if (imguiShow)
@@ -525,7 +557,13 @@ void engineUpdate()
 				formationManagers[i].updateSlots();
 			}
 		}
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+		t1 = std::chrono::steady_clock::now();
 		physicsUpdate();					// physics system
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 	}				
 
 	glfwPollEvents();
@@ -537,7 +575,29 @@ void engineUpdate()
 
 void engineDraw()
 {
+	t1 = std::chrono::steady_clock::now();
 	GLApp::draw();
+	t2 = std::chrono::steady_clock::now();
+	engineDrawTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+
+	/*
+	std::cout << "ecs systems took: " << ecsSystemsTime << std::endl;
+	std::cout << "physics systems took: " << physicsTime << std::endl;
+	std::cout << "draw systems took: " << engineDrawTime << std::endl;
+
+	totalTime = (ecsSystemsTime + physicsTime + engineDrawTime);
+
+	std::cout << "total systems took: " << totalTime << std::endl;
+	std::cout << "ecs systems % " << ecsSystemsTime / totalTime * 100 << "% " <<std::endl;
+	std::cout << "physics systems % " << physicsTime / totalTime * 100 << "% " << std::endl;
+	std::cout << "draw systems % " << engineDrawTime / totalTime * 100 << "% " << std::endl;
+	*/
+
+
+
+
+	
 }
 
 void engineFree()

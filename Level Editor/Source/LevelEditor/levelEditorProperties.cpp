@@ -11,6 +11,10 @@ void* checkComponentByName(rttr::type& componentName, const EntityID& entityID)
 		return ecs.GetComponent<Texture>(entityID);
 	else if (componentName == rttr::type::get<Physics>())
 		return ecs.GetComponent<Physics>(entityID);
+	else if (componentName == rttr::type::get<Building>())
+		return ecs.GetComponent<Building>(entityID);
+	else if (componentName == rttr::type::get<Unit>())
+		return ecs.GetComponent<Unit>(entityID);
 	return nullptr;
 }
 
@@ -81,6 +85,10 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 						ecs.AddComponent<Physics>(id);
 						ecs.GetComponent<Physics>(id)->formationManagerID = -1;
 					}
+					else if (allComponents[i] == "Building")
+						ecs.AddComponent<Building>(id);
+					else if (allComponents[i] == "Unit")
+						ecs.AddComponent<Unit>(id);
 				}
 
 				rttr::instance componentInstance = GetComponentByName(component, id);
@@ -153,6 +161,10 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 					}
 					ecs.RemoveComponent<Physics>(id);
 				}
+				else if (allComponents[i] == "Building")
+					ecs.RemoveComponent<Building>(id);
+				else if (allComponents[i] == "Unit")
+					ecs.RemoveComponent<Unit>(id);
 			}
 		}
 	}
