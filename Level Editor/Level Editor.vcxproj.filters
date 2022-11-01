@@ -66,6 +66,24 @@
     <ClInclude Include="Include\LevelEditor\levelEditorContentBrowser.h">
       <Filter>Header Files\LevelEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\ImGui\ImSequencer.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGui\ImZoomSlider.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGui\GraphEditor.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGui\ImCurveEdit.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGui\ImGradient.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ImGui\ImGuizmo.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ImGui\imgui.cpp">
@@ -100,6 +118,21 @@
     </ClCompile>
     <ClCompile Include="Source\LevelEditor\levelEditorContentBrowser.cpp">
       <Filter>Source Files\LevelEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\ImGradient.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\ImGuizmo.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\ImSequencer.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\GraphEditor.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGui\ImCurveEdit.cpp">
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

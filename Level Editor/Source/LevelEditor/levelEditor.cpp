@@ -4,8 +4,8 @@
 #include "levelEditorProperties.h"
 #include "levelEditorContentBrowser.h"
 #include "framebuffer.h"
-
 #include <cstring>
+#include <ImGuizmo.h>
 
 bool show_demo_window;
 bool show_another_window;
@@ -19,68 +19,64 @@ void menu()
 {
 	if (ImGui::Button("New"))
 	{
-		ImGui::OpenPopup("my_file_popup");
 	}
-	if (ImGui::BeginPopupModal("my_file_popup", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+
+	if (ImGui::Button("Open"))
 	{
-		ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
+		ImGui::OpenPopup("openFile");
+	}
+	if (ImGui::BeginPopupModal("openFile", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Select File To Open");
 		ImGui::Separator();
 
-		static bool dont_ask_me_next_time = false;
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
-		ImGui::PopStyleVar();
-
-		if (ImGui::BeginTabBar("File Browser"))
+		if (ImGui::Button("<<"))
 		{
-			for (auto& p : std::filesystem::directory_iterator(saveLocation))
-			{
-				auto relativePath = std::filesystem::relative(p.path(), saveLocation);
-				std::string path = relativePath.string();
+			saveLocation = saveLocation.parent_path();
+		}
 
-				if (p.is_directory())
+		for (auto& p : std::filesystem::directory_iterator(saveLocation))
+		{
+			auto relativePath = std::filesystem::relative(p.path(), saveLocation);
+			std::string path = relativePath.string();
+
+			if (p.is_directory())
+			{
+				if (ImGui::Button(path.c_str()))
 				{
-					if (ImGui::Button(path.c_str()))
-					{
-						saveLocation /= p.path().filename();
-					}
+					saveLocation /= p.path().filename();
 				}
-				else
+			}
+			else
+			{
+				if (path.find(".json") != std::string::npos)
 				{
 					ImGui::Button(path.c_str());
 				}
-
-				ImGui::NextColumn();
 			}
 
-			ImGui::EndTabBar();
-		}	
-
-		if (ImGui::BeginTabBar("File Browser"))
-		{
-			if (ImGui::Button("OK", ImVec2(120, 0))) 
-			{ 
-				ImGui::CloseCurrentPopup(); 
-			}
-			
-			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine();
-
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) 
-			{ 
-				ImGui::CloseCurrentPopup(); 
-			}
-
-			ImGui::EndTabBar();
+			ImGui::NextColumn();
 		}
+
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
 		ImGui::EndPopup();
 	}
 
 
-	if (ImGui::Button("Open"))
-	{
-
-	}
 	if (ImGui::Button("Save"))
 	{
 
