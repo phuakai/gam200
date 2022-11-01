@@ -48,16 +48,15 @@ void levelEditorContentBrowser::ImGuiContentBrowser(const EntityID& id)
 		}
 		else if(ImGui::Button(path.c_str(), { (ImGui::GetWindowSize().x - 10) / 5, (ImGui::GetWindowSize().x - 10) / 5 }) && id != -1)
 		{
-			//for (int i = 0; i < textureobjects.paths.size(); ++i)
-			//{
-			//	std::string texture(textureobjects.paths[i]);
-			//	if (pathChanged == texture)
-			//	{
-			//		ecs.GetComponent<Texture>(id)->textureID = i + 1;
-			//		break;
-			//	}
-			//}
-			std::cout << std::endl;
+			for (int i = 0; i < textureobjects.paths.size(); ++i)
+			{
+				std::string texture(textureobjects.paths[i]);
+				if (pathChanged == texture)
+				{
+					ecs.GetComponent<Texture>(id)->textureID = i + 1;
+					break;
+				}
+			}
 		}
 
 		ImGui::NextColumn();

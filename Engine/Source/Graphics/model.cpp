@@ -18,7 +18,7 @@ namespace ModelNS
 	Model Model::init(std::string modelname)
 	{
 		Model tempmodel;
-		std::cout << "Models " << modelname << std::endl;
+		//std::cout << "Models " << modelname << std::endl;
 		std::ifstream ifs{ "../meshes/" + modelname + ".msh" , std::ios::in };
 		if (!ifs)
 		{

@@ -178,22 +178,22 @@ void engineInit()
 	// PREFABS
 	const EntityID& enemyPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
-	ecs.AddComponent<Render>(enemyPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
-	ecs.AddComponent<Texture>(enemyPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Render>(enemyPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
+	ecs.AddComponent<Texture>(enemyPrefab, 6, 0, 0, "");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
 	const EntityID& playerPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
-	ecs.AddComponent<Render>(playerPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
-	ecs.AddComponent<Texture>(playerPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Render>(playerPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
+	ecs.AddComponent<Texture>(playerPrefab, 12, 0, 0, "");
 	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	prefabs.push_back(playerPrefab);
 
 	const EntityID& buildingPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
-	ecs.AddComponent<Render>(buildingPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
+	ecs.AddComponent<Render>(buildingPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Building>(buildingPrefab, 0, "");
 	prefabs.push_back(buildingPrefab);
@@ -314,9 +314,9 @@ void engineInit()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
+		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(40, 40), vector2D::vec2D(0.f, 0.f));
 		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
-		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 40, false, 0);
 		enemyUnits[i].Add<Unit>(0, 0);
 		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));

@@ -38,6 +38,11 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 
 		for (int i = 0; i < allComponents.size(); ++i)
 		{
+			if (allComponents[i] == "Render")
+			{
+				continue;
+			}
+
 			auto component = rttr::type::get_by_name(allComponents[i]);
 
 			void* componentExistCheck = checkComponentByName(component, id);
@@ -78,9 +83,7 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 			{
 				if (componentExistCheck == nullptr)
 				{
-					if (allComponents[i] == "Render")
-						ecs.AddComponent<Render>(id);
-					else if (allComponents[i] == "Texture")
+					if (allComponents[i] == "Texture")
 						ecs.AddComponent<Texture>(id);
 					else if (allComponents[i] == "Physics")
 					{
@@ -151,9 +154,7 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 
 			else if (componentExistCheck != nullptr)
 			{
-				if (allComponents[i] == "Render")
-					ecs.RemoveComponent<Render>(id);
-				else if (allComponents[i] == "Texture")
+				if (allComponents[i] == "Texture")
 					ecs.RemoveComponent<Texture>(id);
 				else if (allComponents[i] == "Physics")
 				{

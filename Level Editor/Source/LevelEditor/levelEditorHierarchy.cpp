@@ -46,6 +46,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		{
 			selected = ecs.GetNewID();
 			ecs.AddComponent<BaseInfo>(selected);
+			ecs.AddComponent<Render>(selected, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 			ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
 			hierarchyList[std::make_pair(100000, 1)].push_back(selected);
 		}
@@ -206,19 +207,19 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					int lowestChildLevel = 0;
 					for (auto it = ++(hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel))); it != hierarchyList.end(); ++it, ++numberOfChildren)
 					{
-						std::cout << "what is this " << it->first.second;
+						//std::cout << "what is this " << it->first.second;
 						if (it->first.second <= moveFromFolderLevel)
 						{
 							break;
 						}
 						lowestChildLevel = it->first.second;
 					}
-					std::cout << "number of children: " << numberOfChildren << std::endl;
+					//std::cout << "number of children: " << numberOfChildren << std::endl;
 
 					// Check if moving is valid (there is a limit of 4 layers of folders)
 					if (lowestChildLevel - moveFromFolderLevel - moveToFolderLevel > 4)
 					{
-						std::cout << "the hell " << std::endl;
+						//std::cout << "the hell " << std::endl;
 						moveFrom = -1;
 						moveTo = -1;
 						continue;
@@ -239,7 +240,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					while (hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1)) != hierarchyList.end());
 
 					folder.key().first = childID;
-					std::cout << "Child ID: " <<  childID << std::endl;
+					//std::cout << "Child ID: " <<  childID << std::endl;
 					folder.key().second = moveToFolderLevel + 1;
 					hierarchyList.insert(std::move(folder));
 					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,7 +256,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 						auto childFolder = hierarchyList.extract(std::make_pair(initialFolderPosition->first.first, initialFolderPosition->first.second));
 						//if (childFolder.key().second == 0) { break; 
 					//	if (childFolder == 0) { break; }
-						std::cout << "child folder key" << childFolder.key().second << std::endl;
+						//std::cout << "child folder key" << childFolder.key().second << std::endl;
 						childFolder.key().second = moveToFolderLevel + 1 + childFolder.key().second - moveFromFolderLevel;
 
 						childID += (int)pow(10, 4 - childFolder.key().second);
