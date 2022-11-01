@@ -9,17 +9,15 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
-#include "Font.h"
+//#include "Font.h"
 #include "AudioEngine.h"
 #include "camera.h"
 #include <app.h>
-#include <fowMap.h>
-#include "UI/uiManager.h"
-#include <collision.h>
+#include "uiManager.h"
+#include "fowMap.h"
 
 #include "app.h"
 #include "collision.h"
-#include "fowMap.h"
 #include <ctime>
 #include <ratio>
 #include <chrono>
@@ -121,6 +119,8 @@ float timer;
 extern CameraNS::Camera2D camera2d;
 
 quadTree mainTree;
+fow::fogOfWarMap fowMap(1600, 900, 20, 20, vector2D::vec2D(0.f, 0.f));
+
 
 //-------------profiler test
 std::chrono::steady_clock::time_point t1;
@@ -132,7 +132,7 @@ std::chrono::duration <double> ecsSystemsTime;
 std::chrono::duration <double> totalTime;
 //------------------------
 
-spooky::CAudioEngine audioEngine;
+//spooky::CAudioEngine audioEngine;
 
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
@@ -464,11 +464,11 @@ void engineInit()
 	pause = false;
 
 	//spooky::CAudioEngine audioEngine;
-	audioEngine.Init();
-	
-	audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
-	audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
-	audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	//audioEngine.Init();
+	//
+	//audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
+	//audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
+	//audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
 	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
 	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
@@ -482,8 +482,8 @@ void engineInit()
 		assert("ERROR: Unable to validate shaders!");
 	}*/
 
-	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
-	Font::init();
+	//GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	//Font::init();
 }
 
 void engineUpdate()
@@ -511,36 +511,36 @@ void engineUpdate()
 			Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		}
 
-	if (Graphics::Input::mousestateLeft) // just clicked
-	{
-		if (!drag)
+		if (Graphics::Input::mousestateLeft) // just clicked
 		{
-			dragSelectStartPosition.x = mousePosX;
-			dragSelectStartPosition.y = mousePosY;
-			drag = true;
-			
-			// Clear info from hud
-			UI::UIMgr.removeInfoFromDisplay();
+			if (!drag)
+			{
+				dragSelectStartPosition.x = mousePosX;
+				dragSelectStartPosition.y = mousePosY;
+				drag = true;
 
-			// Remove actions from panel
-			UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
-		}
-		else // still dragging
-		{
-			dragSelectEndPosition.x = mousePosX;
-			dragSelectEndPosition.y = mousePosY;
+				// Clear info from hud
+				UI::UIMgr.removeInfoFromDisplay();
+
+				// Remove actions from panel
+				UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+			}
+			else // still dragging
+			{
+				dragSelectEndPosition.x = mousePosX;
+				dragSelectEndPosition.y = mousePosY;
 
 				BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
 
 				formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
 				formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
 
-			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+				formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+			}
 		}
-	}
-	else if (drag) // released
-	{
-		BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+		else if (drag) // released
+		{
+			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
 
 			if (formationManagerInfo->dimension.x < 2 && formationManagerInfo->dimension.y < 2)	// click and not drag
 			{
@@ -625,21 +625,21 @@ void engineUpdate()
 						formationManagerID = newFormationManagerID;
 						ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
 
-					// Add unit to info
-					UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
+						// Add unit to info
+						UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
 
-					if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
-					{
-						break;
+						if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
+						{
+							break;
+						}
 					}
-				}
 
-				// Add actions to panel
-				UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+					// Add actions to panel
+					UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 
-				newManager.generateDijkstraCost(walls);
-				newManager.generateFlowField();
-				newManager.updateReached();
+					newManager.generateDijkstraCost(walls);
+					newManager.generateFlowField();
+					newManager.updateReached();
 
 					if (newFormationManagerID != formationManagers.size())
 					{
@@ -685,21 +685,22 @@ void engineUpdate()
 					formationManagers[i].reached = true;
 				}
 
-			if (!formationManagers[i].reached)
-			{
-				formationManagers[i].updateAnchorPosition();
-				//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
-				formationManagers[i].updateSlots();
+				if (!formationManagers[i].reached)
+				{
+					formationManagers[i].updateAnchorPosition();
+					//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
+					formationManagers[i].updateSlots();
+				}
 			}
-		}
-		t2 = std::chrono::steady_clock::now();
-		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+			t2 = std::chrono::steady_clock::now();
+			ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
-		t1 = std::chrono::steady_clock::now();
-		physicsUpdate();					// physics system
-		t2 = std::chrono::steady_clock::now();
-		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
-	}				
+			t1 = std::chrono::steady_clock::now();
+			physicsUpdate();					// physics system
+			t2 = std::chrono::steady_clock::now();
+			ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+		}
+	}
 
 	glfwPollEvents();
 
@@ -714,7 +715,7 @@ void engineUpdate()
 void engineDraw()
 {
 	t1 = std::chrono::steady_clock::now();
-	GLApp::draw();
+	App::draw();
 	t2 = std::chrono::steady_clock::now();
 	engineDrawTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
@@ -731,14 +732,10 @@ void engineDraw()
 	std::cout << "physics systems % " << physicsTime / totalTime * 100 << "% " << std::endl;
 	std::cout << "draw systems % " << engineDrawTime / totalTime * 100 << "% " << std::endl;
 	*/
-
-
-
-
 	
-	GLApp::shdrpgms.find("font");
-	Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
-	Font::RenderFont(GLApp::shdrpgms.find("font")->second, "The Quick Brown Fox Jumps Over The Fence", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight(), 1.5f, glm::vec3(1.0f, 1.0f, 1.0f));
+	//App::shdrpgms.find("font");
+	//Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
+	//Font::RenderFont(GLApp::shdrpgms.find("font")->second, "The Quick Brown Fox Jumps Over The Fence", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight(), 1.5f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void engineFree()

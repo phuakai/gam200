@@ -127,83 +127,10 @@ void App::init()
 	collisionInfo[collisionType::PolygonCircleResolution] = "PolygonCircleResolution";
 	coldebug = false;
 
-	//EntityID playerID = player1.GetID();
-	//GLApp::GLObject::gimmeObject(ecs.GetComponent<Render>(playerID)->type, ecs.GetComponent<Render>(playerID)->name, ecs.GetComponent<Render>(playerID)->dimension, ecs.GetComponent<Render>(playerID)->position, vector3D::vec3D(0.3f, 0.3f, 0.7f));
-
 }
 
 /*  _________________________________________________________________________*/
 /*! App::update
-
-@param GLdouble delta_time
-
-@return none
-
-This function is called once per frame to update an object's scale, rotation and translation matrices
-*/
-void GLApp::GLObject::update(GLdouble delta_time)
-{
-	matrix3x3::mat3x3 scale
-	(scaling.x, 0, 0,
-		0, scaling.y, 0,
-		0, 0, 1);
-
-	if (mdl_ref->first != "triangle")	// check if is black triangle
-	{
-		orientation.x += orientation.y * float(delta_time);
-	}
-
-	//std::cout << "Orientation " << orientation.x << ", " << orientation.y << std::endl;
-
-	matrix3x3::mat3x3 rotation
-	(cos(orientation.x), -sin(orientation.x), 0,
-		sin(orientation.x), cos(orientation.x), 0,
-		0, 0, 1);
-
-	matrix3x3::mat3x3 translation
-	(1, 0, modelCenterPos.x,
-		0, 1, modelCenterPos.y,
-		0, 0, 1);
-
-	mdl_to_world_xform = translation * rotation * scale;
-	//world_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform;
-	//mdl_to_ndc_xform = Graphics::camera2d.world_to_ndc_xform * mdl_to_world_xform;
-	matrix3x3::mat3x3 world_to_ndc_notglm = Graphics::camera2d.getWorldtoNDCxForm();
-	world_to_ndc_xform = matrix3x3::mat3x3
-	(
-		world_to_ndc_notglm.m[0], world_to_ndc_notglm.m[1], world_to_ndc_notglm.m[2],
-		world_to_ndc_notglm.m[3], world_to_ndc_notglm.m[4], world_to_ndc_notglm.m[5],
-		world_to_ndc_notglm.m[6], world_to_ndc_notglm.m[7], world_to_ndc_notglm.m[8]
-	);
-	// TO MOVE OUT IN THE FUTURE (is called every draw when it only needs to be called once)
-	matrix3x3::mat3x3 controlxform = translation * rotation * scale;
-	controlworldpos.clear();
-	controlndcpos.clear();
-	std::vector <vector2D::vec2D> controlmodelpos = mdl_ref->second.getModelCoords();
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		controlworldpos.emplace_back(controlxform * controlmodelpos[i]);
-		controlndcpos.emplace_back(world_to_ndc_xform * controlworldpos[i]);
-	}
-
-	mdl_to_ndc_xform = world_to_ndc_xform * mdl_to_world_xform;
-
-	//compute world coordinates for physics calc
-	worldCenterPos = mdl_to_world_xform * vector2D::vec2D(0.f, 0.f);
-
-	ndc_coords.clear();
-	worldVertices.clear();
-	std::vector <vector2D::vec2D> modelcoord = mdl_ref->second.getModelCoords();
-	for (GLuint i = 0; i < mdl_ref->second.posvtx_cnt; i++)
-	{
-		worldVertices.emplace_back(mdl_to_world_xform * modelcoord[i]);
-		ndc_coords.emplace_back(world_to_ndc_xform * worldVertices[i]);
-	}
-}
-
-
-/*  _________________________________________________________________________*/
-/*! GLObject::draw
 
 @param none
 @return none
@@ -412,7 +339,7 @@ void App::draw()
 	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	
+
 	std::vector<GLenum> primtypestorage;
 	primtypestorage.emplace_back(GL_TRIANGLES);
 	if (coldebug == true)

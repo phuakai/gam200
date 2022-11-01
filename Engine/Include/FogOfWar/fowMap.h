@@ -18,8 +18,6 @@ Technology is prohibited.
 #include "mat3x3.h"
 #include <list>
 #include <iterator>
-#include "../mainHeader.h"
-#include "ECS.h"
 
 namespace fow
 {
@@ -161,7 +159,7 @@ namespace fow
 
 	};// struct fogOfWarMap
 
-	static fogOfWarMap fowMap {1600, 900, 20, 20, vector2D::vec2D(0.f, 0.f)};
-
 }// namespace fow
+
+extern fow::fogOfWarMap fowMap;
 

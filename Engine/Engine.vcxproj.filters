@@ -198,6 +198,18 @@
     <Filter Include="Header Files\UI">
       <UniqueIdentifier>{71f9f095-643f-47cf-9e8e-6ff9f16ccf8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{f334d1cf-28ce-48f9-a1da-a3d6eeb748f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Audio\inc">
+      <UniqueIdentifier>{29f13a39-8c7b-4a69-9db0-e4eb026944ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Font\Freetype\config">
+      <UniqueIdentifier>{f1082ed9-0d01-48dc-89a5-7095b4f3f5f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{d141ac59-5cb6-44d6-a867-497244acaa56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Graphics\camera.cpp">
@@ -377,23 +389,17 @@
     <ClCompile Include="Source\Graphics\framebuffer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Source\AudioEngine\AudioEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\FontSystem\Font.cpp">
-      <Filter>Source Files\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\window.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Graphics\inputSystem.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="Source\UI\ui.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\uiManager.cpp">
       <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FontSystem\Font.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\AudioEngine\AudioEngine.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -988,17 +994,62 @@
     <ClInclude Include="Include\Graphics\framebuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Graphics\window.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Include\AudioEngine\AudioEngine.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod.hpp">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_codec.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_common.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_dsp.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_dsp_effects.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_errors.h">
+      <Filter>Header Files\Audio\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AudioEngine\inc\fmod_output.h">
+      <Filter>Header Files\Audio\inc</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\Font.h">
       <Filter>Header Files\Font</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\ft2build.h">
       <Filter>Header Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftmodule.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftoption.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftstdlib.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\integer-types.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\mac-support.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\public-macros.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftconfig.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\FontSystem\freetype\config\ftheader.h">
+      <Filter>Header Files\Font\Freetype\config</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftadvanc.h">
       <Filter>Header Files\Font\Freetype</Filter>
@@ -1027,9 +1078,6 @@
     <ClInclude Include="Include\FontSystem\freetype\ftcolor.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\ftconfig.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftdriver.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
@@ -1052,9 +1100,6 @@
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftgzip.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\ftheader.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftimage.h">
@@ -1087,12 +1132,6 @@
     <ClInclude Include="Include\FontSystem\freetype\ftmoderr.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\ftmodule.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\ftoption.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftotval.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
@@ -1114,9 +1153,6 @@
     <ClInclude Include="Include\FontSystem\freetype\ftsnames.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\ftstdlib.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\ftstroke.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
@@ -1135,16 +1171,7 @@
     <ClInclude Include="Include\FontSystem\freetype\ftwinfnt.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\integer-types.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\mac-support.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\otsvg.h">
-      <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\FontSystem\freetype\config\public-macros.h">
       <Filter>Header Files\Font\Freetype</Filter>
     </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\t1tables.h">
@@ -1161,9 +1188,6 @@
     </ClInclude>
     <ClInclude Include="Include\FontSystem\freetype\freetype.h">
       <Filter>Header Files\Font\Freetype</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Graphics\inputSystem.h">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Include\UI\ui.h">
       <Filter>Header Files\UI</Filter>
@@ -1190,6 +1214,15 @@
     </None>
     <None Include="Source\Serialization\rttr\detail\base\version.h.in">
       <Filter>Source Files\Serialization\rttr\detail\base</Filter>
+    </None>
+    <None Include="Include\AudioEngine\inc\fmod.cs">
+      <Filter>Header Files\Audio\inc</Filter>
+    </None>
+    <None Include="Include\AudioEngine\inc\fmod_dsp.cs">
+      <Filter>Header Files\Audio\inc</Filter>
+    </None>
+    <None Include="Include\AudioEngine\inc\fmod_errors.cs">
+      <Filter>Header Files\Audio\inc</Filter>
     </None>
   </ItemGroup>
 </Project>

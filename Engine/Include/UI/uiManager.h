@@ -20,7 +20,6 @@ Technology is prohibited.
 #define UI_H
 
 #include "ui.h"
-#include "../mainHeader.h"
 
 namespace UI
 {

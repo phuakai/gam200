@@ -215,32 +215,6 @@ namespace CameraNS
 				up.x, up.y, -(up.x * position.x + up.y * position.y),
 				0, 0, 1);
 		}
-	if (Graphics::Input::keystateZ == GL_TRUE)
-	{
-		if (height >= max_height)
-		{
-			height_chg_dir = -1;
-		}
-		else if (height <= min_height)
-		{
-			height_chg_dir = 1;
-		}
-		height += height_chg_val * height_chg_dir;
-	}
-
-	if (camtype_flag == GL_FALSE)
-	{
-		view_xform = matrix3x3::mat3x3(1, 0, -pgo->modelCenterPos.x,
-			0, 1, -pgo->modelCenterPos.y,
-			0, 0, 1);
-	}
-	else
-	{
-		//std::cout << "isit this\n";
-		view_xform = matrix3x3::mat3x3(right.x, right.y, -(right.x * pgo->modelCenterPos.x + right.y * pgo->modelCenterPos.y),
-			up.x, up.y, -(up.x * pgo->modelCenterPos.x + up.y * pgo->modelCenterPos.y),
-			0, 0, 1);
-	}
 
 		camworld_to_ndc_xform = camwin_to_ndc_xform * view_xform;
 		//std::cout << "camworld " << camworld_to_ndc_xform.m[0] << std::endl;

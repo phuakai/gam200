@@ -15,6 +15,7 @@ Technology is prohibited.
 /* End Header **************************************************************************/
 
 #include "uiManager.h"
+#include "mainHeader.h"
 #include "input.h"
 #include <iterator>
 #include <algorithm>

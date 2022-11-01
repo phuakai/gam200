@@ -17,9 +17,7 @@ Technology is prohibited.
 #pragma once
 
 #include "vec2D.h"
-#include "../mainHeader.h"
 #include "ECS.h"
-
 
 namespace UI
 {
