@@ -23,12 +23,12 @@ namespace Graphics
 		Initializes the collision debug
 	 */
 	 /**************************************************************************/
-	void collisionDebugInit(GLApp::GLObject& object);
+	//void collisionDebugInit(App::GLObject& object);
 
 	/**************************************************************************/
 	/*!
 		Creates the collision debug objects
 	 */
 	 /**************************************************************************/
-	void collisionDebugCreate(GLApp::GLObject& object);
+	//void collisionDebugCreate(App::GLObject& object);
 }

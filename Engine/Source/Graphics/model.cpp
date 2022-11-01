@@ -227,4 +227,13 @@ namespace ModelNS
 	{
 		return eboid;
 	}
+
+	void initModels(std::map<std::string, ModelNS::Model>& modellist)
+	{
+		ModelNS::Model tmpmodel; // Init line model
+		tmpmodel = tmpmodel.init("line");
+		modellist["line"] = tmpmodel;
+		tmpmodel = tmpmodel.init("square");
+		modellist["square"] = tmpmodel;
+	}
 }

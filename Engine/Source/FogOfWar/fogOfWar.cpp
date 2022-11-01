@@ -1,13 +1,29 @@
+/* Start Header ************************************************************************/
+/*!
+\file		fowOfWar.cpp
+\author		Grace Lee, lee.g, 390002621
+\par		lee.g\@digipen.edu
+\date		Oct 26, 2022
+\brief		This file contains the function definitions collision detections and responses
+			between circle and polygon objects
+
+Copyright (C) 2022 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents
+without the prior written consent of DigiPen Institute of
+Technology is prohibited.
+*/
+/* End Header **************************************************************************/
+
 #include "fogOfWar.h"
-//#include "collision.h"
 
 namespace fow
 {
-	/**************************************************
+	/************************************************************************************
 	*
 	*	FOG OF WAR TILE
 	*
-	**************************************************/
+	************************************************************************************/
+
 	direction& operator++(direction& dir) {
 		if (dir == direction::ne)
 			dir = direction::n;
@@ -23,6 +39,11 @@ namespace fow
 		return tmp;
 	}
 
+	/**************************************************************************/
+	/*!
+		Constructor for the fog of war tile
+	*/
+	/**************************************************************************/
 	fowTile::fowTile()
 	{
 		id = width = height = 0;
@@ -30,6 +51,11 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 	
+	/**************************************************************************/
+	/*!
+		Constructor for the fog of war tile
+	*/
+	/**************************************************************************/
 	fowTile::fowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos)
 	{
 		id = 0;
@@ -40,6 +66,11 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 
+	/**************************************************************************/
+	/*!
+		Creator for the fog of war tile
+	*/
+	/**************************************************************************/
 	void fowTile::createFowTile(int _width, int _height, vector2D::vec2D _worldPos, vector2D::vec2D _gridPos)
 	{
 		width = _width;
@@ -49,35 +80,65 @@ namespace fow
 		state = fowTileState::unvisited;
 	}
 
-	void fowTile::removeFromTile(EntityID id, vector2D::vec2D oldMapPos)
+	/**************************************************************************/
+	/*!
+		This function removes endities from the fog of war tile
+	*/
+	/**************************************************************************/
+	void fowTile::removeFromTile(EntityID _id, vector2D::vec2D oldMapPos)
 	{
 		//remove entity from tile
-		entitiesOnTile.remove(id);
+		entitiesOnTile.remove(_id);
 	}
 
-	void fowTile::addToTile(EntityID id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos)
+	/**************************************************************************/
+	/*!
+		This function adds endities to the fog of war tile
+	*/
+	/**************************************************************************/
+	void fowTile::addToTile(EntityID _id, std::list<vector2D::vec2D> LOS, vector2D::vec2D oldMapPos)
 	{
 		//add entity to tile
-		entitiesOnTile.emplace_back(id);
+		entitiesOnTile.emplace_back(_id);
 		//update states of surrounding tile
 		state = fowTileState::visible;
 	}
 
+	/**************************************************************************/
+	/*!
+		This function updates the state of the tile to fogged (second layer)
+	*/
+	/**************************************************************************/
 	void fowTile::updateTileStateToFog()
 	{
 		state = fowTileState::fogged;
 	}
 
+	/**************************************************************************/
+	/*!
+		This function updates the state of the tile to visible (first layer)
+	*/
+	/**************************************************************************/
 	void fowTile::updateTileStateToVisible()
 	{
 		state = fowTileState::visible;
 	}
 
+	/**************************************************************************/
+	/*!
+		Getter for entity id on the tile
+	*/
+	/**************************************************************************/
 	EntityID fowTile::getid()
 	{
 		return id;
 	}
 
+	/**************************************************************************/
+	/*!
+		Getter for tile width
+	*/
+	/**************************************************************************/
 	int fowTile::getWdith()
 	{
 		return width;
@@ -113,11 +174,11 @@ namespace fow
 		id = _id;
 	}
 
-	/**************************************************
+	/************************************************************************************
 	* 
 	*	FOG OF WAR OBJECT
 	* 
-	**************************************************/
+	************************************************************************************/
 	fowObj::fowObj()
 	{
 		id = 0;
@@ -152,51 +213,51 @@ namespace fow
 		LOS.clear();
 
 		// floor the map pos
-		int W{ static_cast<int>(currMapPos.x) - visionRad },
-			E{ static_cast<int>(currMapPos.x) + visionRad }, 
-			S{ static_cast<int>(currMapPos.y) - visionRad },
-			N{ static_cast<int>(currMapPos.y) + visionRad };
+		float	W{ static_cast<float>(static_cast<int>(currMapPos.x) - visionRad) },
+				E{ static_cast<float>(static_cast<int>(currMapPos.x) + visionRad) }, 
+				S{ static_cast<float>(static_cast<int>(currMapPos.y) - visionRad) },
+				N{ static_cast<float>(static_cast<int>(currMapPos.y) + visionRad) };
 
 		if (mapPos.x < visionRad)
 		{
-			W = 0;
+			W = 0.f;
 		}
 		else if (mapPos.x >= col - visionRad)
 		{
-			E = col - 1;
+			E = static_cast<float>(col) - 1.f;
 		}
 		if (mapPos.y < visionRad)
 		{
-			S = 0;
+			S = 0.f;
 		}
 		else if (mapPos.y >= row - visionRad)
 		{
-			N = row - 1;
+			N = static_cast<float>(row) - 1.f;
 		}
 
 		// top row
-		for (int c = W; c <= E; ++c)
+		for (float c = W; c <= E; ++c)
 		{
 			frontier.emplace_back(vector2D::vec2D(c, N));
 		}
-		for (int r = N; r >= S; --r)
+		for (float r = N; r >= S; --r)
 		{
 			frontier.emplace_back(vector2D::vec2D(E, r));
 		}
 		// bottom row
-		for (int c = E; c >= W; --c)
+		for (float c = E; c >= W; --c)
 		{
 			frontier.emplace_back(vector2D::vec2D(c, S));
 		}
 		// left column
-		for (int r = S; r <= N; ++r)
+		for (float r = S; r <= N; ++r)
 		{
 			frontier.emplace_back(vector2D::vec2D(W, r));
 		}
 
-		for (int r = S + 1; r <= N - 1; ++r)
+		for (float r = S + 1; r <= N - 1; ++r)
 		{
-			for (int c = W + 1; c <= E - 1; ++c)
+			for (float c = W + 1; c <= E - 1; ++c)
 			{
 				LOS.emplace_back(vector2D::vec2D(c, r));
 			}

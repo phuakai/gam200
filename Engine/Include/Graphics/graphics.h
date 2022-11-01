@@ -9,15 +9,15 @@ This file handles the batch rendering of the game
 #pragma once
 
 //#include <GL/glew.h> // for access to OpenGL API declarations 
-#include <glslshader.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-//#include <app.h>
 #include <vec2D.h>
 #include <vec3D.h>
 #include <mat3x3.h>
+#include <mat4x4.h>
 #include <model.h>
 #include <texture.h>
+#include "framebuffer.h"
 
 namespace RenderNS
 {
@@ -25,11 +25,14 @@ namespace RenderNS
 	class InstancedRenderer
 	{
 	public:
+		int entitycounter{};
 		GLSLShader instanceshader{}; // Shader of all objects in instance
 		GLSLShader frameshader{}; // Shader of all objects in instance
 		std::vector<ModelNS::modelVtxData> headerdata{}; // Main (control) object in instance
-		std::vector<matrix3x3::mat3x3> instancedata{}; // All transformations for different instances
+		std::vector<matrix4x4::mat4x4> instancedata{}; // All transformations for different instances
 		std::vector<GLushort> ebodata{}; // Ebo/indices data
+
+		GLenum primtype{};
 		GLuint vaoid{};
 
 		/******************************************************************************/
@@ -38,7 +41,7 @@ namespace RenderNS
 		*/
 		/******************************************************************************/
 		//static void InstanceRender(std::vector<Texture>& texobjs, GLSLShader shader, GLuint vaoid, std::vector<vertexData> data, std::vector<vector2D::vec2D> offsetdata); // instance renders all objects in render
-		void InstanceRender(TextureNS::Texture& texobjs, int entitycount); // instance renders all objects in render
+		void InstanceRender(TextureNS::Texture& texobjs); // instance renders all objects in render
 
 		/******************************************************************************/
 		/*!
@@ -104,6 +107,7 @@ namespace RenderNS
 	};
 
 	//static BatchRenderer basicbatch;
-
+	void DrawFunc(std::vector<RenderNS::InstancedRenderer>& instanceobj, FrameBufferNS::frameBuffer& frame, GLSLShader shadertouse, std::map<std::string, ModelNS::Model> models, TextureNS::Texture texobj, std::vector<GLenum> primitive);
+	void QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<std::string, ModelNS::Model> models);
 
 }

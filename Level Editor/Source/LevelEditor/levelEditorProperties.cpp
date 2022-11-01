@@ -30,6 +30,8 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 	static bool check = true;
 	static std::vector<int> componentCheck(ecs.getAllRegisteredComponents().size(), 0);
 
+	//ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+
 	if (id != -1)
 	{
 		std::vector<std::string>allComponents = ecs.getAllRegisteredComponents();
@@ -101,6 +103,7 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
 						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
 						property.set_value(componentInstance, temp);
+
 					}
 
 					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())

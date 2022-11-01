@@ -9,13 +9,15 @@ This file creates the transformation matrices and converts NDC to World / World 
 #include <graphics.h>
 #include <camera.h>
 #include <iostream>
+#define _USE_MATH_DEFINES //for pi
+#include <math.h>
+
+extern CameraNS::Camera2D camera2d;
 
 matrix3x3::mat3x3 Transform::createNDCtoViewport()
 {
-
-	int winWidth = Graphics::camera2d.getWinWidth();
-	int winHeight = Graphics::camera2d.getWinHeight();
-
+	int winWidth = camera2d.getWidth();
+	int winHeight = camera2d.getHeight();
 	float halfWinWidth{ static_cast<float>(winWidth) / 2 };
 	float halfWinHeight{ static_cast<float>(winHeight) / 2 };
 	matrix3x3::mat3x3 ndc_to_viewport
@@ -62,8 +64,8 @@ matrix3x3::mat3x3 Transform::createWorldtoModel()
 
 matrix3x3::mat3x3 Transform::createWorldtoNDC()
 {
-	int height = Graphics::Input::screenheight;
-	int width = Graphics::Input::screenwidth;
+	int height = (int)Graphics::Input::screenheight;
+	int width = (int)Graphics::Input::screenwidth;
 	
 	
 	// at startup, the camera must be initialized to free camera ...
@@ -99,7 +101,7 @@ matrix3x3::mat3x3 Transform::createWorldtoNDC()
 
 	//return world_to_ndc_xform;
 
-	return Graphics::camera2d.getWorldtoNDCxForm();
+	return camera2d.getWorldtoNDCxForm();
 }
 
 matrix3x3::mat3x3 Transform::createNDCtoWorld()
@@ -138,9 +140,10 @@ matrix3x3::mat3x3 Transform::createTranslationMat(vector2D::vec2D translation)
 
 matrix3x3::mat3x3 Transform::createRotationMat(float rot)
 {
+	float rotrad = rot * (M_PI/180.f);
 	matrix3x3::mat3x3 final
-	(cos(rot), -sin(rot), 0,
-		sin(rot), cos(rot), 0,
+	(cos(rotrad), sin(rotrad), 0,
+		-sin(rotrad), cos(rotrad), 0,
 		0, 0, 1);
 	return final;
 }

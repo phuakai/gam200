@@ -33,6 +33,7 @@ struct BaseInfo
 	std::string name;
 	vector2D::vec2D position{ 0 , 0 };
 	vector2D::vec2D dimension{ 0 , 0 };
+	vector2D::vec2D orientation{ 0 , 0 };
 };
 
 struct Texture
