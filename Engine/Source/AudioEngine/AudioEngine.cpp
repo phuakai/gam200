@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
 \file   AudioEngine.cpp
-\author Ow Xin Rui
-\par    email: xinrui.ow@digipen.edu
+\author Ow Xin Rui, Pang Tun Dagh
+\par    email: xinrui.ow@digipen.edu, tundagh.pang@digipen.edu
 \par    DigiPen login: xinrui.ow
 \par    Course: CSD2400
 \brief
