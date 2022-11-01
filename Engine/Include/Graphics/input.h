@@ -33,6 +33,7 @@ namespace Graphics
 		static GLboolean keystateD;  // Rotate
 
 		static GLboolean keystateZ;  // Zoom
+		static GLboolean keystateSpacebar;  // Pause
 		//static GLboolean keystateV;  // View
 
 		static GLboolean keystateC;  // Collision

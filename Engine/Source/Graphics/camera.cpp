@@ -153,6 +153,19 @@ void Graphics::Camera2D::update(GLFWwindow* pWindow)
 		height += height_chg_val * height_chg_dir;
 	}
 
+	if (Graphics::Input::keystateZ == GL_TRUE)
+	{
+		if (height >= max_height)
+		{
+			height_chg_dir = -1;
+		}
+		else if (height <= min_height)
+		{
+			height_chg_dir = 1;
+		}
+		height += height_chg_val * height_chg_dir;
+	}
+
 	if (camtype_flag == GL_FALSE)
 	{
 		view_xform = matrix3x3::mat3x3(1, 0, -pgo->modelCenterPos.x,

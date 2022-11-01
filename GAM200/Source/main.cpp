@@ -72,7 +72,6 @@ abstracted away in GLApp::init
 */
 static void init() 
 {
-   
     engineInit();
     imguiInit();
 }
@@ -89,6 +88,7 @@ mouse movement, and mouse scroller events to be processed.
 static void update() 
 {
     engineUpdate();
+
 
     if (Graphics::Input::keystateI)
     {

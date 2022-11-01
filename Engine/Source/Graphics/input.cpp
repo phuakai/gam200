@@ -30,6 +30,7 @@ GLboolean Graphics::Input::keystateS;
 GLboolean Graphics::Input::keystateD;
 
 GLboolean Graphics::Input::keystateZ;  // Zoom
+GLboolean Graphics::Input::keystateSpacebar;  // Zoom
 //GLboolean Graphics::Input::keystateV;	// View
 
 GLboolean Graphics::Input::keystateC;  // Collision
@@ -71,6 +72,7 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 	Graphics::Input::keystateD = false;
 
 	Graphics::Input::keystateZ = false;  // Zoom
+	Graphics::Input::keystateSpacebar = false;
 
 	Graphics::Input::keystateC = false;  // Collision
 	Graphics::Input::keystateI = false;  // Collision
@@ -189,6 +191,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 			keystateZ = GL_TRUE;
 		}
 
+		if (key == GLFW_KEY_SPACE) // Zoom
+		{
+			keystateSpacebar = GL_TRUE;
+		}
+
 		if (key == GLFW_KEY_C) // Collision
 		{
 			keystateC = GL_TRUE;
@@ -276,6 +283,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 		if (key == GLFW_KEY_Z) // Zoom
 		{
 			keystateZ = GL_TRUE;
+		}
+
+		if (key == GLFW_KEY_SPACE) // Zoom
+		{
+			keystateSpacebar = GL_FALSE;
 		}
 
 		if (key == GLFW_KEY_C) // Collision
@@ -366,6 +378,11 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 		if (key == GLFW_KEY_Z) // Zoom
 		{
 			keystateZ = GL_FALSE;
+		}
+
+		if (key == GLFW_KEY_SPACE) 
+		{
+			keystateSpacebar = GL_FALSE;
 		}
 
 		if (key == GLFW_KEY_C) // Collision
