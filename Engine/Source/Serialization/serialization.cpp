@@ -31,11 +31,15 @@ using namespace rttr;
 instance addComponentByName(type& componentName, const EntityID& entityID)
 {
     if (componentName == type::get<Render>())
-        return *(ecs.AddComponent<Render>(entityID));
+    {
+        return *(ecs.AddComponent<Render>(entityID, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true));
+    }
     else if (componentName == type::get<BaseInfo>())
         return *(ecs.AddComponent<BaseInfo>(entityID));
     else if (componentName == type::get<Texture>())
-        return *(ecs.AddComponent<Texture>(entityID));
+    {
+        return *(ecs.AddComponent<Texture>(entityID, 4, 1, 1, "Enemy"));
+    }
     else if (componentName == type::get<Physics>())
         return *(ecs.AddComponent<Physics>(entityID));
 }

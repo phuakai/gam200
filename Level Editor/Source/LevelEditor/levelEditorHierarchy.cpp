@@ -59,6 +59,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				{
 					rttr::type component = rttr::type::get_by_name(j);
 					addComponentByName(component, selected);
+
 					if (j == "Physics")
 					{
 						ecs.GetComponent<Physics>(selected)->formationManagerID = -1;

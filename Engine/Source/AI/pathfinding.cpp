@@ -537,7 +537,7 @@ vector2D::vec2D FormationManager::formationPosition(int index)
 	vector2D::vec2D slotRelativePosition;
 	int rows = (int)round(sqrt(slotAssignment.size()));
 	int columns;
-	if (sqrt(slotAssignment.size()) == (int)sqrt(slotAssignment.size()))
+	if ((round(slotAssignment.size() / rows == (int)round(slotAssignment.size() / rows))) || ((int)round(slotAssignment.size() / rows) == (double)((int)sqrt(slotAssignment.size()))))
 	{
 		columns = (int)round(slotAssignment.size() / rows);
 	}
@@ -546,8 +546,15 @@ vector2D::vec2D FormationManager::formationPosition(int index)
 		columns = (int)round(slotAssignment.size() / rows) == (int)round(slotAssignment.size() / rows) + 1 ? (int)round(slotAssignment.size() / rows) : (int)round(slotAssignment.size() / rows) + 1;
 	}
 	
-	slotRelativePosition.x = (index % columns) - (columns - 1) / 2.f;
-	slotRelativePosition.y = (index / rows) - (rows - 1) / 2.f;
+	if (columns == rows + 1)
+	{
+		slotRelativePosition.x = (float)(index % (columns - 1)) - (columns - 1) / 2.f;
+	}
+	else
+	{
+		slotRelativePosition.x = (float)(index % columns) - (columns - 1) / 2.f;
+	}
+	slotRelativePosition.y = (float)(index / rows) - (rows - 1) / 2.f;
 
 	slotRelativePosition *= ecs.GetComponent<Physics>(slotAssignment[index])->radius;
 

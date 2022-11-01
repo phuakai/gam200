@@ -9,6 +9,8 @@
 #include "GraphEditor.h"
 #include <math.h>
 
+extern std::vector<Entity> enemyUnits;
+
 bool show_demo_window;
 bool show_another_window;
 ImVec4 clear_color;
@@ -145,6 +147,8 @@ void imguiUpdate()
 	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
 	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
 	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
+
+	ShowExampleAppCustomNodeGraph((bool*)1);
 		 
 	if (ImGui::Begin("Camera", (bool*)0, ImGuiWindowFlags_NoScrollbar))
 	{
@@ -241,8 +245,6 @@ void imguiUpdate()
 
 	ImGui::End();
 	// ========================================================================================================
-
-	ShowExampleAppCustomNodeGraph((bool*)1);
 
 	ImGui::Render();
 }

@@ -97,6 +97,7 @@ Entity bg;
 Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(100);
+extern std::vector<Entity> enemyUnits;
 //std::vector<Entity> cloud(fow::fowMap.getDims());
 std::vector<Entity> uiEntity(113);
 
@@ -179,7 +180,7 @@ void engineInit()
 	const EntityID& enemyPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(enemyPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
-	ecs.AddComponent<Texture>(enemyPrefab, 6, 0, 0, "");
+	ecs.AddComponent<Texture>(enemyPrefab, 4, 1, 1, "Enemy");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
@@ -316,7 +317,7 @@ void engineInit()
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
 		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(40, 40), vector2D::vec2D(0.f, 0.f));
 		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
-		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 40, false, 0);
+		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 4, 0, vector2D::vec2D(0, 0), 40, false, 0);
 		enemyUnits[i].Add<Unit>(0, 0);
 		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
@@ -490,6 +491,8 @@ void engineUpdate()
 {
 	t1 = std::chrono::steady_clock::now();
 
+	static FormationManager newManager;
+
 	double mousePosX = 0.0, mousePosY = 0.0;
 	if (Graphics::Input::keystateSpacebar)
 	{
@@ -544,8 +547,8 @@ void engineUpdate()
 
 			if (formationManagerInfo->dimension.x < 2 && formationManagerInfo->dimension.y < 2)	// click and not drag
 			{
-				formationManagerInfo->dimension.x = 10;
-				formationManagerInfo->dimension.y = 10;
+				formationManagerInfo->dimension.x = 30;
+				formationManagerInfo->dimension.y = 30;
 
 				formationManagerInfo->position = dragSelectStartPosition;
 
@@ -560,105 +563,99 @@ void engineUpdate()
 			{
 				selected = 1;
 			}
+
+			// Checking for units in the selected area using quadTree
+			vector2D::vec2D center = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
+			vector2D::vec2D dimension;
+			dimension.x = fabs(dragSelectEndPosition.x - dragSelectStartPosition.x);
+			dimension.y = fabs(dragSelectEndPosition.y - dragSelectStartPosition.y);
+
+			std::list<EntityID*> myList;
+			AABB range(center.x - dimension.x / 2,
+				center.y - dimension.y / 2,
+				center.x + dimension.x / 2,
+				center.y + dimension.y / 2);
+			mainTree.query(range, myList);
+
+			if (myList.size() != 0)
+			{
+				int newFormationManagerID = formationManagers.size();
+				// Finding inactive formation manager
+				for (int i = 0; i < formationManagers.size(); ++i)
+				{
+					// means inactive
+					if (formationManagers[i].slotAssignment.size() == 0)
+					{
+						newFormationManagerID = i;
+						break;
+					}
+				}
+				currentFormationManagerID = newFormationManagerID;
+
+				newManager.slotAssignment.clear();
+
+				for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
+				{
+					if ((**obj2) == player1.GetID()  /* || (**obj2) == enemyManagerEntity.GetID() */ || (**obj2) == formationManager.GetID() || ecs.GetComponent<Physics>((**obj2)) == nullptr)
+					{
+						continue;
+					}
+
+					int& formationManagerID = ecs.GetComponent<Physics>((**obj2))->formationManagerID;
+
+					if (formationManagerID != -1)
+					{
+						auto initialFormationManagerSlot = std::find(formationManagers[formationManagerID].slotAssignment.begin(), formationManagers[formationManagerID].slotAssignment.end(), (**obj2));
+
+						if (initialFormationManagerSlot == formationManagers[formationManagerID].slotAssignment.end())
+						{
+							formationManagerID = -1;
+						}
+						else
+						{
+							formationManagers[formationManagerID].slotAssignment.erase(initialFormationManagerSlot);
+						}
+					}
+
+					newManager.addCharacter((**obj2));
+					formationManagerID = newFormationManagerID;
+					//ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
+
+					// Add unit to info
+					UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
+
+					if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
+					{
+						break;
+					}
+				}
+
+				// Add actions to panel
+				UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+
+				if (newFormationManagerID != formationManagers.size())
+				{
+					formationManagers[newFormationManagerID] = newManager;
+				}
+				else
+				{
+					formationManagers.push_back(newManager);
+				}
+
+				selected = 0;
+
+				BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+
+				formationManagerInfo->dimension.x = 0;
+				formationManagerInfo->dimension.y = 0;
+			}
+
 			drag = false;
 		}
 
 		if (Graphics::Input::mousestateRight)
 		{
-			if (selected > 0)
-			{
-				// Checking for units in the selected area using quadTree
-				vector2D::vec2D center = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
-				vector2D::vec2D dimension;
-				dimension.x = fabs(dragSelectEndPosition.x - dragSelectStartPosition.x);
-				dimension.y = fabs(dragSelectEndPosition.y - dragSelectStartPosition.y);
-
-				std::list<EntityID*> myList;
-				AABB range(center.x - dimension.x / 2,
-					center.y - dimension.y / 2,
-					center.x + dimension.x / 2,
-					center.y + dimension.y / 2);
-				mainTree.query(range, myList);
-
-				if (myList.size() != 0)
-				{
-					int newFormationManagerID = formationManagers.size();
-					// Finding inactive formation manager
-					for (int i = 0; i < formationManagers.size(); ++i)
-					{
-						// means inactive
-						if (formationManagers[i].slotAssignment.size() == 0)
-						{
-							newFormationManagerID = i;
-							break;
-						}
-					}
-					currentFormationManagerID = newFormationManagerID;
-
-					FormationManager newManager;
-					newManager.target = vector2D::vec2D(mousePosX, mousePosY);
-
-					for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
-					{
-						if ((**obj2) == player1.GetID()  /* || (**obj2) == enemyManagerEntity.GetID() */ || (**obj2) == formationManager.GetID() || ecs.GetComponent<Physics>((**obj2)) == nullptr)
-						{
-							continue;
-						}
-
-						int& formationManagerID = ecs.GetComponent<Physics>((**obj2))->formationManagerID;
-
-						if (formationManagerID != -1)
-						{
-							auto initialFormationManagerSlot = std::find(formationManagers[formationManagerID].slotAssignment.begin(), formationManagers[formationManagerID].slotAssignment.end(), (**obj2));
-
-							if (initialFormationManagerSlot == formationManagers[formationManagerID].slotAssignment.end())
-							{
-								formationManagerID = -1;
-							}
-							else
-							{
-								formationManagers[formationManagerID].slotAssignment.erase(initialFormationManagerSlot);
-							}
-						}
-
-						newManager.addCharacter((**obj2));
-						formationManagerID = newFormationManagerID;
-						ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
-
-						// Add unit to info
-						UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
-
-						if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
-						{
-							break;
-						}
-					}
-
-					// Add actions to panel
-					UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
-
-					newManager.generateDijkstraCost(walls);
-					newManager.generateFlowField();
-					newManager.updateReached();
-
-					if (newFormationManagerID != formationManagers.size())
-					{
-						formationManagers[newFormationManagerID] = newManager;
-					}
-					else
-					{
-						formationManagers.push_back(newManager);
-					}
-
-					selected = 0;
-
-					BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
-
-					formationManagerInfo->dimension.x = 0;
-					formationManagerInfo->dimension.y = 0;
-				}
-			}
-			else if (selected != -1)
+			if (selected != -1)
 			{
 				formationManagers[currentFormationManagerID].target = vector2D::vec2D(mousePosX, mousePosY);
 				formationManagers[currentFormationManagerID].generateDijkstraCost(walls);
