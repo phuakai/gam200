@@ -721,41 +721,9 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
     T& t,
     Ts... ts)
 {
-    //typedef std::tuple_element<Index, std::tuple<Cs...>>::type IthT;
-    //std::size_t index2 = 0;
-    //ComponentTypeID thisTypeCS = Component<IthT>::GetTypeID();
-    //ComponentTypeID thisArchetypeID = archeTypeIds[index2];
-    //while (thisTypeCS != thisArchetypeID && index2 < archeTypeIds.size())
-    //{
-    //    ++index2;
-    //    thisArchetypeID = archeTypeIds[index2];
-    //}
-    //if (index2 == archeTypeIds.size())
-    //{
-    //    throw std::runtime_error
-    //    ("System was executed against an incorrect Archetype");
-    //}
-
-    //DoAction<Index + 1>(elapsedMilliseconds,
-    //    archeTypeIds,
-    //    entityIDs,
-    //    t,
-    //    ts...,
-    //    reinterpret_cast<IthT*>(&t[index2][0]));
-
     typedef std::tuple_element<Index, std::tuple<Cs...>>::type IthT;
-    //std::size_t index2 = 0;
+
     ComponentTypeID thisTypeCS = Component<IthT>::GetTypeID();
-    //ComponentTypeID thisArchetypeID = index2;
-    //while (index2 < archeTypeIds.size())       // this has a problem
-    //{
-    //    if (thisTypeCS == thisArchetypeID)
-    //    {
-    //        break;
-    //    }
-    //    ++index2;
-    //    thisArchetypeID = archeTypeIds[index2];
-    //}
 
     if (!archeTypeIds[thisTypeCS])
     {

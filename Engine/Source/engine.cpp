@@ -298,7 +298,6 @@ void engineInit()
 		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
 	}
 
-
 	FormationManager enemyManager;
 	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
 
@@ -432,20 +431,23 @@ void engineInit()
 		///}
 	});
 
-	textureSystem.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Texture* t, Physics* p)
-	{
-		if ((int)timer % 5 == 0)
-		{
-			for (int i = 0; i < entities.size(); ++i)
-			{
-				++t[i].spriteStep;
-				if (t[i].spriteStep >= 4)
-				{
-					t[i].spriteStep = 0;
-				}
-			}
-		}
-	});
+	//textureSystem.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Texture* t, Physics* p)
+	//{
+	//	if (timer <= 0)
+	//	{
+	//		for (int i = 0; i < entities.size(); ++i)
+	//		{
+	//			std::cout << i << std::endl;
+	//			t[i].spriteStep += 1;
+
+	//			if (t[i].spriteStep >= 4)
+	//			{
+	//				t[i].spriteStep = 0;
+	//			}
+	//		}
+	//		timer = 5.f;
+	//	}
+	//});
 
 	drag = false;
 	selected = -1;
@@ -670,39 +672,56 @@ void engineUpdate()
 			Graphics::Input::mousestateRight = false;
 		}
 
-		if (timer > 4)
+		ecs.RunSystems(2, 100);
+
+		for (int i = 0; i < formationManagers.size(); ++i)
 		{
-			ecs.RunSystems(2, 100);
+			vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
-			for (int i = 0; i < formationManagers.size(); ++i)
+			if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 5 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 5) &&
+				(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 5 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 5))
 			{
-				vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+				formationManagers[i].reached = true;
+			}
 
-				if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 5 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 5) &&
-					(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 5 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 5))
-				{
-					formationManagers[i].reached = true;
-				}
+			if (!formationManagers[i].reached)
+			{
+				formationManagers[i].updateAnchorPosition();
+				//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
+				formationManagers[i].updateSlots();
+			}
+		}
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
-				if (!formationManagers[i].reached)
+		t1 = std::chrono::steady_clock::now();
+		physicsUpdate();					// physics system
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+
+		timer -= (float)Graphics::Input::delta_time;
+
+		if (timer <= 0)
+		{
+			std::vector<EntityID> entities = ecs.getEntities();
+
+			for (int i = 0; i < entities.size(); ++i)
+			{
+				if (ecs.GetComponent<Texture>(entities[i])->textureID == 4)
 				{
-					formationManagers[i].updateAnchorPosition();
-					//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
-					formationManagers[i].updateSlots();
+					std::cout << ecs.GetComponent<BaseInfo>(entities[i])->type << std::endl;
+
+					ecs.GetComponent<Texture>(entities[i])->spriteStep += 1;
+
+					if (ecs.GetComponent<Texture>(entities[i])->spriteStep >= 4)
+					{
+						ecs.GetComponent<Texture>(entities[i])->spriteStep = 0;
+					}
 				}
 			}
-			t2 = std::chrono::steady_clock::now();
-			ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
-
-			t1 = std::chrono::steady_clock::now();
-			physicsUpdate();					// physics system
-			t2 = std::chrono::steady_clock::now();
-			ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+			timer = 5.0f;
 		}
-		
-		ecs.RunSystems(1, 100);
-
-		timer += (float)Graphics::Input::delta_time;
 	}
 
 	glfwPollEvents();
