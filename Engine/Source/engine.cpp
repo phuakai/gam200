@@ -174,10 +174,10 @@ void engineInit()
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f)), vector2D::vec2D(0.f, 0.f);
 	// velocity, target, force, speed
-	player1.Add<Texture>(0, 1, 1, "none");
+	player1.Add<Texture>(12, 1, 1, "none");
 	//player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
@@ -301,7 +301,7 @@ void engineInit()
 
 	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
 	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
-	formationManager.Add<Texture>(0, 1, 1, "FM");
+	formationManager.Add<Texture>(12, 1, 1, "FM");
 	ecs.setEntityName(formationManager.GetID(), "formationManager");
 
 	timer = 4;
