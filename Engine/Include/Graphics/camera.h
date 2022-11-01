@@ -11,12 +11,12 @@ This file controls the camera of the game
 #include <vector>
 #include <vec2D.h>
 #include <mat3x3.h>
-#include <app.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+//#include <app.h>
 
-namespace Graphics
+namespace CameraNS
 {
-
-
 	struct GLViewport
 	{
 		GLint x, y;
@@ -27,63 +27,54 @@ namespace Graphics
 	{
 	public:
 		Camera2D();
-		void init(GLFWwindow* pWindow, GLApp::GLObject* ptr);
+		void init(GLFWwindow* pWindow, vector2D::Vec2 pos, vector2D::Vec2 orient);
 		void update(GLFWwindow* pWindow);
 
-		// Temp
+		// Getters
 		matrix3x3::mat3x3 getViewxForm();
-		// Temp
 		matrix3x3::mat3x3 getCamwintoNDCForm();
 		// Get world to NDC transformation matrix
 		matrix3x3::mat3x3 getWorldtoNDCxForm();
 
-		// Get camera object
-		GLApp::GLObject getCameraObject();
-		//vector2D::Vec2 getCamPosition();
-		//vector2D::Vec2 getCamOrientation();
-
+		vector2D::Vec2 getCamPosition();
+		vector2D::Vec2 getCamOrientation();
+		// Get width
+		int getWidth();
 		// Get height
-		GLint getHeight();
-
+		int getHeight();
 		// Get Window Height
 		int getWinHeight();
 		// Get Window Width
 		int getWinWidth();
-	private:
 
-		vector2D::Vec2 right{};
-		vector2D::Vec2 up{};
-		//vector2D::Vec2 position{}; // Camera position
-		//vector2D::vec2D orientation{}; // Orientation
-		matrix3x3::mat3x3 camworld_to_ndc_xform{};
-		GLApp::GLObject* pgo{}; // pointer to game object that embeds camera
+		float getCamSpeed();
 
-		matrix3x3::mat3x3 view_xform{};
-		matrix3x3::mat3x3 camwin_to_ndc_xform{};
+		// Setters
+		void setCamSpeed(float speed);
+	public:
 
-		GLint height{ 900 };
-		GLfloat ar{};
+		vector2D::Vec2 right;
+		vector2D::Vec2 up;
 
-		// window change parameters ...
-		GLint min_height{ 500 }, max_height{ 2000 };
-		// height is increasing if 1 and decreasing if -1
-		GLint height_chg_dir{ 1 };
-		// increments by which window height is changed per Z key press
-		GLint height_chg_val{ 5 };
-		// camera's speed when button U is pressed
-		GLfloat linear_speed{ 2.f };
+		vector2D::Vec2 position; // Camera position
+		vector2D::vec2D orientation; // Orientation
+
+		matrix3x3::mat3x3 camworld_to_ndc_xform;
+
+		matrix3x3::mat3x3 view_xform;
+		matrix3x3::mat3x3 camwin_to_ndc_xform;
+
+		int width;
+		int height;
+
+		float aspectratio;
+
+		float movespeed;
+
 		// keyboard button press flags
-		GLboolean camtype_flag{ GL_FALSE }; // button V
-		GLboolean zoom_flag{ GL_FALSE }; // button Z
-		GLboolean left_turn_flag{ GL_FALSE }; // button H
-		GLboolean right_turn_flag{ GL_FALSE }; // button K
-		GLboolean move_flag{ GL_FALSE }; // button U
-
-	// you can implement these functions as you wish ...
+		GLboolean camtype_flag; 
 
 	};
-	// define object of type Camera2D ...
-	static Camera2D camera2d;
 
 	static std::vector<GLViewport> vps; // container for viewports
 

@@ -59,6 +59,8 @@ GLboolean Graphics::Input::keystateSquareBracketRight; // Object rotation
 GLboolean Graphics::Input::mousestateLeft = GL_FALSE;
 GLboolean Graphics::Input::mousestateRight = GL_FALSE;
 
+GLboolean Graphics::Input::mousestateMiddle;
+
 
 bool Graphics::Input::init(GLint w, GLint h, std::string t)
 {
@@ -93,12 +95,14 @@ bool Graphics::Input::init(GLint w, GLint h, std::string t)
 	Graphics::Input::keystateSquareBracketLeft = false; // Object rotation
 	Graphics::Input::keystateSquareBracketRight = false; // Object rotation
 
+
+	Graphics::Input::mousestateMiddle = GL_FALSE; // Object rotation
+
 	if (!glfwInit()) 
 	{
 		std::cout << "GLFW init has failed - Aborting program!!!" << std::endl;
 		return false;
 	}
-
 	glfwSetErrorCallback(Graphics::Input::error_callback); // Error callback if a glfw function fails
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Set major OPENGL version to 4
@@ -450,15 +454,23 @@ void Graphics::Input::key_callback(GLFWwindow* pwin, int key, int scancode, int 
 
 void Graphics::Input::mousebutton_callback(GLFWwindow* pwin, int button, int action, int mod) 
 {
+	static int prevButton = -1;
 	if (GLFW_MOUSE_BUTTON_LEFT == button)
 	{
 		if (GLFW_PRESS == action)
 		{
 			mousestateLeft = GL_TRUE; // Enable mouse left state on click
+			#ifdef _DEBUG
+			std::cout << "Mouse clicked\n";
+			#endif
 		}
-		if (GLFW_RELEASE == action)
+		else if (GLFW_RELEASE == action)
 		{
 			mousestateLeft = GL_FALSE; // Disable mouse left state on release
+			#ifdef _DEBUG
+			std::cout << "Mouse released\n";
+			#endif
+
 		}
 	}
 
@@ -473,7 +485,23 @@ void Graphics::Input::mousebutton_callback(GLFWwindow* pwin, int button, int act
 			mousestateRight = GL_FALSE; // Disable mouse left state on release
 		}
 	}
+	if (GLFW_MOUSE_BUTTON_MIDDLE == button)
+	{
+		if (GLFW_PRESS == action)
+		{
+			mousestateMiddle = GL_TRUE; // Enable mouse left state on click
+		}
+		if (GLFW_RELEASE == action)
+		{
+			mousestateMiddle = GL_FALSE; // Disable mouse left state on release
+		}
+	}
 }
+
+//bool Graphics::Input::mouseIsTriggered(Graphics::mouse mouseInput)
+//{
+//	if (mouseInput == )
+//}
 
 void Graphics::Input::mousepos_callback(GLFWwindow* pwin, double xpos, double ypos) 
 {
@@ -586,6 +614,46 @@ bool Graphics::Input::getCursorPos(double* xpos, double* ypos)
 		*xpos = worldCursorPos.x;
 		*ypos = worldCursorPos.y;
 		//std::cout << "Position in input " << xpos << ", " << ypos << std::endl;
+		return true;
+	}
+}
+
+bool Graphics::Input::getCursorPos(vector2D::vec2D * mousePos)
+{
+	double tmpx;
+	double tmpy;
+
+	//std::cout << "Other thingy when click " << Graphics::camera2d.getWorldtoNDCxForm().m[0] << std::endl;
+	glfwGetCursorPos(Graphics::Input::ptr_to_window, &tmpx, &tmpy);
+	if (tmpx == NULL || tmpy == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		matrix3x3::mat3x3 viewport_to_ndc = transform.createViewporttoNDC();
+		matrix3x3::mat3x3 ndc_to_world = transform.createNDCtoWorld();
+
+		*mousePos = ndc_to_world * viewport_to_ndc * vector2D::Vec2((float)tmpx, (float)-tmpy);
+		//std::cout << "Position in input " << mousePos->x << ", " << mousePos->y << std::endl;
+		return true;
+	}
+}
+
+bool Graphics::Input::getCursorScreenPos(vector2D::vec2D* mousePos)
+{
+	double tmpx;
+	double tmpy;
+
+	//std::cout << "Other thingy when click " << Graphics::camera2d.getWorldtoNDCxForm().m[0] << std::endl;
+	glfwGetCursorPos(Graphics::Input::ptr_to_window, &tmpx, &tmpy);
+	if (tmpx == NULL || tmpy == NULL)
+	{
+		return false;
+	}
+	else
+	{
+		*mousePos = vector2D::Vec2((float)tmpx - ((float)screenwidth/2.f), (float)-tmpy + ((float)screenheight / 2.f));
 		return true;
 	}
 }

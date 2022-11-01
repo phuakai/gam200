@@ -17,49 +17,54 @@ Please see the class declaration for information about these functions.
 #include <fstream>
 #include <sstream>
 
-GLint
-GLSLShader::GetUniformLocation(GLchar const* name) {
-  return glGetUniformLocation(pgm_handle, name);
+GLint GLSLShader::GetUniformLocation(GLchar const* name) 
+{
+  return glGetUniformLocation(pgm_handle, name); // Get shader location
 }
 
-GLboolean
-GLSLShader::FileExists(std::string const& file_name) {
-  std::ifstream infile(file_name); return infile.good();
+GLboolean GLSLShader::FileExists(std::string const& file_name) 
+{
+  std::ifstream infile(file_name); // Check if file exists
+  return infile.good();
 }
 
-void
-GLSLShader::DeleteShaderProgram() {
-  if (pgm_handle > 0) {
-    glDeleteProgram(pgm_handle);
+void GLSLShader::DeleteShaderProgram() 
+{
+  if (pgm_handle > 0) 
+  {
+    glDeleteProgram(pgm_handle); // Delete shader prog
   }
 }
 
-GLboolean
-GLSLShader::CompileLinkValidate(std::vector<std::pair<GLenum, std::string>> vec) {
-  for (auto& elem : vec) {
-    if (GL_FALSE == CompileShaderFromFile(elem.first, elem.second.c_str())) {
+GLboolean GLSLShader::CompileLinkValidate(std::vector<std::pair<GLenum, std::string>> vec) 
+{
+  for (auto& elem : vec) 
+  {
+    if (GL_FALSE == CompileShaderFromFile(elem.first, elem.second.c_str())) // Compile link and validate shader
+    {
       return GL_FALSE;
     }
   }
-  if (GL_FALSE == Link()) {
+  if (GL_FALSE == Link()) 
+  {
     return GL_FALSE;
   }
-  if (GL_FALSE == Validate()) {
+  if (GL_FALSE == Validate()) 
+  {
     return GL_FALSE;
   }
-  //PrintActiveAttribs();
-  //PrintActiveUniforms();
-
   return GL_TRUE;
 }
 
-GLboolean
-GLSLShader::CompileShaderFromFile(GLenum shader_type, const std::string& file_name) {
-  if (GL_FALSE == FileExists(file_name)) {
+GLboolean GLSLShader::CompileShaderFromFile(GLenum shader_type, const std::string& file_name) 
+{
+  if (GL_FALSE == FileExists(file_name)) 
+  {
     log_string = "File not found";
     return GL_FALSE;
   }
-  if (pgm_handle <= 0) {
+  if (pgm_handle <= 0) 
+  {
     pgm_handle = glCreateProgram();
     if (0 == pgm_handle) {
       log_string = "Cannot create program handle";
@@ -130,11 +135,14 @@ GLSLShader::CompileShaderFromString(GLenum shader_type,
   }
 }
 
-GLboolean GLSLShader::Link() {
-  if (GL_TRUE == is_linked) {
+GLboolean GLSLShader::Link() 
+{
+  if (GL_TRUE == is_linked) 
+  {
     return GL_TRUE;
   }
-  if (pgm_handle <= 0) {
+  if (pgm_handle <= 0) 
+  {
     return GL_FALSE;
   }
 
@@ -143,11 +151,13 @@ GLboolean GLSLShader::Link() {
   // verify the link status
   GLint lnk_status;
   glGetProgramiv(pgm_handle, GL_LINK_STATUS, &lnk_status);
-  if (GL_FALSE == lnk_status) {
+  if (GL_FALSE == lnk_status) 
+  {
     log_string = "Failed to link shader program\n";
     GLint log_len;
     glGetProgramiv(pgm_handle, GL_INFO_LOG_LENGTH, &log_len);
-    if (log_len > 0) {
+    if (log_len > 0) 
+    {
       GLchar* log_str = new GLchar[log_len];
       GLsizei written_log_len;
       glGetProgramInfoLog(pgm_handle, log_len, &written_log_len, log_str);
@@ -159,29 +169,36 @@ GLboolean GLSLShader::Link() {
   return is_linked = GL_TRUE;
 }
 
-void GLSLShader::Use() {
-  if (pgm_handle > 0 && is_linked == GL_TRUE) {
+void GLSLShader::Use() 
+{
+  if (pgm_handle > 0 && is_linked == GL_TRUE) 
+  {
     glUseProgram(pgm_handle);
   }
 }
 
-void GLSLShader::UnUse() {
+void GLSLShader::UnUse() 
+{
   glUseProgram(0);
 }
 
-GLboolean GLSLShader::Validate() {
-  if (pgm_handle <= 0 || is_linked == GL_FALSE) {
+GLboolean GLSLShader::Validate() 
+{
+  if (pgm_handle <= 0 || is_linked == GL_FALSE) 
+  {
     return GL_FALSE;
   }
 
   glValidateProgram(pgm_handle);
   GLint status;
   glGetProgramiv(pgm_handle, GL_VALIDATE_STATUS, &status);
-  if (GL_FALSE == status) {
+  if (GL_FALSE == status) 
+  {
     log_string = "Failed to validate shader program for current OpenGL context\n";
     GLint log_len;
     glGetProgramiv(pgm_handle, GL_INFO_LOG_LENGTH, &log_len);
-    if (log_len > 0) {
+    if (log_len > 0) 
+    {
       GLchar* log_str = new GLchar[log_len];
       GLsizei written_log_len;
       glGetProgramInfoLog(pgm_handle, log_len, &written_log_len, log_str);
@@ -189,184 +206,225 @@ GLboolean GLSLShader::Validate() {
       delete[] log_str;
     }
     return GL_FALSE;
-  } else {
+  } 
+  else 
+  {
     return GL_TRUE;
   }
 }
 
-GLuint GLSLShader::GetHandle() const {
+GLuint GLSLShader::GetHandle() const 
+{
   return pgm_handle;
 }
 
-GLboolean GLSLShader::IsLinked() const {
+GLboolean GLSLShader::IsLinked() const 
+{
   return is_linked;
 }
 
-std::string GLSLShader::GetLog() const {
+std::string GLSLShader::GetLog() const 
+{
   return log_string;
 }
 
-void GLSLShader::BindAttribLocation(GLuint index, GLchar const* name) {
-  glBindAttribLocation(pgm_handle, index, name);
+void GLSLShader::BindAttribLocation(GLuint index, GLchar const* name) 
+{
+  glBindAttribLocation(pgm_handle, index, name); // Bind attribute location
 }
 
-void GLSLShader::BindFragDataLocation(GLuint color_number, GLchar const* name) {
-  glBindFragDataLocation(pgm_handle, color_number, name);
+void GLSLShader::BindFragDataLocation(GLuint color_number, GLchar const* name) 
+{
+  glBindFragDataLocation(pgm_handle, color_number, name); // Bind fragment shader
 }
 
-void GLSLShader::SetUniform(GLchar const* name, GLboolean val) {
+void GLSLShader::SetUniform(GLchar const* name, GLboolean val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform1i(loc, val);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, GLint val) {
+void GLSLShader::SetUniform(GLchar const* name, GLint val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform1i(loc, val);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, GLfloat val) {
+void GLSLShader::SetUniform(GLchar const* name, GLfloat val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform1f(loc, val);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y) {
+void GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform2f(loc, x, y);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y, GLfloat z) {
+void GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y, GLfloat z) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform3f(loc, x, y, z);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
 void
-GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
+GLSLShader::SetUniform(GLchar const* name, GLfloat x, GLfloat y, GLfloat z, GLfloat w) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform4f(loc, x, y, z, w);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, glm::vec2 const& val) {
+void GLSLShader::SetUniform(GLchar const* name, glm::vec2 const& val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform2f(loc, val.x, val.y);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, glm::vec3 const& val) {
+void GLSLShader::SetUniform(GLchar const* name, glm::vec3 const& val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform3f(loc, val.x, val.y, val.z);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, glm::vec4 const& val) {
+void GLSLShader::SetUniform(GLchar const* name, glm::vec4 const& val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniform4f(loc, val.x, val.y, val.z, val.w);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, glm::mat3 const& val) {
+void GLSLShader::SetUniform(GLchar const* name, glm::mat3 const& val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniformMatrix3fv(loc, 1, GL_FALSE, &val[0][0]);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::SetUniform(GLchar const* name, glm::mat4 const& val) {
+void GLSLShader::SetUniform(GLchar const* name, glm::mat4 const& val) 
+{
   GLint loc = glGetUniformLocation(pgm_handle, name);
-  if (loc >= 0) {
+  if (loc >= 0) 
+  {
     glUniformMatrix4fv(loc, 1, GL_FALSE, &val[0][0]);
-  } else {
+  } 
+  else 
+  {
     std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
   }
 }
 
-void GLSLShader::PrintActiveAttribs() const {
-#if 1
-  GLint max_length, num_attribs;
-  glGetProgramiv(pgm_handle, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &max_length);
-  glGetProgramiv(pgm_handle, GL_ACTIVE_ATTRIBUTES, &num_attribs);
-  GLchar* pname = new GLchar[max_length];
-  std::cout << "Index\t|\tName\n";
-  std::cout << "----------------------------------------------------------------------\n";
-  for (GLint i = 0; i < num_attribs; ++i) {
-    GLsizei written;
-    GLint size;
-    GLenum type;
-    glGetActiveAttrib(pgm_handle, i, max_length, &written, &size, &type, pname);
-    GLint loc = glGetAttribLocation(pgm_handle, pname);
-    std::cout << loc << "\t\t" << pname << std::endl;
-  }
-  std::cout << "----------------------------------------------------------------------\n";
-  delete[] pname;
-#else
-  GLint numAttribs;
-  glGetProgramInterfaceiv(pgm_handle, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &numAttribs);
-  GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION };
-  std::cout << "Active attributes:" << std::endl;
-  for (GLint i = 0; i < numAttribs; ++i) {
-    GLint results[3];
-    glGetProgramResourceiv(pgm_handle, GL_PROGRAM_INPUT, i, 3, properties, 3, NULL, results);
+/*  _________________________________________________________________________*/
+/*!  insert_shdrpgm
 
-    GLint nameBufSize = results[0] + 1;
-    GLchar* pname = new GLchar[nameBufSize];
-    glGetProgramResourceName(pgm_handle, GL_PROGRAM_INPUT, i, nameBufSize, NULL, pname);
-    //   std::cout << results[2] << " " << pname << " " << getTypeString(results[1]) << std::endl;
-    std::cout << results[2] << " " << pname << " " << results[1] << std::endl;
-    delete[] pname;
-  }
-#endif
+@param std::string shdr_pgm_name
+Name of shader program to be used
+
+@param std::string vtx_shdr
+Name of vertex shader to be used
+
+@param std::string frg_shdr
+Name of fragment shader to be used
+
+@return none
+
+This function is called at the initialization of the scene to insert the different shader programs into a map container
+*/
+void insert_shdrpgm(std::vector<std::string>& shdrnamelist, std::vector<GLSLShader>& shdrpgmlist, std::string shdr_pgm_name, std::string vtx_shdr, std::string frg_shdr)
+{
+    std::vector<std::pair<GLenum, std::string>> shdr_files
+    {
+        std::make_pair(GL_VERTEX_SHADER, vtx_shdr),
+        std::make_pair(GL_FRAGMENT_SHADER, frg_shdr)
+    };
+    GLSLShader shdr_pgm;
+    shdr_pgm.CompileLinkValidate(shdr_files);
+    if (GL_FALSE == shdr_pgm.IsLinked()) {
+        std::cout << "Unable to compile/link/validate shader programs\n";
+        std::cout << shdr_pgm.GetLog() << "\n";
+        std::exit(EXIT_FAILURE);
+    }
+    shdrnamelist.emplace_back(shdr_pgm_name);
+    shdrpgmlist.emplace_back(shdr_pgm);
 }
 
-void GLSLShader::PrintActiveUniforms() const {
-  GLint max_length;
-  glGetProgramiv(pgm_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_length);
-  GLchar* pname = new GLchar[max_length];
-  GLint num_uniforms;
-  glGetProgramiv(pgm_handle, GL_ACTIVE_UNIFORMS, &num_uniforms);
-  std::cout << "Location\t|\tName\n";
-  std::cout << "----------------------------------------------------------------------\n";
-  for (GLint i = 0; i < num_uniforms; ++i) {
-    GLsizei written;
-    GLint size;
-    GLenum type;
-    glGetActiveUniform(pgm_handle, i, max_length, &written, &size, &type, pname);
-    GLint loc = glGetUniformLocation(pgm_handle, pname);
-    std::cout << loc << "\t\t" << pname << std::endl;
-  }
-  std::cout << "----------------------------------------------------------------------\n";
-  delete[] pname;
+void insertallshdrs(std::map<std::string, GLSLShader>& shdrlist)
+{
+    std::vector<std::string> shdrnames;
+    std::vector<GLSLShader> shdrpgms;
+    insert_shdrpgm(shdrnames, shdrpgms, "framebuffershader", "../shaders/framebuffer.vert", "../shaders/framebuffer.frag");
+    insert_shdrpgm(shdrnames, shdrpgms, "instanceshader", "../shaders/instancing.vert", "../shaders/instancing.frag");
+    insert_shdrpgm(shdrnames, shdrpgms, "font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+    for (size_t i = 0; i < shdrnames.size(); i++)
+    {
+        shdrlist[shdrnames[i]] = shdrpgms[i];
+    }
 }

@@ -7,6 +7,8 @@
 #include "mat3x3.h"
 #include <rttr/type>
 #include "ECS.h"
+//#include "behaviourTree.h"
+#include "../../GAM200/Include/behaviourTree.h"
 
 #define MAX_GRID_X 25
 #define MAX_GRID_Y 25
@@ -31,6 +33,7 @@ struct BaseInfo
 	std::string name;
 	vector2D::vec2D position{ 0 , 0 };
 	vector2D::vec2D dimension{ 0 , 0 };
+	vector2D::vec2D orientation{ 0 , 0 };
 };
 
 struct Texture
@@ -62,6 +65,24 @@ struct Stats {
 	RTTR_ENABLE()
 private:
 	int health;
+};
+
+struct Unit {
+	int faction;
+	int type;
+	BehaviourTree* aiTree;
+
+};
+
+struct Building {
+
+	float buildTime;
+	std::string buildingType;
+
+	//more shit
+
+
+
 };
 
 rttr::instance addComponentByName(rttr::type& componentName, const EntityID& entityID);

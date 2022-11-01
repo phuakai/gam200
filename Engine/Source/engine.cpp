@@ -1,5 +1,6 @@
 
 #include "mainHeader.h"
+#include <window.h>
 #include "ECS.h"
 #include "eventManager.h"
 #include "physicsPartition.h"
@@ -10,8 +11,18 @@
 #include "vec3D.h"
 #include "Font.h"
 #include "AudioEngine.h"
+#include "camera.h"
 #include <app.h>
+#include <fowMap.h>
+#include "UI/uiManager.h"
 #include <collision.h>
+
+#include "app.h"
+#include "collision.h"
+#include "fowMap.h"
+#include <ctime>
+#include <ratio>
+#include <chrono>
 #include <random>
 
 RTTR_REGISTRATION{
@@ -37,13 +48,15 @@ RTTR_REGISTRATION{
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
-		.property("shaderName", &Render::shaderName);
+		.property("shaderName", &Render::shaderName)
+		.property("render", &Render::render);
 
 	rttr::registration::class_<BaseInfo>("BaseInfo")
 		.property("type", &BaseInfo::type)
 		.property("name", &BaseInfo::name)
 		.property("position", &BaseInfo::position)
-		.property("dimension", &BaseInfo::dimension);
+		.property("dimension", &BaseInfo::dimension)
+		.property("orientation", &BaseInfo::orientation);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -65,17 +78,29 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::getHealth, &Stats::setHealth);
-}
 
+
+	rttr::registration::class_<Building>("Building")
+		.property("buildTime", &Building::buildTime)
+		.property("buildingType", &Building::buildingType);
+
+	rttr::registration::class_<Unit>("Unit")
+		.property("faction", &Unit::faction)
+		.property("type", &Unit::type)
+		.property("aiTree", &Unit::aiTree);
+}
 ECS ecs;
 
 extern Entity player1;
 extern std::vector<Entity> walls;
 
+
+Entity bg;
 Entity player1;
 std::vector<Entity> walls(0);
 std::vector<Entity> enemyUnits(100);
 //std::vector<Entity> cloud(fow::fowMap.getDims());
+std::vector<Entity> uiEntity(113);
 
 // for checking
 //Entity enemyManagerEntity;
@@ -93,7 +118,19 @@ std::vector<FormationManager> formationManagers;
 
 float timer;
 
+extern CameraNS::Camera2D camera2d;
+
 quadTree mainTree;
+
+//-------------profiler test
+std::chrono::steady_clock::time_point t1;
+std::chrono::steady_clock::time_point t2;
+std::chrono::duration <double> engineDrawTime;
+std::chrono::duration <double> physicsTime;
+std::chrono::duration <double> ecsSystemsTime;
+
+std::chrono::duration <double> totalTime;
+//------------------------
 
 spooky::CAudioEngine audioEngine;
 
@@ -118,49 +155,64 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<Texture>(entityID));
 	else if (componentName == rttr::type::get<Physics>())
 		return *(ecs.GetComponent<Physics>(entityID));
+	else if (componentName == rttr::type::get<Building>())
+		return *(ecs.GetComponent<Building>(entityID));
+	else if (componentName == rttr::type::get<Unit>())
+		return *(ecs.GetComponent<Unit>(entityID));
 }
 
 void engineInit()
 {
+	App::init();
+
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Physics>("Physics");
 	ecs.RegisterComponent<Render>("Render");
+	ecs.RegisterComponent<Building>("Building");
+	ecs.RegisterComponent<Unit>("Unit");
 
 	// ======================================================================================================================================
 	// PREFABS
 	const EntityID& enemyPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(enemyPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
 	const EntityID& playerPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(playerPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(playerPrefab, 0, 0, 0, "");
 	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	prefabs.push_back(playerPrefab);
 
 	const EntityID& buildingPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(buildingPrefab, "", vector3D::vec3D(0.f, 0.f, 0.f), 0, 0, 0, "", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
+	ecs.AddComponent<Building>(buildingPrefab, 0, "");
 	prefabs.push_back(buildingPrefab);
 	
 	// ======================================================================================================================================
 
-	mainTree.createQuadTree(vector2D::vec2D(0, 0), 500, 500, nullptr);
+	mainTree.createQuadTree(vector2D::vec2D(0, 0), static_cast<float>(camera2d.getWidth()), static_cast<float>(camera2d.getHeight()), nullptr);
+
+	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
+	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight), vector2D::vec2D(0.f, 0.f));
+	// velocity, target, force, speed
+	bg.Add<Texture>(1, 1, 1, "Background");
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
-	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f));
+	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
+	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f)), vector2D::vec2D(0.f, 0.f);
 	// velocity, target, force, speed
-	player1.Add<Texture>(0, 1, 1, "none");
+	player1.Add<Texture>(12, 1, 1, "none");
 	//player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
 
@@ -170,17 +222,82 @@ void engineInit()
 	//fow::fowMap.createFow();
 	//int inc = 0;
 	//std::list<fow::fowTile> fowTileList = fow::fowMap.getFowTileMap();
-	////std::cout << "this is size of tile list: " << fowTileList.size() << std::endl;
 	//for (std::list<fow::fowTile>::iterator it = fow::fowMap.getFowTileMap().begin(); it != fow::fowMap.getFowTileMap().end(); ++it, ++inc)
 	//{
 	//	//std::cout << "this is pos: " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	//	//cloud[inc].Add<Render>("cloud" + std::to_string(inc + 1), "square", it->getWorldPos(), vector3D::vec3D(0.5f, 0.5f, 0.5f), vector2D::vec2D(it->getWdith(), it->getHeight()), 0, 0, 0, "gam200-shdrpgm", true);
 	//	cloud[inc].Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	//	cloud[inc].Add<BaseInfo>("cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()));
-	//	cloud[inc].Add<Texture>(1, 1, 1, "Cloud");
+	//	cloud[inc].Add<BaseInfo>("Cloud", "cloud" + std::to_string(inc + 1), it->getWorldPos(), vector2D::vec2D(it->getWdith(), it->getHeight()), vector2D::vec2D(0.f, 0.f));
+	//	cloud[inc].Add<Texture>(2, 1, 1, "Cloud");
 	//	it->setid(cloud[inc].GetID());
 	//	//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	//}
+
+	// Create ui entity
+	float mapRatio{ 0.17f }/*17% screenwidth*/, hudRatio{ 0.7f }/*70% screenwidth*/, infoRatio{ 0.17 }/*17% screenwidth*/;
+	int camWidth{ camera2d.getWidth() }, camHeight{ camera2d.getHeight() };
+	vector2D::vec2D camPos{ camera2d.getCamPosition() };
+	UI::UIMgr.createUiManager(0.17f, 0.7f, 0.17f );
+	// 0 = base hud
+	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
+	uiEntity[0].Add<BaseInfo>("UI", "uiEntity" + std::to_string(0), vector2D::vec2D(camPos.x, (-camHeight + camHeight / 4.f) / 2.f), vector2D::vec2D(camWidth * hudRatio, camHeight / 4.f));
+	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::UIManager::groupName::base);
+	
+	// 1 = info panel (bottom right of screen)
+	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+	uiEntity[1].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(camWidth / 2.f * (1.f - infoRatio), -camHeight / 2.f + camWidth / 2.f * infoRatio), vector2D::vec2D(camWidth * infoRatio, camWidth * infoRatio));
+	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::UIManager::groupName::base);
+
+	// 2 = minimap (bottom left of screen)
+	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
+	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
+	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
+	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::UIManager::groupName::base);
+
+	UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::base)]);
+
+	// 3 - 9 = buttons for building1
+	BaseInfo* ptr = ecs.GetComponent<BaseInfo>(uiEntity[1].GetID());
+	vector2D::vec2D dimensions = ptr->dimension / 5.f;
+	vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x * 1.5f,// / 2.f,
+								 ptr->position.y + ptr->dimension.y / 2.f - dimensions.y / 2.f };
+	//vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x. / 2.f,
+	//						 ptr->position.y + ptr->dimension.y / 2.f + dimensions.y / 2.f };
+
+	for (int i = 3, colTracker = 0; i < 10; ++i, ++colTracker)
+	{
+		static vector2D::vec2D startingPos{ position };
+		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
+		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
+		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
+		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::building1);
+	}
+
+	// 10 - 12 = buttons for unit1
+	for (int i = 10, colTracker = 0; i < 13; ++i, ++colTracker)
+	{
+		static vector2D::vec2D startingPos{ position };
+		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
+		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
+		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
+		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+	}
+
+	// 13 - 112 = icons of enemy
+	for (int i = 13, colTracker = 0; i < 113; ++i, ++colTracker)
+	{
+		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
+		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
+		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
+		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+	}
+
 
 	FormationManager enemyManager;
 	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
@@ -197,9 +314,10 @@ void engineInit()
 		float randb = colour(generator);
 
 		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10));
-		enemyUnits[i].Add<Texture>(3, 1, 1, "Enemy");
+		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
+		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
 		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false, 0);
+		enemyUnits[i].Add<Unit>(0, 0);
 		//enemyUnits[i].Add<Stats>(100);
 		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
 
@@ -207,18 +325,19 @@ void engineInit()
 
 		enemyManager.addCharacter(enemyID);
 		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<BaseInfo>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
 	}
 	formationManagers.push_back(enemyManager);
 
 	//enemyManagerEntity.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm");
-	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20));
+	//enemyManagerEntity.Add<BaseInfo>("enemyManager", vector2D::vec2D(0, 0), vector2D::vec2D(20, 20), vector2D::vec2D(0.f, 0.f));
 	//enemyManagerEntity.Add<Texture>(6, 1, 1, "Enemy");
 	//enemyManagerEntity.Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 2, 0, vector2D::vec2D(0, 0), 10, false);
 	//ecs.setEntityName(enemyManagerEntity.GetID(), "enemyManager");
 
 	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
-	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0));
-	formationManager.Add<Texture>(0, 1, 1, "Enemy");
+	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
+	formationManager.Add<Texture>(12, 1, 1, "FM");
 	ecs.setEntityName(formationManager.GetID(), "formationManager");
 
 	timer = 4;
@@ -344,8 +463,6 @@ void engineInit()
 
 	pause = false;
 
-	GLApp::init();
-
 	//spooky::CAudioEngine audioEngine;
 	audioEngine.Init();
 	
@@ -354,12 +471,26 @@ void engineInit()
 	audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
 	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
+	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
+	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
+	if (false == Font::shader.Link() || false == Font::shader.IsLinked())
+	{
+		assert("ERROR: Unable to link shaders!");
+	}
+	if (false == Font::shader.Validate() || false == Font::shader.Validate())
+	{
+		assert("ERROR: Unable to validate shaders!");
+	}*/
+
 	GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
 	Font::init();
 }
 
 void engineUpdate()
 {
+	t1 = std::chrono::steady_clock::now();
+
+	double mousePosX = 0.0, mousePosY = 0.0;
 	if (Graphics::Input::keystateSpacebar)
 	{
 		pause = pause ? false : true;
@@ -380,30 +511,36 @@ void engineUpdate()
 			Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
 		}
 
-		if (Graphics::Input::mousestateLeft) // just clicked
+	if (Graphics::Input::mousestateLeft) // just clicked
+	{
+		if (!drag)
 		{
-			if (!drag)
-			{
-				dragSelectStartPosition.x = mousePosX;
-				dragSelectStartPosition.y = mousePosY;
-				drag = true;
-			}
-			else // still dragging
-			{
-				dragSelectEndPosition.x = mousePosX;
-				dragSelectEndPosition.y = mousePosY;
+			dragSelectStartPosition.x = mousePosX;
+			dragSelectStartPosition.y = mousePosY;
+			drag = true;
+			
+			// Clear info from hud
+			UI::UIMgr.removeInfoFromDisplay();
+
+			// Remove actions from panel
+			UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+		}
+		else // still dragging
+		{
+			dragSelectEndPosition.x = mousePosX;
+			dragSelectEndPosition.y = mousePosY;
 
 				BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
 
 				formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
 				formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
 
-				formationManagerInfo->position = (dragSelectEndPosition + dragSelectStartPosition) / 2 + dragSelectStartPosition;
-			}
+			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
 		}
-		else if (drag) // released
-		{
-			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+	}
+	else if (drag) // released
+	{
+		BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
 
 			if (formationManagerInfo->dimension.x < 2 && formationManagerInfo->dimension.y < 2)	// click and not drag
 			{
@@ -488,15 +625,21 @@ void engineUpdate()
 						formationManagerID = newFormationManagerID;
 						ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
 
-						if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
-						{
-							break;
-						}
-					}
+					// Add unit to info
+					UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
 
-					newManager.generateDijkstraCost(walls);
-					newManager.generateFlowField();
-					newManager.updateReached();
+					if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
+					{
+						break;
+					}
+				}
+
+				// Add actions to panel
+				UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+
+				newManager.generateDijkstraCost(walls);
+				newManager.generateFlowField();
+				newManager.updateReached();
 
 					if (newFormationManagerID != formationManagers.size())
 					{
@@ -542,32 +685,57 @@ void engineUpdate()
 					formationManagers[i].reached = true;
 				}
 
-				if (!formationManagers[i].reached)
-				{
-					formationManagers[i].updateAnchorPosition();
-					//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
-					formationManagers[i].updateSlots();
-				}
+			if (!formationManagers[i].reached)
+			{
+				formationManagers[i].updateAnchorPosition();
+				//ecs.GetComponent<BaseInfo>(enemyManagerEntity.GetID())->position = formationManagers[i].getAnchorPosition();
+				formationManagers[i].updateSlots();
 			}
-			physicsUpdate();					// physics system
 		}
-	}
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+		t1 = std::chrono::steady_clock::now();
+		physicsUpdate();					// physics system
+		t2 = std::chrono::steady_clock::now();
+		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+	}				
 
 	glfwPollEvents();
 
+	//fow::fowMap.updateFow();
+	UI::UIMgr.UIUpdate();
+
 	Graphics::Input::update_time(1.0);
 
-	GLApp::update();						// graphics system
-
-	//if (Graphics::Input::mousestateLeft)
-	//{
-	//	audioEngine.PlaySound("../asset/sounds/vine-boom.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
-	//}
+	App::update();						// graphics system
 }
 
 void engineDraw()
 {
+	t1 = std::chrono::steady_clock::now();
 	GLApp::draw();
+	t2 = std::chrono::steady_clock::now();
+	engineDrawTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+
+	/*
+	std::cout << "ecs systems took: " << ecsSystemsTime << std::endl;
+	std::cout << "physics systems took: " << physicsTime << std::endl;
+	std::cout << "draw systems took: " << engineDrawTime << std::endl;
+
+	totalTime = (ecsSystemsTime + physicsTime + engineDrawTime);
+
+	std::cout << "total systems took: " << totalTime << std::endl;
+	std::cout << "ecs systems % " << ecsSystemsTime / totalTime * 100 << "% " <<std::endl;
+	std::cout << "physics systems % " << physicsTime / totalTime * 100 << "% " << std::endl;
+	std::cout << "draw systems % " << engineDrawTime / totalTime * 100 << "% " << std::endl;
+	*/
+
+
+
+
+	
 	GLApp::shdrpgms.find("font");
 	Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
 	Font::RenderFont(GLApp::shdrpgms.find("font")->second, "The Quick Brown Fox Jumps Over The Fence", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight(), 1.5f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -575,7 +743,7 @@ void engineDraw()
 
 void engineFree()
 {
-	GLApp::cleanup();
+	App::cleanup();
 
 	Graphics::Input::cleanup();
 }

@@ -136,7 +136,7 @@ namespace physics
 	*/
 	/**************************************************************************/
 	//bool shapeOverlapStaticAABB(const AABB& rect1, const AABB& rect2)
-	bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2)
+	bool shapeOverlapStaticAABB(App::GLObject & polygon1, App::GLObject & polygon2)
 	{
 		polygon1.boundingBoxWorldVertices.clear();
 		polygon2.boundingBoxWorldVertices.clear();
@@ -196,7 +196,7 @@ namespace physics
 
 #endif
 #if false
-	void computeBoundingBox(GLApp::GLObject& polygon)
+	void computeBoundingBox(App::GLObject& polygon)
 	{
 		polygon.boundingBoxWorldVertices.clear();
 
@@ -214,7 +214,7 @@ namespace physics
 #if false
 	//bool shapeOverlapDynamicAABB(const AABB& aabb1, const vector2D::vec2D& vel1,
 	//const AABB& aabb2, const vector2D::vec2D& vel2)
-	void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon)
+	void shapeOverlapDynamicAABB(App::GLObject& staticPolygon, App::GLObject& dynamicPolygon)
 	{
 		if (shapeOverlapStaticAABB(staticPolygon, dynamicPolygon)) //polygon1 is pushed back
 		{
@@ -288,15 +288,16 @@ namespace physics
 		}
 	}
 #endif
+#if false
 	/******************************************************************************/
 	/*!
 		
 	*/
 	/******************************************************************************/
-	bool shapeOverlapSAT(GLApp::GLObject const& polygon1, GLApp::GLObject const& polygon2)
+	bool shapeOverlapSAT(App::GLObject const& polygon1, App::GLObject const& polygon2)
 	{
-		GLApp::GLObject const* shape1 = &polygon1;
-		GLApp::GLObject const* shape2 = &polygon2;
+		App::GLObject const* shape1 = &polygon1;
+		App::GLObject const* shape2 = &polygon2;
 		static float myInf{ std::numeric_limits<float>::infinity() };
 
 		for (int i = 0; i < 2; ++i)
@@ -353,7 +354,7 @@ namespace physics
 		}
 		return true;
 	}
-
+#endif
 	bool CollisionDetectionPolygonPolygon(std::vector < vector2D::vec2D> staticVtx, std::vector < vector2D::vec2D> kineticVtx)
 	{
 
@@ -548,7 +549,6 @@ namespace physics
 	bool CollisionDetectionCirclePolygon(vector2D::vec2D circleCenter, float rad, std::vector < vector2D::vec2D> boxVtx)
 	{
 		vector2D::vec2D boxMinMax{ 0.f, 0.f }, circleMinMax{ 0.f, 0.f }, projAxis{ 0.f, 0.f };
-		float axisDepth{ 0.f };
 
 		for (size_t i{ 0 }; i < boxVtx.size(); ++i)
 		{
@@ -579,7 +579,7 @@ namespace physics
 		if (boxMinMax.x >= circleMinMax.y || circleMinMax.x >= boxMinMax.y)
 			return false;
 
-		std::cout << "there is circle polygon collision detection\n";
+		//std::cout << "there is circle polygon collision detection\n";
 
 		return true;
 	}
@@ -645,7 +645,7 @@ namespace physics
 		if (vector2D::Vector2DDotProduct(direction, norm) < 0.f)
 			norm = -norm;
 
-		std::cout << "there is circle polygon collision\n";
+		//std::cout << "there is circle polygon collision\n";
 
 		return true;
 	}

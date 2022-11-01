@@ -12,9 +12,11 @@ This file controls the window inputs
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <vec2D.h>
 
 namespace Graphics
 {
+
 	struct Input // Input class
 	{       
 		// Variables
@@ -23,6 +25,8 @@ namespace Graphics
 		static GLFWwindow* ptr_to_window; // Pointer to window 
 		static GLboolean mousestateLeft; // Boolean to check left mouse click
 		static GLboolean mousestateRight; // Boolean to check left mouse click
+
+		static GLboolean mousestateMiddle; // Boolean to check left mouse click
 
 		static GLdouble fps;
 		static GLdouble delta_time; // time taken to complete most recent game loop
@@ -63,7 +67,8 @@ namespace Graphics
 		// Get cursor position, returned via address in input parameters xpos and ypos
 		// Example usage : getCursorPos(&PositionX, &PositionY);
 		static bool getCursorPos(double* xpos, double* ypos); // Static allows function to be called without Input class object
-		
+		static bool getCursorPos(vector2D::vec2D* mousePos);
+		static bool getCursorScreenPos(vector2D::vec2D* mousePos);
 
 		static bool init(GLint w, GLint h, std::string t);
 		static void cleanup();

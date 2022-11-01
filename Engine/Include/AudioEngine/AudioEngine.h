@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
 \file   AudioEngine.h
-\author Ow Xin Rui
-\par    email: xinrui.ow@digipen.edu
+\author Ow Xin Rui, Pang Tun Dagh
+\par    email: xinrui.ow@digipen.edu, tundagh.pang@digipen.edu
 \par    DigiPen login: xinrui.ow
 \par    Course: CSD2400
 \brief
@@ -30,11 +30,11 @@ namespace spooky
     };
     //Vector_2D Vec2;
 
-    struct Implementation {
-        Implementation();
-        ~Implementation();
+    struct Implementation { //audio engine constructor struct, handles the channels and sounds proper
+        Implementation();   //audio engine constructor
+        ~Implementation();  //audio engine destructor
 
-        void Update();
+        void Update();      //update loop
         FMOD_RESULT result;
         FMOD::System* mpSystem;
         unsigned int mpVersion;
@@ -49,11 +49,11 @@ namespace spooky
         ChannelMap mChannels;
     };
 
-    class CAudioEngine {
+    class CAudioEngine {    //audio engine functions
     public:
-        static void Init();
-        static void Update();
-        static void Shutdown();
+        static void Init();     //initialises the audio engine using implementation class
+        static void Update();   //update loop
+        static void Shutdown(); //shuts down audio engine
         static int ErrorCheck(FMOD_RESULT result);
 
         void LoadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false, bool bStream = false);

@@ -1,4 +1,7 @@
 #include "Font.h"
+#include "camera.h"
+
+extern CameraNS::Camera2D camera2d;
 
 namespace Font
 {
@@ -95,8 +98,8 @@ namespace Font
 		s.Use();
 		//Uniform = glGetUniformLocation(s.GetHandle(), "text");
 		glm::mat4x4 proj(
-			2.0f / (float)Graphics::camera2d.getWinWidth(), 0.f, 0.f, 0.f,
-			0.f, 2.0f / (float)Graphics::camera2d.getWinHeight(), 0.f, 0.f,
+			2.0f / (float)camera2d.getWinWidth(), 0.f, 0.f, 0.f,
+			0.f, 2.0f / (float)camera2d.getWinHeight(), 0.f, 0.f,
 			0.f, 0.f, -1.f, 0.f,
 			-2.f, -2.f, 0.f, 1.f);
 		glUniformMatrix4fv(glGetUniformLocation(s.GetHandle(), "projection"), 1, GL_FALSE, glm::value_ptr(proj));

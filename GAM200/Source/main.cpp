@@ -3,8 +3,7 @@
 @author  a.weiren@digipen.edu
 @date    20/8/2022
 
-This file uses functionality defined in types GLHelper and GLApp to initialize 
-an OpenGL context and implement a game loop.
+This file implements a game loop.
 
 *//*__________________________________________________________________________*/
 
@@ -17,6 +16,11 @@ an OpenGL context and implement a game loop.
 #include <fstream>
 #include "mainHeader.h"
 #include "levelEditor.h"
+
+//BehaviourTree behaviorTree;
+extern BehaviourTree behaviorTree;
+AIStats testStats;
+//extern AIStats testStats;
 
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
@@ -68,12 +72,16 @@ int main()
 
 The OpenGL context initialization stuff is abstracted away in Graphics::Input::init.
 The specific initialization of OpenGL state and geometry data is
-abstracted away in GLApp::init
+abstracted away in App::init
 */
 static void init() 
 {
     engineInit();
     imguiInit();
+    gameStatsInit();
+    behaviorTreeInit();
+
+
 }
 
 /*  _________________________________________________________________________ */

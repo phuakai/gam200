@@ -111,12 +111,12 @@ namespace physics
 		vector2D::vec2D& kineticCenter, float& kineticRad);
 
 
-	//bool shapeOverlapStaticAABB(GLApp::GLObject & polygon1, GLApp::GLObject & polygon2);
+	//bool shapeOverlapStaticAABB(App::GLObject & polygon1, App::GLObject & polygon2);
 
-	//void shapeOverlapDynamicAABB(GLApp::GLObject& staticPolygon, GLApp::GLObject& dynamicPolygon);
+	//void shapeOverlapDynamicAABB(App::GLObject& staticPolygon, App::GLObject& dynamicPolygon);
 
-	//bool shapeOverlapSAT(GLApp::GLObject const& polygon1,
-	//					 GLApp::GLObject const& polygon2);
+	//bool shapeOverlapSAT(App::GLObject const& polygon1,
+	//					 App::GLObject const& polygon2);
 
 	/******************************************************************************/
 	/*!
@@ -198,7 +198,7 @@ namespace physics
 		This helper function computes the bounding box of a convex polygon
 	*/
 	/******************************************************************************/
-	void computeBoundingBox(GLApp::GLObject& polygon);
+	//void computeBoundingBox(App::GLObject& polygon);
 
 }
 #endif /* PHYSICS_H */

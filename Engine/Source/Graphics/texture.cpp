@@ -22,7 +22,7 @@ namespace TextureNS
 		//textures.clear();
 	}
 
-	void Texture::createTexturePath(const char* path, Texture& textureobj)
+	void Texture::createTexturePath(std::string path, Texture& textureobj)
 	{
 		textureobj.paths.emplace_back(path);
 	}
@@ -49,10 +49,11 @@ namespace TextureNS
 		}
 		for (int numoftexs = 0; numoftexs < textureobj.paths.size(); numoftexs++)
 		{
-			images.emplace_back(stbi_load(textureobj.paths[numoftexs], &width, &height, &channels, 0));
+			images.emplace_back(stbi_load(textureobj.paths[numoftexs].c_str(), &width, &height, &channels, 0));
 			if (images[numoftexs] == NULL)
 			{
-				std::cout << "Error in loading the image" << std::endl;
+				std::cout << "Texture obj size " << textureobj.paths.size() << std::endl;
+				std::cout << "Error in loading the image " << numoftexs << std::endl;
 				exit(1);
 			}
 		}
@@ -65,6 +66,36 @@ namespace TextureNS
 			glTextureSubImage3D(textureobj.textureid, 0, 0, 0, numoftexs, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, images[numoftexs]);
 			stbi_image_free(images[numoftexs]);
 		}
+	}
+
+	void Texture::CreateandLoadTexture(Texture& textureobj, std::vector<std::string>& paths)
+	{
+		paths.emplace_back("BG256x256.png"); // 1 - Background
+		paths.emplace_back("Transcloud.png"); // 2 - Translucent cloud 
+		paths.emplace_back("basecloud.png"); // 3 - Normal cloud
+		paths.emplace_back("Tank.png"); // 4 - Enemy
+		paths.emplace_back("ActionBG.png"); // 5 - Actions Panel Background
+		paths.emplace_back("ActionButton.png"); // 6 - Actions buttons
+		paths.emplace_back("MiniMapFrame.png"); // 7 - Minimap
+		paths.emplace_back("tile000.png"); // 8 - Sprite Test
+		paths.emplace_back("tile001.png"); // 9 - Sprite Test
+		paths.emplace_back("tile002.png"); // 10 - Sprite Test
+		paths.emplace_back("tile003.png"); // 11 - Sprite Test
+		paths.emplace_back("DragBox_256x256.png"); // 12 - Drag box
+		//Texture::createTexturePath("../asset/Transcloud.png", textureobj);
+		//Texture::createTexturePath("../asset/basecloud.png", textureobj);
+		//Texture::createTexturePath("../asset/Tank.png", textureobj);
+		//Texture::createTexturePath("../asset/ActionBG.png", textureobj);
+		//Texture::createTexturePath("../asset/ActionButton.png", textureobj);
+		//Texture::createTexturePath("../asset/MiniMapFrame.png", textureobj);
+
+		std::string path = "../asset/";
+		for (size_t numpath = 0; numpath < paths.size(); numpath++)
+		{
+			std::string tmp = path + paths[numpath];
+			Texture::createTexturePath(tmp, textureobj);
+		}
+		Texture::loadTexture(textureobj); // Load all textures
 	}
 
 	void Texture::deleteTexture(Texture& textureobj)

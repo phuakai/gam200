@@ -172,9 +172,9 @@ void imguiUpdate()
 		imguiMouseX *= screenWidth / (double)imguiWindowSize.x;
 		imguiMouseY *= screenHeight / (double)imguiWindowSize.y;
 
+		
 		ImGui::End();
 	}
-
 	//static bool inputs_step = true;
 	//static float f32_v = 0.123f;
 	//const float f32_one = 1.f;

@@ -24,7 +24,7 @@ program object.
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
-
+#include <map>
 
 class GLSLShader 
 {
@@ -136,38 +136,30 @@ public:
   void SetUniform(GLchar const* name, glm::mat3 const& val);
   void SetUniform(GLchar const* name, glm::mat4 const& val);
 
-  /******************************************************************************/
-  /*!
-      This function prints the active vertice attribs in the shaders
-  */
-  /******************************************************************************/
-  void PrintActiveAttribs() const;
-
-  /******************************************************************************/
-  /*!
-      This function prints the active uniforms of the shaders
-  */
-  /******************************************************************************/
-  void PrintActiveUniforms() const;
 
 private:
-  enum ShaderType {
+  enum ShaderType 
+  {
     VERTEX_SHADER = GL_VERTEX_SHADER,
     FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
     GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
     TESS_CONTROL_SHADER = GL_TESS_CONTROL_SHADER,
     TESS_EVALUATION_SHADER = GL_TESS_EVALUATION_SHADER,
-
   };
 
   GLuint pgm_handle = 0;  // handle to linked shader program object
   GLboolean is_linked = GL_FALSE; // has the program successfully linked?
   std::string log_string; // log for OpenGL compiler and linker messages
 
-private:
   GLint GetUniformLocation(GLchar const* name);
 
   GLboolean FileExists(std::string const& file_name);
+
+
 };
+
+void insert_shdrpgm(std::vector<std::string>& shdrnamelist, std::vector<GLSLShader>& shdrpgmlist, std::string shdr_pgm_name, std::string vtx_shdr, std::string frg_shdr);
+
+void insertallshdrs(std::map<std::string, GLSLShader>& shdrlist);
 
 #endif /* GLSLSHADER_H */
