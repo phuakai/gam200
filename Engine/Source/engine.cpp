@@ -84,8 +84,7 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Unit>("Unit")
 		.property("faction", &Unit::faction)
-		.property("type", &Unit::type)
-		.property("aiTree", &Unit::aiTree);
+		.property("type", &Unit::type);
 }
 ECS ecs;
 
@@ -107,7 +106,7 @@ std::vector<Entity> uiEntity(113);
 
 //std::vector<Entity> createdUnits(100); // precreated empty entities
 
-System<Texture> textureSystem(ecs, 1);
+System<Texture, Physics> textureSystem(ecs, 1);
 System<BaseInfo, Physics> system1(ecs, 2);
 
 extern EventManager eventManager;
@@ -355,15 +354,6 @@ void engineInit()
 	{
 		for (int i = 0; i < entities.size(); ++i)
 		{
-			//if (i == enemyManagerEntity.GetID())
-			//{
-			//	continue;
-			//}
-			//if (m->reached)
-			//{
-			//	continue;
-			//}
-
 			if (p[i].type == "Prefab" || m[i].formationManagerID == -1)
 			{
 				continue;
@@ -440,6 +430,21 @@ void engineInit()
 
 		///	}
 		///}
+	});
+
+	textureSystem.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Texture* t, Physics* p)
+	{
+		if ((int)timer % 5 == 0)
+		{
+			for (int i = 0; i < entities.size(); ++i)
+			{
+				++t[i].spriteStep;
+				if (t[i].spriteStep >= 4)
+				{
+					t[i].spriteStep = 0;
+				}
+			}
+		}
 	});
 
 	drag = false;
@@ -665,10 +670,7 @@ void engineUpdate()
 			Graphics::Input::mousestateRight = false;
 		}
 
-		if (timer > 0)
-			timer -= (float)Graphics::Input::delta_time;
-
-		else
+		if (timer > 4)
 		{
 			ecs.RunSystems(2, 100);
 
@@ -697,6 +699,10 @@ void engineUpdate()
 			t2 = std::chrono::steady_clock::now();
 			ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 		}
+		
+		ecs.RunSystems(1, 100);
+
+		timer += (float)Graphics::Input::delta_time;
 	}
 
 	glfwPollEvents();

@@ -64,6 +64,7 @@ std::vector<RenderNS::InstancedRenderer> InstanceContainer; // Instance render o
 FrameBufferNS::frameBuffer mainFrame; // Texture obj
 
 TextureNS::Texture textureobjects;
+extern TextureNS::Texture textureobjects;
 
 CameraNS::Camera2D camera2d;
 
