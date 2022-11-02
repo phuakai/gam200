@@ -45,7 +45,7 @@ to OpenGL implementations.
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "pathfinding.h"
-#include "Font.h";
+#include "Font.h"
 
 extern std::vector<FormationManager> formationManagers;
 extern Entity player1;

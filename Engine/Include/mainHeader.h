@@ -85,6 +85,15 @@ struct Building {
 
 };
 
+
+struct ui {
+
+	int group;
+	int uiType;
+	int location;
+};
+
+
 rttr::instance addComponentByName(rttr::type& componentName, const EntityID& entityID);
 rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID);
 

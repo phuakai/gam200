@@ -32,12 +32,33 @@ namespace UI
 
 	struct UIManager
 	{
-		enum class groupName : uint8_t
+		enum class groupName : int
 		{
-			base,
+			hud,
+			actionPanel,
+			map,
 			unit1,
 			building1
 		};
+
+		enum class uiType : int
+		{
+			uiBg,
+			uiButton
+		};
+
+		enum class uiLocation : int
+		{
+			nil,
+			hud,
+			actionPanel,
+			map
+		};
+		//rttr::registration::class_<ui>("ui")
+		//	.property("group", &ui::group)
+		//	.property("uiType", &ui::uiType) // is it uibg/uibutton? 
+		//	.property("location", &ui::location)	// is it in hud/map/action panel? store into the respective list
+
 
 		// CONSTRUCTOR
 		/******************************************************************************/
@@ -53,7 +74,7 @@ namespace UI
 			units/buildings
 		*/
 		/******************************************************************************/
-		void							createUiManager						(float minimapRatio, float infoPanelRatio, float actionPanelRatio);
+		void							createUiManager						();
 
 		// ADDERS
 		/******************************************************************************/
@@ -62,6 +83,7 @@ namespace UI
 		*/
 		/******************************************************************************/
 		void							addUiToActionGroup					(uiObj const& obj, groupName const& grp);
+		//void							addUiToActionGroup					(uiObj const& obj, groupName const& grp);
 		
 		/******************************************************************************/
 		/*!
@@ -169,6 +191,11 @@ namespace UI
 		int								infoDisplayRow;
 
 		// Minimap (bottom left panel)
+		
+		
+		float							mapRatio;
+		float							hudRatio;
+		float							actionPanelRatio;
 
 	};
 

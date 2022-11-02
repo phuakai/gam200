@@ -77,7 +77,6 @@ RTTR_REGISTRATION{
 	rttr::registration::class_<Stats>("Stats")
 		.property("health", &Stats::getHealth, &Stats::setHealth);
 
-
 	rttr::registration::class_<Building>("Building")
 		.property("buildTime", &Building::buildTime)
 		.property("buildingType", &Building::buildingType);
@@ -85,6 +84,12 @@ RTTR_REGISTRATION{
 	rttr::registration::class_<Unit>("Unit")
 		.property("faction", &Unit::faction)
 		.property("type", &Unit::type);
+
+	rttr::registration::class_<ui>("ui")
+		.property("group", &ui::group)
+		.property("uiType", &ui::uiType)		// is it uibg/uibutton? 
+		.property("location", &ui::location);	// is it in hud/map/action panel? store into the respective list
+
 }
 ECS ecs;
 
@@ -159,6 +164,8 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<Building>(entityID));
 	else if (componentName == rttr::type::get<Unit>())
 		return *(ecs.GetComponent<Unit>(entityID));
+	else if (componentName == rttr::type::get<ui>())
+		return *(ecs.GetComponent<ui>(entityID));
 }
 
 void engineInit()
@@ -173,6 +180,7 @@ void engineInit()
 	ecs.RegisterComponent<Render>("Render");
 	ecs.RegisterComponent<Building>("Building");
 	ecs.RegisterComponent<Unit>("Unit");
+	ecs.RegisterComponent<ui>("ui");
 
 	// ======================================================================================================================================
 	// PREFABS
@@ -234,38 +242,34 @@ void engineInit()
 	//}
 
 	// Create ui entity
-	float mapRatio{ 0.17f }/*17% screenwidth*/, hudRatio{ 0.7f }/*70% screenwidth*/, infoRatio{ 0.17 }/*17% screenwidth*/;
+	float mapRatio{ 0.17f }/*17% screenwidth*/, hudRatio{ 0.7f }/*70% screenwidth*/, infoRatio{ 0.17f }/*17% screenwidth*/;
 	int camWidth{ camera2d.getWidth() }, camHeight{ camera2d.getHeight() };
 	vector2D::vec2D camPos{ camera2d.getCamPosition() };
-	UI::UIMgr.createUiManager(0.17f, 0.7f, 0.17f );
 	// 0 = base hud
+	uiEntity[0].Add<ui>(0,0,0);
+	//uiEntity[0].Add<ui>(static_cast<int>(UI::UIManager::groupName::hud), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
 	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[0].Add<BaseInfo>("UI", "uiEntity" + std::to_string(0), vector2D::vec2D(camPos.x, (-camHeight + camHeight / 4.f) / 2.f), vector2D::vec2D(camWidth * hudRatio, camHeight / 4.f));
 	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[0].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[0].GetID())->dimension / 2.f), UI::UIManager::groupName::base);
 	
 	// 1 = info panel (bottom right of screen)
 	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
 	uiEntity[1].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(camWidth / 2.f * (1.f - infoRatio), -camHeight / 2.f + camWidth / 2.f * infoRatio), vector2D::vec2D(camWidth * infoRatio, camWidth * infoRatio));
 	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[1].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[1].GetID())->dimension.y)), UI::UIManager::groupName::base);
+	uiEntity[1].Add<ui>(static_cast<int>(UI::UIManager::groupName::actionPanel), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
 
 	// 2 = minimap (bottom left of screen)
 	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
+	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(2), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
 	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
-	UI::UIMgr.addUiToActionGroup(UI::uiBg(uiEntity[2].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->position, vector2D::vec2D(300.f, ecs.GetComponent<BaseInfo>(uiEntity[2].GetID())->dimension.y)), UI::UIManager::groupName::base);
+	uiEntity[2].Add<ui>(static_cast<int>(UI::UIManager::groupName::map), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
 
-	UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::base)]);
-
-	// 3 - 9 = buttons for building1
 	BaseInfo* ptr = ecs.GetComponent<BaseInfo>(uiEntity[1].GetID());
 	vector2D::vec2D dimensions = ptr->dimension / 5.f;
 	vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x * 1.5f,// / 2.f,
 								 ptr->position.y + ptr->dimension.y / 2.f - dimensions.y / 2.f };
-	//vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x. / 2.f,
-	//						 ptr->position.y + ptr->dimension.y / 2.f + dimensions.y / 2.f };
-
+	
+	// 3 - 9 = buttons for building1
 	for (int i = 3, colTracker = 0; i < 10; ++i, ++colTracker)
 	{
 		static vector2D::vec2D startingPos{ position };
@@ -274,7 +278,7 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::building1);
+		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::building1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::actionPanel));
 	}
 
 	// 10 - 12 = buttons for unit1
@@ -286,7 +290,7 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToActionGroup(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::unit1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::actionPanel));
 	}
 
 	// 13 - 112 = icons of enemy
@@ -295,8 +299,10 @@ void engineInit()
 		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
 		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
 		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
-		UI::UIMgr.addUiToInfoList(UI::uiButton(uiEntity[i].GetID(), ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->position, ecs.GetComponent<BaseInfo>(uiEntity[i].GetID())->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::unit1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::hud));
 	}
+
+	UI::UIMgr.createUiManager();
 
 
 	FormationManager enemyManager;
@@ -498,7 +504,7 @@ void engineUpdate()
 
 	static FormationManager newManager;
 
-	double mousePosX = 0.0, mousePosY = 0.0;
+	//double mousePosX = 0.0, mousePosY = 0.0;
 	if (Graphics::Input::keystateSpacebar)
 	{
 		pause = pause ? false : true;
@@ -507,24 +513,24 @@ void engineUpdate()
 
 	if (!pause)
 	{
-		double mousePosX = 0.0, mousePosY = 0.0;
+		vector2D::vec2D mousePos{};// = 0.0, mousePosY = 0.0;
 
 		if (imguiShow)
 		{
-			mousePosX = imguiMouseX;
-			mousePosY = imguiMouseY;
+			mousePos.x = static_cast<float>(imguiMouseX);
+			mousePos.y = static_cast<float>(imguiMouseY);
 		}
 		else
 		{
-			Graphics::Input::getCursorPos(&mousePosX, &mousePosY);
+			Graphics::Input::getCursorPos(&mousePos);
 		}
 
 		if (Graphics::Input::mousestateLeft) // just clicked
 		{
 			if (!drag)
 			{
-				dragSelectStartPosition.x = mousePosX;
-				dragSelectStartPosition.y = mousePosY;
+				dragSelectStartPosition.x = mousePos.x;
+				dragSelectStartPosition.y = mousePos.y;
 				drag = true;
 
 				// Clear info from hud
@@ -535,13 +541,13 @@ void engineUpdate()
 			}
 			else // still dragging
 			{
-				dragSelectEndPosition.x = mousePosX;
-				dragSelectEndPosition.y = mousePosY;
+				dragSelectEndPosition.x = mousePos.x;
+				dragSelectEndPosition.y = mousePos.y;
 
 				BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
 
-				formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
-				formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
+				formationManagerInfo->dimension.x = fabs(mousePos.x - dragSelectStartPosition.x);
+				formationManagerInfo->dimension.y = fabs(mousePos.y - dragSelectStartPosition.y);
 
 				formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
 			}
@@ -584,7 +590,7 @@ void engineUpdate()
 
 			if (myList.size() != 0)
 			{
-				int newFormationManagerID = formationManagers.size();
+				int newFormationManagerID = static_cast<int>(formationManagers.size());
 				// Finding inactive formation manager
 				for (int i = 0; i < formationManagers.size(); ++i)
 				{
@@ -622,11 +628,16 @@ void engineUpdate()
 						}
 					}
 
+					std::cout << "Whats this thingy " << (**obj2) << std::endl;
 					newManager.addCharacter((**obj2));
 					formationManagerID = newFormationManagerID;
 					//ecs.GetComponent<Physics>((**obj2))->target = newManager.target;
 
 					// Add unit to info
+ 					if (**obj2 == 104)
+ 					{
+						UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2]); // 3 objects bef ui
+ 					   }
 					UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
 
 					if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
@@ -662,7 +673,7 @@ void engineUpdate()
 		{
 			if (selected != -1)
 			{
-				formationManagers[currentFormationManagerID].target = vector2D::vec2D(mousePosX, mousePosY);
+				formationManagers[currentFormationManagerID].target = mousePos;
 				formationManagers[currentFormationManagerID].generateDijkstraCost(walls);
 				formationManagers[currentFormationManagerID].generateFlowField();
 				formationManagers[currentFormationManagerID].updateReached();
