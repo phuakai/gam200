@@ -302,6 +302,22 @@ void imguiUpdate()
 
 	ImGui::End();
 	// ========================================================================================================
+	
+	// "Profilier" tab ==========================================================================================
+	ImGui::Begin("Profilier");
+
+	if (ImGui::BeginTabBar("Profilier", tab_bar_flags))
+	{
+		ImGui::Text("Total time took: %fms", totalTime);
+		ImGui::Text("ECS System: %f %%", (ecsSystemsTime / totalTime) * 100);
+		ImGui::Text("Physics System: %f %%", (physicsTime / totalTime) * 100);
+		ImGui::Text("Draw System: %f %%", (engineDrawTime / totalTime) * 100);
+
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
+	// ========================================================================================================
 
 	ImGui::Render();
 }

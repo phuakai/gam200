@@ -20,7 +20,6 @@
 #include "collision.h"
 #include <ctime>
 #include <ratio>
-#include <chrono>
 #include <random>
 
 RTTR_REGISTRATION{
@@ -98,7 +97,6 @@ RTTR_REGISTRATION{
 ECS ecs;
 
 extern Entity player1;
-extern std::vector<Entity> walls;
 
 Entity bg;
 Entity player1;
@@ -106,7 +104,7 @@ Entity playbutton;
 Entity exitbutton;
 //std::vector<Entity> cloud(fow::fowMap.getDims());
 
-System<Texture, Physics> textureSystem(ecs, 1);
+System<Building> system2(ecs, 1);
 System<BaseInfo, Physics> system1(ecs, 2);
 
 extern EventManager eventManager;
@@ -127,7 +125,6 @@ std::chrono::steady_clock::time_point t2;
 std::chrono::duration <double> engineDrawTime;
 std::chrono::duration <double> physicsTime;
 std::chrono::duration <double> ecsSystemsTime;
-
 std::chrono::duration <double> totalTime;
 //------------------------
 
@@ -205,7 +202,7 @@ void engineInit()
 	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(buildingPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
-	ecs.AddComponent<Building>(buildingPrefab, 0, "");
+	ecs.AddComponent<Building>(buildingPrefab, 0, 0, "");
 	prefabs.push_back(buildingPrefab);
 	
 	// ======================================================================================================================================
@@ -383,6 +380,18 @@ void engineInit()
 		///	}
 		///}
 	});
+	//system2.Action([](const float elapsedMilliseconds, const std::vector<EntityID>& entities, Building* b)
+	//{
+	//	for (int i = 0; i < entities.size(); ++i)
+	//	{
+	//		b[i].spawnTimer -= (float)Graphics::Input::delta_time;
+	//		if (b[i].spawnTimer <= 0)
+	//		{
+
+	//			b[i].spawnTimer = 3;
+	//		}
+	//	}
+	//});
 
 	drag = false;
 	selected = -1;
@@ -559,18 +568,7 @@ void engineDraw()
 	t2 = std::chrono::steady_clock::now();
 	engineDrawTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
-	/*
-	std::cout << "ecs systems took: " << ecsSystemsTime << std::endl;
-	std::cout << "physics systems took: " << physicsTime << std::endl;
-	std::cout << "draw systems took: " << engineDrawTime << std::endl;
-
 	totalTime = (ecsSystemsTime + physicsTime + engineDrawTime);
-
-	std::cout << "total systems took: " << totalTime << std::endl;
-	std::cout << "ecs systems % " << ecsSystemsTime / totalTime * 100 << "% " <<std::endl;
-	std::cout << "physics systems % " << physicsTime / totalTime * 100 << "% " << std::endl;
-	std::cout << "draw systems % " << engineDrawTime / totalTime * 100 << "% " << std::endl;
-	*/
 	
 	//App::shdrpgms.find("font");
 	//Font::RenderFont(GLApp::shdrpgms.find("font")->second , "Text Renderer Testing", Graphics::camera2d.getWinWidth() / 2, Graphics::camera2d.getWinHeight() / 2, 1.f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -587,9 +585,8 @@ void engineFree()
 void swapBuffer()
 {
 	// Swap buffers: front <-> back
-	glfwSwapBuffers(Graphics::Input::ptr_to_window);
 
-	//std::cout << "test" << std::endl;
+	glfwSwapBuffers(Graphics::Input::ptr_to_window);
 }
 
 void dragSelect()
