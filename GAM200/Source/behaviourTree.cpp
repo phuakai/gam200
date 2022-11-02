@@ -1,11 +1,13 @@
 
 #include "mainHeader.h"
 #include "EventManager/eventManager.h"
+#include "physicsPartition.h"
 
 extern AIStats testStats;
 BehaviourTree behaviorTree;
 extern BehaviourTree behaviorTree;
-extern EventManager eventmanager;
+extern EventManager eventManager;
+extern quadTree mainTree;
 
 State Task::run(EntityID ID)
 {
@@ -15,21 +17,51 @@ State Task::run(EntityID ID)
 }
 
 
-    State TargetInRange::run(EntityID ID)
-    {
-        if (true) { // PLS this is suppose to be a check dont forget to CHANGE THIS PLS
-        //chasing
-            std::cout << "chasing";
-
-            return State::True; //need to return the enemy in the range?
-        }
-        return State::False;
-    }
 
     const std::vector<std::shared_ptr<Task>>Composite::getchildren() const { return children; }
     void Composite::addChild(std::shared_ptr<Task> child) { children.push_back((child)); }
 
+    MoveEvent enemyMove;
 
+
+    State TargetInRange::run(EntityID ID)
+    {
+        
+        std::list<EntityID*> inRange;
+        
+        //float rangebox = ((50 +50));
+
+        //just shoot me
+        AABB range(ecs.GetComponent<BaseInfo>(ID)->position.x - 50, ecs.GetComponent<BaseInfo>(ID)->position.y - 50, ecs.GetComponent<BaseInfo>(ID)->position.x + 50, ecs.GetComponent<BaseInfo>(ID)->position.y + 50);
+        mainTree.query(range, inRange);
+
+
+        //need to check if its an enemy
+        if (inRange.size() != 0) {
+          //  std::cout << "things in range";
+            for (auto const& i : inRange) {
+                std::cout << *i << std::endl;
+                if (ecs.GetComponent<Unit>(*i)->faction == PLAYER) {
+                    //is this inefficent
+                  //  ecs.GetComponent<Unit>(*i)->target = *i;
+                    
+                    ecs.GetComponent<Physics>(ID)->target = ecs.GetComponent<BaseInfo>(*i)->position;
+
+                    enemyMove.id = ID;
+                    enemyMove.message = (1UL << Systems::Physics);
+
+                    eventManager.post(enemyMove);
+                    std::cout << "chasing" << i << std::endl;
+              }
+            }
+            
+            return State::True; //need to return the enemy in the range?
+        }
+        else {
+            //std::cout << "no target here " << std::endl;
+            return State::False;
+        }
+    }
 
     State Selector::run(EntityID ID) 
     {
@@ -78,14 +110,14 @@ State Task::run(EntityID ID)
 
     State PlaySound::run(EntityID ID) 
     {
-        std::cout << "play a sound\n";
+     //   std::cout << "play a sound\n";
         return State::True;
     }
 
 
     State PlayAnimation::run(EntityID ID) 
     {
-        std::cout << "animate?\n";
+     //   std::cout << "animate?\n";
         return State::True;
     }
 
@@ -94,11 +126,11 @@ State Task::run(EntityID ID)
         //should i put the if here or ?
         if (testStats.resourceOne >= 50) {
             testStats.resourceOne -= 10;
-            std::cout << "Burning 10 / " << testStats.resourceOne << std::endl;
+        //    std::cout << "Burning 10 / " << testStats.resourceOne << std::endl;
             return State::True;
         }
         else {
-            std::cout << "only have " << testStats.resourceOne << " /50 left " << std::endl;
+       //     std::cout << "only have " << testStats.resourceOne << " /50 left " << std::endl;
             return State::False;
         }
     }
@@ -106,13 +138,17 @@ State Task::run(EntityID ID)
 
     State noResource::run(EntityID ID)  {
         if (1) {
-            std::cout << "no resource so cry " << std::endl;
+            AIEvent theEvent;
+            theEvent.id = ID;
+
+            eventManager.post(theEvent);
+         //   std::cout << "no resource so cry " << std::endl;
             return State::True;
         }
     }
 
     State YesResource::run(EntityID ID)  {
-        std::cout << "boi moving" << std::endl;
+       // std::cout << "boi moving" << std::endl;
 
         return State::True;
 
@@ -122,7 +158,7 @@ State Task::run(EntityID ID)
 
     State IdleState::run(EntityID ID)
     {
-        std::cout << "State change to idle";
+      //  std::cout << "State change to idle";
         return State::True;
     }
 
@@ -136,7 +172,7 @@ State Task::run(EntityID ID)
     State testFail::run(EntityID ID) 
     {
         return State::False;
-        std::cout << "fail here\n";
+     //   std::cout << "fail here\n";
     }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -169,10 +205,16 @@ void behaviorTreeInit()
     std::shared_ptr<Task> testSound = std::make_shared<PlaySound>();
     std::shared_ptr<Task> booResource = std::make_shared<noResource>();
     std::shared_ptr<Task> payUp = std::make_shared<PayResource>();
+    std::shared_ptr<Task> testRange = std::make_shared<TargetInRange>();
+   
+
+ 
+    sequen->children.push_back(testRange);
     sequen->children.push_back(payUp);
     sequen->children.push_back(gotResource);
     sequen->children.push_back(playAni);
     sequen->children.push_back(testSound);
+
 
    // select->children.push_back(fail);
 
@@ -182,13 +224,5 @@ void behaviorTreeInit()
   //  select->children.push_back(booResource);
    // select->children.push_back(playAni);
 
-    for (auto& i : ecs.getEntities())
-    {
-        Unit* unit = ecs.GetComponent<Unit>(i);
-        if (unit && ecs.GetComponent<BaseInfo>(i)->type != "Prefab")
-        {
-            unit->aiTree = &behaviorTree;
-            unit->aiTree->run(i);
-        }
-    }
+
 }

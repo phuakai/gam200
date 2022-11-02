@@ -8,6 +8,7 @@
 #include <fstream>
 #include "gameStats.h"
 
+
 //#include "ECS.h"
 //#include "../../Engine/Include/eventManager/eventManager.h"
 
@@ -38,7 +39,7 @@ public:
    std::vector<std::shared_ptr<Task>> children;
 };
 
-class TargetInRange : Task
+class TargetInRange :public Task
 { //condition
 
     int unit;

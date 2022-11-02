@@ -973,9 +973,6 @@
     <ClInclude Include="Include\Serialization\rttr\property.h">
       <Filter>Header Files\Serialization\rttr</Filter>
     </ClInclude>
-    <ClInclude Include="Include\mainHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\EventManager\eventManager.h">
       <Filter>Header Files\EventManager</Filter>
     </ClInclude>
@@ -1194,6 +1191,9 @@
     </ClInclude>
     <ClInclude Include="Include\UI\uiManager.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mainHeader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

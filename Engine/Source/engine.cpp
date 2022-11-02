@@ -263,13 +263,14 @@ void engineInit()
 			{
 				continue;
 			}
-
+			/*
 			MoveEvent entityToMove;
 
 			entityToMove.id = entities[i];
 			entityToMove.message = (1UL << Systems::Physics);
 
 			eventManager.post(entityToMove);
+		*/
 		}
 		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;

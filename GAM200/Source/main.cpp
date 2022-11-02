@@ -16,11 +16,10 @@ This file implements a game loop.
 #include <fstream>
 #include "mainHeader.h"
 #include "levelEditor.h"
+#include "scripts.h"
 
 //BehaviourTree behaviorTree;
 extern BehaviourTree behaviorTree;
-AIStats testStats;
-//extern AIStats testStats;
 
 /*                                                   type declarations
 ----------------------------------------------------------------------------- */
@@ -96,6 +95,7 @@ mouse movement, and mouse scroller events to be processed.
 */
 static void update() 
 {
+    unitAIUpdate();
     engineUpdate();
 
 

@@ -201,7 +201,7 @@ void FormationManager::movementFlocking(EntityID id, std::vector<vector2D::vec2D
 		entity->position.y - maximumCohesion,
 		entity->position.x + maximumCohesion,
 		entity->position.y + maximumCohesion);
-	maintree.query(range, myList);
+		maintree.query(range, myList);
 
 	for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 	{

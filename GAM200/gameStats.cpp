@@ -1,6 +1,7 @@
 #include "gameStats.h"
-extern AIStats testStats;
 
+AIStats testStats;
+extern AIStats testStats;
 
 void gameStatsInit() {
 	testStats.resourceOne = 100;
