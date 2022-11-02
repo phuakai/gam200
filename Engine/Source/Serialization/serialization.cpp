@@ -264,7 +264,7 @@ std::string to_json(rttr::instance obj, std::string fileName, bool overwiteFile)
 
     Document d;
     d.Parse(sb.GetString());
-    FILE* fp;
+    //FILE* fp;
     //if (overwiteFile)
     //{
     //    fp = fopen(fileName.c_str(), "ab");
@@ -600,7 +600,7 @@ bool fromJsonECS(std::string fileName)
 
     //FormationManager enemyManager;
 
-    for (int i = 0; i < d.Size(); ++i)
+    for (unsigned int i = 0; i < d.Size(); ++i)
     {
         std::cout << i << std::endl;
         
@@ -618,12 +618,12 @@ bool fromJsonECS(std::string fileName)
         std::string componentName = theItr->value.GetString();
 
         // For each component
-        for (int j = 0; j < theItr->value.Size(); ++j)
+        for (unsigned int j = 0; j < theItr->value.Size(); ++j)
         {
-            auto& componentName = theItr->value[(j * 2)];
+            auto& currentComponentName = theItr->value[(j * 2)];
             auto& componentData = theItr->value[(j * 2) + 1];
 
-            rttr::type component = rttr::type::get_by_name(componentName.GetString());
+            rttr::type component = rttr::type::get_by_name(currentComponentName.GetString());
 
             instance addedComponent = addComponentByName(component, newEntity);
 

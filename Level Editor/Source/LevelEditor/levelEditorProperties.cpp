@@ -46,7 +46,7 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 			auto component = rttr::type::get_by_name(allComponents[i]);
 
 			void* componentExistCheck = checkComponentByName(component, id);
-			bool check = componentExistCheck == nullptr ? false : true;
+			bool boolCheck = componentExistCheck == nullptr ? false : true;
 
 			if (allComponents[i] == "BaseInfo")
 			{
@@ -77,9 +77,9 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 				continue;
 			}
 
-			ImGui::Checkbox(allComponents[i].c_str(), &check);
+			ImGui::Checkbox(allComponents[i].c_str(), &boolCheck);
 
-			if (check)
+			if (boolCheck)
 			{
 				if (componentExistCheck == nullptr)
 				{

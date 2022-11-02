@@ -129,7 +129,7 @@ protected:
     bool m_funcSet;
 
 public:
-    System(ECS& ecs, const std::uint8_t& layer) : m_ecs(ecs), m_funcSet(false)
+    System(ECS& theecs, const std::uint8_t& layer) : m_ecs(theecs), m_funcSet(false)
     {
         m_ecs.RegisterSystem(layer, this);
     }
@@ -237,8 +237,6 @@ public:
     template<typename C>
     void RemoveComponent(const EntityID& entityId);
 
-    void setEntityName(const EntityID& entityId, std::string name);
-
     template<typename C>
     C* GetComponent(const EntityID& entityId);
 
@@ -257,9 +255,8 @@ public:
     std::vector<std::string> getEntityComponents(const EntityID& entityId);
     
     std::vector<EntityID> getEntities();
-    std::vector<std::string> getEntityNames();
-
-    std::string* getEntityName(const EntityID& entityId);
+    //std::vector<std::string> getEntityNames();
+    //std::string* getEntityName(const EntityID& entityId);
 
     //change back to priv 
 private:

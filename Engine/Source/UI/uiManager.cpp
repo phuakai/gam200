@@ -58,12 +58,12 @@ namespace UI
 		std::vector<EntityID> id = ecs.getEntities();
 		for (size_t currId = 0; currId < id.size(); ++currId)
 		{
-			ui* uiPtr = ecs.GetComponent<ui>(currId);
+			ui* uiPtr = ecs.GetComponent<ui>((EntityID)currId);
 			// Entity does not have ui component
 			if (uiPtr == nullptr)
 				continue;
 
-			UIGroup* grp;
+			//UIGroup* grp;
 				//std::cout << "what is the id: " << id[currId] << std::endl;
 			// Entity has ui component
 			switch(static_cast<groupName>(uiPtr->group))
@@ -87,11 +87,11 @@ namespace UI
 				switch (static_cast<uiLocation>(uiPtr->location))
 				{
 				case uiLocation::actionPanel:
-					addUiToActionGroup(UI::uiButton(currId, ecs.GetComponent<BaseInfo>(currId)->position, ecs.GetComponent<BaseInfo>(currId)->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+					addUiToActionGroup(UI::uiButton((EntityID)currId, ecs.GetComponent<BaseInfo>((EntityID)currId)->position, ecs.GetComponent<BaseInfo>((EntityID)currId)->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
 					break;
 				case uiLocation::hud:
 					//std::cout << "do you enter here? " << std::endl;
-					addUiToInfoList(UI::uiButton(currId, ecs.GetComponent<BaseInfo>(currId)->position, ecs.GetComponent<BaseInfo>(currId)->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
+					addUiToInfoList(UI::uiButton((EntityID)currId, ecs.GetComponent<BaseInfo>((EntityID)currId)->position, ecs.GetComponent<BaseInfo>((EntityID)currId)->dimension / 2.f, 2), UI::UIManager::groupName::unit1);
 					break;
 				default:
 					//std::cout << "you are not suppoes to be here\n";
@@ -104,10 +104,10 @@ namespace UI
 				{
 				case uiLocation::actionPanel:
 					//std::cout << "do you enter here? " << std::endl;
-					addUiToActionGroup(UI::uiButton(currId, ecs.GetComponent<BaseInfo>(currId)->position, ecs.GetComponent<BaseInfo>(currId)->dimension / 2.f, 2), UI::UIManager::groupName::building1);
+					addUiToActionGroup(UI::uiButton((EntityID)currId, ecs.GetComponent<BaseInfo>((EntityID)currId)->position, ecs.GetComponent<BaseInfo>((EntityID)currId)->dimension / 2.f, 2), UI::UIManager::groupName::building1);
 					break;
 				case uiLocation::hud:
-					addUiToInfoList(UI::uiButton(currId, ecs.GetComponent<BaseInfo>(currId)->position, ecs.GetComponent<BaseInfo>(currId)->dimension / 2.f, 2), UI::UIManager::groupName::building1);
+					addUiToInfoList(UI::uiButton((EntityID)currId, ecs.GetComponent<BaseInfo>((EntityID)currId)->position, ecs.GetComponent<BaseInfo>((EntityID)currId)->dimension / 2.f, 2), UI::UIManager::groupName::building1);
 					break;
 				default:
 					//std::cout << "you are not suppoes to be here\n";

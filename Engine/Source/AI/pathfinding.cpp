@@ -69,9 +69,9 @@ bool pathfindingCalculation(EntityID& id)
 			changedVelocity = formationManagers[physics->formationManagerID].flowField[(int)nodePosition.y][(int)nodePosition.x].direction + offsetVector;
 		}
 
-		changedVelocity += (physics->formationTarget - baseInfo->position) * 0.2;
+		changedVelocity += (physics->formationTarget - baseInfo->position) * 0.2f;
 
-		changedVelocity += (physics->target - baseInfo->position) * 0.7;
+		changedVelocity += (physics->target - baseInfo->position) * 0.7f;
 
 		std::vector<vector2D::vec2D> allVelocity{ vector2D::vec2D(0.f,0.f), vector2D::vec2D(0.f,0.f),vector2D::vec2D(0.f,0.f) };
 
@@ -515,7 +515,7 @@ void FormationManager::generateFlowField()
 
 bool FormationManager::addCharacter(EntityID& id)
 {
-	int occupiedSlots = slotAssignment.size();
+	int occupiedSlots = (int)slotAssignment.size();
 
 	// change this to an array / define
 	if (occupiedSlots <= 100)
@@ -571,7 +571,7 @@ void FormationManager::updateAnchorPosition()
 
 	if (slotAssignment.size() != 0)
 	{
-		anchorPosition = totalPositions / slotAssignment.size();
+		anchorPosition = totalPositions / (float)slotAssignment.size();
 	}
 
 	vector2D::vec2D anchorNode = (anchorPosition - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
@@ -598,7 +598,7 @@ void FormationManager::updateOffsetPosition()
 	{
 		totalPositions += formationPosition(i);
 	}
-	offsetPosition = totalPositions / slotAssignment.size();
+	offsetPosition = totalPositions / (float)slotAssignment.size();
 }
 
 //void FormationManager::updateOffsetOrientation()
@@ -675,5 +675,5 @@ void FormationManager::updateReached()
 
 int FormationManager::getNumberOfEntities()
 {
-	return slotAssignment.size();
+	return (int)slotAssignment.size();
 }

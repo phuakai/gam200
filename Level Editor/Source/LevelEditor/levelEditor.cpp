@@ -145,7 +145,18 @@ void menu()
 			{
 				if (saveLoadFile != "")
 				{
-					toJsonECS(ecs.getEntities(), saveLoadFile, true);
+					std::vector<EntityID> entities = ecs.getEntities();
+
+					for (int i = 0; i < entities.size(); ++i)
+					{
+						if (ecs.GetComponent<BaseInfo>(entities[i])->type == "HealthBar")
+						{
+							entities.erase(entities.begin() + i);
+							--i;
+						}
+					}
+
+					toJsonECS(entities, saveLoadFile, true);
 				}
 
 				saveLoadState = 0;
@@ -207,7 +218,7 @@ void imguiUpdate()
 	{
 		auto tex = mainFrame.framebuffer;
 		ImVec2 size = ImGui::GetWindowSize();
-		ImGui::Image((ImTextureID)tex, size, ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image(reinterpret_cast<ImTextureID>(tex), size, ImVec2(0, 1), ImVec2(1, 0));
 
 		double mousePosX = 0.0, mousePosY = 0.0;
 		Graphics::Input::getCursorPos(&mousePosX, &mousePosY);

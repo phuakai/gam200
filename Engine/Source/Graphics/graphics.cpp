@@ -168,12 +168,12 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	{
 		for (int i = 0; i < (totalindicesize - 5); ++i)
 		{
-			ebodata[i] = 0 + offset;
-			ebodata[++i] = 1 + offset;
-			ebodata[++i] = 2 + offset;
-			ebodata[++i] = 2 + offset;
-			ebodata[++i] = 3 + offset;
-			ebodata[++i] = 0 + offset;
+			ebodata[i] = 0 + (GLushort)offset;
+			ebodata[++i] = 1 + (GLushort)offset;
+			ebodata[++i] = 2 + (GLushort)offset;
+			ebodata[++i] = 2 + (GLushort)offset;
+			ebodata[++i] = 3 + (GLushort)offset;
+			ebodata[++i] = 0 + (GLushort)offset;
 			offset += 4;
 		}
 	}
@@ -181,8 +181,8 @@ void RenderNS::BatchRenderer::BatchRender(std::vector<TextureNS::Texture>& texob
 	{
 		for (int i = 0; i < (totalindicesize - 1); i += 2)
 		{
-			ebodata[i + 0] = 0 + offset;
-			ebodata[i + 1] = 1 + offset;
+			ebodata[i + 0] = 0 + (GLushort)offset;
+			ebodata[i + 1] = 1 + (GLushort)offset;
 			offset += 2;
 		}
 	}
@@ -315,7 +315,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 			tmpVtxData.clrVtx = clr_vtx[j];
 			tmpVtxData.posVtx = models["square"].model_coords[j];
 			tmpVtxData.txtVtx = texcoord[j];
-			tmpVtxData.txtIndex = texid; // To be removed
+			tmpVtxData.txtIndex = (float)texid; // To be removed
 			vertexData.emplace_back(tmpVtxData);
 		}
 		vector2D::vec2D temppos = curobjBaseInfo->position;

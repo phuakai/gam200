@@ -15,7 +15,7 @@ const IDType TypeIdGenerator<T>::GetNewID() {
     return idCounter;
 }
 
-inline Entity::Entity(ECS& ecs, std::string name) : m_id(ecs.GetNewID()), m_ecs(ecs) 
+inline Entity::Entity(ECS& theecs, std::string name) : m_id(theecs.GetNewID()), m_ecs(theecs)
 {
     m_ecs.RegisterEntity(m_id);
 }
@@ -160,13 +160,11 @@ inline void ECS::RegisterEntity(const EntityID entityId)
 template<typename C, typename... Args>
 inline C* ECS::AddComponent(const EntityID& entityID, Args&&... args) 
 {
-
     // no safety checks
 
     ComponentTypeID newCompTypeId = Component<C>::GetTypeID();
 
     const std::size_t& compDataSize = m_componentMap[newCompTypeId]->GetSize();
-
 
     // this ensures the entity is added to dummy archetype if needed
     Record& record = m_entityArchetypeMap[entityID];
@@ -274,8 +272,8 @@ inline C* ECS::AddComponent(const EntityID& entityID, Args&&... args)
 
                 const std::size_t& oldCompDataSize = oldComp->GetSize();
 
-                std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
-                std::size_t newSize = currentSize - oldCompDataSize;
+                //std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
+                //std::size_t newSize = currentSize - oldCompDataSize;
                 unsigned char* newData = new unsigned char[oldArchetype->componentDataSize[i] - oldCompDataSize];
                 oldArchetype->componentDataSize[i] -= oldCompDataSize;
                 for (std::size_t e = 0, ei = 0; e < oldArchetype->entityIds.size(); ++e)
@@ -406,7 +404,7 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
             continue;
         }
 
-        const ComponentBase* const newComp = m_componentMap[j];
+        const ComponentBase* const newComp = m_componentMap[(unsigned int)j];
 
         const std::size_t& newCompDataSize = newComp->GetSize();
 
@@ -442,9 +440,9 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
             if (i == j)
             {
                 const std::size_t& oldCompDataSize
-                    = m_componentMap[i]->GetSize();
+                    = m_componentMap[(unsigned int)i]->GetSize();
 
-                ComponentBase* removeWrapper = m_componentMap[i];
+                ComponentBase* removeWrapper = m_componentMap[(unsigned int)i];
                 removeWrapper->MoveData(&oldArchetype->componentData[i][record.index * oldCompDataSize],
                     &newArchetype->componentData[j][currentSize]);
 
@@ -470,12 +468,12 @@ inline void ECS::RemoveComponent(const EntityID& entityId)
                 &oldArchetype->componentData[i][record.index * sizeof(C)]);
         }
 
-        const ComponentBase* const oldComp = m_componentMap[i];
+        const ComponentBase* const oldComp = m_componentMap[(unsigned int)i];
 
         const std::size_t& oldCompDataSize = oldComp->GetSize();
 
-        std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
-        std::size_t newSize = currentSize - oldCompDataSize;
+        //std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
+        //std::size_t newSize = currentSize - oldCompDataSize;
         unsigned char* newData = new unsigned char[oldArchetype->componentDataSize[i] - oldCompDataSize];
         oldArchetype->componentDataSize[i] -= oldCompDataSize;
         for (std::size_t e = 0, ei = 0; e < oldArchetype->entityIds.size(); ++e)
@@ -559,7 +557,7 @@ inline void ECS::RemoveEntity(const EntityID& entityId)
             continue;
         }
 
-        const ComponentBase* const comp = m_componentMap[i];
+        const ComponentBase* const comp = m_componentMap[(unsigned int)i];
 
         const std::size_t& compSize = comp->GetSize();
 
@@ -574,12 +572,12 @@ inline void ECS::RemoveEntity(const EntityID& entityId)
             continue;
         }
 
-        const ComponentBase* const oldComp = m_componentMap[i];
+        const ComponentBase* const oldComp = m_componentMap[(unsigned int)i];
 
         const std::size_t& oldCompDataSize = oldComp->GetSize();
 
-        std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
-        std::size_t newSize = currentSize - oldCompDataSize;
+        //std::size_t currentSize = oldArchetype->entityIds.size() * oldCompDataSize;
+        //std::size_t newSize = currentSize - oldCompDataSize;
         unsigned char* newData = new unsigned char[oldArchetype->componentDataSize[i] - oldCompDataSize];
         oldArchetype->componentDataSize[i] -= oldCompDataSize;
         for (std::size_t e = 0, ei = 0; e < oldArchetype->entityIds.size(); ++e)
@@ -670,7 +668,7 @@ inline ECS::~ECS()
                 continue;
             }
 
-            const ComponentBase* const comp = m_componentMap[i];
+            const ComponentBase* const comp = m_componentMap[(unsigned int)i];
             const std::size_t& dataSize = comp->GetSize();
             for (std::size_t e = 0; e < archetype->entityIds.size(); ++e)
             {
@@ -762,11 +760,6 @@ System<Cs...>::DoAction(const float elapsedMilliseconds,
     m_func(elapsedMilliseconds, entityIDs, ts...);
 }
 
-inline void ECS::setEntityName(const EntityID& entityId, std::string name)
-{
-    Record& record = m_entityArchetypeMap[entityId];
-}
-
 inline std::vector<std::string> ECS::getAllRegisteredComponents() 
 {
     std::vector<std::string> componentNames;
@@ -785,20 +778,20 @@ inline std::vector<EntityID> ECS::getEntities()
     return entityIDs;
 }
 
-inline std::vector<std::string> ECS::getEntityNames() 
-{
-    std::vector<std::string> entitynames;
-    for (auto i : m_entityArchetypeMap) 
-    {
-        entitynames.push_back(*getEntityName(i.first));
-    }
-    return entitynames;
-}
-
-inline std::string* ECS::getEntityName(const EntityID& entityId) 
-{
-    Record& record = m_entityArchetypeMap[entityId];
-}
+//inline std::vector<std::string> ECS::getEntityNames() 
+//{
+//    std::vector<std::string> entitynames;
+//    for (auto i : m_entityArchetypeMap) 
+//    {
+//        entitynames.push_back(*getEntityName(i.first));
+//    }
+//    return entitynames;
+//}
+//
+//inline std::string* ECS::getEntityName(const EntityID& entityId) 
+//{
+//    Record& record = m_entityArchetypeMap[entityId];
+//}
 
 inline std::vector<std::string> ECS::getEntityComponents(const EntityID& entityId)
 {

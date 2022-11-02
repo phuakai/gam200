@@ -78,10 +78,12 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("unitLink", &Stats::unitLink)
+		.property("attackTimer", &Stats::attackTimer)
 		.property("health", &Stats::health);
 
 	rttr::registration::class_<Building>("Building")
 		.property("buildTime", &Building::buildTime)
+		.property("spawnTimer", &Building::spawnTimer)
 		.property("buildingType", &Building::buildingType);
 
 	rttr::registration::class_<Unit>("Unit")
@@ -90,8 +92,17 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<ui>("ui")
 		.property("group", &ui::group)
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+			)
 		.property("uiType", &ui::uiType)		// is it uibg/uibutton? 
-		.property("location", &ui::location);	// is it in hud/map/action panel? store into the respective list
+			(
+				rttr::metadata("NO_SERIALIZE", "TRUE")
+				)
+		.property("location", &ui::location)	// is it in hud/map/action panel? store into the respective list
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+			);
 
 }
 ECS ecs;
@@ -137,7 +148,7 @@ EntityID buildingPrefab;
 // PUT IN INPUT SYSTEM -> DRAG SELECT
 bool drag;
 int selected;
-EntityID selectedEntityID;
+int selectedEntityID;
 int currentFormationManagerID;
 vector2D::vec2D dragSelectStartPosition;
 vector2D::vec2D dragSelectEndPosition;
@@ -221,7 +232,6 @@ void engineInit()
 	// velocity, target, force, speed
 	player1.Add<Texture>(12, 1, 1, "none");
 	//player1.Add<Stats>(100);
-	ecs.setEntityName(player1.GetID(), "Mouse Click");
 
 	playbutton.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
 	vector2D::vec2D playdimension{ 150.f, 75.f };
@@ -253,7 +263,6 @@ void engineInit()
 	ecs.AddComponent<Render>(selected, "square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
 	ecs.AddComponent<BaseInfo>(selected, "Selection", "selection", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
-	ecs.setEntityName(selection, "selection");
 
 	timer = 4;
 
@@ -507,58 +516,11 @@ void engineUpdate()
 	glfwPollEvents();
 
 	//fow::fowMap.updateFow();
-	UI::UIMgr.UIUpdate();
+	//UI::UIMgr.UIUpdate();
 
 	Graphics::Input::update_time(1.0);
 
 	App::update();						// graphics system
-	vector2D::vec2D mousepos;
-	Graphics::Input::getCursorScreenPos(&mousepos);
-	//std::cout << "This mouse pos " << mousepos.x << ", " << mousepos.y << std::endl;
-	BaseInfo* playbuttoninfo = ecs.GetComponent<BaseInfo>(playbutton.GetID());
-	Texture* playbuttontex = ecs.GetComponent<Texture>(playbutton.GetID());
-	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
-	std::vector<vector2D::vec2D> playbuttonvtx
-	{
-		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f))
-	};
-
-	BaseInfo* exitbuttoninfo = ecs.GetComponent<BaseInfo>(exitbutton.GetID());
-	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
-	std::vector<vector2D::vec2D> exitbuttonvtx
-	{
-		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f)),
-		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f))
-	};
-
-	//if (Graphics::Input::mousestateLeft)
-	//{
-	//	if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, playbuttonvtx))
-	//	{
-	//		std::cout << "Play button" << std::endl;
-	//		pause = pause ? false : true;
-	//		std::cout << "Pause state " << pause << std::endl;
-	//		if (pause)
-	//		{
-	//			playbuttontex->textureID = 8;
-	//		}
-	//		else
-	//		{
-	//			playbuttontex->textureID = 8;
-	//		}
-	//	}
-	//	if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, exitbuttonvtx))
-	//	{
-	//		std::cout << "Exit button" << std::endl;
-	//		glfwSetWindowShouldClose(Graphics::Input::ptr_to_window, GLFW_TRUE);
-	//	}
-	//	Graphics::Input::mousestateLeft = false;
-	//}
 }
 
 void engineDraw()
@@ -593,6 +555,30 @@ void dragSelect()
 {
 	double mousePosX = 0.0, mousePosY = 0.0;
 
+	vector2D::vec2D mousepos;
+	Graphics::Input::getCursorScreenPos(&mousepos);
+	//std::cout << "This mouse pos " << mousepos.x << ", " << mousepos.y << std::endl;
+	BaseInfo* playbuttoninfo = ecs.GetComponent<BaseInfo>(playbutton.GetID());
+	Texture* playbuttontex = ecs.GetComponent<Texture>(playbutton.GetID());
+	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
+	std::vector<vector2D::vec2D> playbuttonvtx
+	{
+		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f))
+	};
+
+	BaseInfo* exitbuttoninfo = ecs.GetComponent<BaseInfo>(exitbutton.GetID());
+	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
+	std::vector<vector2D::vec2D> exitbuttonvtx
+	{
+		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f))
+	};
+
 	if (imguiShow)
 	{
 		mousePosX = imguiMouseX;
@@ -605,10 +591,32 @@ void dragSelect()
 
 	if (Graphics::Input::mousestateLeft) // just clicked
 	{
+		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, playbuttonvtx))
+		{
+			std::cout << "Play button" << std::endl;
+			pause = pause ? false : true;
+			std::cout << "Pause state " << pause << std::endl;
+			if (pause)
+			{
+				playbuttontex->textureID = 8;
+			}
+			else
+			{
+				playbuttontex->textureID = 8;
+			}
+			Graphics::Input::mousestateLeft = false;
+		}
+		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, exitbuttonvtx))
+		{
+			std::cout << "Exit button" << std::endl;
+			glfwSetWindowShouldClose(Graphics::Input::ptr_to_window, GLFW_TRUE);
+			Graphics::Input::mousestateLeft = false;
+		}
+
 		if (!drag)
 		{
-			dragSelectStartPosition.x = mousePosX;
-			dragSelectStartPosition.y = mousePosY;
+			dragSelectStartPosition.x = (float)mousePosX;
+			dragSelectStartPosition.y = (float)mousePosY;
 			drag = true;
 
 			// Clear info from hud
@@ -619,13 +627,13 @@ void dragSelect()
 		}
 		else // still dragging
 		{
-			dragSelectEndPosition.x = mousePosX;
-			dragSelectEndPosition.y = mousePosY;
+			dragSelectEndPosition.x = (float)mousePosX;
+			dragSelectEndPosition.y = (float)mousePosY;
 
 			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(selection);
 
-			formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
-			formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
+			formationManagerInfo->dimension.x = (float)fabs(mousePosX - dragSelectStartPosition.x);
+			formationManagerInfo->dimension.y = (float)fabs(mousePosY - dragSelectStartPosition.y);
 
 			formationManagerInfo->position = (dragSelectEndPosition - dragSelectStartPosition) / 2 + dragSelectStartPosition;
 		}
@@ -690,8 +698,6 @@ void dragSelect()
 			//UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 
 			selected = 0;
-
-			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(selection);
 		}
 		else
 		{
@@ -710,7 +716,7 @@ void dragSelect()
 		{
 			for (auto i : formationManagerUpdateEntities)
 			{
-				ecs.GetComponent<Physics>(i)->target = vector2D::vec2D(mousePosX, mousePosY);
+				ecs.GetComponent<Physics>(i)->target = vector2D::vec2D((float)mousePosX, (float)mousePosY);
 
 				MoveEvent entityToPathFind;
 
@@ -730,7 +736,7 @@ void addHealthBar(EntityID id)
 	BaseInfo* entityInfo = ecs.GetComponent<BaseInfo>(id);
 
 	EntityID healthBar = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(healthBar, "HealthBar", "HealthBar" + entityInfo->name, vector2D::vec2D(entityInfo->position.x, entityInfo->position.y + entityInfo->dimension.y), vector2D::vec2D(entityInfo->dimension.x, entityInfo->dimension.x * 0.2), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(healthBar, "HealthBar", "HealthBar" + entityInfo->name, vector2D::vec2D(entityInfo->position.x, entityInfo->position.y + entityInfo->dimension.y), vector2D::vec2D(entityInfo->dimension.x, entityInfo->dimension.x * 0.2f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(healthBar, "square", vector3D::vec3D(0.7f, 0.0f, 0.0f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(healthBar, 0, 1, 1, "Color");
 	ecs.AddComponent<Stats>(healthBar, 100, 1, id);
@@ -761,7 +767,7 @@ void updateHealthBars()
 				BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
 				baseInfo->position = otherBaseInfo->position;
 				baseInfo->position.y += otherBaseInfo->dimension.y;
-				baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
+				baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2f);
 			}
 		}
 	}
