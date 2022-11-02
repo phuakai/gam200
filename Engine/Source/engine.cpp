@@ -9,7 +9,7 @@
 #include "physics.h"
 #include "vec2D.h"
 #include "vec3D.h"
-//#include "Font.h"
+#include "Font.h"
 #include "AudioEngine.h"
 #include "camera.h"
 #include <app.h>
@@ -471,13 +471,13 @@ void engineInit()
 
 	pause = false;
 
-	//spooky::CAudioEngine audioEngine;
-	//audioEngine.Init();
-	//
-	//audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
-	//audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
-	//audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
-	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	spooky::CAudioEngine audioEngine;
+	audioEngine.Init();
+	
+	audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
+	audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
+	audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
+	audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
 	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
 	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
@@ -490,8 +490,8 @@ void engineInit()
 		assert("ERROR: Unable to validate shaders!");
 	}*/
 
-	//GLApp::insert_shdrpgm("font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
-	//Font::init();
+	//insert_shdrpgm(shdrnames, shdrpgms, "font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+	Font::init();
 }
 
 void engineUpdate()
