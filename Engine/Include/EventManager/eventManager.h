@@ -8,6 +8,7 @@ namespace Systems
 	enum Systems
 	{
 		Collision = 0,
+		Pathfinding,
 		Physics,
 		Graphics,
 		Sound

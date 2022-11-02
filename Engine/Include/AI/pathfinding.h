@@ -63,7 +63,7 @@ public:
 	This function calculates the 2D array of the dijkstra grid, calculating the
 	shortest part of all the nodes to the target position.
 	*/
-	void generateDijkstraCost(std::vector<Entity>& walls);
+	void generateDijkstraCost(std::vector<EntityID>* walls = nullptr);
 
 	/*  _________________________________________________________________________*/
 	/*! calculateLOS
@@ -106,5 +106,5 @@ private:
 extern std::vector<FormationManager> formationManagers;
 
 // =============================================================================
-
+void formationManagerUpdate();
 bool pathfindingCalculation(EntityID& id);

@@ -204,23 +204,42 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				if (dragTypeTo == "Folder")
 				{
 					// Finding children under selected folder
+					auto it = hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel));
+					auto itFrom = it;
 					int numberOfChildren = 0;
-					int lowestChildLevel = 0;
-					for (auto it = ++(hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel))); it != hierarchyList.end(); ++it, ++numberOfChildren)
+					int lowestChildLevel = it->first.second;
+					for (++it; it != hierarchyList.end(); ++it, ++numberOfChildren)
 					{
-						//std::cout << "what is this " << it->first.second;
 						if (it->first.second <= moveFromFolderLevel)
 						{
 							break;
 						}
 						lowestChildLevel = it->first.second;
 					}
-					//std::cout << "number of children: " << numberOfChildren << std::endl;
+
+					// Check if parent is dragged into child
+					auto itTo = hierarchyList.find(std::make_pair(moveToFolderID, moveToFolderLevel));
+					it = itFrom;
+					bool check = false;
+					if (moveFromFolderLevel < moveToFolderLevel)
+					{
+						for (int i = 0; i < numberOfChildren; ++i, ++it)
+						{
+							if (it->first.first == itTo->first.first)
+							{
+								check = true;
+								break;
+							}
+						}
+					}
+					if (check)
+					{
+						continue;
+					}
 
 					// Check if moving is valid (there is a limit of 4 layers of folders)
-					if (lowestChildLevel - moveFromFolderLevel - moveToFolderLevel > 4)
+					if (moveToFolderLevel + (lowestChildLevel - moveFromFolderLevel) >= 4)
 					{
-						//std::cout << "the hell " << std::endl;
 						moveFrom = -1;
 						moveTo = -1;
 						continue;
@@ -228,9 +247,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 
 					// Changing selected folderID
 					// Unlinks the node in the map and returns the node handler
-					auto initialFolderPosition = hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel));
 					auto folder = hierarchyList.extract(std::make_pair(moveFromFolderID, moveFromFolderLevel));
-
 					int childID = moveToFolderID;
 					int increment = (int)pow(10, 3 - moveToFolderLevel);
 					do
@@ -241,26 +258,26 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					while (hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1)) != hierarchyList.end());
 
 					folder.key().first = childID;
-					//std::cout << "Child ID: " <<  childID << std::endl;
 					folder.key().second = moveToFolderLevel + 1;
 					hierarchyList.insert(std::move(folder));
-					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					initialFolderPosition = hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1));
+
+					it = itFrom;
+					int currentLevelOffset = moveToFolderLevel + 1;
 					for (; numberOfChildren > 0; --numberOfChildren)
 					{
-						if (moveFromFolderID > moveToFolderLevel)
+						if (moveFromFolderID < moveToFolderLevel)
 						{
 							// Is now to child position in map
-							++initialFolderPosition;
+							++it;
 						}
 
-						auto childFolder = hierarchyList.extract(std::make_pair(initialFolderPosition->first.first, initialFolderPosition->first.second));
+						auto childFolder = hierarchyList.extract(std::make_pair(it->first.first, it->first.second));
 						//if (childFolder.key().second == 0) { break; 
-					//	if (childFolder == 0) { break; }
+						//	if (childFolder == 0) { break; }
 						//std::cout << "child folder key" << childFolder.key().second << std::endl;
-						childFolder.key().second = moveToFolderLevel + 1 + childFolder.key().second - moveFromFolderLevel;
+						childFolder.key().second = currentLevelOffset + (childFolder.key().second - moveFromFolderLevel);
 
-						childID += (int)pow(10, 4 - childFolder.key().second);
+						childID += (int)pow(10, 3 - childFolder.key().second);
 						childFolder.key().first = childID;
 
 						hierarchyList.insert(std::move(childFolder));
