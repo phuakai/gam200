@@ -10,6 +10,7 @@
 #include <math.h>
 #include "serialization.h"
 #include "pathfinding.h"
+#include "uiManager.h"
 
 bool show_demo_window;
 bool show_another_window;
@@ -94,9 +95,11 @@ void menu()
 		{
 			if (ImGui::Button("Load", ImVec2(120, 0)))
 			{
+				//UI::UIMgr.destroyUI();
 				ecs.RemoveAllEntities();
 				formationManagers.clear();
 				prefabs.clear();
+				mainTree.destroyQuadTree();
 
 				if (saveLoadFile != "")
 				{
@@ -105,15 +108,16 @@ void menu()
 
 				hierarchy.clear();
 
-				for (auto i : ecs.getEntities())
+				std::vector<EntityID> entityList = ecs.getEntities();
+				for (auto i : entityList)
 				{
-					if (ecs.GetComponent<BaseInfo>(i)->type == "Enemy" || ecs.GetComponent<BaseInfo>(i)->type == "Player")
-					{
-						addHealthBar(i);
-					}
 					if (ecs.GetComponent<BaseInfo>(i)->type == "Selection")
 					{
 						selection = i;
+					}
+					else if (ecs.GetComponent<BaseInfo>(i)->type == "Enemy" || ecs.GetComponent<BaseInfo>(i)->type == "Player")
+					{
+						addHealthBar(i);
 					}
 					else if (ecs.GetComponent<BaseInfo>(i)->type == "Prefab")
 					{
@@ -135,6 +139,8 @@ void menu()
 					}
 				}
 
+				//UI::UIMgr.createUiManager();
+
 				saveLoadState = 0;
 				ImGui::CloseCurrentPopup();
 			}
@@ -145,7 +151,16 @@ void menu()
 			{
 				if (saveLoadFile != "")
 				{
-					toJsonECS(ecs.getEntities(), saveLoadFile, true);
+					std::vector<EntityID> entities = ecs.getEntities();
+					for (int i = 0; i < entities.size(); ++i)
+					{
+						if (ecs.GetComponent<BaseInfo>(entities[i])->type == "HealthBar")
+						{
+							entities.erase(entities.begin() + i);
+							--i;
+						}
+					}
+					toJsonECS(entities, saveLoadFile, true);
 				}
 
 				saveLoadState = 0;

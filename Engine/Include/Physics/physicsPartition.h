@@ -150,6 +150,8 @@ public:
 	/******************************************************************************/
 	~quadTree();
 
+	void destroyQuadTree();
+
 	/******************************************************************************/
 	/*!
 		This function sets the tree's center position, halfwidth, halfheight,

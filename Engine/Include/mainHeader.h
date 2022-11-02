@@ -72,7 +72,8 @@ struct Physics
 struct Stats 
 {
 	int health;
-	EntityID unitLink;
+	int attackTimer;
+	int unitLink;
 };
 
 struct Unit 

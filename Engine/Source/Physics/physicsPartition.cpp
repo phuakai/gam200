@@ -1,6 +1,3 @@
-
-//#if false
-
 #include "physicsPartition.h"
 #include <iostream>
 #include <iomanip>
@@ -151,6 +148,14 @@ quadTree::quadTree(vector2D::vec2D const& centerPos, float const& halfWidth, flo
 */
 /******************************************************************************/
 quadTree::~quadTree() { }
+
+void quadTree::destroyQuadTree()
+{
+	nw = std::make_shared<quadTree>();
+	ne = std::make_shared<quadTree>();
+	sw = std::make_shared<quadTree>();
+	se = std::make_shared<quadTree>();
+}
 
 /******************************************************************************/
 /*!

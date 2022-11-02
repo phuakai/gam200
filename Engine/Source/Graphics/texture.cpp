@@ -82,9 +82,11 @@ namespace TextureNS
 		paths.emplace_back("tile002.png"); // 10 - Sprite Test
 		paths.emplace_back("tile003.png"); // 11 - Sprite Test
 		paths.emplace_back("DragBox_256x256.png"); // 12 - Drag box
+		paths.emplace_back("Enemy_Building_unclaimed.png"); // 13 - Enemy Building
+		paths.emplace_back("Enemy_Building_claimed.png"); // 14 - Enemy Building Claimed
 
 		// FOR IMGUI ========================================================
-		paths.emplace_back("folder.png"); // 13 - Folder Icon
+		paths.emplace_back("folder.png"); // 15 - Folder Icon
 		// ==================================================================
 
 		//Texture::createTexturePath("../asset/Transcloud.png", textureobj);
