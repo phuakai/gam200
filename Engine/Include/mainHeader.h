@@ -14,6 +14,17 @@
 #define MAX_GRID_Y 25
 #define WALL 255
 
+enum unitType {
+	PLAYER = 1,
+	ENEMY
+};
+
+enum buildingType {
+	RECRUITMENT = 1
+
+
+};
+
 struct Render // Sprite
 {
 	std::string type;
@@ -70,6 +81,7 @@ private:
 struct Unit {
 	int faction;
 	int type;
+	//EntityID target;
 	BehaviourTree* aiTree;
 
 };

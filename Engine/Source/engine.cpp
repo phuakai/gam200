@@ -96,7 +96,7 @@ extern std::vector<Entity> walls;
 Entity bg;
 Entity player1;
 std::vector<Entity> walls(0);
-std::vector<Entity> enemyUnits(100);
+std::vector<Entity> enemyUnits(5);
 extern std::vector<Entity> enemyUnits;
 //std::vector<Entity> cloud(fow::fowMap.getDims());
 std::vector<Entity> uiEntity(113);
@@ -368,13 +368,14 @@ void engineInit()
 			{
 				continue;
 			}
-
+			/*
 			MoveEvent entityToMove;
 
 			entityToMove.id = entities[i];
 			entityToMove.message = (1UL << Systems::Physics);
 
 			eventManager.post(entityToMove);
+		*/
 		}
 		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;

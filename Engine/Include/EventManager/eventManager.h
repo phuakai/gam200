@@ -10,7 +10,8 @@ namespace Systems
 		Collision = 0,
 		Physics,
 		Graphics,
-		Sound
+		Sound,
+		AI
 	};
 }
 
@@ -19,6 +20,14 @@ class Event
 public:
 	EntityID id;
 	char message;		// example: a mixture of systemIDs
+};
+
+class AIEvent :public Event {
+
+public:
+	
+
+
 };
 
 class MoveEvent : public Event

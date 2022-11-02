@@ -1,5 +1,7 @@
 
 
+void unitAIUpdate();
+
 /*
 struct BasicScript {
 
