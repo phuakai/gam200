@@ -79,7 +79,6 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Stats>("Stats")
 		.property("unitLink", &Stats::unitLink)
-		.property("attackTimer", &Stats::attackTimer)
 		.property("health", &Stats::health);
 
 	rttr::registration::class_<Building>("Building")
@@ -88,16 +87,13 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Unit>("Unit")
 		.property("faction", &Unit::faction)
-		.property("type", &Unit::type)
-		.property("aiTree", &Unit::aiTree)
-		(
-			rttr::metadata("NO_SERIALIZE", "TRUE")
-		);
+		.property("type", &Unit::type);
 
 	rttr::registration::class_<ui>("ui")
 		.property("group", &ui::group)
 		.property("uiType", &ui::uiType)		// is it uibg/uibutton? 
 		.property("location", &ui::location);	// is it in hud/map/action panel? store into the respective list
+
 }
 ECS ecs;
 
@@ -106,6 +102,8 @@ extern std::vector<Entity> walls;
 
 Entity bg;
 Entity player1;
+Entity playbutton;
+Entity exitbutton;
 //std::vector<Entity> cloud(fow::fowMap.getDims());
 
 System<Texture, Physics> textureSystem(ecs, 1);
@@ -129,6 +127,7 @@ std::chrono::steady_clock::time_point t2;
 std::chrono::duration <double> engineDrawTime;
 std::chrono::duration <double> physicsTime;
 std::chrono::duration <double> ecsSystemsTime;
+
 std::chrono::duration <double> totalTime;
 //------------------------
 
@@ -164,8 +163,6 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<Physics>(entityID));
 	else if (componentName == rttr::type::get<Building>())
 		return *(ecs.GetComponent<Building>(entityID));
-	else if (componentName == rttr::type::get<Stats>())
-		return *(ecs.GetComponent<Stats>(entityID));
 	else if (componentName == rttr::type::get<Unit>())
 		return *(ecs.GetComponent<Unit>(entityID));
 	else if (componentName == rttr::type::get<ui>())
@@ -194,7 +191,6 @@ void engineInit()
 	ecs.AddComponent<Render>(enemyPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 4, 1, 1, "Enemy");
 	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
-	ecs.AddComponent<Stats>(enemyPrefab, 0, 0, 0);
 	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
@@ -218,13 +214,29 @@ void engineInit()
 
 	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
 	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight), vector2D::vec2D(0.f, 0.f));
+	// velocity, target, force, speed
 	bg.Add<Texture>(1, 1, 1, "Background");
 
 	// ECS: Adding components into Entities
+	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
 	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f)), vector2D::vec2D(0.f, 0.f);
+	// velocity, target, force, speed
 	player1.Add<Texture>(12, 1, 1, "none");
+	//player1.Add<Stats>(100);
 	ecs.setEntityName(player1.GetID(), "Mouse Click");
+
+	playbutton.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
+	vector2D::vec2D playdimension{ 150.f, 75.f };
+	playbutton.Add<BaseInfo>("Menu", "play", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (playdimension.x / 2.f), 100.f), playdimension, vector2D::vec2D(0.f, 0.f));
+	// velocity, target, force, speed
+	playbutton.Add<Texture>(8, 1, 1, "Play");
+
+	exitbutton.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
+	vector2D::vec2D exitdimension{ 150.f, 75.f };
+	exitbutton.Add<BaseInfo>("Menu", "exit", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (exitdimension.x / 2.f), 0.f), exitdimension, vector2D::vec2D(0.f, 0.f));
+	// velocity, target, force, speed
+	exitbutton.Add<Texture>(10, 1, 1, "Exit");
 
 	// Create fow
 	//fow::fowMap.createFow();
@@ -246,8 +258,6 @@ void engineInit()
 	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
 	ecs.setEntityName(selection, "selection");
 
-	//UI::UIMgr.createUiManager();
-
 	timer = 4;
 
 	//fromJsonECS("data.json");
@@ -263,51 +273,18 @@ void engineInit()
 	{
 		for (int i = 0; i < entities.size(); ++i)
 		{
-			if (p[i].type == "Player" && m[i].formationManagerID != -1)
+			if (p[i].type == "Prefab" || m[i].formationManagerID == -1)
 			{
-				std::list<EntityID*>myList;
-				AABB range(p->position.x - p->dimension.x,
-					p->position.y - p->dimension.y,
-					p->position.x + p->dimension.x,
-					p->position.y + p->dimension.y);
-				mainTree.query(range, myList);
-
-				if (myList.size() != 0)
-				{
-					for (std::list <EntityID*>::iterator obj = myList.begin(); obj != myList.end(); ++obj)
-					{
-
-						if (ecs.GetComponent<BaseInfo>(**obj)->type == "Enemy")
-						{
-							if (ecs.GetComponent<Stats>(i))
-							{
-								ecs.GetComponent<Stats>(i)->attackTimer -= (float)Graphics::Input::delta_time;
-								std::cout << ecs.GetComponent<Stats>(i)->attackTimer << std::endl;
-
-								if (ecs.GetComponent<Stats>(**obj) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
-								{
-									ecs.GetComponent<Stats>(**obj)->health -= 1;
-								}
-							}
-						}
-					}
-				}
-				if (ecs.GetComponent<Stats>(i) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
-				{
-					ecs.GetComponent<Stats>(i)->attackTimer = 5;
-				}
-
-
-
-				MoveEvent entityToMove;
-
-				entityToMove.id = entities[i];
-				entityToMove.message = (1UL << Systems::Physics);
-
-				eventManager.post(entityToMove);
+				continue;
 			}
-			
-		
+			/*
+			MoveEvent entityToMove;
+
+			entityToMove.id = entities[i];
+			entityToMove.message = (1UL << Systems::Physics);
+
+			eventManager.post(entityToMove);
+		*/
 		}
 		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
@@ -395,7 +372,7 @@ void engineInit()
 	audioEngine.LoadSound("../asset/sounds/lofistudy.wav", false);
 	audioEngine.LoadSound("../asset/sounds/vine-boom.wav", false);
 	audioEngine.PlaySound("../asset/sounds/lofistudy.wav", spooky::Vector2{ 0, 0 }, audioEngine.VolumeTodb(1.0f));
-	//audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
+	audioEngine.PlaySound("../asset/sounds/Star Wars The Imperial March Darth Vaders Theme.wav", spooky::Vector2{ 0,0 }, audioEngine.VolumeTodb(1.0f));
 
 	/*Font::shader.CompileShaderFromFile(GL_VERTEX_SHADER, "../asset/shaders/Font.vert");
 	Font::shader.CompileShaderFromFile(GL_FRAGMENT_SHADER, "../asset/shaders/Font.frag");
@@ -494,6 +471,53 @@ void engineUpdate()
 	Graphics::Input::update_time(1.0);
 
 	App::update();						// graphics system
+	vector2D::vec2D mousepos;
+	Graphics::Input::getCursorScreenPos(&mousepos);
+	//std::cout << "This mouse pos " << mousepos.x << ", " << mousepos.y << std::endl;
+	BaseInfo* playbuttoninfo = ecs.GetComponent<BaseInfo>(playbutton.GetID());
+	Texture* playbuttontex = ecs.GetComponent<Texture>(playbutton.GetID());
+	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
+	std::vector<vector2D::vec2D> playbuttonvtx
+	{
+		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y + (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x + (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(playbuttoninfo->position.x - (playbuttoninfo->dimension.x / 2.f), playbuttoninfo->position.y - (playbuttoninfo->dimension.y / 2.f))
+	};
+
+	BaseInfo* exitbuttoninfo = ecs.GetComponent<BaseInfo>(exitbutton.GetID());
+	//std::cout << "This playbutton dimension " << playbuttoninfo->dimension.x << ", " << playbuttoninfo->dimension.y << std::endl;
+	std::vector<vector2D::vec2D> exitbuttonvtx
+	{
+		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y + (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x + (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f)),
+		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f))
+	};
+
+	if (Graphics::Input::mousestateLeft)
+	{
+		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, playbuttonvtx))
+		{
+			std::cout << "Play button" << std::endl;
+			pause = pause ? false : true;
+			std::cout << "Pause state " << pause << std::endl;
+			if (pause)
+			{
+				playbuttontex->textureID = 8;
+			}
+			else
+			{
+				playbuttontex->textureID = 8;
+			}
+		}
+		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, exitbuttonvtx))
+		{
+			std::cout << "Exit button" << std::endl;
+			glfwSetWindowShouldClose(Graphics::Input::ptr_to_window, GLFW_TRUE);
+		}
+		Graphics::Input::mousestateLeft = false;
+	}
 }
 
 void engineDraw()
@@ -559,10 +583,10 @@ void dragSelect()
 			drag = true;
 
 			// Clear info from hud
-			//UI::UIMgr.removeInfoFromDisplay();
+			UI::UIMgr.removeInfoFromDisplay();
 
 			// Remove actions from panel
-			//UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+			UI::UIMgr.removeActionGroupFromDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 		}
 		else // still dragging
 		{
@@ -680,14 +704,7 @@ void addHealthBar(EntityID id)
 	ecs.AddComponent<BaseInfo>(healthBar, "HealthBar", "HealthBar" + entityInfo->name, vector2D::vec2D(entityInfo->position.x, entityInfo->position.y + entityInfo->dimension.y), vector2D::vec2D(entityInfo->dimension.x, entityInfo->dimension.x * 0.2), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(healthBar, "square", vector3D::vec3D(0.7f, 0.0f, 0.0f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(healthBar, 0, 1, 1, "Color");
-	ecs.AddComponent<Stats>(healthBar, 100, 1, id);
-
-	if (!ecs.GetComponent<Stats>(id))
-	{
-		ecs.AddComponent<Stats>(id);
-	}
-	ecs.GetComponent<Stats>(id)->health = 100;
-	ecs.GetComponent<Stats>(id)->unitLink = healthBar;
+	ecs.AddComponent<Stats>(healthBar, 100, id);
 }
 
 void updateHealthBars()
@@ -700,7 +717,8 @@ void updateHealthBars()
 			BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
 			baseInfo->position = otherBaseInfo->position;
 			baseInfo->position.y += otherBaseInfo->dimension.y;
-			baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
+		
+			baseInfo->dimension = vector2D::vec2D(otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
 		}
 	}
 }

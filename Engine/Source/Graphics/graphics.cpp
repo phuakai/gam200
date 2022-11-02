@@ -319,10 +319,6 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 			vertexData.emplace_back(tmpVtxData);
 		}
 		vector2D::vec2D temppos = curobjBaseInfo->position;
-		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
-		{
-			//temppos += camera2d.getCamPosition();	
-		}
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(temppos.x, temppos.y));
 		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
 
@@ -346,7 +342,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 
 		matrix3x3::mat3x3 model_to_ndc_xformnotglm;// = world_to_ndc_xform * model_to_world;
 
-		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI")
+		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI" || curobjBaseInfo->type == "Menu")
 		{
 			model_to_ndc_xformnotglm = camera2d.getCamwintoNDCForm() * model_to_world;
 		}

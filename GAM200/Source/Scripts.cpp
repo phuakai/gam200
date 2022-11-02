@@ -6,8 +6,6 @@
 #include "EventManager/eventManager.h"
 #include "levelEditor.h"
 #include "Scripts.h"
-#include "physicsPartition.h"
-
 
 extern BehaviourTree behaviorTree;
 extern EventManager eventManager;
@@ -16,51 +14,18 @@ void unitAIUpdate()
 {
 	//loopStart;
 
+    //check to see if its enemy first CHANGE THIS
     for (auto& i : ecs.getEntities())
     {
-        if (ecs.GetComponent<BaseInfo>(i)->type != "Enemy")
-        {
-            continue;
-        }
-
         Unit* unit = ecs.GetComponent<Unit>(i);
-        if (unit && ecs.GetComponent<Unit>(i)->faction == 2)
+        if (unit && ecs.GetComponent<BaseInfo>(i)->type != "Prefab")
         {
             unit->aiTree = &behaviorTree;
             unit->aiTree->run(i);
         }
 
-        std::list<EntityID*> inRange;
-        AABB range(
-            ecs.GetComponent<BaseInfo>(i)->position.x - ecs.GetComponent<BaseInfo>(i)->dimension.x,
-            ecs.GetComponent<BaseInfo>(i)->position.y - ecs.GetComponent<BaseInfo>(i)->dimension.x,
-            ecs.GetComponent<BaseInfo>(i)->position.x + ecs.GetComponent<BaseInfo>(i)->dimension.y,
-            ecs.GetComponent<BaseInfo>(i)->position.y + ecs.GetComponent<BaseInfo>(i)->dimension.y);
-        mainTree.query(range, inRange);
+        //check if its targeting some other unit then check range then attack (-hp) CHANGE THIS
 
-        //need to check if its an enemy
-        if (inRange.size() != 0) 
-        {
-            for (auto const& j : inRange) 
-            {
-                if (ecs.GetComponent<BaseInfo>(*j)->type == "Player")
-                {
-                    if (ecs.GetComponent<Stats>(i))
-                    {
-                        ecs.GetComponent<Stats>(i)->attackTimer -= (float)Graphics::Input::delta_time;
-
-                        if (ecs.GetComponent<Stats>(*j) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
-                        {
-                            ecs.GetComponent<Stats>(*j)->health -= 1;
-                        }
-                    }
-                }
-            }
-        }
-        if (ecs.GetComponent<Stats>(i) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
-        {
-            ecs.GetComponent<Stats>(i)->attackTimer = 15;
-        }
 
     }
 	//std::vector<Event>& eventQueue = eventManager.findQueue(Systems::AI);
@@ -70,7 +35,7 @@ void buildingsUpdate() {
     for (auto& i : ecs.getEntities())
     {
         Building* building = ecs.GetComponent<Building>(i);
-        if (building && ecs.GetComponent<BaseInfo>(i)->type == "Enemy")
+        if (building && ecs.GetComponent<BaseInfo>(i)->type != "Prefab")
         {
             //spawn here CHANGE THIS
 
