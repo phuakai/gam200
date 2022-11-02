@@ -411,10 +411,13 @@ bool quadTree::query(AABB & queryRange, std::list<EntityID*> & objList)
 		// Query range and tree's boundary intersect
 		for (std::list<EntityID>::iterator it = points.begin(); it != points.end(); ++it)
 		{
-			if (queryRange.withinBoundary(ecs.GetComponent<BaseInfo>(*it)->position))
+			if (ecs.GetComponent<BaseInfo>(*it))
 			{
-				// Point in tree is within the query range, add to list of obj to be tested for pathfinding/collision
-				objList.push_front(&*it);
+				if (queryRange.withinBoundary(ecs.GetComponent<BaseInfo>(*it)->position))
+				{
+					// Point in tree is within the query range, add to list of obj to be tested for pathfinding/collision
+					objList.push_front(&*it);
+				}
 			}
 		}
 	}

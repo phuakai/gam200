@@ -47,6 +47,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		{
 			selected = ecs.GetNewID();
 			ecs.AddComponent<BaseInfo>(selected);
+			ecs.AddComponent<Texture>(selected, 0, 1, 1, "");
 			ecs.AddComponent<Render>(selected, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 			ecs.GetComponent<BaseInfo>(selected)->name = "Entity";
 			hierarchyList[std::make_pair(100000, 1)].push_back(selected);
@@ -106,7 +107,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		// folderID = map < pair < folderID, folderLevel >, listOfEntities >
 		// folderID
 		ImGui::PushID(i);
-		std::vector<EntityID>& listOfEntities = folder.second;
+		std::vector<EntityID> listOfEntities = folder.second;
 		// Drawing Folder 
 		bool nodeOpen = false;
 
@@ -157,7 +158,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		{
 			for (int j = 0; j < listOfEntities.size(); ++j)
 			{
-				if (ecs.GetComponent<BaseInfo>(listOfEntities[j])->type == "Prefab")
+				if (!ecs.GetComponent<BaseInfo>(listOfEntities[j]) || ecs.GetComponent<BaseInfo>(listOfEntities[j])->type == "Prefab")
 				{
 					continue;
 				}
@@ -173,6 +174,32 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					{
 						selected = currentEntity;
 					}
+				}
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+				{
+					ImGui::OpenPopup("delete");
+				}
+
+				if (ImGui::BeginPopup("delete"))
+				{
+					if (ImGui::Selectable("Delete"))
+					{
+						selected = -1;
+						if (ecs.GetComponent<Stats>(listOfEntities[j]))
+						{
+							ecs.RemoveEntity(ecs.GetComponent<Stats>(listOfEntities[j])->unitLink);
+							auto it = std::find(listOfEntities.begin(), listOfEntities.end(), ecs.GetComponent<Stats>(listOfEntities[j])->unitLink);
+							if (it != listOfEntities.end())
+							{
+								listOfEntities.erase(listOfEntities.begin() + *it);
+							}
+						}
+						ecs.RemoveEntity(listOfEntities[j]);
+						listOfEntities.erase(listOfEntities.begin() + j);
+						break;
+					}
+					ImGui::EndPopup();
 				}
 
 				if (ImGui::BeginDragDropSource())

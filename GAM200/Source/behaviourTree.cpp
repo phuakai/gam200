@@ -31,9 +31,9 @@ State TargetInRange::run(EntityID ID)
     //just shoot me
     AABB range(
         ecs.GetComponent<BaseInfo>(ID)->position.x - ecs.GetComponent<BaseInfo>(ID)->dimension.x * 3,
-        ecs.GetComponent<BaseInfo>(ID)->position.y - ecs.GetComponent<BaseInfo>(ID)->dimension.x * 3,
+        ecs.GetComponent<BaseInfo>(ID)->position.y - ecs.GetComponent<BaseInfo>(ID)->dimension.y * 3,
         ecs.GetComponent<BaseInfo>(ID)->position.x + ecs.GetComponent<BaseInfo>(ID)->dimension.x * 3,
-        ecs.GetComponent<BaseInfo>(ID)->position.y + ecs.GetComponent<BaseInfo>(ID)->dimension.x * 3);
+        ecs.GetComponent<BaseInfo>(ID)->position.y + ecs.GetComponent<BaseInfo>(ID)->dimension.y * 3);
     mainTree.query(range, inRange);
 
 

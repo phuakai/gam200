@@ -32,10 +32,10 @@ void unitAIUpdate()
 
         std::list<EntityID*> inRange;
         AABB range(
-            ecs.GetComponent<BaseInfo>(i)->position.x - ecs.GetComponent<BaseInfo>(i)->dimension.x,
-            ecs.GetComponent<BaseInfo>(i)->position.y - ecs.GetComponent<BaseInfo>(i)->dimension.x,
-            ecs.GetComponent<BaseInfo>(i)->position.x + ecs.GetComponent<BaseInfo>(i)->dimension.y,
-            ecs.GetComponent<BaseInfo>(i)->position.y + ecs.GetComponent<BaseInfo>(i)->dimension.y);
+            ecs.GetComponent<BaseInfo>(i)->position.x - ecs.GetComponent<BaseInfo>(i)->dimension.x / 2,
+            ecs.GetComponent<BaseInfo>(i)->position.y - ecs.GetComponent<BaseInfo>(i)->dimension.y / 2,
+            ecs.GetComponent<BaseInfo>(i)->position.x + ecs.GetComponent<BaseInfo>(i)->dimension.x / 2,
+            ecs.GetComponent<BaseInfo>(i)->position.y + ecs.GetComponent<BaseInfo>(i)->dimension.y / 2);
         mainTree.query(range, inRange);
 
         //need to check if its an enemy

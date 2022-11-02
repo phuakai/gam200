@@ -266,10 +266,10 @@ void engineInit()
 			if (p[i].type == "Player" && m[i].formationManagerID != -1)
 			{
 				std::list<EntityID*>myList;
-				AABB range(p->position.x - p->dimension.x,
-					p->position.y - p->dimension.y,
-					p->position.x + p->dimension.x,
-					p->position.y + p->dimension.y);
+				AABB range(p[i].position.x - p[i].dimension.x,
+					p[i].position.y - p[i].dimension.y,
+					p[i].position.x + p[i].dimension.x,
+					p[i].position.y + p[i].dimension.y);
 				mainTree.query(range, myList);
 
 				if (myList.size() != 0)
@@ -279,25 +279,24 @@ void engineInit()
 
 						if (ecs.GetComponent<BaseInfo>(**obj)->type == "Enemy")
 						{
-							if (ecs.GetComponent<Stats>(i))
+							if (ecs.GetComponent<Stats>(entities[i]))
 							{
-								ecs.GetComponent<Stats>(i)->attackTimer -= (float)Graphics::Input::delta_time;
-								std::cout << ecs.GetComponent<Stats>(i)->attackTimer << std::endl;
 
-								if (ecs.GetComponent<Stats>(**obj) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
+								ecs.GetComponent<Stats>(entities[i])->attackTimer -= (float)Graphics::Input::delta_time;
+								
+								if (ecs.GetComponent<Stats>(**obj) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
 								{
 									ecs.GetComponent<Stats>(**obj)->health -= 1;
 								}
+
 							}
 						}
 					}
 				}
-				if (ecs.GetComponent<Stats>(i) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
+				if (ecs.GetComponent<Stats>(entities[i]) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
 				{
-					ecs.GetComponent<Stats>(i)->attackTimer = 5;
+					ecs.GetComponent<Stats>(entities[i])->attackTimer = 5;
 				}
-
-
 
 				MoveEvent entityToMove;
 
@@ -697,10 +696,19 @@ void updateHealthBars()
 		BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(i);
 		if (baseInfo->type == "HealthBar")
 		{
-			BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
-			baseInfo->position = otherBaseInfo->position;
-			baseInfo->position.y += otherBaseInfo->dimension.y;
-			baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
+			if (ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health <= 0)
+			{
+				ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink)->type = "DeadEnemy";
+				ecs.GetComponent<Render>(ecs.GetComponent<Stats>(i)->unitLink)->render = false;
+				ecs.GetComponent<Render>(i)->render = false;
+			}
+			else
+			{
+				BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
+				baseInfo->position = otherBaseInfo->position;
+				baseInfo->position.y += otherBaseInfo->dimension.y;
+				baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
+			}
 		}
 	}
 }
