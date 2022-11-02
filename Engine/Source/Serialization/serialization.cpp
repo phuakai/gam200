@@ -334,8 +334,6 @@ std::string toJsonECS(std::vector<EntityID> entityList, std::string fileName, bo
 }
     
 
-
-    
 //----------------------------------------------------------------------------------------- READING STARTS HERE 
 void fromJsonRecur(instance& obj, Value& jsonObj);
    
@@ -647,7 +645,7 @@ bool fromJsonECS(std::string fileName)
         //enemyManager.addCharacter(newEntity);
     }
     //formationManagers.push_back(enemyManager);
-
+    fclose(fp);
     return true;
 
     //Reader reader;
@@ -655,20 +653,4 @@ bool fromJsonECS(std::string fileName)
     //StringStream ss(json);
     //if (reader.Parse(ss, handler))
 
-}
-    
-void ecsWriteToFile()
-{
-    for (int i = 0; i < ecs.getEntities().size(); ++i)
-    {
-        //if (ecs.GetComponent<Render>(i))
-        //    to_json(*ecs.GetComponent<Render>(i));
-        //if (ecs.GetComponent<Texture>(i))
-        //    to_json(*ecs.GetComponent<Texture>(i));
-        //if (ecs.GetComponent<Movement>(i))
-        //    to_json(*ecs.GetComponent<Movement>(i));
-        //if (ecs.GetComponent<
-        // >(i))
-        //    to_json(*ecs.GetComponent<Stats>(i));
-    }
 }
