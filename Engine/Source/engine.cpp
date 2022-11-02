@@ -536,29 +536,29 @@ void engineUpdate()
 		vector2D::vec2D(exitbuttoninfo->position.x - (exitbuttoninfo->dimension.x / 2.f), exitbuttoninfo->position.y - (exitbuttoninfo->dimension.y / 2.f))
 	};
 
-	if (Graphics::Input::mousestateLeft)
-	{
-		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, playbuttonvtx))
-		{
-			std::cout << "Play button" << std::endl;
-			pause = pause ? false : true;
-			std::cout << "Pause state " << pause << std::endl;
-			if (pause)
-			{
-				playbuttontex->textureID = 8;
-			}
-			else
-			{
-				playbuttontex->textureID = 8;
-			}
-		}
-		if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, exitbuttonvtx))
-		{
-			std::cout << "Exit button" << std::endl;
-			glfwSetWindowShouldClose(Graphics::Input::ptr_to_window, GLFW_TRUE);
-		}
-		Graphics::Input::mousestateLeft = false;
-	}
+	//if (Graphics::Input::mousestateLeft)
+	//{
+	//	if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, playbuttonvtx))
+	//	{
+	//		std::cout << "Play button" << std::endl;
+	//		pause = pause ? false : true;
+	//		std::cout << "Pause state " << pause << std::endl;
+	//		if (pause)
+	//		{
+	//			playbuttontex->textureID = 8;
+	//		}
+	//		else
+	//		{
+	//			playbuttontex->textureID = 8;
+	//		}
+	//	}
+	//	if (physics::CollisionDetectionCirclePolygon(mousepos, 1.f, exitbuttonvtx))
+	//	{
+	//		std::cout << "Exit button" << std::endl;
+	//		glfwSetWindowShouldClose(Graphics::Input::ptr_to_window, GLFW_TRUE);
+	//	}
+	//	Graphics::Input::mousestateLeft = false;
+	//}
 }
 
 void engineDraw()
