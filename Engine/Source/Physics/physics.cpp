@@ -55,6 +55,7 @@ void physicsUpdate()
 		
 		mainTree.updatePoint(currentEvent.id, oldPosition, ecs.GetComponent<BaseInfo>(currentEvent.id)->position, mainTree);
 	}
+
 	//loopEnd;
 	//std::cout << std::fixed << diff << std::endl;
 	//

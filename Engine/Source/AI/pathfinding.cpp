@@ -13,6 +13,9 @@ This file includes the function definitions for pathfinding functions.
 #include <iostream>
 #include <iomanip>
 #include <math.h>
+#include "eventManager.h"
+
+extern EventManager eventManager;
 
 vector2D::vec2D directionToCheck[4]{ vector2D::vec2D(-1,0), vector2D::vec2D(1,0),vector2D::vec2D(0,-1),vector2D::vec2D(0,1) }; //,vector2D::vec2D(-1,-1),vector2D::vec2D(1,-1),vector2D::vec2D(-1,1),vector2D::vec2D(1,1)};
 
@@ -89,6 +92,78 @@ bool pathfindingCalculation(EntityID& id)
 	physics->velocity = changedVelocity;
 
 	return true;
+}
+
+void formationManagerUpdate()
+{
+	std::vector<Event>& eventQueue = eventManager.findQueue(Systems::Pathfinding);
+	std::vector<int> formationUpdate;
+
+	while (eventQueue.size())
+	{
+		Event currentEvent = eventManager.dequeue(Systems::Pathfinding);
+		EntityID entity = currentEvent.id;
+		Physics* physicsComponent = ecs.GetComponent<Physics>(entity);
+
+		// Check if target is within formation manager already
+		int formationManagerID = 0;
+		for (; formationManagerID < formationManagers.size(); ++formationManagerID)
+		{
+			if (physicsComponent->target == formationManagers[formationManagerID].target)
+			{
+				break;
+			}
+		}
+
+		// Means formation manager found
+		if (formationManagerID < formationManagers.size())
+		{
+			// Already in a formation manager
+			if (physicsComponent->formationManagerID != -1)
+			{
+				// Switch formation managers
+				formationManagers[physicsComponent->formationManagerID].removeCharacter(entity);
+			}
+		}
+		// Adding new formation manager / using inactive formation managers
+		else
+		{
+			// Finding inactive formation manager
+			for (int i = 0; i < formationManagers.size(); ++i)
+			{
+				// means inactive
+				if (formationManagers[i].slotAssignment.size() == 0)
+				{
+					formationManagerID = i;
+					break;
+				}
+			}
+
+			if (formationManagerID == formationManagers.size())
+			{
+				FormationManager newManager;
+				formationManagers.push_back(newManager);
+			}
+
+			formationManagers[formationManagerID].target = physicsComponent->target;
+		}
+
+		formationManagers[formationManagerID].addCharacter(entity);
+
+		if (std::find(formationUpdate.begin(), formationUpdate.end(), formationManagerID) == formationUpdate.end())
+		{
+			formationUpdate.push_back(formationManagerID);
+		}
+
+		physicsComponent->formationManagerID = formationManagerID;
+	}
+
+	for (int i : formationUpdate)
+	{
+		formationManagers[i].generateDijkstraCost();
+		formationManagers[i].generateFlowField();
+		formationManagers[i].updateReached();
+	}
 }
 
 
@@ -236,7 +311,7 @@ void FormationManager::movementFlocking(EntityID id, std::vector<vector2D::vec2D
 This function calculates the 2D array of the dijkstra grid, calculating the
 shortest part of all the nodes to the target position.
 */
-void FormationManager::generateDijkstraCost(std::vector<Entity>& walls)
+void FormationManager::generateDijkstraCost(std::vector<EntityID>* walls)
 {
 	vector2D::vec2D endingNode = (target - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
@@ -249,9 +324,9 @@ void FormationManager::generateDijkstraCost(std::vector<Entity>& walls)
 		}
 	}
 
-	for (int i = 0; i < walls.size(); ++i)
+	for (int i = 0; walls != nullptr && i < (*walls).size(); ++i)
 	{
-		BaseInfo* pointer = ecs.GetComponent<BaseInfo>(walls[i].GetID());
+		BaseInfo* pointer = ecs.GetComponent<BaseInfo>((*walls)[i]);
 		vector2D::vec2D wallNode = (pointer->position - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
 
 		flowField[(int)wallNode.y][(int)wallNode.x].cost = WALL;
@@ -363,7 +438,6 @@ and the line of sight array.
 void FormationManager::generateFlowField()
 {
 	vector2D::vec2D endingNode = (target - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-	//std::cout << endingNode.x << endingNode.y << std::endl;
 	//generateDijkstraCost(endingNode);
 
 	// resetting flow field to zero vectors

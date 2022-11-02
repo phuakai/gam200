@@ -8,6 +8,7 @@
 #include <ImGuizmo.h>
 #include "GraphEditor.h"
 #include <math.h>
+#include "serialization.h"
 
 extern std::vector<Entity> enemyUnits;
 
@@ -16,10 +17,14 @@ bool show_another_window;
 ImVec4 clear_color;
 
 extern FrameBufferNS::frameBuffer mainFrame; // This is the externed mainFrame variable to read framebuffer id from
+extern TextureNS::Texture textureobjects;
 
 static std::filesystem::path saveLocation = std::filesystem::current_path();
 
 static void ShowExampleAppCustomNodeGraph(bool* opened);
+
+int saveLoadState;
+std::string saveLoadFile;
 
 void menu()
 {
@@ -29,11 +34,24 @@ void menu()
 
 	if (ImGui::Button("Open"))
 	{
-		ImGui::OpenPopup("openFile");
+		saveLoadState = 1;
+		ImGui::OpenPopup("file");
 	}
-	if (ImGui::BeginPopupModal("openFile", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+
+	if (ImGui::Button("Save"))
 	{
-		ImGui::Text("Select File To Open");
+		saveLoadState = 2;
+		ImGui::OpenPopup("file");
+	}
+	if (ImGui::Button("Save As..."))
+	{
+		saveLoadState = 2;
+		ImGui::OpenPopup("file");
+	}
+
+	if (ImGui::BeginPopupModal("file", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Select File");
 		ImGui::Separator();
 
 		if (ImGui::Button("<<"))
@@ -48,16 +66,20 @@ void menu()
 
 			if (p.is_directory())
 			{
-				if (ImGui::Button(path.c_str()))
+				if (ImGui::ImageButton((GLuint*)13, ImVec2(10, 10)))
 				{
 					saveLocation /= p.path().filename();
+					saveLoadFile = "";
 				}
 			}
 			else
 			{
 				if (path.find(".json") != std::string::npos)
 				{
-					ImGui::Button(path.c_str());
+					if (ImGui::Button(path.c_str()))
+					{
+						saveLoadFile = p.path().string();
+					}
 				}
 			}
 
@@ -66,9 +88,26 @@ void menu()
 
 		ImGui::Separator();
 
-		if (ImGui::Button("OK", ImVec2(120, 0)))
+		if (saveLoadState == 1)
 		{
-			ImGui::CloseCurrentPopup();
+			if (ImGui::Button("Load", ImVec2(120, 0)))
+			{
+				saveLoadState = 0;
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Save", ImVec2(120, 0)))
+			{
+				if (saveLoadFile != "")
+				{
+					toJsonECS(ecs.getEntities(), saveLoadFile, true);
+				}
+
+				saveLoadState = 0;
+				ImGui::CloseCurrentPopup();
+			}
 		}
 
 		ImGui::SetItemDefaultFocus();
@@ -76,20 +115,11 @@ void menu()
 
 		if (ImGui::Button("Cancel", ImVec2(120, 0)))
 		{
+			saveLoadState = 0;
 			ImGui::CloseCurrentPopup();
 		}
 
 		ImGui::EndPopup();
-	}
-
-
-	if (ImGui::Button("Save"))
-	{
-
-	}
-	if (ImGui::Button("Save As..."))
-	{
-
 	}
 
 	ImGui::Separator();
@@ -133,6 +163,9 @@ void imguiInit()
 	clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+
+	saveLoadState = 0;
+	saveLoadFile = "";
 }
 
 void imguiUpdate()
