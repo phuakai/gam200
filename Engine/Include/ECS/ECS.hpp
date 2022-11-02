@@ -619,6 +619,17 @@ inline void ECS::RemoveEntity(const EntityID& entityId)
     oldArchetype->entityIds.erase(willBeRemoved);
 }
 
+inline void ECS::RemoveAllEntities()
+{
+    std::vector<EntityID> entities = ecs.getEntities();
+
+    for (auto& i : entities)
+    {
+        RemoveEntity(i);
+    }
+    m_entityIdCounter = 1;
+}
+
 
 inline void ECS::RunSystems(const std::uint8_t& layer, const float elapsedMilliseconds)
 {

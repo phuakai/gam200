@@ -5,7 +5,7 @@ class levelEditorHierarchy
 public:
 	static levelEditorHierarchy& getInstance();
 	void ImGuiHierarchy();
-
+	void clear();
 	int getSelected();
 
 private:

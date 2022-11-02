@@ -38,6 +38,7 @@ static void cleanup();
 bool imguiShow;
 double imguiMouseX;
 double imguiMouseY;
+bool imguiCameraCheck;
 
 /*                                                      function definitions
 ----------------------------------------------------------------------------- */
@@ -81,7 +82,7 @@ static void init()
     gameStatsInit();
     behaviorTreeInit();
 
-
+    imguiCameraCheck = false;
 }
 
 /*  _________________________________________________________________________ */

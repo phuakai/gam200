@@ -72,10 +72,14 @@ RTTR_REGISTRATION{
 		.property("collisionResponse", &Physics::collisionResponse)
 		.property("radius", &Physics::radius)
 		.property("reached", &Physics::reached)
-		.property("formationManagerID", &Physics::formationManagerID);
+		.property("formationManagerID", &Physics::formationManagerID)
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+		);
 
 	rttr::registration::class_<Stats>("Stats")
-		.property("health", &Stats::getHealth, &Stats::setHealth);
+		.property("unitLink", &Stats::unitLink)
+		.property("health", &Stats::health);
 
 	rttr::registration::class_<Building>("Building")
 		.property("buildTime", &Building::buildTime)
@@ -96,13 +100,9 @@ ECS ecs;
 extern Entity player1;
 extern std::vector<Entity> walls;
 
-
 Entity bg;
 Entity player1;
-std::vector<Entity> enemyUnits(100);
-extern std::vector<Entity> enemyUnits;
 //std::vector<Entity> cloud(fow::fowMap.getDims());
-std::vector<Entity> uiEntity(113);
 
 System<Texture, Physics> textureSystem(ecs, 1);
 System<BaseInfo, Physics> system1(ecs, 2);
@@ -129,6 +129,10 @@ std::chrono::duration <double> ecsSystemsTime;
 std::chrono::duration <double> totalTime;
 //------------------------
 
+EntityID enemyPrefab;
+EntityID playerPrefab;
+EntityID buildingPrefab;
+
 //spooky::CAudioEngine audioEngine;
 
 // PUT IN INPUT SYSTEM -> DRAG SELECT
@@ -141,7 +145,7 @@ vector2D::vec2D dragSelectEndPosition;
 std::vector<EntityID> formationManagerUpdateEntities;
 void dragSelect();
 
-Entity formationManager;
+EntityID selection;
 
 bool pause;
 
@@ -173,13 +177,14 @@ void engineInit()
 	ecs.RegisterComponent<Texture>("Texture");
 	ecs.RegisterComponent<Physics>("Physics");
 	ecs.RegisterComponent<Render>("Render");
+	ecs.RegisterComponent<Stats>("Stats");
 	ecs.RegisterComponent<Building>("Building");
 	ecs.RegisterComponent<Unit>("Unit");
 	ecs.RegisterComponent<ui>("ui");
 
 	// ======================================================================================================================================
 	// PREFABS
-	const EntityID& enemyPrefab = ecs.GetNewID();
+	enemyPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(enemyPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 4, 1, 1, "Enemy");
@@ -187,14 +192,14 @@ void engineInit()
 	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
-	const EntityID& playerPrefab = ecs.GetNewID();
+	playerPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(playerPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(playerPrefab, 12, 0, 0, "");
 	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
 	prefabs.push_back(playerPrefab);
 
-	const EntityID& buildingPrefab = ecs.GetNewID();
+	buildingPrefab = ecs.GetNewID();
 	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
 	ecs.AddComponent<Render>(buildingPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
@@ -217,9 +222,7 @@ void engineInit()
 	// velocity, target, force, speed
 	player1.Add<Texture>(12, 1, 1, "none");
 	//player1.Add<Stats>(100);
-	ecs.setEntityName(player1.GetID(), "Mouse Click");												// may not need this after rttr
-
-	EntityID playerID = player1.GetID();
+	ecs.setEntityName(player1.GetID(), "Mouse Click");
 
 	// Create fow
 	//fow::fowMap.createFow();
@@ -236,111 +239,17 @@ void engineInit()
 	//	//std::cout << "this is cloud id :" << it->getid() << " " << cloud[inc].GetID() << " " << it->getWorldPos().x << " " << it->getWorldPos().y << std::endl;
 	//}
 
-	// Create ui entity
-	float mapRatio{ 0.17f }/*17% screenwidth*/, hudRatio{ 0.7f }/*70% screenwidth*/, infoRatio{ 0.17f }/*17% screenwidth*/;
-	int camWidth{ camera2d.getWidth() }, camHeight{ camera2d.getHeight() };
-	vector2D::vec2D camPos{ camera2d.getCamPosition() };
-	// 0 = base hud
-	uiEntity[0].Add<ui>(0,0,0);
-	//uiEntity[0].Add<ui>(static_cast<int>(UI::UIManager::groupName::hud), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
-	uiEntity[0].Add<Render>("square", vector3D::vec3D(0.2f, 0.2f, 0.2f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[0].Add<BaseInfo>("UI", "uiEntity" + std::to_string(0), vector2D::vec2D(camPos.x, (-camHeight + camHeight / 4.f) / 2.f), vector2D::vec2D(camWidth * hudRatio, camHeight / 4.f));
-	uiEntity[0].Add<Texture>(6, 1, 1, "UIEntity");
-	
-	// 1 = info panel (bottom right of screen)
-	uiEntity[1].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[1].Add<BaseInfo>("UI", "uiEntity" + std::to_string(1), vector2D::vec2D(camWidth / 2.f * (1.f - infoRatio), -camHeight / 2.f + camWidth / 2.f * infoRatio), vector2D::vec2D(camWidth * infoRatio, camWidth * infoRatio));
-	uiEntity[1].Add<Texture>(5, 1, 1, "UIEntity");
-	uiEntity[1].Add<ui>(static_cast<int>(UI::UIManager::groupName::actionPanel), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
-
-	// 2 = minimap (bottom left of screen)
-	uiEntity[2].Add<Render>("square", vector3D::vec3D(0.7f, 0.7f, 0.7f), 0, 0, 0, "gam200-shdrpgm", true);
-	uiEntity[2].Add<BaseInfo>("UI", "uiEntity" + std::to_string(2), vector2D::vec2D(-camWidth / 2.f * (1.f - mapRatio), -camHeight / 2.f + camWidth / 2.f * mapRatio), vector2D::vec2D(camWidth * mapRatio, camWidth * mapRatio));
-	uiEntity[2].Add<Texture>(5, 1, 1, "UIEntity");
-	uiEntity[2].Add<ui>(static_cast<int>(UI::UIManager::groupName::map), static_cast<int>(UI::UIManager::uiType::uiBg), static_cast<int>(UI::UIManager::uiLocation::nil));
-
-	BaseInfo* ptr = ecs.GetComponent<BaseInfo>(uiEntity[1].GetID());
-	vector2D::vec2D dimensions = ptr->dimension / 5.f;
-	vector2D::vec2D position = { ptr->position.x - ptr->dimension.x / 2.f + dimensions.x * 1.5f,// / 2.f,
-								 ptr->position.y + ptr->dimension.y / 2.f - dimensions.y / 2.f };
-	
-	// 3 - 9 = buttons for building1
-	for (int i = 3, colTracker = 0; i < 10; ++i, ++colTracker)
-	{
-		static vector2D::vec2D startingPos{ position };
-		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
-		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
-		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
-		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::building1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::actionPanel));
-	}
-
-	// 10 - 12 = buttons for unit1
-	for (int i = 10, colTracker = 0; i < 13; ++i, ++colTracker)
-	{
-		static vector2D::vec2D startingPos{ position };
-		colTracker % 5 == 0 ? startingPos.x = position.x : startingPos.x += dimensions.x;
-		colTracker % 5 == 0 ? startingPos.y -= dimensions.y : startingPos.y = startingPos.y;
-		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 0.f, 1.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), startingPos, dimensions, vector2D::vec2D(0.f, 0.f));
-		uiEntity[i].Add<Texture>(6, 1, 1, "UIEntity");
-		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::unit1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::actionPanel));
-	}
-
-	// 13 - 112 = icons of enemy
-	for (int i = 13, colTracker = 0; i < 113; ++i, ++colTracker)
-	{
-		uiEntity[i].Add<Render>("square", vector3D::vec3D(0.f, 1.f, 0.f), 0, 0, 0, "gam200-shdrpgm", false);
-		uiEntity[i].Add<BaseInfo>("CollidableUI", "uiEntity" + std::to_string(i), position, dimensions, vector2D::vec2D(0.f, 0.f));
-		uiEntity[i].Add<Texture>(4, 1, 1, "UIEntity");
-		uiEntity[i].Add<ui>(static_cast<int>(UI::UIManager::groupName::unit1), static_cast<int>(UI::UIManager::uiType::uiButton), static_cast<int>(UI::UIManager::uiLocation::hud));
-	}
-
-	UI::UIMgr.createUiManager();
-
-
-	FormationManager enemyManager;
-	enemyManager.target = ecs.GetComponent<BaseInfo>(playerID)->position;
-
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
-
-	for (int i = 0; i < enemyUnits.size(); ++i)
-	{
-		float randr = colour(generator);
-		float randg = colour(generator);
-		float randb = colour(generator);
-
-		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(40, 40), vector2D::vec2D(0.f, 0.f));
-		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
-		enemyUnits[i].Add<Physics>(vector2D::vec2D(0, 0), ecs.GetComponent<BaseInfo>(playerID)->position, vector2D::vec2D(0, 0), 1, 4, 0, vector2D::vec2D(0, 0), 40, false, 0);
-		enemyUnits[i].Add<Unit>(0, 0);
-		//enemyUnits[i].Add<Stats>(100);
-		ecs.setEntityName(enemyUnits[i].GetID(), "enemy" + std::to_string(i + 1));
-
-		EntityID enemyID = enemyUnits[i].GetID();
-
-		enemyManager.addCharacter(enemyID);
-		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
-		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<BaseInfo>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
-	}
-	formationManagers.push_back(enemyManager);
-
-	formationManager.Add<Render>("square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
-	formationManager.Add<BaseInfo>("", "formationManager", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
-	formationManager.Add<Texture>(12, 1, 1, "FM");
-	ecs.setEntityName(formationManager.GetID(), "formationManager");
+	ecs.AddComponent<Render>(selected, "square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
+	ecs.AddComponent<BaseInfo>(selected, "Selection", "selection", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
+	ecs.setEntityName(selection, "selection");
 
 	timer = 4;
 
 	//fromJsonECS("data.json");
 
-	formationManagers[0].generateDijkstraCost();
-	formationManagers[0].generateFlowField();
+	//formationManagers[0].generateDijkstraCost();
+	//formationManagers[0].generateFlowField();
 	
 	eventManager.subscribe(Systems::Collision);
 	eventManager.subscribe(Systems::Pathfinding);
@@ -435,15 +344,6 @@ void engineInit()
 	dragSelectStartPosition = vector2D::vec2D{ 0 , 0 };
 	dragSelectEndPosition = vector2D::vec2D{ 0 , 0 };
 
-	// Serialisation ========================================================================================================
-	//std::vector<EntityID> enemyUnitsID;
-	//for (int i = 0; i < enemyUnits.size(); ++i)
-	//{
-	//	enemyUnitsID.push_back(enemyUnits[i].GetID());
-	//}
-	
-	//toJsonECS(enemyUnitsID, "data.json", true);
-
 	imguiShow = true;
 
 	imguiMouseX = 0.0;
@@ -471,6 +371,7 @@ void engineInit()
 	}*/
 
 	//insert_shdrpgm(shdrnames, shdrpgms, "font", "../asset/shaders/Font.vert", "../asset/shaders/Font.frag");
+
 	Font::init();
 }
 
@@ -489,19 +390,38 @@ void engineUpdate()
 
 	if (!pause)
 	{
-		void dragSelect();
+		if (imguiCameraCheck)
+		{
+			dragSelect();
+		}
+
+		for (int i = 0; i < formationManagers.size(); ++i)
+		{
+			vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
+
+			if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 10 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 10) &&
+				(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 10 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 10))
+			{
+				formationManagers[i].reached = true;
+			}
+
+			if (!formationManagers[i].reached)
+			{
+				formationManagers[i].updateAnchorPosition();
+				formationManagers[i].updateSlots();
+			}
+		}
 
 		ecs.RunSystems(2, 100);
 
 		t2 = std::chrono::steady_clock::now();
 		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
-
 		formationManagerUpdate();
-
 
 		t1 = std::chrono::steady_clock::now();
 		physicsUpdate();					// physics system
+		updateHealthBars();
 		t2 = std::chrono::steady_clock::now();
 		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
@@ -545,7 +465,6 @@ void engineDraw()
 	t2 = std::chrono::steady_clock::now();
 	engineDrawTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
-
 	/*
 	std::cout << "ecs systems took: " << ecsSystemsTime << std::endl;
 	std::cout << "physics systems took: " << physicsTime << std::endl;
@@ -577,16 +496,6 @@ void swapBuffer()
 	glfwSwapBuffers(Graphics::Input::ptr_to_window);
 
 	//std::cout << "test" << std::endl;
-}
-
-int Stats::getHealth () const
-{
-	return health;
-}
-
-void Stats::setHealth(const int h)
-{
-	health = h;
 }
 
 void dragSelect()
@@ -622,7 +531,7 @@ void dragSelect()
 			dragSelectEndPosition.x = mousePosX;
 			dragSelectEndPosition.y = mousePosY;
 
-			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(selection);
 
 			formationManagerInfo->dimension.x = fabs(mousePosX - dragSelectStartPosition.x);
 			formationManagerInfo->dimension.y = fabs(mousePosY - dragSelectStartPosition.y);
@@ -632,7 +541,7 @@ void dragSelect()
 	}
 	else if (drag) // released
 	{
-		BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
+		BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(selection);
 
 		if (formationManagerInfo->dimension.x < 2 && formationManagerInfo->dimension.y < 2)	// click and not drag
 		{
@@ -671,10 +580,14 @@ void dragSelect()
 		{
 			for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 			{
-				formationManagerUpdateEntities.push_back(**obj2);
+				std::cout << "test" << std::endl;
+				if (ecs.GetComponent<BaseInfo>(**obj2)->type == "Player")
+				{
+					formationManagerUpdateEntities.push_back(**obj2);
+				}
 
 				// Add unit to info
-				UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
+				//UI::UIMgr.addInfoDisplay(&UI::UIMgr.getUiInfoList()[**obj2 - 3]); // 3 objects bef ui
 
 				if (selected == 2)	// Choosing only 1 entity for clicking and not dragging
 				{
@@ -683,19 +596,19 @@ void dragSelect()
 			}
 
 			// Add actions to panel
-			UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
+			//UI::UIMgr.addActionGroupToDisplay(&UI::UIMgr.getUiActionGroupList()[static_cast<int>(UI::UIManager::groupName::unit1)]);
 
 			selected = 0;
 
-			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(formationManager.GetID());
-
-			formationManagerInfo->dimension.x = 0;
-			formationManagerInfo->dimension.y = 0;
+			BaseInfo* formationManagerInfo = ecs.GetComponent<BaseInfo>(selection);
 		}
 		else
 		{
 			selected = -1;
 		}
+
+		formationManagerInfo->dimension.x = 0;
+		formationManagerInfo->dimension.y = 0;
 
 		drag = false;
 	}
@@ -719,21 +632,31 @@ void dragSelect()
 
 		Graphics::Input::mousestateRight = false;
 	}
+}
 
-	for (int i = 0; i < formationManagers.size(); ++i)
+void addHealthBar(EntityID id)
+{
+	BaseInfo* entityInfo = ecs.GetComponent<BaseInfo>(id);
+
+	EntityID healthBar = ecs.GetNewID();
+	ecs.AddComponent<BaseInfo>(healthBar, "HealthBar", "HealthBar" + entityInfo->name, vector2D::vec2D(entityInfo->position.x, entityInfo->position.y + entityInfo->dimension.y), vector2D::vec2D(entityInfo->dimension.x, entityInfo->dimension.x * 0.2), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<Render>(healthBar, "square", vector3D::vec3D(0.7f, 0.0f, 0.0f), 0, 0, 0, "instanceshader", true);
+	ecs.AddComponent<Texture>(healthBar, 0, 1, 1, "Color");
+	ecs.AddComponent<Stats>(healthBar, 100, id);
+}
+
+void updateHealthBars()
+{
+	for (auto i : ecs.getEntities())
 	{
-		vector2D::vec2D anchorNode = (formationManagers[i].getAnchorPosition() - vector2D::vec2D(-500, -500)) / (1000 / MAX_GRID_X);
-
-		if ((formationManagers[i].getAnchorPosition().x >= formationManagers[i].target.x - 5 && formationManagers[i].getAnchorPosition().x <= formationManagers[i].target.x + 5) &&
-			(formationManagers[i].getAnchorPosition().y >= formationManagers[i].target.y - 5 && formationManagers[i].getAnchorPosition().y <= formationManagers[i].target.y + 5))
+		BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(i);
+		if (baseInfo->type == "HealthBar")
 		{
-			formationManagers[i].reached = true;
-		}
-
-		if (!formationManagers[i].reached)
-		{
-			formationManagers[i].updateAnchorPosition();
-			formationManagers[i].updateSlots();
+			BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
+			baseInfo->position = otherBaseInfo->position;
+			baseInfo->position.y += otherBaseInfo->dimension.y;
+		
+			baseInfo->dimension = vector2D::vec2D(otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2);
 		}
 	}
 }

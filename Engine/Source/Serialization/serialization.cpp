@@ -598,7 +598,7 @@ bool fromJsonECS(std::string fileName)
 
     Value& value = d.GetObject();
 
-    FormationManager enemyManager;
+    //FormationManager enemyManager;
 
     for (int i = 0; i < d.Size(); ++i)
     {
@@ -630,13 +630,23 @@ bool fromJsonECS(std::string fileName)
             fromJsonRecur(addedComponent, componentData);
         }
 
-        enemyManager.target = ecs.GetComponent<Physics>(newEntity)->target;
-        mainTree.insertSuccessfully(newEntity, ecs.GetComponent<BaseInfo>(newEntity)->position);
+        //enemyManager.target = ecs.GetComponent<Physics>(newEntity)->target;
+        if ((ecs.GetComponent<BaseInfo>(newEntity)->type == "Player" ||
+            ecs.GetComponent<BaseInfo>(newEntity)->type == "Enemy") &&
+            ecs.GetComponent<BaseInfo>(newEntity)->name != "player1")
+        {
+            mainTree.insertSuccessfully(newEntity, ecs.GetComponent<BaseInfo>(newEntity)->position);
+        }
+
+        if (Physics* p = ecs.GetComponent<Physics>(newEntity))
+        {
+            p->formationManagerID = -1;
+        }
 
         // Check for formation manager in json file first
-        enemyManager.addCharacter(newEntity);
+        //enemyManager.addCharacter(newEntity);
     }
-    formationManagers.push_back(enemyManager);
+    //formationManagers.push_back(enemyManager);
 
     return true;
 

@@ -58,23 +58,22 @@ struct Physics
 	int formationManagerID;
 };
 
-struct Stats {
-	//int health;
-	int getHealth() const;
-	void setHealth(const int h);
-	RTTR_ENABLE()
-private:
+struct Stats 
+{
 	int health;
+	EntityID unitLink;
 };
 
-struct Unit {
+struct Unit 
+{
 	int faction;
 	int type;
 	BehaviourTree* aiTree;
 
 };
 
-struct Building {
+struct Building 
+{
 
 	float buildTime;
 	std::string buildingType;
@@ -86,7 +85,8 @@ struct Building {
 };
 
 
-struct ui {
+struct ui 
+{
 
 	int group;
 	int uiType;
@@ -107,4 +107,14 @@ extern bool imguiShow;
 extern double imguiMouseX;
 extern double imguiMouseY;
 
+extern bool imguiCameraCheck;
+
 extern std::vector<EntityID> prefabs;
+
+extern EntityID selection;
+extern EntityID enemyPrefab;
+extern EntityID playerPrefab;
+extern EntityID buildingPrefab;
+
+void addHealthBar(EntityID id);
+void updateHealthBars();

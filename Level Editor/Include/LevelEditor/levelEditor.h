@@ -11,3 +11,5 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 void imguiInit();
 void imguiUpdate();
 void imguiDraw();
+
+extern std::vector<EntityID> prefabs;

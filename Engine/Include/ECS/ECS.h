@@ -247,6 +247,8 @@ public:
 
     void RemoveEntity(const EntityID& entityId);
 
+    void RemoveAllEntities();
+
     //template<class... Cs>
    // std::vector<EntityID> GetEntitiesWith();
 

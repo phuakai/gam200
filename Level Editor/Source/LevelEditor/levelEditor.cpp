@@ -9,8 +9,7 @@
 #include "GraphEditor.h"
 #include <math.h>
 #include "serialization.h"
-
-extern std::vector<Entity> enemyUnits;
+#include "pathfinding.h"
 
 bool show_demo_window;
 bool show_another_window;
@@ -26,10 +25,13 @@ static void ShowExampleAppCustomNodeGraph(bool* opened);
 int saveLoadState;
 std::string saveLoadFile;
 
+levelEditorHierarchy& hierarchy = levelEditorHierarchy::getInstance();
+
 void menu()
 {
 	if (ImGui::Button("New"))
 	{
+
 	}
 
 	if (ImGui::Button("Open"))
@@ -92,6 +94,47 @@ void menu()
 		{
 			if (ImGui::Button("Load", ImVec2(120, 0)))
 			{
+				ecs.RemoveAllEntities();
+				formationManagers.clear();
+				prefabs.clear();
+
+				if (saveLoadFile != "")
+				{
+					fromJsonECS(saveLoadFile);
+				}
+
+				hierarchy.clear();
+
+				for (auto i : ecs.getEntities())
+				{
+					if (ecs.GetComponent<BaseInfo>(i)->type == "Enemy" || ecs.GetComponent<BaseInfo>(i)->type == "Player")
+					{
+						addHealthBar(i);
+					}
+					if (ecs.GetComponent<BaseInfo>(i)->type == "Selection")
+					{
+						selection = i;
+					}
+					else if (ecs.GetComponent<BaseInfo>(i)->type == "Prefab")
+					{
+						if (ecs.GetComponent<BaseInfo>(i)->name == "Enemy")
+						{
+							enemyPrefab = i;
+							prefabs.push_back(i);
+						}
+						else if (ecs.GetComponent<BaseInfo>(i)->name == "Player")
+						{
+							playerPrefab = i;
+							prefabs.push_back(i);
+						}
+						else if (ecs.GetComponent<BaseInfo>(i)->name == "Building")
+						{
+							buildingPrefab = i;
+							prefabs.push_back(i);
+						}
+					}
+				}
+
 				saveLoadState = 0;
 				ImGui::CloseCurrentPopup();
 			}
@@ -128,24 +171,6 @@ void menu()
 	{
 		exit(1);
 	}
-	//if (ImGui::BeginMenu("Open Recent"))
-	//{
-	//	ImGui::MenuItem("fish_hat.c");
-	//	ImGui::MenuItem("fish_hat.inl");
-	//	ImGui::MenuItem("fish_hat.h");
-	//	if (ImGui::BeginMenu("More.."))
-	//	{
-	//		ImGui::MenuItem("Hello");
-	//		ImGui::MenuItem("Sailor");
-	//		if (ImGui::BeginMenu("Recurse.."))
-	//		{
-	//			ShowExampleMenuFile();
-	//			ImGui::EndMenu();
-	//		}
-	//		ImGui::EndMenu();
-	//	}
-	//	ImGui::EndMenu();
-	//}
 }
 
 void imguiInit()
@@ -176,11 +201,6 @@ void imguiUpdate()
 	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
 
-	//ImGuiViewport* viewportID = ImGui::FindViewportByPlatformHandle(Graphics::Input::ptr_to_window);
-	//ImGui::GetPlatformIO().Viewports.push_back(viewportID);
-	//ImGuiWindow* currentWindow = ImGui::GetCurrentWindow();
-	//ImGui::SetWindowViewport(currentWindow, (ImGuiViewportP*)viewportID);
-
 	ShowExampleAppCustomNodeGraph((bool*)1);
 		 
 	if (ImGui::Begin("Camera", (bool*)0, ImGuiWindowFlags_NoScrollbar))
@@ -209,6 +229,14 @@ void imguiUpdate()
 		imguiMouseX *= screenWidth / (double)imguiWindowSize.x;
 		imguiMouseY *= screenHeight / (double)imguiWindowSize.y;
 
+		if (ImGui::IsWindowHovered())
+		{
+			imguiCameraCheck = true;
+		}
+		else
+		{
+			imguiCameraCheck = false;
+		}
 		
 		ImGui::End();
 	}
@@ -216,7 +244,6 @@ void imguiUpdate()
 	//static float f32_v = 0.123f;
 	//const float f32_one = 1.f;
 
-	levelEditorHierarchy& hierarchy = levelEditorHierarchy::getInstance();
 	levelEditorProperties& properties = levelEditorProperties::getInstance();
 	levelEditorContentBrowser& contentBrowser = levelEditorContentBrowser::getInstance();
 
@@ -294,7 +321,7 @@ const float NODE_SLOT_RADIUS = 4.0f;
 const ImVec2 NODE_WINDOW_PADDING(8.0f, 8.0f);
 bool dragCheck = false;
 
-struct Node
+struct GraphNode
 {
 	int     ID;
 	char    Name[32];
@@ -303,7 +330,7 @@ struct Node
 	ImVec4  Color;
 	int     InputsCount, OutputsCount;
 
-	Node(int id, const char* name, const ImVec2& pos, float value, const ImVec4& color, int inputs_count, int outputs_count) { ID = id; strcpy_s(Name, name); Pos = pos; Value = value; Color = color; InputsCount = inputs_count; OutputsCount = outputs_count; }
+	GraphNode(int id, const char* name, const ImVec2& pos, float value, const ImVec4& color, int inputs_count, int outputs_count) { ID = id; strcpy_s(Name, name); Pos = pos; Value = value; Color = color; InputsCount = inputs_count; OutputsCount = outputs_count; }
 
 	ImVec2 GetInputSlotPos(int slot_no) const { return ImVec2(Pos.x, Pos.y + Size.y * ((float)slot_no + 1) / ((float)InputsCount + 1)); }
 	ImVec2 GetOutputSlotPos(int slot_no) const { return ImVec2(Pos.x + Size.x, Pos.y + Size.y * ((float)slot_no + 1) / ((float)OutputsCount + 1)); }
@@ -315,11 +342,11 @@ struct NodeLink
 	NodeLink(int input_idx, int input_slot, int output_idx, int output_slot) { InputIdx = input_idx; InputSlot = input_slot; OutputIdx = output_idx; OutputSlot = output_slot; }
 };
 
-Node* outputNode;
+GraphNode* outputNode;
 int outputNodeSlot;
 int outputIndex;
 std::string linkType;
-Node* inputNode;
+GraphNode* inputNode;
 
 bool nodeLinkButtonCheck(ImVec2 nodeLink)
 {
@@ -343,7 +370,7 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	}
 
 	// State
-	static ImVector<Node> nodes;
+	static ImVector<GraphNode> nodes;
 	static ImVector<NodeLink> links;
 	static ImVec2 scrolling = ImVec2(0.0f, 0.0f);
 	static bool inited = false;
@@ -354,9 +381,9 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	ImGuiIO& io = ImGui::GetIO();
 	if (!inited)
 	{
-		nodes.push_back(Node(0, "MainTex", ImVec2(40, 50), 0.5f, ImColor(255, 100, 100), 1, 1));
-		nodes.push_back(Node(1, "BumpMap", ImVec2(40, 150), 0.42f, ImColor(200, 100, 200), 1, 1));
-		nodes.push_back(Node(2, "Combine", ImVec2(270, 80), 1.0f, ImColor(0, 200, 100), 2, 2));
+		nodes.push_back(GraphNode(0, "MainTex", ImVec2(40, 50), 0.5f, ImColor(255, 100, 100), 1, 1));
+		nodes.push_back(GraphNode(1, "BumpMap", ImVec2(40, 150), 0.42f, ImColor(200, 100, 200), 1, 1));
+		nodes.push_back(GraphNode(2, "Combine", ImVec2(270, 80), 1.0f, ImColor(0, 200, 100), 2, 2));
 		links.push_back(NodeLink(0, 0, 2, 0));
 		links.push_back(NodeLink(1, 0, 2, 1));
 		inited = true;
@@ -371,7 +398,7 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	ImGui::Separator();
 	for (int node_idx = 0; node_idx < nodes.Size; node_idx++)
 	{
-		Node* node = &nodes[node_idx];
+		GraphNode* node = &nodes[node_idx];
 		ImGui::PushID(node->ID);
 		if (ImGui::Selectable(node->Name, node->ID == node_selected))
 			node_selected = node->ID;
@@ -421,8 +448,8 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	for (int link_idx = 0; link_idx < links.Size; link_idx++)
 	{
 		NodeLink* link = &links[link_idx];
-		Node* node_inp = &nodes[link->InputIdx];
-		Node* node_out = &nodes[link->OutputIdx];
+		GraphNode* node_inp = &nodes[link->InputIdx];
+		GraphNode* node_out = &nodes[link->OutputIdx];
 		ImVec2 p1 = offset + node_inp->GetOutputSlotPos(link->InputSlot);
 		ImVec2 p2 = offset + node_out->GetInputSlotPos(link->OutputSlot);
 		draw_list->AddBezierCurve(p1, p1 + ImVec2(+50, 0), p2 + ImVec2(-50, 0), p2, IM_COL32(200, 200, 100, 255), 3.0f);
@@ -431,7 +458,7 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	// Display nodes
 	for (int node_idx = 0; node_idx < nodes.Size; node_idx++)
 	{
-		Node* node = &nodes[node_idx];
+		GraphNode* node = &nodes[node_idx];
 		ImGui::PushID(node->ID);
 		ImVec2 node_rect_min = offset + node->Pos;
 
@@ -579,11 +606,11 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
 	if (ImGui::BeginPopup("context_menu"))
 	{
-		Node* node = node_selected != -1 ? &nodes[node_selected] : NULL;
+		GraphNode* node = node_selected != -1 ? &nodes[node_selected] : NULL;
 		ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup() - offset;
 		if (node)
 		{
-			ImGui::Text("Node '%s'", node->Name);
+			ImGui::Text("GraphNode '%s'", node->Name);
 			ImGui::Separator();
 			if (ImGui::MenuItem("Rename..", NULL, false, false)) {}
 			if (ImGui::MenuItem("Delete", NULL, false, false)) {}
@@ -591,7 +618,7 @@ static void ShowExampleAppCustomNodeGraph(bool* opened)
 		}
 		else
 		{
-			if (ImGui::MenuItem("Add")) { nodes.push_back(Node(nodes.Size, "New node", scene_pos, 0.5f, ImColor(100, 100, 200), 2, 2)); }
+			if (ImGui::MenuItem("Add")) { nodes.push_back(GraphNode(nodes.Size, "New node", scene_pos, 0.5f, ImColor(100, 100, 200), 2, 2)); }
 			if (ImGui::MenuItem("Paste", NULL, false, false)) {}
 		}
 		ImGui::EndPopup();

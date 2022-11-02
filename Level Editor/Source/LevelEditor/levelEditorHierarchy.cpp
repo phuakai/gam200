@@ -1,4 +1,5 @@
 #include "levelEditorHierarchy.h"
+#include "physicsPartition.h"
 
 std::vector<EntityID> prefabs;
 
@@ -70,6 +71,15 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					}
 				}
 				hierarchyList[std::make_pair(100000, 1)].push_back(selected);
+
+				ecs.GetComponent<BaseInfo>(selected)->type = ecs.GetComponent<BaseInfo>(prefabs[i])->name;
+
+				if (ecs.GetComponent<BaseInfo>(selected)->type == "Player" || ecs.GetComponent<BaseInfo>(selected)->type == "Enemy")
+				{
+					mainTree.insertSuccessfully(selected, ecs.GetComponent<BaseInfo>(selected)->position);
+				}
+
+				addHealthBar(selected);
 			}
 		}
 		ImGui::EndPopup();
@@ -356,6 +366,13 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		++i;
 	}
 	// Drawing folders & entities end =======================================================================
+}
+
+void levelEditorHierarchy::clear()
+{
+	hierarchyList.clear();
+	selected = -1;
+	hierarchyList[std::make_pair(100000, 1)] = ecs.getEntities();
 }
 
 int levelEditorHierarchy::getSelected()
