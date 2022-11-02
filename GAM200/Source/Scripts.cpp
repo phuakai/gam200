@@ -6,6 +6,7 @@
 #include "EventManager/eventManager.h"
 #include "levelEditor.h"
 #include "Scripts.h"
+#include "physicsPartition.h"
 
 extern BehaviourTree behaviorTree;
 extern EventManager eventManager;

@@ -6,6 +6,7 @@
 #include "vec3D.h"
 #include "mat3x3.h"
 #include <rttr/type>
+#include <chrono>
 #include "ECS.h"
 //#include "behaviourTree.h"
 #include "../../GAM200/Include/behaviourTree.h"
@@ -72,6 +73,7 @@ struct Physics
 struct Stats 
 {
 	int health;
+	float attackTimer;
 	EntityID unitLink;
 };
 
@@ -86,14 +88,9 @@ struct Unit
 
 struct Building 
 {
-
 	float buildTime;
+	float spawnTimer;
 	std::string buildingType;
-
-	//more shit
-
-
-
 };
 
 
@@ -130,3 +127,8 @@ extern EntityID buildingPrefab;
 
 void addHealthBar(EntityID id);
 void updateHealthBars();
+
+extern std::chrono::duration <double> engineDrawTime;
+extern std::chrono::duration <double> physicsTime;
+extern std::chrono::duration <double> ecsSystemsTime;
+extern std::chrono::duration <double> totalTime;
