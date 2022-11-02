@@ -42,14 +42,6 @@ instance addComponentByName(type& componentName, const EntityID& entityID)
     }
     else if (componentName == type::get<Physics>())
         return *(ecs.AddComponent<Physics>(entityID));
-    else if (componentName == type::get<Stats>())
-        return *(ecs.AddComponent<Stats>(entityID));
-    else if (componentName == type::get<Unit>())
-        return *(ecs.AddComponent<Unit>(entityID));
-    else if (componentName == type::get<Building>())
-        return *(ecs.AddComponent<Building>(entityID));
-    else if (componentName == type::get<ui>())
-        return *(ecs.AddComponent<ui>(entityID));
 }
 
 bool write_variant(const variant& var, PrettyWriter<StringBuffer>& writer);
@@ -313,8 +305,10 @@ std::string toJsonECS(std::vector<EntityID> entityList, std::string fileName, bo
             rttr::type type = rttr::type::get_by_name(j);
             ToJsonRecur(GetComponentByName(type, entityList[i]), writer);
         }
+
         writer.EndObject();
     }
+
     writer.EndObject();
 
 
@@ -573,6 +567,8 @@ bool from_json(std::string fileName)
     Document d;
     d.ParseStream(is);
 
+    std::cout << "here" << std::endl;
+
     EntityID newEntity = ecs.GetNewID();
     ecs.RegisterEntity(newEntity);
     ecs.AddComponent<Render>(newEntity);
@@ -651,7 +647,28 @@ bool fromJsonECS(std::string fileName)
         //enemyManager.addCharacter(newEntity);
     }
     //formationManagers.push_back(enemyManager);
-    fclose(fp);
+
     return true;
 
+    //Reader reader;
+    //Handler handler;
+    //StringStream ss(json);
+    //if (reader.Parse(ss, handler))
+
+}
+    
+void ecsWriteToFile()
+{
+    for (int i = 0; i < ecs.getEntities().size(); ++i)
+    {
+        //if (ecs.GetComponent<Render>(i))
+        //    to_json(*ecs.GetComponent<Render>(i));
+        //if (ecs.GetComponent<Texture>(i))
+        //    to_json(*ecs.GetComponent<Texture>(i));
+        //if (ecs.GetComponent<Movement>(i))
+        //    to_json(*ecs.GetComponent<Movement>(i));
+        //if (ecs.GetComponent<
+        // >(i))
+        //    to_json(*ecs.GetComponent<Stats>(i));
+    }
 }

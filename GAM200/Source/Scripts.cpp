@@ -6,8 +6,6 @@
 #include "EventManager/eventManager.h"
 #include "levelEditor.h"
 #include "Scripts.h"
-#include "physicsPartition.h"
-
 
 extern BehaviourTree behaviorTree;
 extern EventManager eventManager;
@@ -18,11 +16,6 @@ void unitAIUpdate()
 
     for (auto& i : ecs.getEntities())
     {
-        if (ecs.GetComponent<BaseInfo>(i)->type != "Enemy")
-        {
-            continue;
-        }
-
         Unit* unit = ecs.GetComponent<Unit>(i);
         if (unit && ecs.GetComponent<Unit>(i)->faction == 2)
         {

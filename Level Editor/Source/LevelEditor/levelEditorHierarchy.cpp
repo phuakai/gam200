@@ -125,14 +125,14 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				++treeLevel;
 			}
 
-			//if (ImGui::BeginDragDropSource())
-			//{
-			//	dragTypeFrom = "Folder";
-			//	vector3D::vec3D folderLocation{ (float)folder.first.first , (float)folder.first.second , (float)i };
-			//	ImGui::SetDragDropPayload("dragEntity", &folderLocation, sizeof(vector3D::vec3D));
-			//	//ImGui::Text("This is a drag and drop source");
-			//	ImGui::EndDragDropSource();
-			//}
+			if (ImGui::BeginDragDropSource())
+			{
+				dragTypeFrom = "Folder";
+				vector3D::vec3D folderLocation{ (float)folder.first.first , (float)folder.first.second , (float)i };
+				ImGui::SetDragDropPayload("dragEntity", &folderLocation, sizeof(vector3D::vec3D));
+				//ImGui::Text("This is a drag and drop source");
+				ImGui::EndDragDropSource();
+			}
 
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -236,109 +236,109 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		if (moveFrom != -1 && moveTo != -1)
 		{
 			// Reorder items
-			//if (dragTypeFrom == "Folder")
-			//{
-			//	if (dragTypeTo == "Folder")
-			//	{
-			//		// Finding children under selected folder
-			//		auto it = hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel));
-			//		auto itFrom = it;
-			//		int numberOfChildren = 0;
-			//		int lowestChildLevel = it->first.second;
-			//		for (++it; it != hierarchyList.end(); ++it, ++numberOfChildren)
-			//		{
-			//			if (it->first.second <= moveFromFolderLevel)
-			//			{
-			//				break;
-			//			}
-			//			lowestChildLevel = it->first.second;
-			//		}
-
-			//		// Check if parent is dragged into child
-			//		auto itTo = hierarchyList.find(std::make_pair(moveToFolderID, moveToFolderLevel));
-			//		it = itFrom;
-			//		bool check = false;
-			//		if (moveFromFolderLevel < moveToFolderLevel)
-			//		{
-			//			for (int i = 0; i < numberOfChildren; ++i, ++it)
-			//			{
-			//				if (it->first.first == itTo->first.first)
-			//				{
-			//					check = true;
-			//					break;
-			//				}
-			//			}
-			//		}
-			//		if (check)
-			//		{
-			//			continue;
-			//		}
-
-			//		// Check if moving is valid (there is a limit of 4 layers of folders)
-			//		if (moveToFolderLevel + (lowestChildLevel - moveFromFolderLevel) >= 4)
-			//		{
-			//			moveFrom = -1;
-			//			moveTo = -1;
-			//			continue;
-			//		}
-
-			//		// Changing selected folderID
-			//		// Unlinks the node in the map and returns the node handler
-			//		auto folder = hierarchyList.extract(std::make_pair(moveFromFolderID, moveFromFolderLevel));
-			//		int childID = moveToFolderID;
-			//		int increment = (int)pow(10, 3 - moveToFolderLevel);
-			//		do
-			//		{
-			//			// Checking if the folder already exists
-			//			childID += increment;
-			//		} 
-			//		while (hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1)) != hierarchyList.end());
-
-			//		folder.key().first = childID;
-			//		folder.key().second = moveToFolderLevel + 1;
-			//		hierarchyList.insert(std::move(folder));
-
-			//		it = itFrom;
-			//		int currentLevelOffset = moveToFolderLevel + 1;
-			//		for (; numberOfChildren > 0; --numberOfChildren)
-			//		{
-			//			if (moveFromFolderID < moveToFolderLevel)
-			//			{
-			//				// Is now to child position in map
-			//				++it;
-			//			}
-
-			//			auto childFolder = hierarchyList.extract(std::make_pair(it->first.first, it->first.second));
-			//			//if (childFolder.key().second == 0) { break; 
-			//			//	if (childFolder == 0) { break; }
-			//			//std::cout << "child folder key" << childFolder.key().second << std::endl;
-			//			childFolder.key().second = currentLevelOffset + (childFolder.key().second - moveFromFolderLevel);
-
-			//			childID += (int)pow(10, 3 - childFolder.key().second);
-			//			childFolder.key().first = childID;
-
-			//			hierarchyList.insert(std::move(childFolder));
-			//		}
-			//	}
-			//}
-			//else // dragTypeFrom == "Entity"
-			//{
-			if (dragTypeTo == "Folder" || moveFromFolderID != moveToFolderID)
+			if (dragTypeFrom == "Folder")
 			{
-				EntityID temp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
-				hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].erase(hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].begin() + moveFrom);
-				hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].emplace(hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].begin() + moveTo, temp);
+				if (dragTypeTo == "Folder")
+				{
+					// Finding children under selected folder
+					auto it = hierarchyList.find(std::make_pair(moveFromFolderID, moveFromFolderLevel));
+					auto itFrom = it;
+					int numberOfChildren = 0;
+					int lowestChildLevel = it->first.second;
+					for (++it; it != hierarchyList.end(); ++it, ++numberOfChildren)
+					{
+						if (it->first.second <= moveFromFolderLevel)
+						{
+							break;
+						}
+						lowestChildLevel = it->first.second;
+					}
+
+					// Check if parent is dragged into child
+					auto itTo = hierarchyList.find(std::make_pair(moveToFolderID, moveToFolderLevel));
+					it = itFrom;
+					bool check = false;
+					if (moveFromFolderLevel < moveToFolderLevel)
+					{
+						for (int i = 0; i < numberOfChildren; ++i, ++it)
+						{
+							if (it->first.first == itTo->first.first)
+							{
+								check = true;
+								break;
+							}
+						}
+					}
+					if (check)
+					{
+						continue;
+					}
+
+					// Check if moving is valid (there is a limit of 4 layers of folders)
+					if (moveToFolderLevel + (lowestChildLevel - moveFromFolderLevel) >= 4)
+					{
+						moveFrom = -1;
+						moveTo = -1;
+						continue;
+					}
+
+					// Changing selected folderID
+					// Unlinks the node in the map and returns the node handler
+					auto folder = hierarchyList.extract(std::make_pair(moveFromFolderID, moveFromFolderLevel));
+					int childID = moveToFolderID;
+					int increment = (int)pow(10, 3 - moveToFolderLevel);
+					do
+					{
+						// Checking if the folder already exists
+						childID += increment;
+					} 
+					while (hierarchyList.find(std::make_pair(childID, moveToFolderLevel + 1)) != hierarchyList.end());
+
+					folder.key().first = childID;
+					folder.key().second = moveToFolderLevel + 1;
+					hierarchyList.insert(std::move(folder));
+
+					it = itFrom;
+					int currentLevelOffset = moveToFolderLevel + 1;
+					for (; numberOfChildren > 0; --numberOfChildren)
+					{
+						if (moveFromFolderID < moveToFolderLevel)
+						{
+							// Is now to child position in map
+							++it;
+						}
+
+						auto childFolder = hierarchyList.extract(std::make_pair(it->first.first, it->first.second));
+						//if (childFolder.key().second == 0) { break; 
+						//	if (childFolder == 0) { break; }
+						//std::cout << "child folder key" << childFolder.key().second << std::endl;
+						childFolder.key().second = currentLevelOffset + (childFolder.key().second - moveFromFolderLevel);
+
+						childID += (int)pow(10, 3 - childFolder.key().second);
+						childFolder.key().first = childID;
+
+						hierarchyList.insert(std::move(childFolder));
+					}
+				}
 			}
-			else // dragTypeTo == "Entity" && moveFromFolderID == moveToFolderID
+			else // dragTypeFrom == "Entity"
 			{
-				int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
-				int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
-				int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
-				EntityID tmp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
-				memmove(&hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_dst], &hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_src], (size_t)copy_count * sizeof(EntityID));
-				hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveTo] = tmp;
+				if (dragTypeTo == "Folder" || moveFromFolderID != moveToFolderID)
+				{
+					EntityID temp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
+					hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].erase(hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)].begin() + moveFrom);
+					hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].emplace(hierarchyList[std::make_pair(moveToFolderID, moveToFolderLevel)].begin() + moveTo, temp);
+				}
+				else // dragTypeTo == "Entity" && moveFromFolderID == moveToFolderID
+				{
+					int copy_dst = (moveFrom < moveTo) ? moveFrom : moveTo + 1;
+					int copy_src = (moveFrom < moveTo) ? moveFrom + 1 : moveTo;
+					int copy_count = (moveFrom < moveTo) ? moveTo - moveFrom : moveFrom - moveTo;
+					EntityID tmp = hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveFrom];
+					memmove(&hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_dst], &hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][copy_src], (size_t)copy_count * sizeof(EntityID));
+					hierarchyList[std::make_pair(moveFromFolderID, moveFromFolderLevel)][moveTo] = tmp;
+				}
 			}
-			//}
 			
 			//ImGui::SetDragDropPayload("DND_DEMO_NAME", &moveTo, sizeof(EntityID)); // Update payload immediately so on the next frame if we move the mouse to an earlier item our index payload will be correct. This is odd and showcase how the DnD api isn't best presented in this example.
 			
