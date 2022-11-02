@@ -85,6 +85,11 @@ namespace TextureNS
 		paths.emplace_back("Robot_Enemy.png"); // 13 - Robot
 		paths.emplace_back("Enemy_Building_unclaimed.png"); // 14 - Unclaimed building
 		paths.emplace_back("Enemy_Building_claimed.png"); // 15 - Reclaimed building
+		paths.emplace_back("tile000.png"); // 16 - Sprite Test
+		paths.emplace_back("tile001.png"); // 17 - Sprite Test
+		paths.emplace_back("tile002.png"); // 18 - Sprite Test
+		paths.emplace_back("tile003.png"); // 19 - Sprite Test
+
 
 		// FOR IMGUI ========================================================
 		paths.emplace_back("folder.png"); // 16 - Folder Icon

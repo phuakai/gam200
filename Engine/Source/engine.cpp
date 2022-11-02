@@ -499,13 +499,13 @@ void engineUpdate()
 
 			for (int i = 0; i < entities.size(); ++i)
 			{
-				if (ecs.GetComponent<Texture>(entities[i])->textureID == 4)
+				if (ecs.GetComponent<Texture>(entities[i])->textureID == 16)
 				{
 					ecs.GetComponent<Texture>(entities[i])->spriteStep += 1;
 
-					if (ecs.GetComponent<Texture>(entities[i])->spriteStep >= 4)
+					if (ecs.GetComponent<Texture>(entities[i])->spriteStep > 4)
 					{
-						ecs.GetComponent<Texture>(entities[i])->spriteStep = 0;
+						ecs.GetComponent<Texture>(entities[i])->spriteStep = 1;
 					}
 				}
 			}

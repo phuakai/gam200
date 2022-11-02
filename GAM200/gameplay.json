@@ -6,10 +6,10 @@
             "position": {
                 "m": [
                     0.0,
-                    -16.0
+                    0.0
                 ],
                 "x": 0.0,
-                "y": -16.0
+                "y": 0.0
             },
             "dimension": {
                 "m": [
@@ -515,11 +515,7 @@
             "shaderName": "instanceshader",
             "render": true
         },
-        "Stats": {},
-        "Unit": {
-            "faction": 2,
-            "type": 0
-        }
+        "Stats": {}
     },
     "7": {
         "BaseInfo": {
@@ -551,9 +547,9 @@
             }
         },
         "Texture": {
-            "textureID": 4,
+            "textureID": 16,
             "textureName": "Enemy",
-            "spriteStep": 0,
+            "spriteStep": 3,
             "numberOfSprites": 1
         },
         "Physics": {
@@ -616,11 +612,7 @@
             "shaderName": "instanceshader",
             "render": true
         },
-        "Stats": {},
-        "Unit": {
-            "faction": 1,
-            "type": 0
-        }
+        "Stats": {}
     },
     "8": {
         "BaseInfo": {
