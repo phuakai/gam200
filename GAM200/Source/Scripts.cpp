@@ -23,6 +23,10 @@ void unitAIUpdate()
             unit->aiTree = &behaviorTree;
             unit->aiTree->run(i);
         }
+        else
+        {
+            continue;
+        }
 
         std::list<EntityID*> inRange;
         AABB range(
@@ -53,7 +57,7 @@ void unitAIUpdate()
         }
         if (ecs.GetComponent<Stats>(i) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
         {
-            ecs.GetComponent<Stats>(i)->attackTimer = 15;
+            ecs.GetComponent<Stats>(i)->attackTimer = 3;
         }
 
     }
