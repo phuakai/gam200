@@ -70,6 +70,5 @@ void buildingsUpdate() {
 
         }
 
-
     }
 }
