@@ -109,7 +109,7 @@ namespace physics
 
 	/**************************************************************************/
 	/*!
-		CollisionResponse_CircleCircle checks for collision between two circcles
+		CollisionResponse_CircleCircle checks for collision between two circles
 		and returns true on collision else it returns false
 	*/
 	/**************************************************************************/

@@ -2,6 +2,7 @@
 #include "mainHeader.h"
 #include "EventManager/eventManager.h"
 #include "physicsPartition.h"
+#include "collision.h"
 
 extern AIStats testStats;
 BehaviourTree behaviorTree;
@@ -41,12 +42,17 @@ State TargetInRange::run(EntityID ID)
     if (inRange.size() != 0) {
         //  std::cout << "things in range";
         for (auto const& i : inRange) {
-            std::cout << *i << std::endl;
+            //std::cout << *i << std::endl;
             if (ecs.GetComponent<Unit>(*i) != nullptr && ecs.GetComponent<Unit>(*i)->faction == PLAYER) {
                 //is this inefficent
                 //  ecs.GetComponent<Unit>(*i)->target = *i;
                     
                 ecs.GetComponent<Physics>(ID)->target = ecs.GetComponent<BaseInfo>(*i)->position;
+
+                if (physics::CollisionDetectionCircleCircle(ecs.GetComponent<BaseInfo>(ID)->position, ecs.GetComponent<BaseInfo>(ID)->dimension.x, ecs.GetComponent<BaseInfo>(*i)->position, ecs.GetComponent<BaseInfo>(*i)->dimension.x))
+                {
+                    break;
+                }
 
                 enemyMove.id = ID;
                 enemyMove.message = (1UL << Systems::Physics) | (1UL << Systems::Pathfinding);
