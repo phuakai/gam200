@@ -15,6 +15,8 @@ void* checkComponentByName(rttr::type& componentName, const EntityID& entityID)
 		return ecs.GetComponent<Building>(entityID);
 	else if (componentName == rttr::type::get<Unit>())
 		return ecs.GetComponent<Unit>(entityID);
+	else if (componentName == rttr::type::get<Stats>())
+		return ecs.GetComponent<Stats>(entityID);
 	return nullptr;
 }
 
@@ -94,6 +96,8 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 						ecs.AddComponent<Building>(id);
 					else if (allComponents[i] == "Unit")
 						ecs.AddComponent<Unit>(id);
+					else if (allComponents[i] == "Stats")
+						ecs.AddComponent<Stats>(id);
 				}
 
 				rttr::instance componentInstance = GetComponentByName(component, id);
@@ -106,7 +110,6 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 						vector2D::vec2D temp = property.get_value(componentInstance).get_value<vector2D::vec2D>();
 						ImGui::DragFloat2(property.get_name().data(), temp.m, 1.0f, -500.0f, 500.0f);
 						property.set_value(componentInstance, temp);
-
 					}
 
 					else if (property.get_type() == rttr::type::get<vector3D::vec3D>())
@@ -167,6 +170,8 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 				}
 				else if (allComponents[i] == "Building")
 					ecs.RemoveComponent<Building>(id);
+				else if (allComponents[i] == "Stats")
+					ecs.RemoveComponent<Stats>(id);
 				else if (allComponents[i] == "Unit")
 					ecs.RemoveComponent<Unit>(id);
 			}
