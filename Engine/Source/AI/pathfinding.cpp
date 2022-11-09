@@ -630,7 +630,7 @@ vector2D::vec2D FormationManager::formationPosition(int index)
 	}
 	slotRelativePosition.y = (float)(index / rows) - (rows - 1) / 2.f;
 
-	slotRelativePosition *= ecs.GetComponent<Physics>(slotAssignment[index])->radius;
+	slotRelativePosition *= ecs.GetComponent<BaseInfo>(slotAssignment[index])->dimension.x;
 
 	return slotRelativePosition;
 }

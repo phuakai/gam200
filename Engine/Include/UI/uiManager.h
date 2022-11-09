@@ -21,7 +21,7 @@ Technology is prohibited.
 
 #include "ui.h"
 
-namespace UI
+namespace UIMgr
 {
 	#define mouseRad 1
 

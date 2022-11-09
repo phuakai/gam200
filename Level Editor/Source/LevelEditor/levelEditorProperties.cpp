@@ -9,12 +9,22 @@ void* checkComponentByName(rttr::type& componentName, const EntityID& entityID)
 		return ecs.GetComponent<BaseInfo>(entityID);
 	else if (componentName == rttr::type::get<Texture>())
 		return ecs.GetComponent<Texture>(entityID);
+	else if (componentName == rttr::type::get<Collision>())
+		return ecs.GetComponent<Collision>(entityID);
 	else if (componentName == rttr::type::get<Physics>())
 		return ecs.GetComponent<Physics>(entityID);
+	else if (componentName == rttr::type::get<HealthBar>())
+		return ecs.GetComponent<HealthBar>(entityID);
+	else if (componentName == rttr::type::get<Script>())
+		return ecs.GetComponent<Script>(entityID);
+	else if (componentName == rttr::type::get<Attack>())
+		return ecs.GetComponent<Attack>(entityID);
 	else if (componentName == rttr::type::get<Building>())
 		return ecs.GetComponent<Building>(entityID);
-	else if (componentName == rttr::type::get<Unit>())
-		return ecs.GetComponent<Unit>(entityID);
+	else if (componentName == rttr::type::get<UIIcon>())
+		return ecs.GetComponent<UIIcon>(entityID);
+	else if (componentName == rttr::type::get<Button>())
+		return ecs.GetComponent<Button>(entityID);
 	return nullptr;
 }
 
@@ -92,8 +102,6 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 					}
 					else if (allComponents[i] == "Building")
 						ecs.AddComponent<Building>(id);
-					else if (allComponents[i] == "Unit")
-						ecs.AddComponent<Unit>(id);
 				}
 
 				rttr::instance componentInstance = GetComponentByName(component, id);
@@ -167,8 +175,6 @@ void levelEditorProperties::ImGuiProperties(const int& id)
 				}
 				else if (allComponents[i] == "Building")
 					ecs.RemoveComponent<Building>(id);
-				else if (allComponents[i] == "Unit")
-					ecs.RemoveComponent<Unit>(id);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ Technology is prohibited.
 #include "vec2D.h"
 #include "ECS.h"
 
-namespace UI
+namespace UIMgr
 {
 
 	enum class uiState

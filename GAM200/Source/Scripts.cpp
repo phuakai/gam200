@@ -17,8 +17,8 @@ void unitAIUpdate()
 
     for (auto& i : ecs.getEntities())
     {
-        Unit* unit = ecs.GetComponent<Unit>(i);
-        if (unit && ecs.GetComponent<Unit>(i)->faction == 2)
+        Script* unit = ecs.GetComponent<Script>(i);
+        if (unit && ecs.GetComponent<Script>(i)->faction == 2)
         {
             unit->aiTree = &behaviorTree;
             unit->aiTree->run(i);
@@ -37,23 +37,23 @@ void unitAIUpdate()
         {
             for (auto const& j : inRange) 
             {
-                if (ecs.GetComponent<BaseInfo>(*j)->type == "Player")
+                if (ecs.GetComponent<BaseInfo>(*j)->type == EntityType::PLAYER)
                 {
-                    if (ecs.GetComponent<Stats>(i))
+                    if (ecs.GetComponent<Attack>(i))
                     {
-                        ecs.GetComponent<Stats>(i)->attackTimer -= (float)Graphics::Input::delta_time;
+                        ecs.GetComponent<Attack>(i)->attackTimer -= (float)Graphics::Input::delta_time;
 
-                        if (ecs.GetComponent<Stats>(*j) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
+                        if (ecs.GetComponent<HealthBar>(*j) && ecs.GetComponent<Attack>(i)->attackTimer <= 0)
                         {
-                            ecs.GetComponent<Stats>(*j)->health -= 1;
+                            ecs.GetComponent<HealthBar>(*j)->health -= 1;
                         }
                     }
                 }
             }
         }
-        if (ecs.GetComponent<Stats>(i) && ecs.GetComponent<Stats>(i)->attackTimer <= 0)
+        if (ecs.GetComponent<Attack>(i) && ecs.GetComponent<Attack>(i)->attackTimer <= 0)
         {
-            ecs.GetComponent<Stats>(i)->attackTimer = 15;
+            ecs.GetComponent<Attack>(i)->attackTimer = 15;
         }
 
     }
@@ -64,7 +64,7 @@ void buildingsUpdate() {
     for (auto& i : ecs.getEntities())
     {
         Building* building = ecs.GetComponent<Building>(i);
-        if (building && ecs.GetComponent<BaseInfo>(i)->type == "Enemy")
+        if (building && ecs.GetComponent<BaseInfo>(i)->type == EntityType::ENEMY)
         {
             //spawn here CHANGE THIS
 

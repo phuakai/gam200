@@ -73,14 +73,25 @@ void levelEditorHierarchy::ImGuiHierarchy()
 				}
 				hierarchyList[std::make_pair(100000, 1)].push_back(selected);
 
-				ecs.GetComponent<BaseInfo>(selected)->type = ecs.GetComponent<BaseInfo>(prefabs[i])->name;
-
-				if (ecs.GetComponent<BaseInfo>(selected)->type == "Player" || ecs.GetComponent<BaseInfo>(selected)->type == "Enemy")
+				if (ecs.GetComponent<BaseInfo>(prefabs[i])->name == "Building")
+				{
+					ecs.GetComponent<BaseInfo>(selected)->type = EntityType::BUILDING;
+				}
+				else if (ecs.GetComponent<BaseInfo>(prefabs[i])->name == "Enemy")
+				{
+					ecs.GetComponent<BaseInfo>(selected)->type = EntityType::ENEMY;
+				}
+				else if (ecs.GetComponent<BaseInfo>(prefabs[i])->name == "Player")
+				{
+					ecs.GetComponent<BaseInfo>(selected)->type = EntityType::PLAYER;
+				}
+				
+				if (ecs.GetComponent<BaseInfo>(selected)->type == EntityType::PLAYER || ecs.GetComponent<BaseInfo>(selected)->type == EntityType::ENEMY)
 				{
 					mainTree.insertSuccessfully(selected, ecs.GetComponent<BaseInfo>(selected)->position);
 				}
 
-				addHealthBar(selected);
+				//addHealthBar(selected);
 			}
 		}
 		ImGui::EndPopup();
@@ -158,7 +169,7 @@ void levelEditorHierarchy::ImGuiHierarchy()
 		{
 			for (int j = 0; j < listOfEntities.size(); ++j)
 			{
-				if (!ecs.GetComponent<BaseInfo>(listOfEntities[j]) || ecs.GetComponent<BaseInfo>(listOfEntities[j])->type == "Prefab")
+				if (!ecs.GetComponent<BaseInfo>(listOfEntities[j]) || ecs.GetComponent<BaseInfo>(listOfEntities[j])->type == EntityType::PREFAB)
 				{
 					continue;
 				}
@@ -186,15 +197,6 @@ void levelEditorHierarchy::ImGuiHierarchy()
 					if (ImGui::Selectable("Delete"))
 					{
 						selected = -1;
-						if (ecs.GetComponent<Stats>(listOfEntities[j]))
-						{
-							ecs.RemoveEntity(ecs.GetComponent<Stats>(listOfEntities[j])->unitLink);
-							auto it = std::find(listOfEntities.begin(), listOfEntities.end(), ecs.GetComponent<Stats>(listOfEntities[j])->unitLink);
-							if (it != listOfEntities.end())
-							{
-								listOfEntities.erase(listOfEntities.begin() + *it);
-							}
-						}
 						ecs.RemoveEntity(listOfEntities[j]);
 						listOfEntities.erase(listOfEntities.begin() + j);
 						break;

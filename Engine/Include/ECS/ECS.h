@@ -155,12 +155,6 @@ public:
 
 
 //templated child class
-
-
-
-// i dont even know whats going on
-
-
 template<class C>
 class Component : public ComponentBase 
 {

@@ -629,8 +629,8 @@ bool fromJsonECS(std::string fileName)
         }
 
         //enemyManager.target = ecs.GetComponent<Physics>(newEntity)->target;
-        if ((ecs.GetComponent<BaseInfo>(newEntity)->type == "Player" ||
-            ecs.GetComponent<BaseInfo>(newEntity)->type == "Enemy") &&
+        if ((ecs.GetComponent<BaseInfo>(newEntity)->type == EntityType::PLAYER ||
+            ecs.GetComponent<BaseInfo>(newEntity)->type == EntityType::ENEMY) &&
             ecs.GetComponent<BaseInfo>(newEntity)->name != "player1")
         {
             mainTree.insertSuccessfully(newEntity, ecs.GetComponent<BaseInfo>(newEntity)->position);

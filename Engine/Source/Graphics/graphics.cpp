@@ -270,7 +270,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b),
 			vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b), vector3D::Vec3(curobj->color.r, curobj->color.g, curobj->color.b)
 		};
-		if (curobjBaseInfo->type == "Background") // Background that moves with camera
+		if (curobjBaseInfo->type == EntityType::BACKGROUND) // Background that moves with camera
 		{
 			curobjBaseInfo->dimension = vector2D::Vec2((float)camera2d.getWidth(), (float)camera2d.getHeight());
 			curobjBaseInfo->position = camera2d.getCamPosition();
@@ -322,7 +322,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 		matrix3x3::mat3x3 translate = Transform::createTranslationMat(vector2D::vec2D(temppos.x, temppos.y));
 		matrix3x3::mat3x3 scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x, curobjBaseInfo->dimension.y));
 
-		if (curobjBaseInfo->type == "Cloud")
+		if (curobjBaseInfo->type == EntityType::FOW)
 		{
 			scale = Transform::createScaleMat(vector2D::vec2D(curobjBaseInfo->dimension.x * 2.5f, curobjBaseInfo->dimension.y * 2.5f));
 		}
@@ -342,7 +342,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 
 		matrix3x3::mat3x3 model_to_ndc_xformnotglm;// = world_to_ndc_xform * model_to_world;
 
-		if (curobjBaseInfo->type == "UI" || curobjBaseInfo->type == "CollidableUI" || curobjBaseInfo->type == "Menu")
+		if (curobjBaseInfo->type == EntityType::UI || curobjBaseInfo->type == EntityType::BUTTON)
 		{
 			model_to_ndc_xformnotglm = camera2d.getCamwintoNDCForm() * model_to_world;
 		}
@@ -381,7 +381,7 @@ void RenderNS::QueueEntity(RenderNS::InstancedRenderer& instanceobj, std::map<st
 			{
 				model_to_ndc_xform.m2[setclr][3] = 1.f;
 			}
-			if (curobjBaseInfo->type == "Enemy" || curobjBaseInfo->type == "CollidableUI")
+			if (curobjBaseInfo->type == EntityType::ENEMY || curobjBaseInfo->type == EntityType::BUTTON)
 			{
 				model_to_ndc_xform.m2[3][3] = 0.f;
 			}

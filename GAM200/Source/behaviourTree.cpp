@@ -42,7 +42,7 @@ State TargetInRange::run(EntityID ID)
         //  std::cout << "things in range";
         for (auto const& i : inRange) {
             std::cout << *i << std::endl;
-            if (ecs.GetComponent<Unit>(*i) != nullptr && ecs.GetComponent<Unit>(*i)->faction == PLAYER) {
+            if (ecs.GetComponent<Script>(*i) != nullptr && ecs.GetComponent<Script>(*i)->faction == PLAYER) {
                 //is this inefficent
                 //  ecs.GetComponent<Unit>(*i)->target = *i;
                     

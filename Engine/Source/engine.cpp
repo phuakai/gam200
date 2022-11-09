@@ -41,7 +41,6 @@ RTTR_REGISTRATION{
 
 	rttr::registration::class_<Render>("Render")
 		.property("type", &Render::type)
-		.property("color", &Render::color)
 		.property("vaoID", &Render::vaoID)
 		.property("vboID", &Render::vboID)
 		.property("eboID", &Render::eboID)
@@ -53,7 +52,9 @@ RTTR_REGISTRATION{
 		.property("name", &BaseInfo::name)
 		.property("position", &BaseInfo::position)
 		.property("dimension", &BaseInfo::dimension)
-		.property("orientation", &BaseInfo::orientation);
+		.property("textureID", &BaseInfo::textureID)
+		.property("spriteStep", &BaseInfo::spriteStep)
+		.property("numberOfSprites", &BaseInfo::numberOfSprites);
 
 	rttr::registration::class_<Texture>("Texture")
 		.property("textureID", &Texture::textureID)
@@ -61,48 +62,61 @@ RTTR_REGISTRATION{
 		.property("spriteStep", &Texture::spriteStep)
 		.property("numberOfSprites", &Texture::numberOfSprites);
 
+	rttr::registration::class_<Collision>("Collision")
+		.property("rigidBody", &Collision::rigidBody)
+		.property("collisionFlag", &Collision::collisionFlag);
+
 	rttr::registration::class_<Physics>("Physics")
 		.property("velocity", &Physics::velocity)
 		.property("target", &Physics::target)
+		.property("formationManagerID", &Physics::formationManagerID)
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+		)
 		.property("formationTarget", &Physics::formationTarget)
 		.property("force", &Physics::force)
 		.property("speed", &Physics::speed)
-		.property("collisionFlag", &Physics::collisionFlag)
-		.property("collisionResponse", &Physics::collisionResponse)
-		.property("radius", &Physics::radius)
-		.property("reached", &Physics::reached)
-		.property("formationManagerID", &Physics::formationManagerID)
+		.property("reached", &Physics::reached);
+
+	rttr::registration::class_<HealthBar>("HealthBar")
+		.property("health", &HealthBar::health)
+		.property("position", &HealthBar::position)
+		.property("dimension", &HealthBar::dimension)
+		.property("textureID", &HealthBar::textureID)
+		.property("spriteStep", &HealthBar::spriteStep)
+		.property("numberOfSprites", &HealthBar::numberOfSprites)
+		.property("color", &HealthBar::color);
+
+	rttr::registration::class_<Script>("Script")
+		.property("faction", &Script::faction)
+		.property("type", &Script::type);
+
+	rttr::registration::class_<Attack>("Attack")
+		.property("attack", &Attack::attack)
+		.property("attackTimer", &Attack::attackTimer);
+
+	rttr::registration::class_<Building>("Building")
+		.property("buildingType", &Building::buildingType)
+		.property("buildTime", &Building::buildTime)
+		.property("spawnTimer", &Building::spawnTimer);
+
+	rttr::registration::class_<UIIcon>("UIIcon")
+		.property("group", &UIIcon::group)
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+		)
+		.property("uiType", &UIIcon::uiType)		// is it uibg/uibutton? 
+		(
+			rttr::metadata("NO_SERIALIZE", "TRUE")
+		)
+		.property("location", &UIIcon::location)	// is it in hud/map/action panel? store into the respective list
 		(
 			rttr::metadata("NO_SERIALIZE", "TRUE")
 		);
 
-	rttr::registration::class_<Stats>("Stats")
-		.property("unitLink", &Stats::unitLink)
-		.property("attackTimer", &Stats::attackTimer)
-		.property("health", &Stats::health);
-
-	rttr::registration::class_<Building>("Building")
-		.property("buildTime", &Building::buildTime)
-		.property("spawnTimer", &Building::spawnTimer)
-		.property("buildingType", &Building::buildingType);
-
-	rttr::registration::class_<Unit>("Unit")
-		.property("faction", &Unit::faction)
-		.property("type", &Unit::type);
-
-	rttr::registration::class_<ui>("ui")
-		.property("group", &ui::group)
-		(
-			rttr::metadata("NO_SERIALIZE", "TRUE")
-			)
-		.property("uiType", &ui::uiType)		// is it uibg/uibutton? 
-			(
-				rttr::metadata("NO_SERIALIZE", "TRUE")
-				)
-		.property("location", &ui::location)	// is it in hud/map/action panel? store into the respective list
-		(
-			rttr::metadata("NO_SERIALIZE", "TRUE")
-			);
+	rttr::registration::class_<Button>("Button")
+		.property("buttonType", &Button::buttonType)
+		.property("buttonFunction", &Button::buttonFunction);
 
 }
 ECS ecs;
@@ -167,14 +181,22 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<BaseInfo>(entityID));
 	else if (componentName == rttr::type::get<Texture>())
 		return *(ecs.GetComponent<Texture>(entityID));
+	else if (componentName == rttr::type::get<Collision>())
+		return *(ecs.GetComponent<Collision>(entityID));
 	else if (componentName == rttr::type::get<Physics>())
 		return *(ecs.GetComponent<Physics>(entityID));
+	else if (componentName == rttr::type::get<HealthBar>())
+		return *(ecs.GetComponent<HealthBar>(entityID));
+	else if (componentName == rttr::type::get<Script>())
+		return *(ecs.GetComponent<Script>(entityID));
+	else if (componentName == rttr::type::get<Attack>())
+		return *(ecs.GetComponent<Attack>(entityID));
 	else if (componentName == rttr::type::get<Building>())
 		return *(ecs.GetComponent<Building>(entityID));
-	else if (componentName == rttr::type::get<Unit>())
-		return *(ecs.GetComponent<Unit>(entityID));
-	else if (componentName == rttr::type::get<ui>())
-		return *(ecs.GetComponent<ui>(entityID));
+	else if (componentName == rttr::type::get<UIIcon>())
+		return *(ecs.GetComponent<UIIcon>(entityID));
+	else if (componentName == rttr::type::get<Button>())
+		return *(ecs.GetComponent<Button>(entityID));
 }
 
 void engineInit()
@@ -183,37 +205,40 @@ void engineInit()
 
 	// ======================================================================================================================================
 	// ECS: Register structs as components 
+	ecs.RegisterComponent<Render>("Render");
 	ecs.RegisterComponent<BaseInfo>("BaseInfo");
 	ecs.RegisterComponent<Texture>("Texture");
+	ecs.RegisterComponent<Collision>("Collision");
 	ecs.RegisterComponent<Physics>("Physics");
-	ecs.RegisterComponent<Render>("Render");
-	ecs.RegisterComponent<Stats>("Stats");
+	ecs.RegisterComponent<HealthBar>("HealthBar");
+	ecs.RegisterComponent<Script>("Script");
+	ecs.RegisterComponent<Attack>("Attack");
 	ecs.RegisterComponent<Building>("Building");
-	ecs.RegisterComponent<Unit>("Unit");
-	ecs.RegisterComponent<ui>("ui");
+	ecs.RegisterComponent<UIIcon>("UIIcon");
+	ecs.RegisterComponent<Button>("Button");
 
 	// ======================================================================================================================================
 	// PREFABS
 	enemyPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(enemyPrefab, "Prefab", "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(enemyPrefab, EntityType::PREFAB, "Enemy", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 4, 1, 1);
 	ecs.AddComponent<Render>(enemyPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(enemyPrefab, 4, 1, 1, "Enemy");
-	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
-	ecs.AddComponent<Unit>(enemyPrefab, 0, 0);
+	ecs.AddComponent<Physics>(enemyPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, vector2D::vec2D(0.f, 0.f), 0, 0, false);
+	ecs.AddComponent<Script>(enemyPrefab, 0, 0);
 	prefabs.push_back(enemyPrefab);
 
 	playerPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(playerPrefab, "Prefab", "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(playerPrefab, EntityType::PREFAB, "Player", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 12, 0, 0);
 	ecs.AddComponent<Render>(playerPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(playerPrefab, 12, 0, 0, "");
-	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	ecs.AddComponent<Physics>(playerPrefab, vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, vector2D::vec2D(0.f, 0.f), 0, 0, false);
 	prefabs.push_back(playerPrefab);
 
 	buildingPrefab = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(buildingPrefab, "Prefab", "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(buildingPrefab, EntityType::PREFAB, "Building", vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0);
 	ecs.AddComponent<Render>(buildingPrefab, "square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
 	ecs.AddComponent<Texture>(buildingPrefab, 0, 0, 0, "");
-	ecs.AddComponent<Building>(buildingPrefab, 0, 0, "");
+	ecs.AddComponent<Building>(buildingPrefab, BuildingType::RECRUITMENT, 0, 0);
 	prefabs.push_back(buildingPrefab);
 	
 	// ======================================================================================================================================
@@ -221,27 +246,27 @@ void engineInit()
 	mainTree.createQuadTree(vector2D::vec2D(0, 0), static_cast<float>(camera2d.getWidth()), static_cast<float>(camera2d.getHeight()), nullptr);
 
 	bg.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
-	bg.Add<BaseInfo>("Background", "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight), vector2D::vec2D(0.f, 0.f));
+	bg.Add<BaseInfo>(EntityType::BACKGROUND, "background", vector2D::vec2D(0.f, 0.f), vector2D::vec2D((float)Graphics::Input::screenwidth, (float)Graphics::Input::screenheight), vector2D::vec2D(0.f, 0.f), 1, 1, 1);
 	// velocity, target, force, speed
 	bg.Add<Texture>(1, 1, 1, "Background");
 
 	// ECS: Adding components into Entities
 	// Render: name, type, position, color, dimension, vaoID, vboID, eboID, shaderName(?)
 	player1.Add<Render>("square", vector3D::vec3D(0.3f, 0.3f, 0.7f), 0, 0, 0, "instanceshader", true);
-	player1.Add<BaseInfo>("Player", "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f)), vector2D::vec2D(0.f, 0.f);
+	player1.Add<BaseInfo>(EntityType::PLAYER, "player1", vector2D::vec2D(-200.f, 0.f), vector2D::vec2D(20.f, 20.f), vector2D::vec2D(0.f, 0.f), 12, 1, 1);
 	// velocity, target, force, speed
 	player1.Add<Texture>(12, 1, 1, "none");
 	//player1.Add<Stats>(100);
 
 	playbutton.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
 	vector2D::vec2D playdimension{ 150.f, 75.f };
-	playbutton.Add<BaseInfo>("Menu", "play", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (playdimension.x / 2.f), 100.f), playdimension, vector2D::vec2D(0.f, 0.f));
+	playbutton.Add<BaseInfo>(EntityType::UI, "play", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (playdimension.x / 2.f), 100.f), playdimension, vector2D::vec2D(0.f, 0.f), 8, 1, 1);
 	// velocity, target, force, speed
 	playbutton.Add<Texture>(8, 1, 1, "Play");
 
 	exitbutton.Add<Render>("square", vector3D::vec3D(1.f, 1.0f, 1.0f), 0, 0, 0, "instanceshader", true);
 	vector2D::vec2D exitdimension{ 150.f, 75.f };
-	exitbutton.Add<BaseInfo>("Menu", "exit", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (exitdimension.x / 2.f), 0.f), exitdimension, vector2D::vec2D(0.f, 0.f));
+	exitbutton.Add<BaseInfo>(EntityType::UI, "exit", vector2D::vec2D(((float)Graphics::Input::screenwidth / 2.f) - (exitdimension.x / 2.f), 0.f), exitdimension, vector2D::vec2D(0.f, 0.f), 10, 1, 1);
 	// velocity, target, force, speed
 	exitbutton.Add<Texture>(10, 1, 1, "Exit");
 
@@ -261,7 +286,7 @@ void engineInit()
 	//}
 
 	ecs.AddComponent<Render>(selected, "square", vector3D::vec3D(0, 0, 0), 0, 0, 0, "gam200-shdrpgm", true);
-	ecs.AddComponent<BaseInfo>(selected, "Selection", "selection", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f));
+	ecs.AddComponent<BaseInfo>(selected, EntityType::SELECT, "selection", vector2D::vec2D(0, 0), vector2D::vec2D(0, 0), vector2D::vec2D(0.f, 0.f), 12, 1, 1);
 	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
 
 	timer = 4;
@@ -279,7 +304,7 @@ void engineInit()
 	{
 		for (int i = 0; i < entities.size(); ++i)
 		{
-			if (p[i].type == "Player" && m[i].formationManagerID != -1)
+			if (p[i].type == EntityType::PLAYER && m[i].formationManagerID != -1)
 			{
 				std::list<EntityID*>myList;
 				AABB range(p[i].position.x - p[i].dimension.x,
@@ -292,26 +317,24 @@ void engineInit()
 				{
 					for (std::list <EntityID*>::iterator obj = myList.begin(); obj != myList.end(); ++obj)
 					{
-
-						if (ecs.GetComponent<BaseInfo>(**obj)->type == "Enemy")
+						if (ecs.GetComponent<BaseInfo>(**obj)->type == EntityType::ENEMY)
 						{
-							if (ecs.GetComponent<Stats>(entities[i]))
+							if (ecs.GetComponent<Attack>(entities[i]))
 							{
-
-								ecs.GetComponent<Stats>(entities[i])->attackTimer -= (float)Graphics::Input::delta_time;
+								ecs.GetComponent<Attack>(entities[i])->attackTimer -= (float)Graphics::Input::delta_time;
 								
-								if (ecs.GetComponent<Stats>(**obj) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
+								if (ecs.GetComponent<HealthBar>(**obj) && ecs.GetComponent<Attack>(entities[i])->attackTimer <= 0)
 								{
-									ecs.GetComponent<Stats>(**obj)->health -= 1;
+									ecs.GetComponent<HealthBar>(**obj)->health -= 1;
 								}
 
 							}
 						}
 					}
 				}
-				if (ecs.GetComponent<Stats>(entities[i]) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
+				if (ecs.GetComponent<Attack>(entities[i]) && ecs.GetComponent<Attack>(entities[i])->attackTimer <= 0)
 				{
-					ecs.GetComponent<Stats>(entities[i])->attackTimer = 5;
+					ecs.GetComponent<Attack>(entities[i])->attackTimer = 5;
 				}
 
 				MoveEvent entityToMove;
@@ -486,7 +509,9 @@ void engineUpdate()
 
 		t1 = std::chrono::steady_clock::now();
 		physicsUpdate();					// physics system
-		updateHealthBars();
+
+		//updateHealthBars();
+		
 		t2 = std::chrono::steady_clock::now();
 		ecsSystemsTime = duration_cast<std::chrono::duration<double>>(t2 - t1);
 
@@ -680,7 +705,7 @@ void dragSelect()
 			for (std::list <EntityID*>::iterator obj2 = myList.begin(); obj2 != myList.end(); ++obj2)
 			{
 				std::cout << "test" << std::endl;
-				if (ecs.GetComponent<BaseInfo>(**obj2)->type == "Player")
+				if (ecs.GetComponent<BaseInfo>(**obj2)->type == EntityType::PLAYER)
 				{
 					formationManagerUpdateEntities.push_back(**obj2);
 				}
@@ -731,44 +756,26 @@ void dragSelect()
 	}
 }
 
-void addHealthBar(EntityID id)
-{
-	BaseInfo* entityInfo = ecs.GetComponent<BaseInfo>(id);
-
-	EntityID healthBar = ecs.GetNewID();
-	ecs.AddComponent<BaseInfo>(healthBar, "HealthBar", "HealthBar" + entityInfo->name, vector2D::vec2D(entityInfo->position.x, entityInfo->position.y + entityInfo->dimension.y), vector2D::vec2D(entityInfo->dimension.x, entityInfo->dimension.x * 0.2f), vector2D::vec2D(0.f, 0.f));
-	ecs.AddComponent<Render>(healthBar, "square", vector3D::vec3D(0.7f, 0.0f, 0.0f), 0, 0, 0, "instanceshader", true);
-	ecs.AddComponent<Texture>(healthBar, 0, 1, 1, "Color");
-	ecs.AddComponent<Stats>(healthBar, 100, 1, id);
-
-	if (!ecs.GetComponent<Stats>(id))
-	{
-		ecs.AddComponent<Stats>(id);
-	}
-	ecs.GetComponent<Stats>(id)->health = 100;
-	ecs.GetComponent<Stats>(id)->unitLink = healthBar;
-}
-
-void updateHealthBars()
-{
-	for (auto i : ecs.getEntities())
-	{
-		BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(i);
-		if (baseInfo->type == "HealthBar")
-		{
-			if (ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health <= 0)
-			{
-				ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink)->type = "DeadEnemy";
-				ecs.GetComponent<Render>(ecs.GetComponent<Stats>(i)->unitLink)->render = false;
-				ecs.GetComponent<Render>(i)->render = false;
-			}
-			else
-			{
-				BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
-				baseInfo->position = otherBaseInfo->position;
-				baseInfo->position.y += otherBaseInfo->dimension.y;
-				baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2f);
-			}
-		}
-	}
-}
+//void updateHealthBars()
+//{
+//	for (auto i : ecs.getEntities())
+//	{
+//		BaseInfo* baseInfo = ecs.GetComponent<BaseInfo>(i);
+//		if (baseInfo->type == "HealthBar")
+//		{
+//			if (ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health <= 0)
+//			{
+//				ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink)->type = "DeadEnemy";
+//				ecs.GetComponent<Render>(ecs.GetComponent<Stats>(i)->unitLink)->render = false;
+//				ecs.GetComponent<Render>(i)->render = false;
+//			}
+//			else
+//			{
+//				BaseInfo* otherBaseInfo = ecs.GetComponent<BaseInfo>(ecs.GetComponent<Stats>(i)->unitLink);
+//				baseInfo->position = otherBaseInfo->position;
+//				baseInfo->position.y += otherBaseInfo->dimension.y;
+//				baseInfo->dimension = vector2D::vec2D((ecs.GetComponent<Stats>(ecs.GetComponent<Stats>(i)->unitLink)->health / 100.f) * otherBaseInfo->dimension.x, otherBaseInfo->dimension.x * 0.2f);
+//			}
+//		}
+//	}
+//}
