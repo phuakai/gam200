@@ -124,6 +124,7 @@ EventManager eventManager;
 std::vector<FormationManager> formationManagers;
 
 float timer;
+float walktimer;
 
 extern CameraNS::Camera2D camera2d;
 
@@ -265,6 +266,7 @@ void engineInit()
 	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
 
 	timer = 4;
+	walktimer = 4;
 
 	//fromJsonECS("data.json");
 
@@ -510,6 +512,35 @@ void engineUpdate()
 				}
 			}
 			timer = 5.0f;
+		}
+
+		walktimer -= (float)Graphics::Input::delta_time;
+
+		if (walktimer <= 0)
+		{
+			std::vector<EntityID> entities = ecs.getEntities();
+
+			for (int i = 0; i < entities.size(); ++i)
+			{
+				if (ecs.GetComponent<Physics>(entities[i]) != nullptr && ecs.GetComponent<Physics>(entities[i])->reached == false)
+				{
+					ecs.GetComponent<Texture>(entities[i])->textureID = 25;
+				}
+				if (ecs.GetComponent<Physics>(entities[i]) != nullptr && ecs.GetComponent<Physics>(entities[i])->reached == true && ecs.GetComponent<Texture>(entities[i])->textureID == 25)
+				{
+					ecs.GetComponent<Texture>(entities[i])->textureID = 16;
+				}
+				if (ecs.GetComponent<Texture>(entities[i])->textureID == 25)
+				{
+					ecs.GetComponent<Texture>(entities[i])->spriteStep += 1;
+
+					if (ecs.GetComponent<Texture>(entities[i])->spriteStep > 6)
+					{
+						ecs.GetComponent<Texture>(entities[i])->spriteStep = 1;
+					}
+				}
+			}
+			walktimer = 0.2f;
 		}
 	}
 
