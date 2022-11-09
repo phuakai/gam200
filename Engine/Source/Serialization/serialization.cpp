@@ -42,10 +42,6 @@ instance addComponentByName(type& componentName, const EntityID& entityID)
     }
     else if (componentName == type::get<Physics>())
         return *(ecs.AddComponent<Physics>(entityID));
-    else if (componentName == type::get<Stats>())
-        return *(ecs.AddComponent<Stats>(entityID));
-    else if (componentName == type::get<Unit>())
-        return *(ecs.AddComponent<Unit>(entityID));
 }
 
 bool write_variant(const variant& var, PrettyWriter<StringBuffer>& writer);

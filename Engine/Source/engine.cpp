@@ -198,12 +198,6 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<UIIcon>(entityID));
 	else if (componentName == rttr::type::get<Button>())
 		return *(ecs.GetComponent<Button>(entityID));
-	else if (componentName == rttr::type::get<Unit>())
-		return *(ecs.GetComponent<Unit>(entityID));
-	else if (componentName == rttr::type::get<ui>())
-		return *(ecs.GetComponent<ui>(entityID));
-	else if (componentName == rttr::type::get<Stats>())
-		return *(ecs.GetComponent<Stats>(entityID));
 }
 
 void engineInit()
@@ -278,32 +272,32 @@ void engineInit()
 	exitbutton.Add<Texture>(10, 1, 1, "Exit");
 
 
-	FormationManager enemyManager;
+	//FormationManager enemyManager;
 
-	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	// create default engine as source of randomness
-	std::default_random_engine generator(seed);
-	std::uniform_real_distribution<float> colour(0.f, 1.f);
+	//unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	//// create default engine as source of randomness
+	//std::default_random_engine generator(seed);
+	//std::uniform_real_distribution<float> colour(0.f, 1.f);
 
-	for (int i = 0; i < enemyUnits.size(); ++i)
-	{
-		float randr = colour(generator);
-		float randg = colour(generator);
-		float randb = colour(generator);
+	//for (int i = 0; i < enemyUnits.size(); ++i)
+	//{
+	//	float randr = colour(generator);
+	//	float randg = colour(generator);
+	//	float randb = colour(generator);
 
-		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
-		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
-		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
-		enemyUnits[i].Add<Physics>( vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
-		enemyUnits[i].Add<Unit>( 0, 0);
+	//	enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
+	//	enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
+	//	enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
+	//	enemyUnits[i].Add<Physics>( vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+	//	enemyUnits[i].Add<Unit>( 0, 0);
 
-		EntityID enemyID = enemyUnits[i].GetID();
+	//	EntityID enemyID = enemyUnits[i].GetID();
 
-		enemyManager.addCharacter(enemyID);
-		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
-		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<BaseInfo>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
-	}
-	formationManagers.push_back(enemyManager);
+	//	enemyManager.addCharacter(enemyID);
+	//	mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+	//	//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<BaseInfo>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
+	//}
+	//formationManagers.push_back(enemyManager);
 
 	// Create fow
 	//fow::fowMap.createFow();
@@ -375,8 +369,6 @@ void engineInit()
 							}
 						}
 					}
-						}
-					}
 				}
 				if (ecs.GetComponent<Attack>(entities[i]) && ecs.GetComponent<Attack>(entities[i])->attackTimer <= 0)
 				{
@@ -388,14 +380,8 @@ void engineInit()
 				entityToMove.message = (1UL << Systems::Physics);
 
 				eventManager.post(entityToMove);
-
-				if (ecs.GetComponent<Stats>(entities[i]) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
-				{
-					ecs.GetComponent<Stats>(entities[i])->attackTimer = 0.1;
-				}
 			}
 			
-		
 		}
 		//fow::fowMap.updateFow();
 		//std::cout << eventManager.findQueue(Systems::Physics).size() << std::endl;
@@ -574,7 +560,7 @@ void engineUpdate()
 
 			for (int i = 0; i < entities.size(); ++i)
 			{
-				if (ecs.GetComponent<Texture>(entities[i])->textureID == 16)
+				if (ecs.GetComponent<Texture>(entities[i]) && ecs.GetComponent<Texture>(entities[i])->textureID == 16)
 				{
 					ecs.GetComponent<Texture>(entities[i])->spriteStep += 1;
 
@@ -595,6 +581,11 @@ void engineUpdate()
 
 			for (int i = 0; i < entities.size(); ++i)
 			{
+				if (!ecs.GetComponent<Texture>(entities[i]))
+				{
+					continue;
+				}
+
 				if (ecs.GetComponent<Physics>(entities[i]) != nullptr && ecs.GetComponent<Physics>(entities[i])->reached == false)
 				{
 					ecs.GetComponent<Texture>(entities[i])->textureID = 25;

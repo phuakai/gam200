@@ -264,18 +264,19 @@ void imguiUpdate()
 		{
 			imguiCameraCheck = false;
 		}
-		const float cameraView[16] =
-		{ 1.f, 0.f, 0.f, 0.f,
-		  0.f, 1.f, 0.f, 0.f,
-		  0.f, 0.f, 1.f, 0.f,
-		  0.f, 0.f, 0.f, 1.f };
 
-		static float projection[16];
+		//const float cameraView[16] =
+		//{ 1.f, 0.f, 0.f, 0.f,
+		//  0.f, 1.f, 0.f, 0.f,
+		//  0.f, 0.f, 1.f, 0.f,
+		//  0.f, 0.f, 0.f, 1.f };
 
-		static matrix3x3::mat3x3 matrix;
+		//static float projection[16];
 
-		ImGuizmo::Manipulate(cameraView, projection, ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::LOCAL, matrix.m);
-		
+		//static matrix3x3::mat3x3 matrix;
+
+		//ImGuizmo::Manipulate(cameraView, projection, ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::LOCAL, matrix.m);
+		//
 		ImGui::End();
 	}
 
@@ -790,11 +791,11 @@ void EditTransform(float* cameraView, float* cameraProjection, float* matrix, bo
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	}
 
-	ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
-	ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
-	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing ? bounds : NULL, boundSizingSnap ? boundsSnap : NULL);
+	//ImGuizmo::DrawGrid(cameraView, cameraProjection, identityMatrix, 100.f);
+	//ImGuizmo::DrawCubes(cameraView, cameraProjection, &objectMatrix[0][0], gizmoCount);
+	//ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL, boundSizing ? bounds : NULL, boundSizingSnap ? boundsSnap : NULL);
 
-	ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
+	//ImGuizmo::ViewManipulate(cameraView, camDistance, ImVec2(viewManipulateRight - 128, viewManipulateTop), ImVec2(128, 128), 0x10101010);
 
 	if (useWindow)
 	{
