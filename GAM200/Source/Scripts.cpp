@@ -67,7 +67,6 @@ void buildingsUpdate() {
         if (building && ecs.GetComponent<BaseInfo>(i)->type == "Enemy")
         {
             //spawn here CHANGE THIS
-
         }
 
     }
