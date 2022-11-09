@@ -138,6 +138,7 @@ EventManager eventManager;
 std::vector<FormationManager> formationManagers;
 
 float timer;
+float walktimer;
 
 extern CameraNS::Camera2D camera2d;
 
@@ -170,7 +171,7 @@ std::vector<EntityID> formationManagerUpdateEntities;
 void dragSelect();
 
 EntityID selection;
-
+std::vector<Entity> enemyUnits(2500);
 bool pause;
 
 rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& entityID)
@@ -197,6 +198,12 @@ rttr::instance GetComponentByName(rttr::type& componentName, const EntityID& ent
 		return *(ecs.GetComponent<UIIcon>(entityID));
 	else if (componentName == rttr::type::get<Button>())
 		return *(ecs.GetComponent<Button>(entityID));
+	else if (componentName == rttr::type::get<Unit>())
+		return *(ecs.GetComponent<Unit>(entityID));
+	else if (componentName == rttr::type::get<ui>())
+		return *(ecs.GetComponent<ui>(entityID));
+	else if (componentName == rttr::type::get<Stats>())
+		return *(ecs.GetComponent<Stats>(entityID));
 }
 
 void engineInit()
@@ -270,6 +277,34 @@ void engineInit()
 	// velocity, target, force, speed
 	exitbutton.Add<Texture>(10, 1, 1, "Exit");
 
+
+	FormationManager enemyManager;
+
+	unsigned int seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	// create default engine as source of randomness
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<float> colour(0.f, 1.f);
+
+	for (int i = 0; i < enemyUnits.size(); ++i)
+	{
+		float randr = colour(generator);
+		float randg = colour(generator);
+		float randb = colour(generator);
+
+		enemyUnits[i].Add<Render>("square", vector3D::vec3D(randr, randg, randb), 0, 0, 0, "gam200-shdrpgm", true);
+		enemyUnits[i].Add<BaseInfo>("Enemy", "enemy" + std::to_string(i + 1), vector2D::vec2D(-450.f + (i % 45 * 20), 400.f - ((int)i / 30 * 10)), vector2D::vec2D(10, 10), vector2D::vec2D(0.f, 0.f));
+		enemyUnits[i].Add<Texture>(4, 1, 1, "Enemy");
+		enemyUnits[i].Add<Physics>( vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), vector2D::vec2D(0.f, 0.f), 0, 0, 0, vector2D::vec2D(0.f, 0.f), 0, false, 0);
+		enemyUnits[i].Add<Unit>( 0, 0);
+
+		EntityID enemyID = enemyUnits[i].GetID();
+
+		enemyManager.addCharacter(enemyID);
+		mainTree.insertSuccessfully(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position);
+		//fow::fowMap.addObjToFow(fow::fowObj(enemyID, ecs.GetComponent<BaseInfo>(enemyID)->position, fow::fowMap.worldToMap(ecs.GetComponent<BaseInfo>(enemyID)->position), fow::fowMap.getCol(), fow::fowMap.getRow()));
+	}
+	formationManagers.push_back(enemyManager);
+
 	// Create fow
 	//fow::fowMap.createFow();
 	//int inc = 0;
@@ -290,6 +325,7 @@ void engineInit()
 	ecs.AddComponent<Texture>(selected, 12, 1, 1, "FM");
 
 	timer = 4;
+	walktimer = 4;
 
 	//fromJsonECS("data.json");
 
@@ -329,6 +365,16 @@ void engineInit()
 								}
 
 							}
+							if (physics::CollisionDetectionCircleCircle(ecs.GetComponent<BaseInfo>(**obj)->position, ecs.GetComponent<BaseInfo>(**obj)->dimension.x, ecs.GetComponent<BaseInfo>(entities[i])->position, ecs.GetComponent<BaseInfo>(entities[i])->dimension.x))
+							{
+								m[i].target = p[i].position;
+								formationManagers[m[i].formationManagerID].target = p[i].position;
+								m[i].reached = true;
+
+								std::cout << "collision?" << std::endl;
+							}
+						}
+					}
 						}
 					}
 				}
@@ -336,13 +382,17 @@ void engineInit()
 				{
 					ecs.GetComponent<Attack>(entities[i])->attackTimer = 5;
 				}
-
 				MoveEvent entityToMove;
 
 				entityToMove.id = entities[i];
 				entityToMove.message = (1UL << Systems::Physics);
 
 				eventManager.post(entityToMove);
+
+				if (ecs.GetComponent<Stats>(entities[i]) && ecs.GetComponent<Stats>(entities[i])->attackTimer <= 0)
+				{
+					ecs.GetComponent<Stats>(entities[i])->attackTimer = 0.1;
+				}
 			}
 			
 		
@@ -535,6 +585,35 @@ void engineUpdate()
 				}
 			}
 			timer = 5.0f;
+		}
+
+		walktimer -= (float)Graphics::Input::delta_time;
+
+		if (walktimer <= 0)
+		{
+			std::vector<EntityID> entities = ecs.getEntities();
+
+			for (int i = 0; i < entities.size(); ++i)
+			{
+				if (ecs.GetComponent<Physics>(entities[i]) != nullptr && ecs.GetComponent<Physics>(entities[i])->reached == false)
+				{
+					ecs.GetComponent<Texture>(entities[i])->textureID = 25;
+				}
+				if (ecs.GetComponent<Physics>(entities[i]) != nullptr && ecs.GetComponent<Physics>(entities[i])->reached == true && ecs.GetComponent<Texture>(entities[i])->textureID == 25)
+				{
+					ecs.GetComponent<Texture>(entities[i])->textureID = 16;
+				}
+				if (ecs.GetComponent<Texture>(entities[i])->textureID == 25)
+				{
+					ecs.GetComponent<Texture>(entities[i])->spriteStep += 1;
+
+					if (ecs.GetComponent<Texture>(entities[i])->spriteStep > 6)
+					{
+						ecs.GetComponent<Texture>(entities[i])->spriteStep = 1;
+					}
+				}
+			}
+			walktimer = 0.2f;
 		}
 	}
 

@@ -23,6 +23,10 @@ void unitAIUpdate()
             unit->aiTree = &behaviorTree;
             unit->aiTree->run(i);
         }
+        else
+        {
+            continue;
+        }
 
         std::list<EntityID*> inRange;
         AABB range(

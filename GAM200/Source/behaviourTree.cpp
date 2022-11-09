@@ -2,6 +2,7 @@
 #include "mainHeader.h"
 #include "EventManager/eventManager.h"
 #include "physicsPartition.h"
+#include "collision.h"
 
 extern AIStats testStats;
 BehaviourTree behaviorTree;
@@ -47,6 +48,11 @@ State TargetInRange::run(EntityID ID)
                 //  ecs.GetComponent<Unit>(*i)->target = *i;
                     
                 ecs.GetComponent<Physics>(ID)->target = ecs.GetComponent<BaseInfo>(*i)->position;
+
+                if (physics::CollisionDetectionCircleCircle(ecs.GetComponent<BaseInfo>(ID)->position, ecs.GetComponent<BaseInfo>(ID)->dimension.x, ecs.GetComponent<BaseInfo>(*i)->position, ecs.GetComponent<BaseInfo>(*i)->dimension.x))
+                {
+                    break;
+                }
 
                 enemyMove.id = ID;
                 enemyMove.message = (1UL << Systems::Physics) | (1UL << Systems::Pathfinding);
